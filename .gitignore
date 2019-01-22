@@ -13,7 +13,6 @@
 *.lai
 *.la
 *.a
-*.lib
 *.exe
 *.out
 *.app
