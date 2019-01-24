@@ -54,6 +54,7 @@ void RenderContext::BeginFrame()
 
 void RenderContext::EndFrame()
 {
+	//Perform swap buffers here
 }
 
 void RenderContext::Shutdown()
