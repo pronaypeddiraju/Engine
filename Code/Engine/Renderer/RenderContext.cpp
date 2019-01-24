@@ -6,27 +6,53 @@
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
 
+/*
+
+NUKED!
+
 //-----------------------------------------------------------------------------------------------
 #include <gl/gl.h>					// Include basic OpenGL constants and function declarations
 #pragma comment( lib, "opengl32" )	// Link in the OpenGL32.lib static library
 
 #define UNUSED(x) (void)(x);
+*/
+
 
 RenderContext* g_renderContext = nullptr;
 
 
 
+RenderContext::RenderContext(void* windowHandle)
+{
+
+}
+
 void RenderContext::Startup()
 {
+
+
+	GUARANTEE_RECOVERABLE(false, "Reached Startup in RC");
+
+	/*
+
+	NUKED!
+
 	// #SD1ToDo: move all OpenGL functions (including those below) to RenderContext.cpp (only!)
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
+	*/
 	
 }
 
 void RenderContext::SetBlendMode(BlendMode blendMode)
 {
+	UNUSED(blendMode);
+	GUARANTEE_RECOVERABLE(false, "Reached Set blend mode in RC");
+
+	/*
+
+	NUKED!
+
 	if(blendMode == BLEND_MODE_ALPHA)
 	{
 		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -35,6 +61,17 @@ void RenderContext::SetBlendMode(BlendMode blendMode)
 	{
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	}
+
+	*/
+
+}
+
+Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
+{
+	UNUSED(imageFilePath);
+	GUARANTEE_RECOVERABLE(false, "Reached Create Texture From File");
+
+	return nullptr;
 }
 
 BitmapFont* RenderContext::CreateBitmapFontFromFile( std::string bitmapName )
@@ -64,6 +101,13 @@ void RenderContext::Shutdown()
 
 void RenderContext::BindTexture( Texture* texture )
 {
+	UNUSED(texture);
+	GUARANTEE_RECOVERABLE(false, "Reached Bind Texture");
+
+	/*
+
+	NUKED!
+
 	if(texture)
 	{
 		//Enabling the GL stuff to use textures
@@ -75,34 +119,61 @@ void RenderContext::BindTexture( Texture* texture )
 		//No texture? Disable the GL stuff for textures
 		glDisable(GL_TEXTURE_2D);
 	}
+	*/
 }
 
 void RenderContext::ClearScreen( const Rgba & clearColor )
 {
+	UNUSED(clearColor);
+	GUARANTEE_RECOVERABLE(false, "Reached Clear Screen");
+
+	/*
+
+	NUKED!
+
 	// Clear all screen (backbuffer) pixels to black
 	glClearColor( clearColor.r, clearColor.g, clearColor.b, clearColor.a );
 	glClear( GL_COLOR_BUFFER_BIT );
+	*/
+
 }
 
 
 void RenderContext::BeginCamera( const Camera &camera )
 {
+	UNUSED(camera);
+	GUARANTEE_RECOVERABLE(false, "Reached Begin Camera");
+	/*
+
+	NUKED!
+
 	//UNUSED(camera);
 	//Add Camera code here
 	// Establish a 2D (orthographic) drawing coordinate system: (0,0) bottom-left to (100,100) top-right
 	// #SD1ToDo: This will be replaced by a call to g_renderer->BeginView( m_worldView ); or similar
 	glLoadIdentity();
 	glOrtho( camera.GetOrthoBottomLeft().x, camera.GetOrthoTopRight().x, camera.GetOrthoBottomLeft().y, camera.GetOrthoTopRight().y , 0.f, 1.f );
+	*/
 }
 
 void RenderContext::EndCamera( const Camera &camera )
 {
 	UNUSED(camera);
+	GUARANTEE_RECOVERABLE(false, "Reached End Camera");
+
 	//Destroy the camera here
 }
 
 void RenderContext::DrawVertexArray( int numVertexes, const Vertex_PCU* vertexes )
 {
+	UNUSED(numVertexes);
+	UNUSED(vertexes);
+	GUARANTEE_RECOVERABLE(false, "Reached Set blend mode in RC");
+
+	/*
+
+	NUKED!
+
 	glBegin( GL_TRIANGLES );
 	{
 		for (int i = 0; i < numVertexes; i++)
@@ -114,6 +185,7 @@ void RenderContext::DrawVertexArray( int numVertexes, const Vertex_PCU* vertexes
 		
 	}
 	glEnd();
+	*/
 }
 
 
@@ -123,6 +195,7 @@ void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertexes )
 	DrawVertexArray( static_cast<int>(vertexes.size()), &vertexes[0]);
 }
 
+/*
 //-----------------------------------------------------------------------------------------------
 // Some simple OpenGL example drawing code.
 // This is the graphical equivalent of printing "Hello, world."
@@ -161,6 +234,7 @@ void RenderContext::DebugRender()
 
 	
 }
+*/
 
 Texture* RenderContext::CreateOrGetTextureFromFile(const char* imageFilePath)
 {
@@ -183,7 +257,7 @@ BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile(std::string bitmapName)
 	std::map<std::string, BitmapFont*>::const_iterator requestedFont = m_loadedFonts.find(bitmapName);
 	if(requestedFont != m_loadedFonts.end())
 	{
-		//Font requested exists in teh map
+		//Font requested exists in the map
 		return requestedFont->second;
 	}
 	else
@@ -194,6 +268,8 @@ BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile(std::string bitmapName)
 	}
 }
 
+
+/*
 //------------------------------------------------------------------------------------------------------------------------------
 Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
 {
@@ -260,4 +336,5 @@ Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
 
 	return newTexture;
 }
+*/
 

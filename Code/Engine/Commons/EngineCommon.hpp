@@ -7,6 +7,9 @@
 #pragma warning( error: 4172) //Not all control paths return a value
 
 #define UNUSED(x) (void)(x);
+#define KEY_UP 72
+#define KEY_LEFT 75
+#define KEY_RIGHT 77
 #define STATIC
 
 class NamedStrings;

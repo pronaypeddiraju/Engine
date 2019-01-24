@@ -18,6 +18,8 @@ enum BlendMode
 class RenderContext
 {
 public:
+	explicit RenderContext(void* windowHandle);
+
 	void Startup();
 	void BeginFrame();
 	void EndFrame();
