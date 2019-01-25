@@ -45,6 +45,13 @@ public:
 	unsigned char plainWhiteImageData[4] = {255, 255, 255, 255};
 
 private:
+	//D3D11 Functions
+	bool D3D11Setup(void* hwnd);   // Creates required D3D Objects
+	void D3D11Cleanup();          // Cleans up D3D11 Objects
+
+	void DemoRender();            // Does rendering for this demo
+	void DemoRun();               // Demo setup and update loop
+
 	// Private (internal) member functions will go here
 	Texture*			CreateTextureFromFile( const char* imageFilePath);
 	BitmapFont*			CreateBitmapFontFromFile(std::string bitmapName);

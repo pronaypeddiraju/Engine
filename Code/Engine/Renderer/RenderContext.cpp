@@ -17,53 +17,151 @@ NUKED!
 #define UNUSED(x) (void)(x);
 */
 
+typedef unsigned int uint;
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// D3D11 STUFF
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+// Required Headers
+#include <d3d11.h>  
+#include <DXGI.h>    
+
+// DEBUG STUFF
+#include <dxgidebug.h>
+// #pragma comment( lib, "dxguid.lib" )
+
+#pragma comment( lib, "d3d11.lib" )
+#pragma comment( lib, "DXGI.lib" )
+
+#define DX_SAFE_RELEASE(dx_resource)   if ((dx_resource) != nullptr) { dx_resource->Release(); dx_resource = nullptr; }
+
+ID3D11Device *gD3DDevice = nullptr;
+ID3D11DeviceContext *gD3DContext = nullptr;
+IDXGISwapChain *gD3DSwapChain = nullptr;
+
+//For now make a global rtv
+ID3D11RenderTargetView *g_rtv;
+
+//------------------------------------------------------------------------------------------------------------------------------
+// D3D11 Functions
+//------------------------------------------------------------------------------------------------------------------------------
+
+bool RenderContext::D3D11Setup( void* hwndVoid )
+{
+	HWND hwnd = (HWND)hwndVoid;
+
+	// Creation Flags
+	// For options, see;
+	// https://www.google.com/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#safe=off&q=device_flags+%7C%3D+D3D11_CREATE_DEVICE_DEBUG%3B
+	uint device_flags = 0U;
+#if defined(RENDER_DEBUG)
+	device_flags |= D3D11_CREATE_DEVICE_DEBUG;
+
+	// This flag fails unless we' do 11.1 (which we're not), and we query that
+	// the adapter support its (which we're not).  Just here to let you know it exists.
+	// device_flags |= D3D11_CREATE_DEVICE_DEBUGGABLE; 
+#endif
+
+	// Setup our Swap Chain
+	// For options, see;
+	// https://www.google.com/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#safe=off&q=DXGI_SWAP_CHAIN_DESC
+
+	DXGI_SWAP_CHAIN_DESC swap_desc;
+	memset( &swap_desc, 0, sizeof(swap_desc) );
+
+	// fill the swap chain description struct
+	swap_desc.BufferCount = 2;                                    // two buffers (one front, one back?)
+
+	swap_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT       // how swap chain is to be used
+		| DXGI_USAGE_BACK_BUFFER;                                  
+	swap_desc.OutputWindow = hwnd;                                // the window to be copied to on present
+	swap_desc.SampleDesc.Count = 1;                               // how many multisamples (1 means no multi sampling)
+
+	RECT client_rect; 
+	::GetClientRect( hwnd, &client_rect ); 
+	uint width = client_rect.right - client_rect.left; 
+	uint height = client_rect.bottom - client_rect.top; 
+
+	// Default options.
+	swap_desc.Windowed = TRUE;                                    // windowed/full-screen mode
+	swap_desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;     // use 32-bit color
+	swap_desc.BufferDesc.Width = width;
+	swap_desc.BufferDesc.Height = height;
+
+
+	// Actually Create
+	HRESULT hr = ::D3D11CreateDeviceAndSwapChain( nullptr, // Adapter, if nullptr, will use adapter window is primarily on.
+		D3D_DRIVER_TYPE_HARDWARE,  // Driver Type - We want to use the GPU (HARDWARE)
+		nullptr,                   // Software Module - DLL that implements software mode (we do not use)
+		device_flags,              // device creation options
+		nullptr,                   // feature level (use default)
+		0U,                        // number of feature levels to attempt
+		D3D11_SDK_VERSION,         // SDK Version to use
+		&swap_desc,                // Description of our swap chain
+		&gD3DSwapChain,            // Swap Chain we're creating
+		&gD3DDevice,               // [out] The device created
+		nullptr,                   // [out] Feature Level Acquired
+		&gD3DContext );            // Context that can issue commands on this pipe.
+
+								   // SUCCEEDED & FAILED are macros provided by Windows to checking
+								   // the results.  Almost every D3D call will return one - be sure to check it.
+	return SUCCEEDED(hr);
+}
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+void RenderContext::D3D11Cleanup()
+{
+	DX_SAFE_RELEASE(gD3DSwapChain);
+	DX_SAFE_RELEASE(gD3DContext);
+	DX_SAFE_RELEASE(gD3DDevice);
+}
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+void RenderContext::DemoRender()
+{
+	// Get the back buffer
+	ID3D11Texture2D *back_buffer = nullptr;
+	gD3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
+
+	// Get a render target view of this
+	// NOTE:  This could be cached off and stored instead of creating
+	// a new one each frame.  It is fairly cheap to do though.
+	ID3D11RenderTargetView *rtv = nullptr;
+	gD3DDevice->CreateRenderTargetView( back_buffer, nullptr, &rtv );
+	DX_SAFE_RELEASE( back_buffer ); // I'm done using this - so release my hold on it (does not destroy it!)
+
+									// Clear the buffer.
+	float clear_color[4] = { 0.004f, 0.475f, 0.435f, 1.0f };
+	gD3DContext->ClearRenderTargetView( rtv, clear_color );
+	DX_SAFE_RELEASE( rtv ); // done with the view - can release it (if you save it frame to frame, skip this step)
+
+							// We're done rendering, so tell the swap chain they can copy the back buffer to the front (desktop/window) buffer
+	gD3DSwapChain->Present( 0, // Sync Interval, set to 1 for VSync
+		0 );                    // Present flags, see;
+								// https://msdn.microsoft.com/en-us/library/windows/desktop/bb509554(v=vs.85).aspx
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+// Render Context Methods
+//------------------------------------------------------------------------------------------------------------------------------
 
 RenderContext* g_renderContext = nullptr;
 
-
-
 RenderContext::RenderContext(void* windowHandle)
 {
-
+	D3D11Setup(windowHandle);
 }
 
 void RenderContext::Startup()
 {
-
-
-	GUARANTEE_RECOVERABLE(false, "Reached Startup in RC");
-
-	/*
-
-	NUKED!
-
-	// #SD1ToDo: move all OpenGL functions (including those below) to RenderContext.cpp (only!)
-	glEnable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-	*/
-	
+	//DemoRender();
 }
 
 void RenderContext::SetBlendMode(BlendMode blendMode)
 {
 	UNUSED(blendMode);
 	GUARANTEE_RECOVERABLE(false, "Reached Set blend mode in RC");
-
-	/*
-
-	NUKED!
-
-	if(blendMode == BLEND_MODE_ALPHA)
-	{
-		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-	}
-	else
-	{
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	}
-
-	*/
-
 }
 
 Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
@@ -87,15 +185,32 @@ BitmapFont* RenderContext::CreateBitmapFontFromFile( std::string bitmapName )
 
 void RenderContext::BeginFrame()
 {
+	// Get the back buffer
+	ID3D11Texture2D *back_buffer = nullptr;
+	gD3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
+
+	// Get a render target view of this
+	// NOTE:  This could be cached off and stored instead of creating
+	// a new one each frame.  It is fairly cheap to do though.
+	g_rtv = nullptr;
+	gD3DDevice->CreateRenderTargetView( back_buffer, nullptr, &g_rtv );
+	DX_SAFE_RELEASE( back_buffer ); // I'm done using this - so release my hold on it (does not destroy it!)
+
 }
 
 void RenderContext::EndFrame()
 {
-	//Perform swap buffers here
+	DX_SAFE_RELEASE( g_rtv ); // done with the view - can release it (if you save it frame to frame, skip this step)
+
+							// We're done rendering, so tell the swap chain they can copy the back buffer to the front (desktop/window) buffer
+	gD3DSwapChain->Present( 0, // Sync Interval, set to 1 for VSync
+		0 );                    // Present flags, see;
+								// https://msdn.microsoft.com/en-us/library/windows/desktop/bb509554(v=vs.85).aspx
 }
 
 void RenderContext::Shutdown()
 {
+	D3D11Cleanup();
 }
 
 
@@ -103,46 +218,21 @@ void RenderContext::BindTexture( Texture* texture )
 {
 	UNUSED(texture);
 	GUARANTEE_RECOVERABLE(false, "Reached Bind Texture");
-
-	/*
-
-	NUKED!
-
-	if(texture)
-	{
-		//Enabling the GL stuff to use textures
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, texture->GetTextureID());
-	}
-	else
-	{
-		//No texture? Disable the GL stuff for textures
-		glDisable(GL_TEXTURE_2D);
-	}
-	*/
 }
 
 void RenderContext::ClearScreen( const Rgba & clearColor )
 {
-	UNUSED(clearColor);
-	GUARANTEE_RECOVERABLE(false, "Reached Clear Screen");
-
-	/*
-
-	NUKED!
-
-	// Clear all screen (backbuffer) pixels to black
-	glClearColor( clearColor.r, clearColor.g, clearColor.b, clearColor.a );
-	glClear( GL_COLOR_BUFFER_BIT );
-	*/
-
+	// Clear the buffer.
+	float clear_color[4] = { clearColor.r, clearColor.g, clearColor.b, clearColor.a};
+	gD3DContext->ClearRenderTargetView( g_rtv, clear_color );
 }
 
 
 void RenderContext::BeginCamera( const Camera &camera )
 {
 	UNUSED(camera);
-	GUARANTEE_RECOVERABLE(false, "Reached Begin Camera");
+	//GUARANTEE_RECOVERABLE(false, "Reached Begin Camera");
+	
 	/*
 
 	NUKED!
@@ -159,7 +249,7 @@ void RenderContext::BeginCamera( const Camera &camera )
 void RenderContext::EndCamera( const Camera &camera )
 {
 	UNUSED(camera);
-	GUARANTEE_RECOVERABLE(false, "Reached End Camera");
+	//GUARANTEE_RECOVERABLE(false, "Reached End Camera");
 
 	//Destroy the camera here
 }
@@ -194,47 +284,6 @@ void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertexes )
 {
 	DrawVertexArray( static_cast<int>(vertexes.size()), &vertexes[0]);
 }
-
-/*
-//-----------------------------------------------------------------------------------------------
-// Some simple OpenGL example drawing code.
-// This is the graphical equivalent of printing "Hello, world."
-// #SD1ToDo: Remove this function and replace it with TheApp::Render()
-// #SD1ToDo: Move all OpenGL code to RenderContext.cpp (only)
-//
-void RenderContext::DebugRender()
-{
-	// Draw a line from the bottom-left corner of the screen (0,0) to the center of the screen (50,50)
-	// #SD1ToDo: Move all OpenGL code into RenderContext.cpp (only); call g_renderer->DrawVertexArray() instead
-	// First triangle (3 vertexes, each preceded by a color)
-	
-	// Establish a 2D (orthographic) drawing coordinate system: (0,0) bottom-left to (100,100) top-right
-	// #SD1ToDo: This will be replaced by a call to g_renderer->BeginView( m_worldView ); or similar
-	glLoadIdentity();
-	glOrtho( 0.f, 16 * 1.77f, 0.f, 30, 0.f, 1.f );
-	//glOrtho(0.f, WORLD_WIDTH, 0.f, WORLD_HEIGHT, 0.f, 1.f);
-	glBegin( GL_TRIANGLES );
-	{
-		glColor4f( 1.0f, 0.0f, 0.0f, 1.0f );
-		glVertex2f( 0.f, 1.f );
-
-		glColor4f( 0.0f, 1.0f, 0.0f, 1.0f );
-		glVertex2f( 8.f, 2.f );
-
-		glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-		glVertex2f( 3.f, 5.f );
-
-		// Second triangle (3 vertexes, all one color)
-		glColor4f( 0.0f, 0.0f, 0.0f, 1.0f );
-		glVertex2f( 4.f, 3.f );
-		glVertex2f( 9.f, 6.f );
-		glVertex2f( 7.f, 8.f );
-	}
-	glEnd();
-
-	
-}
-*/
 
 Texture* RenderContext::CreateOrGetTextureFromFile(const char* imageFilePath)
 {
