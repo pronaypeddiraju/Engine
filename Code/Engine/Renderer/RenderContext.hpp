@@ -44,9 +44,9 @@ public:
 	void				Shutdown();
 
 	//Get resources
-	Texture*			CreateOrGetTextureFromFile( const char* imageFilePath);
-	BitmapFont*			CreateOrGetBitmapFontFromFile ( std::string bitmapName);
-	Shader*				CreateOrGetShaderFromFile( std::string const &fileName);
+	Texture*			CreateOrGetTextureFromFile(const char* imageFilePath);
+	BitmapFont*			CreateOrGetBitmapFontFromFile (const std::string& bitmapName);
+	Shader*				CreateOrGetShaderFromFile(const std::string& fileName);
 
 	void				BindShader(Shader* shader);
 	void				SetBlendMode(BlendMode blendMode);
@@ -62,20 +62,20 @@ public:
 	
 public:
 	//White texture
-	unsigned char plainWhiteImageData[4] = {255, 255, 255, 255};
+	unsigned char		plainWhiteImageData[4] = {255, 255, 255, 255};
 
 private:
 	//D3D11 Functions
-	bool D3D11Setup(void* hwnd);   // Creates required D3D Objects
-	void D3D11Cleanup();          // Cleans up D3D11 Objects
+	bool				D3D11Setup(void* hwnd);   // Creates required D3D Objects
+	void				D3D11Cleanup();          // Cleans up D3D11 Objects
 
-	void DemoRender();            // Does rendering for this demo
-	void DemoRun();               // Demo setup and update loop
+	void				DemoRender();            // Does rendering for this demo
+	void				DemoRun();               // Demo setup and update loop
 
 	// Private (internal) member functions will go here
 	Texture*			CreateTextureFromFile( const char* imageFilePath);
-	BitmapFont*			CreateBitmapFontFromFile(std::string bitmapName);
-	Shader*				CreateShaderFromFile(std::string fileName);
+	BitmapFont*			CreateBitmapFontFromFile(const std::string& bitmapName);
+	Shader*				CreateShaderFromFile(const std::string& fileName);
 
 private:
 	// Private (internal) data members will go here
@@ -89,7 +89,7 @@ private:
 
 	//For now make a global rtv
 	//Wait no! we shouldnt be fucking with this
-	//ID3D11RenderTargetView								*m_renderTargetView = nullptr;
+	//ID3D11RenderTargetView							*m_renderTargetView = nullptr;
 
 	ColorTargetView*									m_FrameBuffer_ColorTargetView = nullptr;
 	Camera*												m_currentCamera = nullptr;

@@ -130,9 +130,6 @@
     <ClCompile Include="Math\Vec4.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="Math\Noise\RawNoise.cpp">
-      <Filter>Math\Noise</Filter>
-    </ClCompile>
     <ClCompile Include="Math\Noise\SmoothNoise.cpp">
       <Filter>Math\Noise</Filter>
     </ClCompile>

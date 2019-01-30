@@ -22,7 +22,7 @@ public:
 	~ShaderStage();
 
 public:
-	bool LoadShaderFromSource( RenderContext *renderContext, std::string &fileName, void const *source, unsigned long sourceSize, eShaderStage stage );
+	bool LoadShaderFromSource( RenderContext *renderContext, const std::string &fileName, void const *source, unsigned long sourceSize, eShaderStage stage );
 	eShaderStage m_stage; 
 	union {
 		ID3D11Resource *m_handle; 

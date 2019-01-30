@@ -108,7 +108,7 @@ STATIC char const* Shader::GetShaderModelForStage( eShaderStage stage )
 }
 
 
-bool ShaderStage::LoadShaderFromSource( RenderContext *renderContext, std::string &fileName, void const *source, unsigned long sourceSize, eShaderStage stage )
+bool ShaderStage::LoadShaderFromSource( RenderContext *renderContext, const std::string &fileName, void const *source, unsigned long sourceSize, eShaderStage stage )
 {
 	m_stage = stage; 
 	ID3D11Device *device = renderContext->m_D3DDevice; 

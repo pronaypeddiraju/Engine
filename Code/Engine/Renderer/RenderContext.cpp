@@ -171,8 +171,9 @@ Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
 	return nullptr;
 }
 
-BitmapFont* RenderContext::CreateBitmapFontFromFile( std::string bitmapName )
+BitmapFont* RenderContext::CreateBitmapFontFromFile(const std::string& bitmapName)
 {
+	// "Data/Fonts/" should be a constexpr char DEFAULT_FONT_PATH[]
 	std::string filePath = "Data/Fonts/" + bitmapName + ".png";
 	Texture* bitmapTexture = CreateTextureFromFile(filePath.c_str());
 
@@ -182,7 +183,7 @@ BitmapFont* RenderContext::CreateBitmapFontFromFile( std::string bitmapName )
 	return newFont;
 }
 
-Shader* RenderContext::CreateShaderFromFile( std::string fileName )
+Shader* RenderContext::CreateShaderFromFile(const std::string& fileName)
 {
 	char* outData = nullptr;
 	unsigned long bufferSize = CreateFileBuffer( fileName, &outData); 
@@ -191,7 +192,6 @@ Shader* RenderContext::CreateShaderFromFile( std::string fileName )
 	
 	shader->m_vertex_shader.LoadShaderFromSource(this, fileName, outData, bufferSize, SHADER_STAGE_VERTEX );
 	shader->m_pixel_shader.LoadShaderFromSource(this, fileName, outData, bufferSize, SHADER_STAGE_FRAGMENT);
-	//m_pixelShader.LoadShaderFromSource( filename, buffer, SHADER_STAGE_FRAGMENT ); 
 	
 	//Delete your outData!
 	delete[] outData;
@@ -300,7 +300,7 @@ void RenderContext::ClearColorTargets( const Rgba& clearColor )
 }
 
 
-void RenderContext::BeginCamera( Camera &camera )
+void RenderContext::BeginCamera( Camera& camera )
 {
 	UNUSED(camera);
 	if(m_currentCamera != nullptr)
@@ -378,7 +378,7 @@ Texture* RenderContext::CreateOrGetTextureFromFile(const char* imageFilePath)
 	}
 }
 
-BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile(std::string bitmapName)
+BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile(const std::string& bitmapName)
 {
 	std::map<std::string, BitmapFont*>::const_iterator requestedFont = m_loadedFonts.find(bitmapName);
 	if(requestedFont != m_loadedFonts.end())

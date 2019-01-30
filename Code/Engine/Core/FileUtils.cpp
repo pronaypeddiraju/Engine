@@ -16,6 +16,7 @@ unsigned long CreateFileBuffer( std::string fileName, char **outData )
 
 		//tellg is an int telling us how far into the file we are. Since we are in the end we can assume this returns the file size
 		unsigned long fileSize = (unsigned long)fileStream.tellg();
+		//Get the cursor back to the start of the file so we read the whole thing as opposed to reading nothing lol
 		fileStream.seekg(std::ios::beg);
 
 		*outData = new char[fileSize];
