@@ -182,6 +182,7 @@
     <ClCompile Include="Commons\StringUtils.cpp" />
     <ClCompile Include="Core\DevConsole.cpp" />
     <ClCompile Include="Core\EventSystems.cpp" />
+    <ClCompile Include="Core\FileUtils.cpp" />
     <ClCompile Include="Core\Image.cpp" />
     <ClCompile Include="Core\NamedStrings.cpp" />
     <ClCompile Include="Core\Tags.cpp" />
@@ -207,8 +208,10 @@
     <ClCompile Include="Math\Vertex_PCU.cpp" />
     <ClCompile Include="Renderer\BitmapFont.cpp" />
     <ClCompile Include="Renderer\Camera.cpp" />
+    <ClCompile Include="Renderer\ColorTargetView.cpp" />
     <ClCompile Include="Renderer\RenderContext.cpp" />
     <ClCompile Include="Renderer\Rgba.cpp" />
+    <ClCompile Include="Renderer\Shader.cpp" />
     <ClCompile Include="Renderer\SpriteAnimDefenition.cpp" />
     <ClCompile Include="Renderer\SpriteDefenition.cpp" />
     <ClCompile Include="Renderer\SpriteSheet.cpp" />
@@ -230,6 +233,7 @@
     <ClInclude Include="Commons\StringUtils.hpp" />
     <ClInclude Include="Core\DevConsole.hpp" />
     <ClInclude Include="Core\EventSystems.hpp" />
+    <ClInclude Include="Core\FileUtils.hpp" />
     <ClInclude Include="Core\Image.hpp" />
     <ClInclude Include="Core\NamedStrings.hpp" />
     <ClInclude Include="Core\Tags.hpp" />
@@ -255,8 +259,10 @@
     <ClInclude Include="Math\Vertex_PCU.hpp" />
     <ClInclude Include="Renderer\BitmapFont.hpp" />
     <ClInclude Include="Renderer\Camera.hpp" />
+    <ClInclude Include="Renderer\ColorTargetView.hpp" />
     <ClInclude Include="Renderer\RenderContext.hpp" />
     <ClInclude Include="Renderer\Rgba.hpp" />
+    <ClInclude Include="Renderer\Shader.hpp" />
     <ClInclude Include="Renderer\SpriteAnimDefenition.hpp" />
     <ClInclude Include="Renderer\SpriteDefenition.hpp" />
     <ClInclude Include="Renderer\SpriteSheet.hpp" />

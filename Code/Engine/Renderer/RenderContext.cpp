@@ -1,7 +1,10 @@
-#include "RenderContext.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "ThirdParty/stb/stb_image.h"
 #include "Engine/Renderer/Texture.hpp"
+#include "Engine/Renderer/ColorTargetView.hpp"
+#include "Engine/Renderer/Shader.hpp"
+#include "Engine/Core/FileUtils.hpp"
 
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
@@ -16,8 +19,6 @@ NUKED!
 
 #define UNUSED(x) (void)(x);
 */
-
-typedef unsigned int uint;
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // D3D11 STUFF
@@ -36,13 +37,6 @@ typedef unsigned int uint;
 
 #define DX_SAFE_RELEASE(dx_resource)   if ((dx_resource) != nullptr) { dx_resource->Release(); dx_resource = nullptr; }
 
-ID3D11Device *gD3DDevice = nullptr;
-ID3D11DeviceContext *gD3DContext = nullptr;
-IDXGISwapChain *gD3DSwapChain = nullptr;
-
-//For now make a global rtv
-ID3D11RenderTargetView *g_rtv;
-
 //------------------------------------------------------------------------------------------------------------------------------
 // D3D11 Functions
 //------------------------------------------------------------------------------------------------------------------------------
@@ -55,7 +49,7 @@ bool RenderContext::D3D11Setup( void* hwndVoid )
 	// For options, see;
 	// https://www.google.com/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#safe=off&q=device_flags+%7C%3D+D3D11_CREATE_DEVICE_DEBUG%3B
 	uint device_flags = 0U;
-#if defined(RENDER_DEBUG)
+#if defined(_DEBUG)
 	device_flags |= D3D11_CREATE_DEVICE_DEBUG;
 
 	// This flag fails unless we' do 11.1 (which we're not), and we query that
@@ -99,10 +93,10 @@ bool RenderContext::D3D11Setup( void* hwndVoid )
 		0U,                        // number of feature levels to attempt
 		D3D11_SDK_VERSION,         // SDK Version to use
 		&swap_desc,                // Description of our swap chain
-		&gD3DSwapChain,            // Swap Chain we're creating
-		&gD3DDevice,               // [out] The device created
+		&m_D3DSwapChain,            // Swap Chain we're creating
+		&m_D3DDevice,               // [out] The device created
 		nullptr,                   // [out] Feature Level Acquired
-		&gD3DContext );            // Context that can issue commands on this pipe.
+		&m_D3DContext );            // Context that can issue commands on this pipe.
 
 								   // SUCCEEDED & FAILED are macros provided by Windows to checking
 								   // the results.  Almost every D3D call will return one - be sure to check it.
@@ -112,9 +106,9 @@ bool RenderContext::D3D11Setup( void* hwndVoid )
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 void RenderContext::D3D11Cleanup()
 {
-	DX_SAFE_RELEASE(gD3DSwapChain);
-	DX_SAFE_RELEASE(gD3DContext);
-	DX_SAFE_RELEASE(gD3DDevice);
+	DX_SAFE_RELEASE(m_D3DSwapChain);
+	DX_SAFE_RELEASE(m_D3DContext);
+	DX_SAFE_RELEASE(m_D3DDevice);
 }
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -122,22 +116,22 @@ void RenderContext::DemoRender()
 {
 	// Get the back buffer
 	ID3D11Texture2D *back_buffer = nullptr;
-	gD3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
+	m_D3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
 
 	// Get a render target view of this
 	// NOTE:  This could be cached off and stored instead of creating
 	// a new one each frame.  It is fairly cheap to do though.
 	ID3D11RenderTargetView *rtv = nullptr;
-	gD3DDevice->CreateRenderTargetView( back_buffer, nullptr, &rtv );
+	m_D3DDevice->CreateRenderTargetView( back_buffer, nullptr, &rtv );
 	DX_SAFE_RELEASE( back_buffer ); // I'm done using this - so release my hold on it (does not destroy it!)
 
 									// Clear the buffer.
 	float clear_color[4] = { 0.004f, 0.475f, 0.435f, 1.0f };
-	gD3DContext->ClearRenderTargetView( rtv, clear_color );
+	m_D3DContext->ClearRenderTargetView( rtv, clear_color );
 	DX_SAFE_RELEASE( rtv ); // done with the view - can release it (if you save it frame to frame, skip this step)
 
 							// We're done rendering, so tell the swap chain they can copy the back buffer to the front (desktop/window) buffer
-	gD3DSwapChain->Present( 0, // Sync Interval, set to 1 for VSync
+	m_D3DSwapChain->Present( 0, // Sync Interval, set to 1 for VSync
 		0 );                    // Present flags, see;
 								// https://msdn.microsoft.com/en-us/library/windows/desktop/bb509554(v=vs.85).aspx
 }
@@ -153,9 +147,14 @@ RenderContext::RenderContext(void* windowHandle)
 	D3D11Setup(windowHandle);
 }
 
+RenderContext::~RenderContext()
+{
+	Shutdown();
+}
+
 void RenderContext::Startup()
 {
-	//DemoRender();
+	
 }
 
 void RenderContext::SetBlendMode(BlendMode blendMode)
@@ -183,36 +182,96 @@ BitmapFont* RenderContext::CreateBitmapFontFromFile( std::string bitmapName )
 	return newFont;
 }
 
+Shader* RenderContext::CreateShaderFromFile( std::string fileName )
+{
+	char* outData = nullptr;
+	unsigned long bufferSize = CreateFileBuffer( fileName, &outData); 
+
+	Shader* shader = new Shader();
+	
+	shader->m_vertex_shader.LoadShaderFromSource(this, fileName, outData, bufferSize, SHADER_STAGE_VERTEX );
+	shader->m_pixel_shader.LoadShaderFromSource(this, fileName, outData, bufferSize, SHADER_STAGE_FRAGMENT);
+	//m_pixelShader.LoadShaderFromSource( filename, buffer, SHADER_STAGE_FRAGMENT ); 
+	
+	//Delete your outData!
+	delete[] outData;
+
+	m_loadedShaders[fileName] = shader;
+	return shader;
+}
+
 void RenderContext::BeginFrame()
 {
 	// Get the back buffer
 	ID3D11Texture2D *back_buffer = nullptr;
-	gD3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
+	m_D3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
+
+	// Okay, we have an rtv, store it in our own class
+	m_FrameBuffer_ColorTargetView = new ColorTargetView();
+	m_FrameBuffer_ColorTargetView->CreateForInternalTexture( *back_buffer, *m_D3DDevice ); 
+
+	/*
+
+	OLD CODE
 
 	// Get a render target view of this
 	// NOTE:  This could be cached off and stored instead of creating
 	// a new one each frame.  It is fairly cheap to do though.
 	g_rtv = nullptr;
 	gD3DDevice->CreateRenderTargetView( back_buffer, nullptr, &g_rtv );
+	*/
+
+	//ColorTargetView holds a reference to the back_buffer so we can now release it from this function
 	DX_SAFE_RELEASE( back_buffer ); // I'm done using this - so release my hold on it (does not destroy it!)
 
 }
 
+ColorTargetView* RenderContext::GetFrameColorTarget()
+{
+	return m_FrameBuffer_ColorTargetView;
+}
+
 void RenderContext::EndFrame()
 {
-	DX_SAFE_RELEASE( g_rtv ); // done with the view - can release it (if you save it frame to frame, skip this step)
-
-							// We're done rendering, so tell the swap chain they can copy the back buffer to the front (desktop/window) buffer
-	gD3DSwapChain->Present( 0, // Sync Interval, set to 1 for VSync
+	// We're done rendering, so tell the swap chain they can copy the back buffer to the front (desktop/window) buffer
+	m_D3DSwapChain->Present( 0, // Sync Interval, set to 1 for VSync
 		0 );                    // Present flags, see;
 								// https://msdn.microsoft.com/en-us/library/windows/desktop/bb509554(v=vs.85).aspx
+
+	//Free up the color target view or we have a leak in memory 
+	delete m_FrameBuffer_ColorTargetView;
+	m_FrameBuffer_ColorTargetView = nullptr;
+
+	//Note: Ask Forseth what he means by reusing this by releasing it every frame
 }
 
 void RenderContext::Shutdown()
 {
 	D3D11Cleanup();
+
+	//m_loadedShaders;
+	std::map< std::string, Shader*>::iterator shaderIterator;
+	std::map< std::string, Shader*>::iterator lastShaderIterator;
+
+	shaderIterator = m_loadedShaders.begin();
+	lastShaderIterator = m_loadedShaders.end();
+	
+	for(shaderIterator; shaderIterator != lastShaderIterator; shaderIterator++)
+	{
+		delete shaderIterator->second;
+	}
+
+	m_loadedShaders.clear();
 }
 
+void RenderContext::BindShader( Shader* shader )
+{
+	//    we only worry about the Vertex and Pixel Shader - but all stages in the Graphics
+	//    pipeline our program uses should be set.
+	//    <note: I use OpenGL naming, and refer to Pixel Shaders are Fragment Shaders>
+	m_D3DContext->VSSetShader(shader->m_vertex_shader.m_vs, nullptr, 0U);
+	m_D3DContext->PSSetShader(shader->m_pixel_shader.m_ps, nullptr, 0U);
+}
 
 void RenderContext::BindTexture( Texture* texture )
 {
@@ -220,38 +279,73 @@ void RenderContext::BindTexture( Texture* texture )
 	GUARANTEE_RECOVERABLE(false, "Reached Bind Texture");
 }
 
-void RenderContext::ClearScreen( const Rgba & clearColor )
+void RenderContext::Draw( uint vertexCount, uint byteOffset )
+{
+	//Topology Type - the data in the Vertex Buffer/Index Buffer describes what kind of shapes.  
+	//In this class - I only deal with POINTS, LINES, and TRIANGLES.
+	m_D3DContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// Now that everything is bound, we can draw!
+	m_D3DContext->Draw( vertexCount, byteOffset );                      // I'm drawing one triangle, so 3 vertices total.  Starting at index 0.
+
+}
+
+void RenderContext::ClearColorTargets( const Rgba& clearColor )
 {
 	// Clear the buffer.
-	float clear_color[4] = { clearColor.r, clearColor.g, clearColor.b, clearColor.a};
-	gD3DContext->ClearRenderTargetView( g_rtv, clear_color );
+	float clearColorArray[4] = { clearColor.r, clearColor.g, clearColor.b, clearColor.a};
+	m_D3DContext->ClearRenderTargetView( m_currentCamera->m_colorTargetView->m_renderTargetView, clearColorArray);
+
+	DX_SAFE_RELEASE( m_currentCamera->m_colorTargetView->m_renderTargetView); // done with the view - can release it (if you save it frame to frame, skip this step)
 }
 
 
-void RenderContext::BeginCamera( const Camera &camera )
+void RenderContext::BeginCamera( Camera &camera )
 {
 	UNUSED(camera);
-	//GUARANTEE_RECOVERABLE(false, "Reached Begin Camera");
-	
-	/*
+	if(m_currentCamera != nullptr)
+	{
+		ERROR_RECOVERABLE("The renderer's current camera in Begin Frame is not null. Complete pipeline with previous camera before using a new one");
+		return;
+	}
 
-	NUKED!
+	//Save a reference to the current camera we are using 
+	m_currentCamera = &camera;
 
-	//UNUSED(camera);
-	//Add Camera code here
-	// Establish a 2D (orthographic) drawing coordinate system: (0,0) bottom-left to (100,100) top-right
-	// #SD1ToDo: This will be replaced by a call to g_renderer->BeginView( m_worldView ); or similar
-	glLoadIdentity();
-	glOrtho( camera.GetOrthoBottomLeft().x, camera.GetOrthoTopRight().x, camera.GetOrthoBottomLeft().y, camera.GetOrthoTopRight().y , 0.f, 1.f );
-	*/
+	// first, figure out what we're rendering to; 
+	ColorTargetView* colorTargetView = camera.m_colorTargetView;
+
+	// Bind this as our output (this method takes an array, so 
+	// this is binding an array of one)
+	m_D3DContext->OMSetRenderTargets( 1, &(colorTargetView->m_renderTargetView), nullptr );
+
+	// Next, we have to describe WHAT part of the texture we're rendering to (called the viewport)
+	// This is also usually managed by the camera, but for now, we will just render to the whole texture
+	D3D11_VIEWPORT viewport;  
+	memset( &viewport, 0, sizeof(viewport) );
+	viewport.TopLeftX = 0U;
+	viewport.TopLeftY = 0U;
+	viewport.Width = colorTargetView->m_width;
+	viewport.Height = colorTargetView->m_height;
+	viewport.MinDepth = 0.0f;        // must be between 0 and 1 (defualt is 0);
+	viewport.MaxDepth = 1.0f;        // must be between 0 and 1 (default is 1)
+	m_D3DContext->RSSetViewports( 1, &viewport );
+
 }
 
-void RenderContext::EndCamera( const Camera &camera )
+void RenderContext::EndCamera()
 {
-	UNUSED(camera);
-	//GUARANTEE_RECOVERABLE(false, "Reached End Camera");
+	if(m_currentCamera == nullptr)
+	{
+		ERROR_RECOVERABLE("The renderer's current camera in End Frame is null");
+		return;
+	}
 
-	//Destroy the camera here
+	// unbind the color targets 
+	m_D3DContext->OMSetRenderTargets( 0, nullptr, nullptr ); 
+
+	// no current camera being drawn; 
+	m_currentCamera = nullptr;
 }
 
 void RenderContext::DrawVertexArray( int numVertexes, const Vertex_PCU* vertexes )
@@ -259,23 +353,6 @@ void RenderContext::DrawVertexArray( int numVertexes, const Vertex_PCU* vertexes
 	UNUSED(numVertexes);
 	UNUSED(vertexes);
 	GUARANTEE_RECOVERABLE(false, "Reached Set blend mode in RC");
-
-	/*
-
-	NUKED!
-
-	glBegin( GL_TRIANGLES );
-	{
-		for (int i = 0; i < numVertexes; i++)
-		{
-			glColor4f(vertexes[i].m_color.r, vertexes[i].m_color.g, vertexes[i].m_color.b, vertexes[i].m_color.a);
-			glTexCoord2f(vertexes[i].m_uvTexCoords.x, vertexes[i].m_uvTexCoords.y);
-			glVertex3f(vertexes[i].m_position.x, vertexes[i].m_position.y, vertexes[i].m_position.z);
-		}
-		
-	}
-	glEnd();
-	*/
 }
 
 
@@ -317,6 +394,21 @@ BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile(std::string bitmapName)
 	}
 }
 
+Shader* RenderContext::CreateOrGetShaderFromFile( std::string const &fileName )
+{
+	std::map<std::string, Shader*>::const_iterator requestedShader = m_loadedShaders.find(fileName);
+	if(requestedShader != m_loadedShaders.end())
+	{
+		//Shader requested exists in the map
+		return requestedShader->second;
+	}
+	else
+	{
+		//Create the newShader
+		Shader *shader = CreateShaderFromFile(fileName); 
+		return shader;
+	}
+}
 
 /*
 //------------------------------------------------------------------------------------------------------------------------------

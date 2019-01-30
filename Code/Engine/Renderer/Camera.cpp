@@ -24,3 +24,8 @@ void Camera::Translate2D( const Vec2& translation2D )
 	m_orthoTopRight += translation2D;
 }
 
+void Camera::SetColorTarget( ColorTargetView *colorTargetView )
+{
+	m_colorTargetView = colorTargetView;
+}
+

@@ -38,7 +38,7 @@ const unsigned short F8_KEY = 119;
 
 constexpr float		 CONSOLE_LINE_SPACE = 0.05f;
 
-
+typedef unsigned int uint;
 typedef NamedStrings EventArgs;
 
 class DevConsole;
