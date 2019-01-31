@@ -33,10 +33,10 @@ ShaderStage::~ShaderStage()
 	DX_SAFE_RELEASE(m_handle); 
 }
 
-ID3DBlob* CompileHLSLToShaderBlob( char const *opt_filename,  // optional: used for error messages
-	void const *source_code,                                          // buffer containing source code.
+STATIC ID3DBlob* CompileHLSLToShaderBlob( char const *opt_filename,  // optional: used for error messages
+	void const* source_code,                                          // buffer containing source code.
 	size_t const source_code_size,                                    // size of the above buffer.
-	char const *entrypoint,                                           // Name of the Function we treat as the entry point for this stage
+	char const* entrypoint,                                           // Name of the Function we treat as the entry point for this stage
 	char const* target  )                                             // What stage we're compiling for (Vertex/Fragment/Hull/Compute... etc...)
 {
 	/* DEFINE MACROS - CONTROLS SHADER
