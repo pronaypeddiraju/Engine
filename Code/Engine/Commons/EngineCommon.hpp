@@ -18,6 +18,7 @@ const unsigned short KEY_ESC = 27;
 const unsigned short UP_ARROW = 38;
 const unsigned short LEFT_ARROW = 37;
 const unsigned short RIGHT_ARROW = 39;
+const unsigned short DOWN_ARROW = 40;
 const unsigned short SPACE_KEY = 32;
 const unsigned short A_KEY = 'A';
 const unsigned short N_KEY = 'N';

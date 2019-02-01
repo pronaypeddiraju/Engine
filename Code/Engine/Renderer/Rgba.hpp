@@ -18,6 +18,7 @@ public:
 	const static Rgba NONE;
 	const static Rgba ORANGE;
 	const static Rgba DARK_GREY;
+	const static Rgba MAGENTA;
 
 private:
 	//private variables

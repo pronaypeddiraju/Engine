@@ -198,7 +198,6 @@
     <ClCompile Include="Math\IntVec2.cpp" />
     <ClCompile Include="Math\MathUtils.cpp" />
     <ClCompile Include="Math\Matrix44.cpp" />
-    <ClCompile Include="Math\Noise\RawNoise.cpp" />
     <ClCompile Include="Math\Noise\SmoothNoise.cpp" />
     <ClCompile Include="Math\RandomNumberGenerator.cpp" />
     <ClCompile Include="Math\Vec2.cpp" />
