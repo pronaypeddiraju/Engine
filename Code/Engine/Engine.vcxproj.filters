@@ -139,6 +139,9 @@
     <ClCompile Include="Core\Tags.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Math\Disc2D.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -278,6 +281,9 @@
     </ClInclude>
     <ClInclude Include="Core\Tags.hpp">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Disc2D.hpp">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

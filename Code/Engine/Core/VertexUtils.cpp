@@ -99,6 +99,20 @@ void AddVertsForRing2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& center
 	}
 }
 
+void AddVertsForWireBox2D(std::vector<Vertex_PCU>& vertexArray, const AABB2& box, float thickness, const Rgba& color, const Vec2& uvAtMins /*= Vec2(0.f, 0.f) */, const Vec2& uvAtMaxs /*= Vec2(1.f,1.f) */ )
+{
+	//Draw 4 lines for the edge of AABB2 recieved
+	Vec2 topLeft = Vec2(box.m_minBounds.x, box.m_maxBounds.y);
+	Vec2 topRight = box.m_maxBounds;
+	Vec2 bottomLeft = box.m_minBounds;
+	Vec2 bottomRight = Vec2(box.m_maxBounds.x, box.m_minBounds.y);
+
+	AddVertsForLine2D(vertexArray, bottomLeft, topLeft, thickness, color);
+	AddVertsForLine2D(vertexArray, topLeft, topRight, thickness, color);
+	AddVertsForLine2D(vertexArray, topRight, bottomRight, thickness, color);
+	AddVertsForLine2D(vertexArray, bottomRight, bottomLeft, thickness, color);
+}
+
 void AddVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba& color, const Vec2& uvAtMins /*= Vec2(0.f,0.f)*/, const Vec2& uvAtMaxs /*= Vec2(1.f,1.f) */ )
 {
 	Vec3 boxBottomLeft = Vec3(box.m_minBounds.x, box.m_minBounds.y, 0.f);
