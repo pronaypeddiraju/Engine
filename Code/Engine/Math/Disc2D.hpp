@@ -5,13 +5,16 @@
 class Disc2D
 {
 public:
+	Disc2D();
 	explicit Disc2D(const Vec2& centre, float radius = 1.f);
 	~Disc2D();
 
-	const Vec2&	GetCentre() const;
-	float		GetRadius();
+	const Vec2&		GetCentre() const;
+	float			GetRadius();
+
+	void			TranslateByVector(const Vec2& translation);
 
 private:
-	Vec2	m_discCentre = Vec2::ZERO;
-	float	m_radius;
+	Vec2			m_discCentre = Vec2::ZERO;
+	float			m_radius;
 };

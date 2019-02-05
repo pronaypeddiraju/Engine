@@ -62,6 +62,12 @@ void AABB2::AlignWithinBox( const AABB2& box, const Vec2& alignment )
 
 }
 
+void AABB2::TranslateByVector( const Vec2& translation )
+{
+	m_minBounds += translation;
+	m_maxBounds += translation;
+}
+
 AABB2::~AABB2()
 {
 

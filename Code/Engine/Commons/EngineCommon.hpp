@@ -11,8 +11,15 @@
 
 class NamedStrings;
 class EventSystems;
+class PhysicsSystem;
+class DevConsole;
 
+extern DevConsole* g_devConsole;
+extern EventSystems* g_eventSystem;
+extern PhysicsSystem* g_physicsSystem;
 extern NamedStrings g_gameConfigBlackboard; // declared in EngineCommon.hpp, defined in EngineCommon.cpp
+
+typedef NamedStrings EventArgs;
 
 const unsigned short KEY_ESC = 27;
 const unsigned short UP_ARROW = 38;
@@ -32,14 +39,8 @@ const unsigned short F5_KEY = 116;
 const unsigned short F6_KEY = 117;
 const unsigned short F7_KEY = 118;
 const unsigned short F8_KEY = 119;
-//const unsigned char DOWN_ARROW;
 
 constexpr float		 CONSOLE_LINE_SPACE = 0.05f;
+constexpr int		 COLLIDER2D_COUNT = 6;
 
 
-typedef NamedStrings EventArgs;
-
-class DevConsole;
-
-extern DevConsole* g_devConsole;
-extern EventSystems* g_eventSystem;

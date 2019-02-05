@@ -99,7 +99,7 @@ void AddVertsForRing2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& center
 	}
 }
 
-void AddVertsForWireBox2D(std::vector<Vertex_PCU>& vertexArray, const AABB2& box, float thickness, const Rgba& color, const Vec2& uvAtMins /*= Vec2(0.f, 0.f) */, const Vec2& uvAtMaxs /*= Vec2(1.f,1.f) */ )
+void AddVertsForWireBox2D(std::vector<Vertex_PCU>& vertexArray, const AABB2& box, float thickness, const Rgba& color)
 {
 	//Draw 4 lines for the edge of AABB2 recieved
 	Vec2 topLeft = Vec2(box.m_minBounds.x, box.m_maxBounds.y);

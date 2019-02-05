@@ -63,6 +63,7 @@ public:
 	const Vec2 operator+( const Vec2& vecToAdd ) const;			// vec2 + vec2
 	const Vec2 operator-( const Vec2& vecToSubtract ) const;	// vec2 - vec2
 	const Vec2 operator*( float uniformScale ) const;			// vec2 * float
+	const Vec2 operator*( const Vec2& vecToMultiply) const;		// vec2 * vec2
 	const Vec2 operator/( float inverseScale ) const;			// vec2 / float
 	void operator+=( const Vec2& vecToAdd );					// vec2 += vec2
 	void operator-=( const Vec2& vecToSubtract );				// vec2 -= vec2
@@ -71,6 +72,10 @@ public:
 	void operator=( const Vec2& copyFrom );						// vec2 = vec2
 	bool operator==( const Vec2& compare ) const;				// vec2 == vec2
 	bool operator!=( const Vec2& compare ) const;				// vec2 != vec2
+	bool operator<( const Vec2& compare ) const;
+
+	Vec2		Min(const Vec2& compare);
+	Vec2		Max(const Vec2& compare);
 
 	friend const Vec2 operator*( float uniformScale, const Vec2& vecToScale );	// float * vec2
 

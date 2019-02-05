@@ -6,6 +6,11 @@ Disc2D::Disc2D(const Vec2& centre, float radius)
 	m_radius = radius;
 }
 
+Disc2D::Disc2D()
+{
+
+}
+
 Disc2D::~Disc2D()
 {
 
@@ -19,5 +24,10 @@ const Vec2& Disc2D::GetCentre() const
 float Disc2D::GetRadius()
 {
 	return m_radius;
+}
+
+void Disc2D::TranslateByVector( const Vec2& translation )
+{
+	m_discCentre += translation;
 }
 

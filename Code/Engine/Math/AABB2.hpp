@@ -34,4 +34,6 @@ public:
 
 	Vec2			GetUVForPoint( const Vec2& point ) const;
 	Vec2			GetPointForUV( const Vec2& normalizedLocalPosition ) const;
+
+	void			TranslateByVector(const Vec2& translation);
 };
