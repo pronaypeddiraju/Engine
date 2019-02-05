@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Math/PhysicsSystem.hpp"
-#include "Engine/Math/Rigidbody2D.hpp"
 #include "Engine/Math/Collider2D.hpp"
+#include "Engine/Renderer/Rgba.hpp"
 
 PhysicsSystem* g_physicsSystem = nullptr;
 
@@ -15,10 +15,16 @@ PhysicsSystem::~PhysicsSystem()
 
 }
 
-Rigidbody2D* PhysicsSystem::CreateRigidbody()
+
+Rigidbody2D* PhysicsSystem::CreateRigidbody( eSimulationType simulationType )
 {
-	Rigidbody2D *rigidbody = new Rigidbody2D();
+	Rigidbody2D *rigidbody = new Rigidbody2D(this, simulationType);
 	return rigidbody;
+}
+
+void PhysicsSystem::AddRigidbodyToVector(Rigidbody2D* rigidbody)
+{
+	m_rigidbodyVector.push_back(rigidbody);
 }
 
 void PhysicsSystem::DestroyRigidbody( Rigidbody2D* rigidbody )
@@ -41,8 +47,6 @@ void PhysicsSystem::BeginFrame()
 void PhysicsSystem::PreRender()
 {
 	// figure out movement, apply to actual game object;
-
-	// whatever else you may want to do end frame; 
 }
 
 void PhysicsSystem::Update( float deltaTime )
@@ -65,7 +69,45 @@ void PhysicsSystem::EndFrame()
 
 void PhysicsSystem::DebugRender( RenderContext* renderContext ) const
 {
-	//
+	int numRigidbodies = static_cast<int>(m_rigidbodyVector.size());
+	for(int rbIndex = 0; rbIndex < numRigidbodies; rbIndex++)
+	{
+		eSimulationType simType = m_rigidbodyVector[rbIndex]->GetSimulationType();
+
+		switch( simType )
+		{
+		case TYPE_UNKOWN:
+		break;
+		case STATIC_SIMULATION:
+		{
+			if(m_rigidbodyVector[rbIndex]->m_collider->m_inCollision)
+			{
+				m_rigidbodyVector[rbIndex]->DebugRender(renderContext, Rgba::MAGENTA);
+			}
+			else
+			{
+				m_rigidbodyVector[rbIndex]->DebugRender(renderContext, Rgba::YELLOW);
+			}
+		}
+		break;
+		case DYNAMIC_SIMULATION:
+		{
+			if(m_rigidbodyVector[rbIndex]->m_collider->m_inCollision)
+			{
+				m_rigidbodyVector[rbIndex]->DebugRender(renderContext, Rgba::RED);
+			}
+			else
+			{
+				m_rigidbodyVector[rbIndex]->DebugRender(renderContext, Rgba::BLUE);
+			}
+		}
+		break;
+		case NUM_SIMULATION_TYPES:
+		break;
+		default:
+		break;
+		}
+	}
 }
 
 const Vec2& PhysicsSystem::GetGravity() const
@@ -82,23 +124,28 @@ void PhysicsSystem::RunStep( float deltaTime )
 		m_rigidbodyVector[objectIndex]->Move(deltaTime);
 	}
 
-	//Correct all objects
-	int numColliders = static_cast<int>(m_colliderVector.size());
-	for(int colliderIndex = 0; colliderIndex < numColliders; colliderIndex++)
+	//Set colliding or not colliding here
+	for(int colliderIndex = 0; colliderIndex < numObjects; colliderIndex++)
 	{
-		for(int otherColliderIndex = 0; otherColliderIndex < numColliders; otherColliderIndex++)
+		for(int otherColliderIndex = 0; otherColliderIndex < numObjects; otherColliderIndex++)
 		{
-			//Make sure we aren't the same collider
-			if(m_colliderVector[otherColliderIndex] == m_colliderVector[colliderIndex])
+			//Make sure we aren't the same rigidbody
+			if(m_rigidbodyVector[otherColliderIndex] == m_rigidbodyVector[colliderIndex])
 			{
 				continue;
 			}
 
-			if(m_colliderVector[colliderIndex]->IsTouching(m_colliderVector[otherColliderIndex]))
+			if(m_rigidbodyVector[colliderIndex]->m_collider->IsTouching(m_rigidbodyVector[otherColliderIndex]->m_collider))
 			{
 				//Set collision to true
-				m_colliderVector[colliderIndex]->SetCollision(true);
-				m_colliderVector[otherColliderIndex]->SetCollision(true);
+				m_rigidbodyVector[colliderIndex]->m_collider->SetCollision(true);
+				m_rigidbodyVector[otherColliderIndex]->m_collider->SetCollision(true);
+			}
+			else
+			{
+				//Set collisions to false
+				m_rigidbodyVector[colliderIndex]->m_collider->SetCollision(false);
+				m_rigidbodyVector[otherColliderIndex]->m_collider->SetCollision(false);
 			}
 		}
 	}

@@ -1,9 +1,20 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Math/Rigidbody2D.hpp"
 #include "Engine/Math/PhysicsSystem.hpp"
+#include "Engine/Math/Collider2D.hpp"
+#include "Engine/Math/Vertex_PCU.hpp"
+#include "Engine/Core/VertexUtils.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 
 Rigidbody2D::Rigidbody2D(float mass)
 {
+	m_mass = mass;
+}
+
+Rigidbody2D::Rigidbody2D( PhysicsSystem* physicsSystem, eSimulationType simulationType, float mass /*= 1.0f*/ )
+{
+	m_system = physicsSystem;
+	m_simulationType = simulationType;
 	m_mass = mass;
 }
 
@@ -14,6 +25,11 @@ Rigidbody2D::~Rigidbody2D()
 
 void Rigidbody2D::Move( float deltaTime )
 {
+	if(m_simulationType == STATIC_SIMULATION)
+	{
+		return;
+	}
+
 	//Calc Acceleration
 	Vec2 gravity = m_system->GetGravity();
 	Vec2 acc =  gravity * m_gravity_scale;
@@ -21,6 +37,42 @@ void Rigidbody2D::Move( float deltaTime )
 	//Apply the acceleration
 	m_velocity += acc * deltaTime;
 	m_transform.m_position += m_velocity * deltaTime;
+
+	//Apply new transform to actual object
+	m_object_transform = &m_transform;
+}
+
+void Rigidbody2D::DebugRender( RenderContext* renderContext, const Rgba& color ) const
+{
+	eColliderType2D type = m_collider->GetType();
+
+	std::vector<Vertex_PCU> verts;
+
+	switch( type )
+	{
+	case COLLIDER_UNKOWN:
+	break;
+	case COLLIDER_AABB2:
+	{
+		AABB2Collider* collider = reinterpret_cast<AABB2Collider*>(m_collider);
+
+		AddVertsForWireBox2D(verts, collider->GetWorldShape(), 0.5f, color);
+	}
+	break;
+	case COLLIDER_DISC:
+	{
+		Disc2DCollider* collider = reinterpret_cast<Disc2DCollider*>(m_collider);
+
+		AddVertsForRing2D(verts, collider->GetWorldShape().GetCentre(), collider->GetWorldShape().GetRadius(), 0.5f, color);
+	}
+	break;
+	case NUM_COLLIDER_TYPES:
+	break;
+	default:
+	break;
+	}
+
+	renderContext->DrawVertexArray(verts);
 }
 
 void Rigidbody2D::SetSimulationMode( eSimulationType simulationType )
@@ -43,5 +95,10 @@ void Rigidbody2D::SetObject( void* object, Transform2* objectTransform )
 Vec2 Rigidbody2D::GetPosition() const
 {
 	return m_transform.m_position;
+}
+
+eSimulationType Rigidbody2D::GetSimulationType()
+{
+	return m_simulationType;
 }
 

@@ -50,10 +50,10 @@ bool CheckAABB2ByAABB2(Collision2D* out, Collider2D* a, Collider2D* b)
 	AABB2Collider* boxA = reinterpret_cast<AABB2Collider*>(a);
 	AABB2Collider* boxB = reinterpret_cast<AABB2Collider*>(b);
 	
-	Vec2 min = boxA->m_localShape.m_minBounds.Min(boxB->m_localShape.m_minBounds);
-	Vec2 max = boxA->m_localShape.m_maxBounds.Max(boxB->m_localShape.m_maxBounds);
+	Vec2 min = boxA->GetWorldShape().m_maxBounds.Min(boxB->GetWorldShape().m_maxBounds);
+	Vec2 max = boxA->GetWorldShape().m_minBounds.Max(boxB->GetWorldShape().m_minBounds);
 
-	if(min < max)
+	if(max < min)
 	{
 		//*out = AABB2(min, max);
 		return true;
@@ -71,12 +71,12 @@ bool CheckAABB2ByDisc(Collision2D* out, Collider2D* a, Collider2D* b)
 	AABB2Collider* boxA = reinterpret_cast<AABB2Collider*>(a);
 	Disc2DCollider* discB = reinterpret_cast<Disc2DCollider*>(b);
 
-	Vec2 discCentre = discB->m_localShape.GetCentre();
+	Vec2 discCentre = discB->GetWorldShape().GetCentre();
 	
-	Vec2 closestPoint = GetClosestPointOnAABB2( discCentre, boxA->m_localShape );
+	Vec2 closestPoint = GetClosestPointOnAABB2( discCentre, boxA->GetWorldShape() );
 
 	float distanceSquared = GetDistanceSquared2D(discCentre, closestPoint);
-	float radius = discB->m_localShape.GetRadius();
+	float radius = discB->GetWorldShape().GetRadius();
 
 	if(distanceSquared < radius * radius)
 	{
@@ -96,10 +96,10 @@ bool CheckDiscByDisc(Collision2D* out, Collider2D* a, Collider2D* b)
 	Disc2DCollider* discA = reinterpret_cast<Disc2DCollider*>(a);
 	Disc2DCollider* discB = reinterpret_cast<Disc2DCollider*>(b);
 
-	float discARad = discA->m_localShape.GetRadius();
-	float discBRad = discB->m_localShape.GetRadius();
+	float discARad = discA->GetWorldShape().GetRadius();
+	float discBRad = discB->GetWorldShape().GetRadius();
 
-	float distanceSquared = GetDistanceSquared2D(discA->m_localShape.GetCentre(), discB->m_localShape.GetCentre());
+	float distanceSquared = GetDistanceSquared2D(discA->GetWorldShape().GetCentre(), discB->GetWorldShape().GetCentre());
 	float radSumSquared = (discARad + discBRad) * (discARad + discBRad);
 
 	if(distanceSquared < radSumSquared)
@@ -120,12 +120,12 @@ bool CheckDiscByAABB2(Collision2D* out, Collider2D* a, Collider2D* b)
 	Disc2DCollider* discA = reinterpret_cast<Disc2DCollider*>(a);
 	AABB2Collider* boxB = reinterpret_cast<AABB2Collider*>(b);
 
-	Vec2 discCentre = discA->m_localShape.GetCentre();
+	Vec2 discCentre = discA->GetWorldShape().GetCentre();
 
-	Vec2 closestPoint = GetClosestPointOnAABB2( discCentre, boxB->m_localShape );
+	Vec2 closestPoint = GetClosestPointOnAABB2( discCentre, boxB->GetWorldShape() );
 
 	float distanceSquared = GetDistanceSquared2D(discCentre, closestPoint);
-	float radius = discA->m_localShape.GetRadius();
+	float radius = discA->GetWorldShape().GetRadius();
 
 	if(distanceSquared < radius * radius)
 	{

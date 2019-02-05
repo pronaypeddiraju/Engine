@@ -22,6 +22,7 @@ class Rigidbody2D
 {
 public:
 	Rigidbody2D( float mass = 1.0f);
+	explicit Rigidbody2D(PhysicsSystem* physicsSystem, eSimulationType simulationType, float mass = 1.0f);
 	~Rigidbody2D();
 
 	//Apply a single step of movement
@@ -36,6 +37,7 @@ public:
 
 	//Accessors
 	Vec2			GetPosition() const;
+	eSimulationType	GetSimulationType();
 
 public :
 	PhysicsSystem*							m_system = nullptr; 			// system this rigidbody belongs to; 
@@ -44,10 +46,10 @@ public :
 
 	Transform2								m_transform;					// rigidbody transform (mimics the object at start of frame, and used to tell the change to object at end of frame)
 	Vec2									m_gravity_scale = Vec2::ONE;	// how much are we affected by gravity
-	Vec2									m_velocity; 
+	Vec2									m_velocity = Vec2::ZERO; 
 	float									m_mass;  						// how heavy am I
 
-	Collider2D*								m_collider;						// my shape; (could eventually be made a set)
+	Collider2D*								m_collider = nullptr;						// my shape; (could eventually be made a set)
 
 private:
 	eSimulationType							m_simulationType = TYPE_UNKOWN;

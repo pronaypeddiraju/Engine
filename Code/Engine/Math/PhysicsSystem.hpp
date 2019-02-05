@@ -2,8 +2,8 @@
 //------------------------------------------------------------------------------------------------------------------------------
 //Engine Systems
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Math/Rigidbody2D.hpp"
 
-class Rigidbody2D;
 class RenderContext;
 class Collider2D;
 
@@ -15,8 +15,9 @@ public:
 	PhysicsSystem();
 	~PhysicsSystem();
 
-	Rigidbody2D*			CreateRigidbody();
-	void					DestroyRigidbody(Rigidbody2D* rigidbody);
+	Rigidbody2D*			CreateRigidbody(eSimulationType simulationType);
+	void					AddRigidbodyToVector( Rigidbody2D* rigidbody );
+	void					DestroyRigidbody( Rigidbody2D* rigidbody );
 	void					SetGravity(const Vec2& gravity);
 
 	void					BeginFrame();
@@ -39,8 +40,6 @@ public:
 
 	//Way to store all rigidbodies
 	std::vector<Rigidbody2D*>		m_rigidbodyVector;
-	//Way to store all colliders
-	std::vector<Collider2D*>		m_colliderVector;
 
 	//system info like gravity
 	Vec2							m_gravity = Vec2(0.0f, -9.8f);

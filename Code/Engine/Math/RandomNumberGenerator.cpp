@@ -56,7 +56,7 @@ float RandomNumberGenerator::GetRandomFloatInRange( float minFloat, float maxFlo
 
 	float randZeroToOne = Get1dNoiseZeroToOne(m_position, m_currentSeed);
 	m_position++;
-	float randNum = RangeMapFloat(randZeroToOne, minFloat, maxFloat, 0.0f, 1.0f);
+	float randNum = RangeMapFloat(randZeroToOne, 0.0f, 1.0f, minFloat, maxFloat);
 	return randNum;
 }
 
