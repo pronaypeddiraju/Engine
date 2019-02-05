@@ -20,7 +20,11 @@ Rigidbody2D::Rigidbody2D( PhysicsSystem* physicsSystem, eSimulationType simulati
 
 Rigidbody2D::~Rigidbody2D()
 {
+	delete m_collider;
+	m_collider = nullptr;
 
+	delete m_object_transform;
+	m_object_transform = nullptr;
 }
 
 void Rigidbody2D::Move( float deltaTime )
@@ -38,8 +42,6 @@ void Rigidbody2D::Move( float deltaTime )
 	m_velocity += acc * deltaTime;
 	m_transform.m_position += m_velocity * deltaTime;
 
-	//Apply new transform to actual object
-	m_object_transform = &m_transform;
 }
 
 void Rigidbody2D::DebugRender( RenderContext* renderContext, const Rgba& color ) const

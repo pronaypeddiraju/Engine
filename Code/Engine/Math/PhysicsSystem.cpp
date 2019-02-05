@@ -41,12 +41,25 @@ void PhysicsSystem::SetGravity( const Vec2& gravity )
 void PhysicsSystem::BeginFrame()
 {
 	// reset per frame stuff; 
-	// copy all transforms over; 
+	// copy all transforms over;
+	int numRigidbodies = m_rigidbodyVector.size();
+
+	for(int rigidbodyIndex = 0; rigidbodyIndex < numRigidbodies; rigidbodyIndex++)
+	{
+		m_rigidbodyVector[rigidbodyIndex]->m_transform = *m_rigidbodyVector[rigidbodyIndex]->m_object_transform;
+	}
 }
 
 void PhysicsSystem::PreRender()
 {
 	// figure out movement, apply to actual game object;
+
+	int numRigidbodies = m_rigidbodyVector.size();
+
+	for(int rigidbodyIndex = 0; rigidbodyIndex < numRigidbodies; rigidbodyIndex++)
+	{
+		*m_rigidbodyVector[rigidbodyIndex]->m_object_transform = m_rigidbodyVector[rigidbodyIndex]->m_transform;
+	}
 }
 
 void PhysicsSystem::Update( float deltaTime )
