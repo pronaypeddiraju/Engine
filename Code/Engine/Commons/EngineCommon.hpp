@@ -36,6 +36,7 @@ const unsigned short F6_KEY = 117;
 const unsigned short F7_KEY = 118;
 const unsigned short F8_KEY = 119;
 //const unsigned char DOWN_ARROW;
+constexpr char SHADER_PATH[] = "Data/Shaders/"; 
 
 constexpr float		 CONSOLE_LINE_SPACE = 0.05f;
 

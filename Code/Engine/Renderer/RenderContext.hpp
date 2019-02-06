@@ -81,6 +81,7 @@ struct CameraBufferT
 class RenderContext
 {
 	friend class ShaderStage;
+	friend class Shader;
 	friend class RenderBuffer;
 	friend class UniformBuffer;
 

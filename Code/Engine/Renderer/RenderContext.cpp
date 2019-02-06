@@ -190,8 +190,8 @@ Shader* RenderContext::CreateShaderFromFile(const std::string& fileName)
 
 	Shader* shader = new Shader();
 	
-	shader->m_vertex_shader.LoadShaderFromSource(this, fileName, outData, bufferSize, SHADER_STAGE_VERTEX );
-	shader->m_pixel_shader.LoadShaderFromSource(this, fileName, outData, bufferSize, SHADER_STAGE_FRAGMENT);
+	shader->m_vertexStage.LoadShaderFromSource(this, fileName, outData, bufferSize, SHADER_STAGE_VERTEX );
+	shader->m_pixelStage.LoadShaderFromSource(this, fileName, outData, bufferSize, SHADER_STAGE_FRAGMENT);
 	
 	//Delete your outData!
 	delete[] outData;
@@ -269,8 +269,8 @@ void RenderContext::BindShader( Shader* shader )
 	//    we only worry about the Vertex and Pixel Shader - but all stages in the Graphics
 	//    pipeline our program uses should be set.
 	//    <note: I use OpenGL naming, and refer to Pixel Shaders are Fragment Shaders>
-	m_D3DContext->VSSetShader(shader->m_vertex_shader.m_vs, nullptr, 0U);
-	m_D3DContext->PSSetShader(shader->m_pixel_shader.m_ps, nullptr, 0U);
+	m_D3DContext->VSSetShader(shader->m_vertexStage.m_vs, nullptr, 0U);
+	m_D3DContext->PSSetShader(shader->m_pixelStage.m_ps, nullptr, 0U);
 }
 
 void RenderContext::BindTexture( Texture* texture )
@@ -330,7 +330,7 @@ void RenderContext::BeginCamera( Camera& camera )
 	viewport.MinDepth = 0.0f;        // must be between 0 and 1 (defualt is 0);
 	viewport.MaxDepth = 1.0f;        // must be between 0 and 1 (default is 1)
 	m_D3DContext->RSSetViewports( 1, &viewport );
-
+	
 }
 
 void RenderContext::EndCamera()
@@ -396,7 +396,8 @@ BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile(const std::string& bitm
 
 Shader* RenderContext::CreateOrGetShaderFromFile( std::string const &fileName )
 {
-	std::map<std::string, Shader*>::const_iterator requestedShader = m_loadedShaders.find(fileName);
+	std::string filePath = SHADER_PATH + fileName;
+	std::map<std::string, Shader*>::const_iterator requestedShader = m_loadedShaders.find(filePath);
 	if(requestedShader != m_loadedShaders.end())
 	{
 		//Shader requested exists in the map
@@ -405,7 +406,7 @@ Shader* RenderContext::CreateOrGetShaderFromFile( std::string const &fileName )
 	else
 	{
 		//Create the newShader
-		Shader *shader = CreateShaderFromFile(fileName); 
+		Shader *shader = CreateShaderFromFile(filePath); 
 		return shader;
 	}
 }

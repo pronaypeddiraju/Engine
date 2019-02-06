@@ -1,6 +1,7 @@
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Math/Vertex_PCU.hpp"
 
 // Required Headers
 #include <d3d11.h>  
@@ -31,9 +32,11 @@ ShaderStage::ShaderStage()
 ShaderStage::~ShaderStage()
 {
 	DX_SAFE_RELEASE(m_handle); 
+	DX_SAFE_RELEASE(m_byteCode);
+	m_owningRenderContext = nullptr;
 }
 
-STATIC ID3DBlob* CompileHLSLToShaderBlob( char const *opt_filename,  // optional: used for error messages
+STATIC ID3D10Blob* CompileHLSLToShaderBlob( char const *opt_filename,  // optional: used for error messages
 	void const* source_code,                                          // buffer containing source code.
 	size_t const source_code_size,                                    // size of the above buffer.
 	char const* entrypoint,                                           // Name of the Function we treat as the entry point for this stage
@@ -56,8 +59,8 @@ STATIC ID3DBlob* CompileHLSLToShaderBlob( char const *opt_filename,  // optional
 	compile_flags |= D3DCOMPILE_OPTIMIZATION_LEVEL3;   // Yay, fastness (default is level 1)
 #endif
 
-	ID3DBlob *code = nullptr;
-	ID3DBlob *errors = nullptr;
+	ID3D10Blob *code = nullptr;
+	ID3D10Blob *errors = nullptr;
 
 	HRESULT hr = ::D3DCompile( source_code, 
 		source_code_size,                   // plain text source code
@@ -88,6 +91,75 @@ STATIC ID3DBlob* CompileHLSLToShaderBlob( char const *opt_filename,  // optional
 }
 
 
+Shader::Shader()
+{
+
+}
+
+Shader::~Shader()
+{
+	GUARANTEE_RECOVERABLE(true, "Dont forget to free inputLayout variable");
+}
+
+bool Shader::CreateInputLayoutForVertexPCU()
+{
+	// Early out - we've already created it; 
+	// TODO: If vertex type changes, we need to rebind; 
+	if (m_inputLayout != nullptr) 
+	{
+		return true; 
+	}
+
+	// This describes the input data to the shader
+	// The INPUT_ELEMENT_DESC describes each element of the structure; 
+	// Since we have POSITION, COLOR, UV, we need three descriptions; 
+	D3D11_INPUT_ELEMENT_DESC inputDescription[3]; 
+
+	// initialize memory to 0 (usually a sane default)
+	memset( inputDescription, 0, sizeof(inputDescription) ); 
+
+	// Map Position
+	inputDescription[0].SemanticName = "POSITION";             // __semantic__ name we gave this input -> float3 pos : POSITION; 
+	inputDescription[0].SemanticIndex = 0;                     // Semantics that share a name (or are large) are spread over multiple indices (matrix4x4s are four floats for instance)
+	inputDescription[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;  // Type this data is (float3/vec3 - so 3 floats)
+	inputDescription[0].InputSlot = 0U;                        // Input Pipe this comes from (ignored unless doing instanced rendering)
+	inputDescription[0].AlignedByteOffset = offsetof( Vertex_PCU, m_position );   // memory offset this data starts (where is position relative to the vertex, 0 in this case)
+	inputDescription[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;   // What is this data for (per vertex data is the only one we'll be dealing with in this class)
+	inputDescription[0].InstanceDataStepRate = 0U;             // If this were instance data - how often do we step it (0 for vertex data)
+	
+	// YOU DO -> Map UV  
+	inputDescription[1].SemanticName = "TEXCOORD";             // __semantic__ name we gave this input -> float3 pos : POSITION; 
+	inputDescription[1].SemanticIndex = 0;                     // Semantics that share a name (or are large) are spread over multiple indices (matrix4x4s are four floats for instance)
+	inputDescription[1].Format = DXGI_FORMAT_R32G32_FLOAT;     // Type this data is (float3/vec3 - so 3 floats)
+	inputDescription[1].InputSlot = 0U;                        // Input Pipe this comes from (ignored unless doing instanced rendering)
+	inputDescription[1].AlignedByteOffset = offsetof( Vertex_PCU, m_uvTexCoords);   // memory offset this data starts (where is position relative to the vertex, 0 in this case)
+	inputDescription[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;   // What is this data for (per vertex data is the only one we'll be dealing with in this class)
+	inputDescription[1].InstanceDataStepRate = 0U;             // If this were instance data - how often do we step it (0 for vertex data)
+
+	// YOU DO -> Map Color
+	inputDescription[1].SemanticName = "COLOR";             // __semantic__ name we gave this input -> float3 pos : POSITION; 
+	inputDescription[1].SemanticIndex = 0;                     // Semantics that share a name (or are large) are spread over multiple indices (matrix4x4s are four floats for instance)
+	inputDescription[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;     // Type this data is (float3/vec3 - so 3 floats)
+	inputDescription[1].InputSlot = 0U;                        // Input Pipe this comes from (ignored unless doing instanced rendering)
+	inputDescription[1].AlignedByteOffset = offsetof( Vertex_PCU, m_color);   // memory offset this data starts (where is position relative to the vertex, 0 in this case)
+	inputDescription[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;   // What is this data for (per vertex data is the only one we'll be dealing with in this class)
+	inputDescription[1].InstanceDataStepRate = 0U;             // If this were instance data - how often do we step it (0 for vertex data)
+
+
+	ID3D10Blob* vs_byteCode = m_vertexStage.m_byteCode; 
+
+	ID3D11Device* device = m_vertexStage.m_owningRenderContext->m_D3DDevice;
+
+	// Final create the layout
+	HRESULT hr = device->CreateInputLayout( inputDescription, 
+		ARRAYSIZE(inputDescription),
+		vs_byteCode->GetBufferPointer(), 
+		vs_byteCode->GetBufferSize(), 
+		&m_inputLayout );   
+
+	return SUCCEEDED(hr); 
+}
+
 STATIC char const* Shader::GetEntryForStage( eShaderStage stage ) 
 {
 	switch (stage) {
@@ -111,32 +183,37 @@ STATIC char const* Shader::GetShaderModelForStage( eShaderStage stage )
 bool ShaderStage::LoadShaderFromSource( RenderContext *renderContext, const std::string &fileName, void const *source, unsigned long sourceSize, eShaderStage stage )
 {
 	m_stage = stage; 
+	m_owningRenderContext = renderContext;
 	ID3D11Device *device = renderContext->m_D3DDevice; 
 
-	ID3DBlob *bytecode = CompileHLSLToShaderBlob( fileName.c_str(), source, sourceSize, Shader::GetEntryForStage(stage), Shader::GetShaderModelForStage(stage) ); 
-	if (bytecode == nullptr) {
+	m_byteCode = CompileHLSLToShaderBlob( fileName.c_str(), source, sourceSize, Shader::GetEntryForStage(stage), Shader::GetShaderModelForStage(stage) ); 
+	if (m_byteCode == nullptr) {
 		return false; 
 	}
 
 	switch (stage) 
 	{
 	case SHADER_STAGE_VERTEX:    // Compile the byte code to the final shader (driver/hardware specific program)
-	device->CreateVertexShader( bytecode->GetBufferPointer(), 
-		bytecode->GetBufferSize(), 
+	device->CreateVertexShader( m_byteCode->GetBufferPointer(), 
+		m_byteCode->GetBufferSize(), 
 		nullptr, 
 		&m_vs );
 	break;
 
 	case SHADER_STAGE_FRAGMENT: 
-	device->CreatePixelShader( bytecode->GetBufferPointer(), 
-		bytecode->GetBufferSize(), 
+	device->CreatePixelShader( m_byteCode->GetBufferPointer(), 
+		m_byteCode->GetBufferSize(), 
 		nullptr, 
 		&m_ps );
 	break; 
 	}
 
-
-	DX_SAFE_RELEASE(bytecode); 
+	//We need to keep byte code for vertex shader to use in InputLayout to feed details
+	//about the type of input being sent to the shader pipeline
+	if(stage != SHADER_STAGE_VERTEX)
+	{
+		DX_SAFE_RELEASE(m_byteCode);
+	}
 	return IsValid();
 }
 

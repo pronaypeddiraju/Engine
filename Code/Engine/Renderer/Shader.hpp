@@ -5,6 +5,7 @@ struct ID3D11Resource;
 struct ID3D11VertexShader;
 struct ID3D11PixelShader;
 struct ID3D10Blob;
+struct ID3D11InputLayout;
 
 class RenderContext;
 
@@ -29,6 +30,8 @@ public:
 		ID3D11VertexShader *m_vs; 
 		ID3D11PixelShader *m_ps; 
 	};
+	ID3D10Blob *m_byteCode = nullptr;
+	RenderContext *m_owningRenderContext = nullptr;
 
 	inline bool IsValid() const { return m_handle != nullptr; }
 }; 
@@ -36,14 +39,21 @@ public:
 //------------------------------------------------------------------------
 class Shader 
 {
+public:
+	Shader();
+	~Shader();
+	
+	static char const*		GetEntryForStage(eShaderStage stage);
+	static char const*		GetShaderModelForStage(eShaderStage stage );
+
+	bool					CreateInputLayoutForVertexPCU(); 
 
 public:
-	ShaderStage m_vertex_shader; 
-	ShaderStage m_pixel_shader; 
+	
+	ShaderStage				m_vertexStage; 
+	ShaderStage				m_pixelStage; 
 
-	static char const* GetEntryForStage(eShaderStage stage);
-	static char const* GetShaderModelForStage(eShaderStage stage );
-
+	ID3D11InputLayout*		m_inputLayout = nullptr;
 }; 
 
 ID3D10Blob* CompileHLSLToShaderBlob( char const *opt_filename,		// optional: used for error messages
