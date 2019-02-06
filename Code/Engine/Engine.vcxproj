@@ -208,6 +208,7 @@
     <ClCompile Include="Renderer\BitmapFont.cpp" />
     <ClCompile Include="Renderer\Camera.cpp" />
     <ClCompile Include="Renderer\ColorTargetView.cpp" />
+    <ClCompile Include="Renderer\RenderBuffer.cpp" />
     <ClCompile Include="Renderer\RenderContext.cpp" />
     <ClCompile Include="Renderer\Rgba.cpp" />
     <ClCompile Include="Renderer\Shader.cpp" />
@@ -215,6 +216,7 @@
     <ClCompile Include="Renderer\SpriteDefenition.cpp" />
     <ClCompile Include="Renderer\SpriteSheet.cpp" />
     <ClCompile Include="Renderer\Texture.cpp" />
+    <ClCompile Include="Renderer\UniformBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirdParty\fmod\fmod.h" />
@@ -259,6 +261,7 @@
     <ClInclude Include="Renderer\BitmapFont.hpp" />
     <ClInclude Include="Renderer\Camera.hpp" />
     <ClInclude Include="Renderer\ColorTargetView.hpp" />
+    <ClInclude Include="Renderer\RenderBuffer.hpp" />
     <ClInclude Include="Renderer\RenderContext.hpp" />
     <ClInclude Include="Renderer\Rgba.hpp" />
     <ClInclude Include="Renderer\Shader.hpp" />
@@ -266,6 +269,7 @@
     <ClInclude Include="Renderer\SpriteDefenition.hpp" />
     <ClInclude Include="Renderer\SpriteSheet.hpp" />
     <ClInclude Include="Renderer\Texture.hpp" />
+    <ClInclude Include="Renderer\UniformBuffer.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

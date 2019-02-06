@@ -11,6 +11,7 @@
 #define KEY_LEFT 75
 #define KEY_RIGHT 77
 #define STATIC
+#define BIT_FLAG(b)   (1 << (b))
 
 class NamedStrings;
 class EventSystems;
