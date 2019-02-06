@@ -20,19 +20,16 @@ public:
 	void					DestroyRigidbody( Rigidbody2D* rigidbody );
 	void					SetGravity(const Vec2& gravity);
 
-	void					BeginFrame();
-	void					PreRender();
+	void					CopyTransformsFromObjects();
+	void					CopyTransformsToObjects();
 	void					Update(float deltaTime);
-	void					EndFrame();
+	void					SetAllCollisionsToFalse();
 
-	void					DebugRender(RenderContext* renderContext) const;
+	void					DebugRender( RenderContext* renderContext ) const;
 
-	//Accessors
 	const Vec2&				GetGravity() const;
 
 private:
-	void					AddCollider(Collider2D* collider);
-	void					RemoveCollider(Collider2D* collider);
 
 	void					RunStep(float deltaTime);
 

@@ -20,11 +20,21 @@ Rigidbody2D::Rigidbody2D( PhysicsSystem* physicsSystem, eSimulationType simulati
 
 Rigidbody2D::~Rigidbody2D()
 {
+	int rbCount = static_cast<int>(m_system->m_rigidbodyVector.size());
+
+	for(int rbIndex = 0; rbIndex < rbCount; rbIndex++)
+	{
+		if(m_system->m_rigidbodyVector[rbIndex] == this)
+		{
+			m_system->m_rigidbodyVector[rbIndex] = nullptr;
+		}
+	}
+
 	delete m_collider;
 	m_collider = nullptr;
 
-	delete m_object_transform;
-	m_object_transform = nullptr;
+	//delete m_object_transform;
+	//m_object_transform = nullptr;
 }
 
 void Rigidbody2D::Move( float deltaTime )

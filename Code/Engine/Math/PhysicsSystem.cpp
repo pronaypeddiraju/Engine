@@ -38,46 +38,60 @@ void PhysicsSystem::SetGravity( const Vec2& gravity )
 	m_gravity = gravity;
 }
 
-void PhysicsSystem::BeginFrame()
+void PhysicsSystem::CopyTransformsFromObjects()
 {
 	// reset per frame stuff; 
 	// copy all transforms over;
-	int numRigidbodies = m_rigidbodyVector.size();
+	int numRigidbodies = static_cast<int>(m_rigidbodyVector.size());
 
 	for(int rigidbodyIndex = 0; rigidbodyIndex < numRigidbodies; rigidbodyIndex++)
 	{
-		m_rigidbodyVector[rigidbodyIndex]->m_transform = *m_rigidbodyVector[rigidbodyIndex]->m_object_transform;
+		if(m_rigidbodyVector[rigidbodyIndex] != nullptr)
+		{
+			m_rigidbodyVector[rigidbodyIndex]->m_transform = *m_rigidbodyVector[rigidbodyIndex]->m_object_transform;
+		}
 	}
 }
 
-void PhysicsSystem::PreRender()
+void PhysicsSystem::CopyTransformsToObjects()
 {
 	// figure out movement, apply to actual game object;
-
-	int numRigidbodies = m_rigidbodyVector.size();
+	int numRigidbodies = static_cast<int>(m_rigidbodyVector.size());
 
 	for(int rigidbodyIndex = 0; rigidbodyIndex < numRigidbodies; rigidbodyIndex++)
 	{
-		*m_rigidbodyVector[rigidbodyIndex]->m_object_transform = m_rigidbodyVector[rigidbodyIndex]->m_transform;
+		if(m_rigidbodyVector[rigidbodyIndex] != nullptr)
+		{
+			*m_rigidbodyVector[rigidbodyIndex]->m_object_transform = m_rigidbodyVector[rigidbodyIndex]->m_transform;
+		}
 	}
 }
 
 void PhysicsSystem::Update( float deltaTime )
 {
-	BeginFrame(); 
+	CopyTransformsFromObjects(); 
 	// debug: clear all frame information
 	// such as if they are currently touching another object; 
+	SetAllCollisionsToFalse();
 
 	// we'll eventually switch to fixed-step updates, so we'll call down immediately to a run_step to make
 	// that port easier; 
 	RunStep( deltaTime );
 
-	PreRender();  
+	CopyTransformsToObjects();  
 }
 
-void PhysicsSystem::EndFrame()
+void PhysicsSystem::SetAllCollisionsToFalse()
 {
+	int numRigidbodies = static_cast<int>(m_rigidbodyVector.size());
 
+	for(int rbIndex = 0; rbIndex < numRigidbodies; rbIndex++)
+	{
+		if(m_rigidbodyVector[rbIndex] != nullptr)
+		{
+			m_rigidbodyVector[rbIndex]->m_collider->SetCollision(false);
+		}
+	}
 }
 
 void PhysicsSystem::DebugRender( RenderContext* renderContext ) const
@@ -85,8 +99,14 @@ void PhysicsSystem::DebugRender( RenderContext* renderContext ) const
 	int numRigidbodies = static_cast<int>(m_rigidbodyVector.size());
 	for(int rbIndex = 0; rbIndex < numRigidbodies; rbIndex++)
 	{
-		eSimulationType simType = m_rigidbodyVector[rbIndex]->GetSimulationType();
+		//Nullptr check first
+		if(m_rigidbodyVector[rbIndex] == nullptr)
+		{
+			continue;
+		}
 
+		eSimulationType simType = m_rigidbodyVector[rbIndex]->GetSimulationType();
+	
 		switch( simType )
 		{
 		case TYPE_UNKOWN:
@@ -134,31 +154,39 @@ void PhysicsSystem::RunStep( float deltaTime )
 	int numObjects = static_cast<int>(m_rigidbodyVector.size());
 	for (int objectIndex = 0; objectIndex < numObjects; objectIndex++)
 	{
-		m_rigidbodyVector[objectIndex]->Move(deltaTime);
+		if(m_rigidbodyVector[objectIndex] != nullptr)
+		{
+			m_rigidbodyVector[objectIndex]->Move(deltaTime);
+		}
 	}
 
 	//Set colliding or not colliding here
 	for(int colliderIndex = 0; colliderIndex < numObjects; colliderIndex++)
 	{
+		if(m_rigidbodyVector[colliderIndex] == nullptr)
+		{
+			continue;
+		}
+
 		for(int otherColliderIndex = 0; otherColliderIndex < numObjects; otherColliderIndex++)
 		{
-			//Make sure we aren't the same rigidbody
-			if(m_rigidbodyVector[otherColliderIndex] == m_rigidbodyVector[colliderIndex])
+			//check condition where the other collider is nullptr
+			if(m_rigidbodyVector[otherColliderIndex] == nullptr)
 			{
 				continue;
 			}
 
+			//Make sure we aren't the same rigidbody
+			if(m_rigidbodyVector[colliderIndex] == m_rigidbodyVector[otherColliderIndex])
+			{
+				continue;
+			}
+						
 			if(m_rigidbodyVector[colliderIndex]->m_collider->IsTouching(m_rigidbodyVector[otherColliderIndex]->m_collider))
 			{
 				//Set collision to true
 				m_rigidbodyVector[colliderIndex]->m_collider->SetCollision(true);
 				m_rigidbodyVector[otherColliderIndex]->m_collider->SetCollision(true);
-			}
-			else
-			{
-				//Set collisions to false
-				m_rigidbodyVector[colliderIndex]->m_collider->SetCollision(false);
-				m_rigidbodyVector[otherColliderIndex]->m_collider->SetCollision(false);
 			}
 		}
 	}
