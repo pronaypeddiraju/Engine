@@ -297,12 +297,14 @@ void RenderContext::Draw( uint vertexCount, uint byteOffset )
 
 	if (result) 
 	{
+		m_D3DContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_D3DContext->IASetInputLayout( m_currentShader->m_inputLayout );
-		Draw( vertexCount, byteOffset ); 
+		m_D3DContext->Draw( vertexCount, byteOffset ); 
 	} 
 	else 
 	{
 		// error/warning
+		ERROR_AND_DIE("Could not create input layout!");
 	}
 
 	/*
@@ -423,7 +425,7 @@ void RenderContext::DrawVertexArray( Vertex_PCU const *vertices, uint count )
 	}
 
 	// copy to a vertex buffer
-	m_immediateVBO->CopyCPUToGPU( vertices, count * sizeof(Vertex_PCU) );
+	m_immediateVBO->CopyCPUToGPU( vertices, count);
 
 	// bind that vertex buffer
 	BindVertexStream( m_immediateVBO ); 
