@@ -12,6 +12,8 @@
 #define KEY_RIGHT 77
 #define STATIC
 #define BIT_FLAG(b)   (1 << (b))
+#define ASSERT_RETURN_VALUE(assertThis, returnValue) if(!(assertThis)) {return returnValue;}
+#define ASSERT(assertThis) if(!(assertThis)) {return false;}
 
 class NamedStrings;
 class EventSystems;

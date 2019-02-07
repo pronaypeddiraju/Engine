@@ -5,6 +5,8 @@
 #include "Engine/Renderer/ColorTargetView.hpp"
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Renderer/VertexBuffer.hpp"
+#include "Engine/Renderer/UniformBuffer.hpp"
 
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
@@ -247,6 +249,8 @@ void RenderContext::EndFrame()
 
 void RenderContext::Shutdown()
 {
+	delete m_immediateVBO;
+	m_immediateVBO = nullptr;
 	D3D11Cleanup();
 
 	//m_loadedShaders;
@@ -271,6 +275,8 @@ void RenderContext::BindShader( Shader* shader )
 	//    <note: I use OpenGL naming, and refer to Pixel Shaders are Fragment Shaders>
 	m_D3DContext->VSSetShader(shader->m_vertexStage.m_vs, nullptr, 0U);
 	m_D3DContext->PSSetShader(shader->m_pixelStage.m_ps, nullptr, 0U);
+
+	m_currentShader = shader;
 }
 
 void RenderContext::BindTexture( Texture* texture )
@@ -281,12 +287,33 @@ void RenderContext::BindTexture( Texture* texture )
 
 void RenderContext::Draw( uint vertexCount, uint byteOffset )
 {
+	// **NEW** - before a draw can happen, 
+	// We need to describe the input to the shader
+	// TODO: only create an input layout if the vertex type changes; 
+	// TODO: When different vertex types come on-line, look at the current bound
+	//       input streams (VertexBuffer) for the layout
+	bool result =  m_currentShader->CreateInputLayoutForVertexPCU(); 
+	// TODO: m_currentShader->CreateInputLayoutFor( VertexPCU::LAYOUT ); 
+
+	if (result) 
+	{
+		m_D3DContext->IASetInputLayout( m_currentShader->m_inputLayout );
+		Draw( vertexCount, byteOffset ); 
+	} 
+	else 
+	{
+		// error/warning
+	}
+
+	/*
+	A01 Implementation
 	//Topology Type - the data in the Vertex Buffer/Index Buffer describes what kind of shapes.  
 	//In this class - I only deal with POINTS, LINES, and TRIANGLES.
 	m_D3DContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Now that everything is bound, we can draw!
 	m_D3DContext->Draw( vertexCount, byteOffset );                      // I'm drawing one triangle, so 3 vertices total.  Starting at index 0.
+	*/
 
 }
 
@@ -299,6 +326,28 @@ void RenderContext::ClearColorTargets( const Rgba& clearColor )
 	DX_SAFE_RELEASE( m_currentCamera->m_colorTargetView->m_renderTargetView); // done with the view - can release it (if you save it frame to frame, skip this step)
 }
 
+
+void RenderContext::BindVertexStream( VertexBuffer *vbo )
+{
+	// Bind the input stream; 
+	uint stride = sizeof(Vertex_PCU);
+	uint offset = 0U;
+	m_D3DContext->IASetVertexBuffers( 0,    // Start slot index
+		1,                            // Number of buffers we're binding
+		&vbo->m_handle, // Array of buffers
+		&stride,                // Stride (read: vertex size, or amount we move forward each vertex) for each buffer
+		&offset );             // Offset into each buffer (array - we are only passing one. 
+}
+
+void RenderContext::BindUniformBuffer( uint slot, UniformBuffer *uniformBuffer )
+{
+	// The API allows us to bind multiple constant buffers at once
+	// and binds to each stage seperately.  For simplicity, we'll
+	// just assume a slot is uniform for the entire pipeline
+	ID3D11Buffer *buffer = (uniformBuffer != nullptr) ? uniformBuffer->m_handle : nullptr; 
+	m_D3DContext->VSSetConstantBuffers( slot, 1U, &buffer ); 
+	m_D3DContext->PSSetConstantBuffers( slot, 1U, &buffer ); 
+}
 
 void RenderContext::BeginCamera( Camera& camera )
 {
@@ -331,6 +380,12 @@ void RenderContext::BeginCamera( Camera& camera )
 	viewport.MaxDepth = 1.0f;        // must be between 0 and 1 (default is 1)
 	m_D3DContext->RSSetViewports( 1, &viewport );
 	
+
+	// Next, update the uniform data, and bind it as an input for the shader
+	// Camera data
+	m_currentCamera->UpdateUniformBuffer( this ); 
+	BindUniformBuffer( UNIFORM_SLOT_CAMERA, m_currentCamera->m_cameraUBO ); 
+
 }
 
 void RenderContext::EndCamera()
@@ -350,9 +405,7 @@ void RenderContext::EndCamera()
 
 void RenderContext::DrawVertexArray( int numVertexes, const Vertex_PCU* vertexes )
 {
-	UNUSED(numVertexes);
-	UNUSED(vertexes);
-	GUARANTEE_RECOVERABLE(false, "Reached Set blend mode in RC");
+	DrawVertexArray(vertexes, numVertexes);
 }
 
 
@@ -360,6 +413,22 @@ void RenderContext::DrawVertexArray( int numVertexes, const Vertex_PCU* vertexes
 void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertexes )
 {
 	DrawVertexArray( static_cast<int>(vertexes.size()), &vertexes[0]);
+}
+
+void RenderContext::DrawVertexArray( Vertex_PCU const *vertices, uint count )
+{
+	if(m_immediateVBO == nullptr)
+	{
+		m_immediateVBO = new VertexBuffer(this);
+	}
+
+	// copy to a vertex buffer
+	m_immediateVBO->CopyCPUToGPU( vertices, count * sizeof(Vertex_PCU) );
+
+	// bind that vertex buffer
+	BindVertexStream( m_immediateVBO ); 
+
+	Draw( count ); 
 }
 
 Texture* RenderContext::CreateOrGetTextureFromFile(const char* imageFilePath)

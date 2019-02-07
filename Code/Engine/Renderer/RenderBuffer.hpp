@@ -64,8 +64,8 @@ public:
 	eRenderBufferUsageBits		m_bufferUsage; 
 	eGPUMemoryUsage				m_memoryUsage; 
 
-	size_t						m_bufferSize;    // total byte count of this buffer; 
-	size_t						m_elementSize;   // size of the stride for each thing in buffer
+	size_t						m_bufferSize = 0;    // total byte count of this buffer; 
+	size_t						m_elementSize = 0;   // size of the stride for each thing in buffer
 
 	// D3D11 Resource
 	ID3D11Buffer*				m_handle = nullptr;  

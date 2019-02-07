@@ -36,7 +36,7 @@ bool UniformBuffer::CopyCPUToGPU( void const *data, size_t const byteSize )
 		// non-static and we have enough room, so call down 
 		// to our base classes CopyGPUToGPU that assumes
 		// enough room is already allocated; 
-		GUARANTEE_RECOVERABLE( IsDynamic(), "The buffer is dynamic" ); 
+		ASSERT(IsDynamic());
 		if (RenderBuffer::CopyCPUToGPU( data, byteSize )) {
 			//m_vertexCount = count; 
 			return true; 

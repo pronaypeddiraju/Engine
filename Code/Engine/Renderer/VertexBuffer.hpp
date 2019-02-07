@@ -11,6 +11,9 @@
 class VertexBuffer : public RenderBuffer
 {
 public:
+	VertexBuffer(RenderContext *owner );
+	~VertexBuffer();
+
 	bool CopyCPUToGPU( Vertex_PCU const *vertices, uint const count ); 
 
 	//For when we need a static vertex buffer (ex: static meshes)

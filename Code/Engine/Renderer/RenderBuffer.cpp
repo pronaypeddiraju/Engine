@@ -78,10 +78,10 @@ bool RenderBuffer::CreateBuffer( void const *initialData,
 	DX_SAFE_RELEASE(m_handle); 
 
 	// can not create a 0 sized buffer; 
-	GUARANTEE_RECOVERABLE( (bufferSize > 0U) && (elementSize > 0U), false );
+	ASSERT_RETURN_VALUE( (bufferSize > 0U) && (elementSize > 0U), false );
 
 	// static buffers MUST be supplied data.
-	GUARANTEE_RECOVERABLE( (memUsage != GPU_MEMORY_USAGE_STATIC) || (initialData != nullptr), false );
+	ASSERT_RETURN_VALUE( (memUsage != GPU_MEMORY_USAGE_STATIC) || (initialData != nullptr), false );
 
 	// Setup the buffer
 	// When creating a D3D object, we setup
@@ -142,9 +142,9 @@ bool RenderBuffer::CreateBuffer( void const *initialData,
 bool RenderBuffer::CopyCPUToGPU( void const *data, size_t const byteSize )
 {
 	// staging or dynamic only & we better have room; 
-	GUARANTEE_RECOVERABLE( !IsStatic(), "GPU Memory Usage is static! Not allowed for CPU to GPU copy" ); 
-	GUARANTEE_RECOVERABLE( byteSize <= m_bufferSize, "The byte size is larger than allotted buffer size!" ); 
-
+	ASSERT( !IsStatic() ); 
+	ASSERT( byteSize <= m_bufferSize ); 
+	
 	// Map and copy
 	// This is a command, so runs using the context
 	ID3D11DeviceContext *deviceContext = m_owningRenderContext->m_D3DContext; 

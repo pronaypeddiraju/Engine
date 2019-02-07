@@ -14,6 +14,7 @@ class Shader;
 class ColorTargetView;
 class RenderBuffer;
 class UniformBuffer;
+class VertexBuffer;
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -112,7 +113,17 @@ public:
 	void				Draw(uint vertexCount, uint byteOffset = 0U);
 
 	void				ClearColorTargets( const Rgba& clearColor );		//Previously was ClearScreen
-	
+
+	// Stream Data
+	void				BindVertexStream( VertexBuffer *vbo ); 
+
+	// Uniform/Constant Data
+	void				BindUniformBuffer( uint slot, UniformBuffer *ubo ); 
+
+	// Resurrected Functions
+	void				DrawVertexArray( Vertex_PCU const *vertices, uint count ); 
+
+
 	void				DrawVertexArray( int numVertexes, const Vertex_PCU* vertexes );
 	void				DrawVertexArray( const std::vector<Vertex_PCU>& vertexes);
 
@@ -150,8 +161,14 @@ private:
 
 	ColorTargetView*									m_FrameBuffer_ColorTargetView = nullptr;
 	Camera*												m_currentCamera = nullptr;
+	Shader*												m_currentShader = nullptr;
 
+public:
 
+	VertexBuffer*										m_immediateVBO = nullptr; 
+
+	//Sampler*											m_defaultPoint = nullptr; 
+	//Sampler*											m_defaultBilinear = nullptr; 
 };
 
 

@@ -1,7 +1,19 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Renderer/VertexBuffer.hpp"
+
 //------------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------
+
+VertexBuffer::VertexBuffer(RenderContext *owner )
+	: RenderBuffer(owner )
+{
+
+}
+
+VertexBuffer::~VertexBuffer()
+{
+
+}
 
 // Similar to UBO - since we are assuming if they are using this method 
 // it is dynamic, and we only need to remake if the size changes; 
@@ -34,7 +46,8 @@ bool VertexBuffer::CopyCPUToGPU( Vertex_PCU const *vertices, uint const count )
 	else 
 	{
 		// non-static and we have enough room
-		GUARANTEE_RECOVERABLE( IsDynamic(), "The GPU Memory mode is not dynamic!" ); 
+		//GUARANTEE_RECOVERABLE( IsDynamic(), "The GPU Memory mode is not dynamic!" ); 
+		ASSERT( IsDynamic() ); 
 		if (RenderBuffer::CopyCPUToGPU( vertices, sizeNeeded )) 
 		{
 			m_vertexCount = count; 

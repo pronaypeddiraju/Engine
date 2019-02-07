@@ -9,8 +9,8 @@ public:
 	//public variables
 	Vec3 m_position;
 	//Vec2 m_position;
-	Rgba m_color;
 	Vec2 m_uvTexCoords;
+	Rgba m_color;
 
 private:
 	//private variables

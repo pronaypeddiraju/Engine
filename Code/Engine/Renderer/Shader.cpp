@@ -74,14 +74,18 @@ STATIC ID3D10Blob* CompileHLSLToShaderBlob( char const *opt_filename,  // option
 		&code,                              // [OUT] ID3DBlob (buffer) that will store the byte code.
 		&errors );                          // [OUT] ID3DBlob (buffer) that will store error information
 
-	if (FAILED(hr) || (errors != nullptr)) {
-		if (errors != nullptr) {
+	if (FAILED(hr) || (errors != nullptr))
+	{
+		if (errors != nullptr) 
+		{
 			char *error_string = (char*) errors->GetBufferPointer();
 			DebuggerPrintf( "Failed to compile [%s].  Compiler gave the following output;\n%s", 
 				opt_filename, 
 				error_string );
 			DX_SAFE_RELEASE(errors);
-		} else {
+		} 
+		else 
+		{
 			DebuggerPrintf( "Failed with HRESULT: %u", hr ); 
 		}
 	} 
@@ -137,13 +141,13 @@ bool Shader::CreateInputLayoutForVertexPCU()
 	inputDescription[1].InstanceDataStepRate = 0U;             // If this were instance data - how often do we step it (0 for vertex data)
 
 	// YOU DO -> Map Color
-	inputDescription[1].SemanticName = "COLOR";             // __semantic__ name we gave this input -> float3 pos : POSITION; 
-	inputDescription[1].SemanticIndex = 0;                     // Semantics that share a name (or are large) are spread over multiple indices (matrix4x4s are four floats for instance)
-	inputDescription[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;     // Type this data is (float3/vec3 - so 3 floats)
-	inputDescription[1].InputSlot = 0U;                        // Input Pipe this comes from (ignored unless doing instanced rendering)
-	inputDescription[1].AlignedByteOffset = offsetof( Vertex_PCU, m_color);   // memory offset this data starts (where is position relative to the vertex, 0 in this case)
-	inputDescription[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;   // What is this data for (per vertex data is the only one we'll be dealing with in this class)
-	inputDescription[1].InstanceDataStepRate = 0U;             // If this were instance data - how often do we step it (0 for vertex data)
+	inputDescription[2].SemanticName = "COLOR";             // __semantic__ name we gave this input -> float3 pos : POSITION; 
+	inputDescription[2].SemanticIndex = 0;                     // Semantics that share a name (or are large) are spread over multiple indices (matrix4x4s are four floats for instance)
+	inputDescription[2].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;     // Type this data is (float3/vec3 - so 3 floats)
+	inputDescription[2].InputSlot = 0U;                        // Input Pipe this comes from (ignored unless doing instanced rendering)
+	inputDescription[2].AlignedByteOffset = offsetof( Vertex_PCU, m_color);   // memory offset this data starts (where is position relative to the vertex, 0 in this case)
+	inputDescription[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;   // What is this data for (per vertex data is the only one we'll be dealing with in this class)
+	inputDescription[2].InstanceDataStepRate = 0U;             // If this were instance data - how often do we step it (0 for vertex data)
 
 
 	ID3D10Blob* vs_byteCode = m_vertexStage.m_byteCode; 
