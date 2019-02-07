@@ -55,10 +55,10 @@ enum eCoreUniformSlot
 // slot: 1
 struct FrameBufferT
 {
-	float time; 
-	float halfTime; 
-	float doubleTime; 
-	float quadTime; 
+	float frameCount; 
+	float currentTime; 
+	float cosine; 
+	float sine; 
 }; 
 
 //------------------------------------------------------------------------
@@ -118,6 +118,7 @@ public:
 	void				BindVertexStream( VertexBuffer *vbo ); 
 
 	// Uniform/Constant Data
+	void				UpdateFrameBuffer();
 	void				BindUniformBuffer( uint slot, UniformBuffer *ubo ); 
 
 	// Resurrected Functions
@@ -166,6 +167,10 @@ private:
 public:
 
 	VertexBuffer*										m_immediateVBO = nullptr; 
+	UniformBuffer*										m_immediateUBO = nullptr;
+
+	unsigned int										m_frameCount = 0;
+
 
 	//Sampler*											m_defaultPoint = nullptr; 
 	//Sampler*											m_defaultBilinear = nullptr; 

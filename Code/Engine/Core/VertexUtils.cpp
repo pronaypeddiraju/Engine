@@ -107,14 +107,12 @@ void AddVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, 
 	Vec3 boxTopRight = Vec3(box.m_maxBounds.x, box.m_maxBounds.y, 0.f);
 
 	vertexArray.push_back(Vertex_PCU(boxBottomLeft, color, uvAtMins));
-	vertexArray.push_back(Vertex_PCU(boxBottomRight, color, Vec2(uvAtMaxs.x, uvAtMins.y)));
-	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
-
-	vertexArray.push_back(Vertex_PCU(boxBottomLeft, color, uvAtMins));
 	vertexArray.push_back(Vertex_PCU(boxTopLeft, color, Vec2(uvAtMins.x, uvAtMaxs.y)));
 	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
 
-
+	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
+	vertexArray.push_back(Vertex_PCU(boxBottomRight, color, Vec2(uvAtMaxs.x, uvAtMins.y)));
+	vertexArray.push_back(Vertex_PCU(boxBottomLeft, color, uvAtMins));
 }
 
 //Move a vertex

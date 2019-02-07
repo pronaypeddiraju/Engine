@@ -15,6 +15,8 @@
 #define ASSERT_RETURN_VALUE(assertThis, returnValue) if(!(assertThis)) {return returnValue;}
 #define ASSERT(assertThis) if(!(assertThis)) {return false;}
 
+//#define ASSERT GUARANTEE_RECOVERABLE;
+
 class NamedStrings;
 class EventSystems;
 

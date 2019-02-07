@@ -32,6 +32,7 @@ NUKED!
 
 // DEBUG STUFF
 #include <dxgidebug.h>
+#include "../Core/Time.hpp"
 // #pragma comment( lib, "dxguid.lib" )
 
 #pragma comment( lib, "d3d11.lib" )
@@ -212,17 +213,6 @@ void RenderContext::BeginFrame()
 	m_FrameBuffer_ColorTargetView = new ColorTargetView();
 	m_FrameBuffer_ColorTargetView->CreateForInternalTexture( *back_buffer, *m_D3DDevice ); 
 
-	/*
-
-	OLD CODE
-
-	// Get a render target view of this
-	// NOTE:  This could be cached off and stored instead of creating
-	// a new one each frame.  It is fairly cheap to do though.
-	g_rtv = nullptr;
-	gD3DDevice->CreateRenderTargetView( back_buffer, nullptr, &g_rtv );
-	*/
-
 	//ColorTargetView holds a reference to the back_buffer so we can now release it from this function
 	DX_SAFE_RELEASE( back_buffer ); // I'm done using this - so release my hold on it (does not destroy it!)
 
@@ -251,6 +241,10 @@ void RenderContext::Shutdown()
 {
 	delete m_immediateVBO;
 	m_immediateVBO = nullptr;
+
+	delete m_immediateUBO;
+	m_immediateUBO = nullptr;
+
 	D3D11Cleanup();
 
 	//m_loadedShaders;
@@ -292,9 +286,13 @@ void RenderContext::Draw( uint vertexCount, uint byteOffset )
 	// TODO: only create an input layout if the vertex type changes; 
 	// TODO: When different vertex types come on-line, look at the current bound
 	//       input streams (VertexBuffer) for the layout
+	
 	bool result =  m_currentShader->CreateInputLayoutForVertexPCU(); 
+	
 	// TODO: m_currentShader->CreateInputLayoutFor( VertexPCU::LAYOUT ); 
 
+	
+	//A02 Implementation
 	if (result) 
 	{
 		m_D3DContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -306,6 +304,7 @@ void RenderContext::Draw( uint vertexCount, uint byteOffset )
 		// error/warning
 		ERROR_AND_DIE("Could not create input layout!");
 	}
+	
 
 	/*
 	A01 Implementation
@@ -388,6 +387,27 @@ void RenderContext::BeginCamera( Camera& camera )
 	m_currentCamera->UpdateUniformBuffer( this ); 
 	BindUniformBuffer( UNIFORM_SLOT_CAMERA, m_currentCamera->m_cameraUBO ); 
 
+	UpdateFrameBuffer();
+	BindUniformBuffer( UNIFORM_SLOT_FRAME, m_immediateUBO);
+
+}
+
+void RenderContext::UpdateFrameBuffer()
+{
+	if(m_immediateUBO == nullptr)
+	{
+		m_immediateUBO = new UniformBuffer(this);
+	}
+
+	//Setup your Frame buffer struct here
+	FrameBufferT frameBuffer;
+	frameBuffer.frameCount = static_cast<float>(m_frameCount);
+	frameBuffer.currentTime = static_cast<float>(GetCurrentTimeSeconds());
+	frameBuffer.cosine = cos(frameBuffer.currentTime) * 5.f;
+	frameBuffer.sine = sin(frameBuffer.currentTime) * 5.f;
+
+	//Copy the cpu to gpu here(on your ubo)
+	m_immediateUBO->CopyCPUToGPU(&frameBuffer, sizeof(frameBuffer));
 }
 
 void RenderContext::EndCamera()

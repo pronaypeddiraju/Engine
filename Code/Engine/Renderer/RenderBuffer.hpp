@@ -17,7 +17,7 @@ enum eRenderBufferUsageBit : uint
 {
 	RENDER_BUFFER_USAGE_VERTEX_STREAM_BIT   = BIT_FLAG(0),   // Can be bound to an vertex input stream slot
 	RENDER_BUFFER_USAGE_INDEX_STREAM_BIT    = BIT_FLAG(1),   // Can be bound as an index input stream.  
-	RENDER_BUFFER_USAGE_UNIFORM_BIT        = BIT_FLAG(2),   // Can be bound to a constant buffer slot; 
+	RENDER_BUFFER_USAGE_UNIFORM_BIT         = BIT_FLAG(2),   // Can be bound to a constant buffer slot; 
 };
 typedef uint eRenderBufferUsageBits; 
 
