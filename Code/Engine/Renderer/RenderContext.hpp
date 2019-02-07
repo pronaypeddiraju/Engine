@@ -20,6 +20,7 @@ struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct IDXGISwapChain;
 struct ID3D11RenderTargetView;
+struct ID3D11RasterizerState;
 
 enum BlendMode
 {
@@ -145,6 +146,7 @@ private:
 	Texture*			CreateTextureFromFile( const char* imageFilePath);
 	BitmapFont*			CreateBitmapFontFromFile(const std::string& bitmapName);
 	Shader*				CreateShaderFromFile(const std::string& fileName);
+	void				CreateAndSetDefaultRasterState();
 
 private:
 	// Private (internal) data members will go here
@@ -155,6 +157,7 @@ private:
 	ID3D11Device										*m_D3DDevice = nullptr;
 	ID3D11DeviceContext									*m_D3DContext = nullptr;
 	IDXGISwapChain										*m_D3DSwapChain = nullptr;
+	ID3D11RasterizerState								*m_defaultRasterState = nullptr; 
 
 	//For now make a global rtv
 	//Wait no! we shouldnt be fucking with this

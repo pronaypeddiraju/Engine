@@ -119,6 +119,7 @@ void RenderContext::D3D11Cleanup()
 		DX_SAFE_RELEASE(debugObject);
 	}
 
+	DX_SAFE_RELEASE(m_defaultRasterState);
 	DX_SAFE_RELEASE(m_D3DSwapChain);
 	DX_SAFE_RELEASE(m_D3DContext);
 	DX_SAFE_RELEASE(m_D3DDevice);
@@ -158,6 +159,7 @@ RenderContext* g_renderContext = nullptr;
 RenderContext::RenderContext(void* windowHandle)
 {
 	D3D11Setup(windowHandle);
+	Startup();
 }
 
 RenderContext::~RenderContext()
@@ -167,7 +169,9 @@ RenderContext::~RenderContext()
 
 void RenderContext::Startup()
 {
-	
+	// Change default behaviour to be counter-clockwise is front-face to match GL
+	// (plus most meshes are built with this convention)
+	CreateAndSetDefaultRasterState(); 
 }
 
 void RenderContext::SetBlendMode(BlendMode blendMode)
@@ -211,6 +215,26 @@ Shader* RenderContext::CreateShaderFromFile(const std::string& fileName)
 
 	m_loadedShaders[fileName] = shader;
 	return shader;
+}
+
+void RenderContext::CreateAndSetDefaultRasterState()
+{
+	D3D11_RASTERIZER_DESC desc; 
+
+	desc.FillMode = D3D11_FILL_SOLID;
+	desc.CullMode = D3D11_CULL_BACK;
+	desc.FrontCounterClockwise = TRUE; // the only reason we're doing this; 
+	desc.DepthBias = 0U; 
+	desc.DepthBiasClamp = 0.0f; 
+	desc.SlopeScaledDepthBias = 0.0f; 
+	desc.DepthClipEnable = TRUE; 
+	desc.ScissorEnable = FALSE; 
+	desc.MultisampleEnable = FALSE; 
+	desc.AntialiasedLineEnable = FALSE; 
+
+	// ID3D11RasterizerState *m_defaultRasterState; 
+	m_D3DDevice->CreateRasterizerState( &desc, &m_defaultRasterState );
+	m_D3DContext->RSSetState( m_defaultRasterState); 
 }
 
 void RenderContext::BeginFrame()
