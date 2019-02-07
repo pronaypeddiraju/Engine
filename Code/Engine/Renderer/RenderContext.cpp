@@ -109,6 +109,16 @@ bool RenderContext::D3D11Setup( void* hwndVoid )
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 void RenderContext::D3D11Cleanup()
 {
+	ID3D11Debug* debugObject = nullptr;
+
+	HRESULT hr = m_D3DDevice->QueryInterface(__uuidof(ID3D11Debug), (void**)&debugObject);
+
+	if(SUCCEEDED(hr))
+	{
+		debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		DX_SAFE_RELEASE(debugObject);
+	}
+
 	DX_SAFE_RELEASE(m_D3DSwapChain);
 	DX_SAFE_RELEASE(m_D3DContext);
 	DX_SAFE_RELEASE(m_D3DDevice);

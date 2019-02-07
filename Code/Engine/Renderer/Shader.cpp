@@ -103,6 +103,7 @@ Shader::Shader()
 Shader::~Shader()
 {
 	GUARANTEE_RECOVERABLE(true, "Dont forget to free inputLayout variable");
+	DX_SAFE_RELEASE(m_inputLayout);
 }
 
 bool Shader::CreateInputLayoutForVertexPCU()

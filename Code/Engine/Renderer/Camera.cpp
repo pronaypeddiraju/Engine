@@ -3,6 +3,12 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/UniformBuffer.hpp"
 
+Camera::~Camera()
+{
+	delete m_cameraUBO;
+	m_cameraUBO = nullptr;
+}
+
 //------------------------------------------------------------------------------------------------------------------------------
 
 void Camera::SetOrthoView( const Vec2& bottomLeft, const Vec2& topRight, float minZ, float maxZ)

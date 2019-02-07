@@ -10,8 +10,8 @@ class UniformBuffer;
 
 struct Camera
 {
-
 public:
+	~Camera();
 
 	void SetOrthoView(const Vec2& bottomLeft, const Vec2& topRight, float minZ = -1.f, float maxZ = 1.f);
 	Vec2 GetOrthoBottomLeft() const;
