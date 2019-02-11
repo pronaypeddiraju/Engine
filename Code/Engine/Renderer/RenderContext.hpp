@@ -6,6 +6,7 @@
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/SpriteAnimDefenition.hpp"
+#include "Engine/Renderer/Sampler.hpp"
 #include <vector>
 #include <map>
 
@@ -15,6 +16,10 @@ class ColorTargetView;
 class RenderBuffer;
 class UniformBuffer;
 class VertexBuffer;
+class TextureView2D;
+class Texture;
+class Texture2D;
+class TextureView;
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -80,12 +85,26 @@ struct CameraBufferT
 // but I like to usually have my engine renderer reserve a few slots
 // grouped by update frequency.
 
+// A enum to pick a sampler state to use
+enum eSampleMode
+{
+	SAMPLE_MODE_POINT       = 0, 
+	SAMPLE_MODE_LINEAR, 
+	// SAMPLE_MODE_BILINEAR
+
+	SAMPLE_MODE_COUNT,
+	SAMPLE_MODE_DEFAULT     = SAMPLE_MODE_LINEAR // different games may want to change this.  My projects will use Linear, SD4 will want point; 
+}; 
+
+
 class RenderContext
 {
 	friend class ShaderStage;
 	friend class Shader;
 	friend class RenderBuffer;
 	friend class UniformBuffer;
+	friend class Sampler;
+	friend class Texture2D;
 
 public:
 	explicit RenderContext(void* windowHandle);
@@ -103,13 +122,33 @@ public:
 	void				Shutdown();
 
 	//Get resources
-	Texture*			CreateOrGetTextureFromFile(const char* imageFilePath);
+	//Texture*			CreateOrGetTextureFromFile(const char* imageFilePath);
+	TextureView2D*		GetOrCreateTextureView2DFromFile( std::string const &filename ); 
 	BitmapFont*			CreateOrGetBitmapFontFromFile (const std::string& bitmapName);
 	Shader*				CreateOrGetShaderFromFile(const std::string& fileName);
 
 	void				BindShader(Shader* shader);
 	void				SetBlendMode(BlendMode blendMode);
-	void				BindTexture(Texture* texture);
+	
+	//void				BindTexture(Texture* texture);
+	void				BindTextureView( uint slot, TextureView *view ); 
+	void				BindSampler( uint slot, Sampler *sampler ); 
+	void				BindTextureView( uint slot, std::string const &name ); 
+	void				BindSampler( eSampleMode mode );
+
+	// more convience - I store samplers WITH a texture view for convinience (what
+	// is the desired way to sample this texture).  
+	// (Personal Note: I like storing the Sampler on the shader, as the sampling usually has to do with the 
+	// effect I want to achieve, but that seems to be a fairly uncommon practice)
+
+	// sampler I'm storing with the view in this design - but still giving
+	// the context the option of binding a view with a different sampler if we so choose; 
+	void				BindTextureViewWithSampler( uint slot, TextureView *view ); 
+	void				BindTextureViewWithSampler( uint slot, std::string const &name ); 
+	void				BindTextureViewWithSampler( uint slot, TextureView *view, Sampler *sampler ); 
+	void				BindTextureViewWithSampler( uint slot, TextureView *view, eSampleMode mode ); 
+	void				BindTextureViewWithSampler( uint slot, std::string const &name, eSampleMode mode ); 
+
 
 	void				Draw(uint vertexCount, uint byteOffset = 0U);
 
@@ -171,6 +210,13 @@ public:
 
 	VertexBuffer*										m_immediateVBO = nullptr; 
 	UniformBuffer*										m_immediateUBO = nullptr;
+
+	// There are a small set of sampler state that
+	// we can get by with just reusing everywhere, 
+	// so instead of creating a sampler per texture, 
+	// we'll pull from this store; 
+	Sampler*											m_cachedSamplers[SAMPLE_MODE_COUNT]; 
+	std::map<std::string, TextureView2D*>				m_cachedTextureViews;
 
 	unsigned int										m_frameCount = 0;
 

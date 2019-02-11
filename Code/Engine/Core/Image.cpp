@@ -1,3 +1,4 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Image.hpp"
 #include "Engine/Renderer/Rgba.hpp"
 
@@ -5,6 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "ThirdParty/stb/stb_image.h"
 
+//------------------------------------------------------------------------------------------------------------------------------
 Image::Image( const char* imageFilePath )
 {
 	int imageTexelSizeX = 0; // Filled in for us to indicate image width
@@ -35,7 +37,7 @@ Image::Image( const char* imageFilePath )
 			unsigned char greenByte = imageData[greenByteIndex];
 			unsigned char blueByte = imageData[blueByteIndex];
 
-			m_texelRepository[texelIndex].SetFromBytes(redByte, greenByte, blueByte);
+			m_texelRepository[texelIndex]->SetFromBytes(redByte, greenByte, blueByte);
 		}
 	}
 	else
@@ -53,7 +55,7 @@ Image::Image( const char* imageFilePath )
 			unsigned char blueByte = imageData[blueByteIndex];
 			unsigned char alphaByte = imageData[alphaByteIndex];
 
-			m_texelRepository[texelIndex].SetFromBytes(redByte, greenByte, blueByte, alphaByte);
+			m_texelRepository[texelIndex]->SetFromBytes(redByte, greenByte, blueByte, alphaByte);
 		}
 	}
 
@@ -64,13 +66,13 @@ const Rgba& Image::GetTexelColor( const IntVec2& texelCoordinates ) const
 {
 	//Get index from the coordinates
 	int texelIndex = texelCoordinates.x + texelCoordinates.y * m_dimensions.x;
-	return m_texelRepository[texelIndex];	
+	return *m_texelRepository[texelIndex];	
 }
 
 const Rgba& Image::GetTexelColor(int xCoord, int yCoord) const
 {
 	int texelIndex = xCoord + yCoord * m_dimensions.x;
-	return m_texelRepository[texelIndex];	
+	return *m_texelRepository[texelIndex];	
 }
 
 const IntVec2& Image::GetImageDimensions() const
@@ -78,20 +80,31 @@ const IntVec2& Image::GetImageDimensions() const
 	return m_dimensions;
 }
 
-const std::string& Image::GetImageFilePath()
+const std::string& Image::GetImageFilePath() const
 {
 	return m_imageFilePath;
+}
+
+const uint Image::GetBytesPerPixel() const
+{
+	//For our purposes it is always R8G8B8A8 so that's 4 bytes
+	return 4;
+}
+
+const void* Image::GetImageBuffer() const
+{
+	return m_texelRepository[0];
 }
 
 void Image::SetTexelColor( int xCoord, int yCoord, const Rgba& setColor )
 {
 	int texelIndex = xCoord + yCoord * m_dimensions.x;
-	m_texelRepository[texelIndex] = setColor;
+	*m_texelRepository[texelIndex] = setColor;
 }
 
 void Image::SetTexelColor( const IntVec2& texelCoordinates, const Rgba& setColor )
 {
 	int texelIndex = texelCoordinates.x + texelCoordinates.y * m_dimensions.x;
-	m_texelRepository[texelIndex] = setColor;
+	*m_texelRepository[texelIndex] = setColor;
 }
 

@@ -7,6 +7,9 @@
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/Renderer/UniformBuffer.hpp"
+#include "Engine/Renderer/Sampler.hpp"
+#include "Engine/Renderer/Texture.hpp"
+#include "Engine/Renderer/TextureView.hpp"
 
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
@@ -172,6 +175,14 @@ void RenderContext::Startup()
 	// Change default behaviour to be counter-clockwise is front-face to match GL
 	// (plus most meshes are built with this convention)
 	CreateAndSetDefaultRasterState(); 
+
+	Sampler *point = new Sampler(); 
+	point->SetFilterModes( FILTER_MODE_LINEAR, FILTER_MODE_POINT );  // still min linear - to get blending as it gets smaller; 
+	m_cachedSamplers[SAMPLE_MODE_POINT] = point; 
+
+	Sampler *linear = new Sampler(); 
+	linear->SetFilterModes( FILTER_MODE_LINEAR, FILTER_MODE_LINEAR ); 
+	m_cachedSamplers[SAMPLE_MODE_LINEAR] = linear; 
 }
 
 void RenderContext::SetBlendMode(BlendMode blendMode)
@@ -293,6 +304,15 @@ void RenderContext::Shutdown()
 		delete shaderIterator->second;
 	}
 
+	//Free all samplers
+	int numFilterModes = NUM_FILTER_MODES;
+
+	for(int filterIterator = 0; filterIterator < numFilterModes; filterIterator++)
+	{
+		delete m_cachedSamplers[filterIterator];
+		m_cachedSamplers[filterIterator] = nullptr;
+	}
+
 	m_loadedShaders.clear();
 }
 
@@ -304,13 +324,112 @@ void RenderContext::BindShader( Shader* shader )
 	m_D3DContext->VSSetShader(shader->m_vertexStage.m_vs, nullptr, 0U);
 	m_D3DContext->PSSetShader(shader->m_pixelStage.m_ps, nullptr, 0U);
 
+	shader->UpdateBlendStateIfDirty(); 
+	float black[] = { 0.0f, 0.0f, 0.0f, 1.0f }; 
+	m_context->OMSetBlendState( shader->m_d3d11BlendState, // the d3d11 blend state object; 
+		black,         // blend factor (some blend options use this) 
+		0xffffffff );  // mask (what channels will get blended, this means ALL)  
+
 	m_currentShader = shader;
 }
 
-void RenderContext::BindTexture( Texture* texture )
+//------------------------------------------------------------------------
+// Note:  We have 128 texture slots, and 16 sampler slots
+// But for simplicity, the system is designed to have the sampler stored
+// with the texture view (so users just have to say "BindTexture").  
+// Meaning, this design limits us to 16 textures.  
+void RenderContext::BindTextureView( uint slot, TextureView *view )
 {
-	UNUSED(texture);
-	GUARANTEE_RECOVERABLE(false, "Reached Bind Texture");
+	ID3D11ShaderResourceView *srv = nullptr; 
+	if (view != nullptr) 
+	{
+		srv = view->m_view; 
+	} 
+	else 
+	{
+		// TODO - if view is nullptr, default to something
+		// that makes sence for the slot
+		// For now - bind a solid "WHITE" texture if slot == 0; 
+		if(slot == 0)
+		{
+			//Bind to white texture
+			
+		}
+	}
+
+	// You can bind textures to the Vertex stage, but not samplers
+	// We're *not* for now since no effect we do at Guildhall requires it, but
+	// be aware it is an option; 
+	// m_context->VSSetShaderResource( slot, 1U, &srv ); 
+
+	m_D3DContext->PSSetShaderResources(slot, 1U, &srv);
+}
+
+//------------------------------------------------------------------------
+void RenderContext::BindSampler( uint slot, Sampler *sampler ) 
+{
+	if (sampler == nullptr) {
+		sampler = m_cachedSamplers[SAMPLE_MODE_DEFAULT]; // bind the default if nothing is set
+	}
+
+	// create the dx handle; 
+	sampler->CreateStateIfDirty(this);
+
+	ID3D11SamplerState *handle = sampler->GetHandle(); 
+	m_D3DContext->PSSetSamplers( slot, 1U, &handle ); 
+}
+
+//------------------------------------------------------------------------
+void RenderContext::BindTextureViewWithSampler( uint slot, TextureView *view )
+{
+	BindTextureView( slot, view ); 
+
+	if (view != nullptr) {
+		BindSampler( slot, view->m_sampler );
+	} else {
+		BindSampler( slot, nullptr ); 
+	}
+}
+
+//------------------------------------------------------------------------
+// (NOTE: This design is fairly different from my Engine, 
+// so while I'm fairly sure this should work, if it doesn't, please let me know)
+TextureView2D* RenderContext::GetOrCreateTextureView2DFromFile( std::string const &filename )
+{
+	TextureView2D *view = nullptr; 
+
+	// normal stuff - if it exists, return it; 
+	auto item = m_cachedTextureViews.find(filename); 
+	if (item != m_cachedTextureViews.end()) 
+	{
+		return item->second; 
+	} 
+
+	Texture2D *tex = new Texture2D(this); 
+	if (!tex->LoadTextureFromFile( filename))
+	{
+		delete tex;
+
+		// optional -> store a null at this spot so we don't 
+		// bother trying to reload it later; 
+		m_cachedTextureViews[filename] = nullptr;
+
+		return nullptr;
+
+	}
+	else 
+	{
+		// create the view
+		TextureView2D *view = tex->CreateTextureView2D(); 
+
+		// THIS SHOULD BE FINE - the view should hold onto the D3D11 resource;
+		// (I'm not 100% on this though, so if not, please Slack me)
+		delete tex;  
+
+		m_cachedTextureViews[filename] = view; 
+
+		return view; 
+	}
 }
 
 void RenderContext::Draw( uint vertexCount, uint byteOffset )

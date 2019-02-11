@@ -6,6 +6,7 @@ struct ID3D11VertexShader;
 struct ID3D11PixelShader;
 struct ID3D10Blob;
 struct ID3D11InputLayout;
+struct ID3D11BlendState;
 
 class RenderContext;
 
@@ -47,13 +48,23 @@ public:
 	static char const*		GetShaderModelForStage(eShaderStage stage );
 
 	bool					CreateInputLayoutForVertexPCU(); 
+	bool					UpdateBlendStateIfDirty(RenderContext *renderContext); 
 
 public:
 	
 	ShaderStage				m_vertexStage; 
 	ShaderStage				m_pixelStage; 
 
-	ID3D11InputLayout*		m_inputLayout = nullptr;
+	// blend state - not sure how your SD1 exposes this.  Some Engines expose the blend factors
+	// and some engines will expose an enum for common setups (like alpha, additive, etc...)
+
+	// eBlendFactor m_srcFactor;  
+	// eBlendFactor m_dstFactor; 
+	bool					m_blendStateDirty = true; 
+
+
+	ID3D11InputLayout*		m_inputLayout = nullptr; 
+	ID3D11BlendState*		m_blendState = nullptr; 
 }; 
 
 ID3D10Blob* CompileHLSLToShaderBlob( char const *opt_filename,		// optional: used for error messages
