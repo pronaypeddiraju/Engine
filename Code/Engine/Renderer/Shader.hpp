@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Renderer/RendererTypes.hpp"
 #include <string>
 
 struct ID3D11Resource;
@@ -10,12 +11,6 @@ struct ID3D11BlendState;
 
 class RenderContext;
 
-enum eShaderStage
-{
-	SHADER_STAGE_VERTEX, 
-	SHADER_STAGE_FRAGMENT, 
-};
-
 // A programmable shader stage, either vertex or pixel fornow; 
 class ShaderStage
 {
@@ -25,6 +20,7 @@ public:
 
 public:
 	bool LoadShaderFromSource( RenderContext *renderContext, const std::string &fileName, void const *source, unsigned long sourceSize, eShaderStage stage );
+
 	eShaderStage m_stage; 
 	union {
 		ID3D11Resource *m_handle; 
@@ -50,6 +46,8 @@ public:
 	bool					CreateInputLayoutForVertexPCU(); 
 	bool					UpdateBlendStateIfDirty(RenderContext *renderContext); 
 
+	void					SetBlendMode( eBlendMode mode ); 
+
 public:
 	
 	ShaderStage				m_vertexStage; 
@@ -57,6 +55,7 @@ public:
 
 	// blend state - not sure how your SD1 exposes this.  Some Engines expose the blend factors
 	// and some engines will expose an enum for common setups (like alpha, additive, etc...)
+	eBlendMode				m_blendMode = BLEND_MODE_ALPHA; 
 
 	// eBlendFactor m_srcFactor;  
 	// eBlendFactor m_dstFactor; 

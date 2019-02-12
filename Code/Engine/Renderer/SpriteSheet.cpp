@@ -2,7 +2,7 @@
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Renderer/Texture.hpp"
 
-SpriteSheet::SpriteSheet( const Texture* texture, const IntVec2 spriteGridDefenition )
+SpriteSheet::SpriteSheet( const TextureView* texture, const IntVec2 spriteGridDefenition )
 	: m_spriteTexture(texture)
 {
 

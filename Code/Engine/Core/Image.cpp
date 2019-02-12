@@ -14,7 +14,9 @@ Image::Image( const char* imageFilePath )
 	int numComponents = 0; // Filled in for us to indicate how many color components the image had (e.g. 3=RGB=24bit, 4=RGBA=32bit)
 	int numComponentsRequested = 0; // don't care; we support 3 (24-bit RGB) or 4 (32-bit RGBA)
 
-	stbi_set_flip_vertically_on_load( 1 ); // We prefer uvTexCoords has origin (0,0) at BOTTOM LEFT
+	//D3D prefers it to be (0,0) at the bottom
+	//stbi_set_flip_vertically_on_load( 1 ); // We prefer uvTexCoords has origin (0,0) at BOTTOM LEFT
+	
 	unsigned char* imageData = stbi_load( imageFilePath, &imageTexelSizeX, &imageTexelSizeY, &numComponents, numComponentsRequested );
 
 	//To-do: For loop through each of the imageData[] and get the RGB data from them
@@ -54,6 +56,12 @@ Image::Image( const char* imageFilePath )
 			unsigned char greenByte = imageData[greenByteIndex];
 			unsigned char blueByte = imageData[blueByteIndex];
 			unsigned char alphaByte = imageData[alphaByteIndex];
+
+			//Store Raw data also
+			m_redByte = imageData[redByteIndex];
+			m_greenByte = imageData[greenByteIndex];
+			m_blueByte = imageData[blueByteIndex];
+			m_alphaByte = imageData[alphaByteIndex];
 
 			m_texelRepository[texelIndex]->SetFromBytes(redByte, greenByte, blueByte, alphaByte);
 		}

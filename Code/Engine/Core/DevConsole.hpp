@@ -1,9 +1,15 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #pragma once
-#include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Renderer/Rgba.hpp"
+#include "Engine/Commons/EngineCommon.hpp"
+#include <string>
+#include <vector>
 
+class BitmapFont;
 class RenderContext;
 struct Camera;
 
+//------------------------------------------------------------------------------------------------------------------------------
 struct ConsoleEntry
 {
 	const std::string		m_printString;
@@ -14,6 +20,7 @@ struct ConsoleEntry
 	explicit ConsoleEntry(const Rgba&, const std::string&, unsigned int, float);
 };
 
+//------------------------------------------------------------------------------------------------------------------------------
 class DevConsole
 {
 public:

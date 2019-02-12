@@ -5,6 +5,8 @@
 #include "Engine/Core/EventSystems.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Core/Time.hpp"
+#include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Renderer/Rgba.hpp"
 
 DevConsole* g_devConsole = nullptr;
 
@@ -130,7 +132,7 @@ void DevConsole::Render( RenderContext& renderer, const Camera& camera, float li
 	std::vector<ConsoleEntry>::const_iterator vecIterator = m_printLog.end();
 
 	std::vector<Vertex_PCU> textVerts;
-	renderer.BindTexture(m_consoleFont->GetTexture());
+	renderer.BindTextureView(0U, m_consoleFont->GetTexture());
 
 	//Setup your loop end condition
 	int endCondition = 0;
@@ -150,7 +152,7 @@ void DevConsole::Render( RenderContext& renderer, const Camera& camera, float li
 
 		textVerts.empty();
 
-		//Get lenght of string
+		//Get length of string
 		std::string printString = "[ T:" + Stringf("%03f", vecIterator->m_calledTime) + " Frame:" + std::to_string(vecIterator->m_frameNum) + " ] " + vecIterator->m_printString;
 		int numChars = static_cast<int>(printString.length());
 
@@ -171,7 +173,7 @@ void DevConsole::Render( RenderContext& renderer, const Camera& camera, float li
 		//boxBottomLeft.y += CONSOLE_LINE_SPACE;
 	}
 
-	renderer.BindTexture(nullptr);
+	renderer.BindTextureView(0U, nullptr);
 }
 
 void DevConsole::ToggleOpenFull()

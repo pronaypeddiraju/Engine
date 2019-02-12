@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Renderer/RenderBuffer.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // D3D11 STUFF
@@ -28,7 +29,7 @@
 // translate external enum to D3D11 specific options; 
 // These will be used by texture as well,
 // so may want to move this function to a common include; 
-static D3D11_USAGE DXUsageFromMemoryUsage( eGPUMemoryUsage const usage )
+STATIC D3D11_USAGE RenderBuffer::DXUsageFromMemoryUsage( eGPUMemoryUsage const usage )
 {
 	switch (usage) 
 	{

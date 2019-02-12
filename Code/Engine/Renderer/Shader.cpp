@@ -146,10 +146,15 @@ bool Shader::UpdateBlendStateIfDirty( RenderContext *renderContext )
 	desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;  // can mask off outputs;  we won't be doing that; 
 	
 	// Finally, create the blend state
-	//renderContext->CreateBlendState( desc, &m_blendState );
+	renderContext->m_D3DDevice->CreateBlendState( &desc, &m_blendState);
 
 	m_blendStateDirty = false; 
 	return (m_blendState != nullptr); 
+}
+
+void Shader::SetBlendMode( eBlendMode mode )
+{
+	m_blendMode = mode;
 }
 
 bool Shader::CreateInputLayoutForVertexPCU()

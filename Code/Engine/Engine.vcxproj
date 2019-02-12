@@ -266,6 +266,7 @@
     <ClInclude Include="Renderer\ColorTargetView.hpp" />
     <ClInclude Include="Renderer\RenderBuffer.hpp" />
     <ClInclude Include="Renderer\RenderContext.hpp" />
+    <ClInclude Include="Renderer\RendererTypes.hpp" />
     <ClInclude Include="Renderer\Rgba.hpp" />
     <ClInclude Include="Renderer\Sampler.hpp" />
     <ClInclude Include="Renderer\Shader.hpp" />

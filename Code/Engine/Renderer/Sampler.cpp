@@ -77,8 +77,13 @@ void Sampler::CreateStateIfDirty( RenderContext *renderContext )
 												   // leaving border color black (only useful if our wrap mode is BORDER
 
 	// Create!
-	renderContext->Create( &desc, &m_handle ); 
+	ID3D11Device *d3dDevice = renderContext->m_D3DDevice; 
+	d3dDevice->CreateSamplerState( &desc, &m_handle ); 
 
 	m_isDirty = false; 
-	ASSERT( m_handle != nullptr );   // this should honestly never fail.  If it does - check your output!
+	//ASSERT( m_handle != nullptr );   // this should honestly never fail.  If it does - check your output!
+	if(m_handle != nullptr)
+	{
+		ERROR_AND_DIE("The handle was not null in Sampler::CreateStateIfDirty");
+	}
 }; 

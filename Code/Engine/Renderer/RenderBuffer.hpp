@@ -1,7 +1,10 @@
-#pragma once
 //------------------------------------------------------------------------------------------------------------------------------
+#pragma once
 #include "Engine/Commons/EngineCommon.hpp"
-#include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/RendererTypes.hpp"
+#include <d3d11.h>
+
+class RenderContext;
 
 struct ID3D11Buffer;
 
@@ -9,27 +12,6 @@ struct ID3D11Buffer;
 // RenderBuffer.hpp
 // Render Buffers are GPU storage for information.  
 //------------------------------------------------------------------------
-
-// We have to specify what can a buffer be used 
-// for.  It is possible for a buffer to serve multiple purposes
-// though for our case, we'll be special casing them for clarity; 
-enum eRenderBufferUsageBit : uint
-{
-	RENDER_BUFFER_USAGE_VERTEX_STREAM_BIT   = BIT_FLAG(0),   // Can be bound to an vertex input stream slot
-	RENDER_BUFFER_USAGE_INDEX_STREAM_BIT    = BIT_FLAG(1),   // Can be bound as an index input stream.  
-	RENDER_BUFFER_USAGE_UNIFORM_BIT         = BIT_FLAG(2),   // Can be bound to a constant buffer slot; 
-};
-typedef uint eRenderBufferUsageBits; 
-
-// In D3D11 and GL - buffers also are supplied hints on 
-// desired usage patterns to help the GPU optimize for it
-enum eGPUMemoryUsage 
-{
-	GPU_MEMORY_USAGE_GPU,     // Can be written/read from GPU only (Color Targets are a good example)
-	GPU_MEMORY_USAGE_STATIC,  // Created, and are read only after that (ex: textures from images, sprite atlas)
-	GPU_MEMORY_USAGE_DYNAMIC, // Update often from CPU, used by the GPU (CPU -> GPU updates, used by shaders.  ex: Uniform Buffers)
-	GPU_MEMORY_USAGE_STAGING, // For getting memory from GPU to CPU (can be copied into, but not directly bound as an output.  ex: Screen shots system)
-}; 
 
 class RenderBuffer
 {
@@ -44,6 +26,8 @@ public:
 	size_t					GetSize() const;    // return max byte size of this buffer; 
 	bool					IsStatic() const;     // has static usage?
 	bool					IsDynamic() const; 
+
+	static D3D11_USAGE DXUsageFromMemoryUsage( eGPUMemoryUsage const usage );
 
 protected:
 	// for doing initial setup - we'll mark 

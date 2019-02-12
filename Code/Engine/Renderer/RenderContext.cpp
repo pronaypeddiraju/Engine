@@ -10,6 +10,8 @@
 #include "Engine/Renderer/Sampler.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/TextureView.hpp"
+#include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Core/Image.hpp"
 
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
@@ -172,7 +174,7 @@ RenderContext::~RenderContext()
 
 void RenderContext::Startup()
 {
-	// Change default behaviour to be counter-clockwise is front-face to match GL
+	// Change default behavior to be counter-clockwise is front-face to match GL
 	// (plus most meshes are built with this convention)
 	CreateAndSetDefaultRasterState(); 
 
@@ -183,15 +185,27 @@ void RenderContext::Startup()
 	Sampler *linear = new Sampler(); 
 	linear->SetFilterModes( FILTER_MODE_LINEAR, FILTER_MODE_LINEAR ); 
 	m_cachedSamplers[SAMPLE_MODE_LINEAR] = linear; 
+
+	//PremakeDefaults();
 }
 
-void RenderContext::SetBlendMode(BlendMode blendMode)
+void RenderContext::PremakeDefaults()
+{
+	// premake defaults 
+	std::string path = IMAGE_PATH;
+	path += "WHITE.png";
+	
+	TextureView* white  = CreateTextureViewFromFile(path.c_str());
+	m_loadedTextures["WHITE"] = white;
+}
+
+void RenderContext::SetBlendMode(eBlendMode blendMode)
 {
 	UNUSED(blendMode);
 	GUARANTEE_RECOVERABLE(false, "Reached Set blend mode in RC");
 }
 
-Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
+TextureView* RenderContext::CreateTextureViewFromFile( const char* imageFilePath )
 {
 	UNUSED(imageFilePath);
 	GUARANTEE_RECOVERABLE(false, "Reached Create Texture From File");
@@ -203,7 +217,7 @@ BitmapFont* RenderContext::CreateBitmapFontFromFile(const std::string& bitmapNam
 {
 	// "Data/Fonts/" should be a constexpr char DEFAULT_FONT_PATH[]
 	std::string filePath = "Data/Fonts/" + bitmapName + ".png";
-	Texture* bitmapTexture = CreateTextureFromFile(filePath.c_str());
+	TextureView* bitmapTexture = CreateTextureViewFromFile(filePath.c_str());
 
 	BitmapFont* newFont = new BitmapFont(bitmapName, bitmapTexture);
 
@@ -324,9 +338,9 @@ void RenderContext::BindShader( Shader* shader )
 	m_D3DContext->VSSetShader(shader->m_vertexStage.m_vs, nullptr, 0U);
 	m_D3DContext->PSSetShader(shader->m_pixelStage.m_ps, nullptr, 0U);
 
-	shader->UpdateBlendStateIfDirty(); 
+	shader->UpdateBlendStateIfDirty(this); 
 	float black[] = { 0.0f, 0.0f, 0.0f, 1.0f }; 
-	m_context->OMSetBlendState( shader->m_d3d11BlendState, // the d3d11 blend state object; 
+	m_D3DContext->OMSetBlendState( shader->m_blendState, // the d3d11 blend state object; 
 		black,         // blend factor (some blend options use this) 
 		0xffffffff );  // mask (what channels will get blended, this means ALL)  
 
@@ -394,9 +408,9 @@ void RenderContext::BindTextureViewWithSampler( uint slot, TextureView *view )
 //------------------------------------------------------------------------
 // (NOTE: This design is fairly different from my Engine, 
 // so while I'm fairly sure this should work, if it doesn't, please let me know)
-TextureView2D* RenderContext::GetOrCreateTextureView2DFromFile( std::string const &filename )
+TextureView* RenderContext::GetOrCreateTextureViewFromFile( std::string const &filename )
 {
-	TextureView2D *view = nullptr; 
+	TextureView* view = nullptr; 
 
 	// normal stuff - if it exists, return it; 
 	auto item = m_cachedTextureViews.find(filename); 
@@ -420,7 +434,7 @@ TextureView2D* RenderContext::GetOrCreateTextureView2DFromFile( std::string cons
 	else 
 	{
 		// create the view
-		TextureView2D *view = tex->CreateTextureView2D(); 
+		view = tex->CreateTextureView2D(); 
 
 		// THIS SHOULD BE FINE - the view should hold onto the D3D11 resource;
 		// (I'm not 100% on this though, so if not, please Slack me)
@@ -606,9 +620,11 @@ void RenderContext::DrawVertexArray( Vertex_PCU const *vertices, uint count )
 	Draw( count ); 
 }
 
-Texture* RenderContext::CreateOrGetTextureFromFile(const char* imageFilePath)
+//Depricated. To be removed
+/*
+TextureView* RenderContext::CreateOrGetTextureViewFromFile(std::string const &imageFilePath)
 {
-	std::map<std::string, Texture*>::const_iterator requestedTexture = m_loadedTextures.find(imageFilePath);
+	std::map<std::string, TextureView*>::const_iterator requestedTexture = m_loadedTextures.find(imageFilePath);
 	if(requestedTexture != m_loadedTextures.end())
 	{
 		//Texture requested exists in the map
@@ -617,10 +633,11 @@ Texture* RenderContext::CreateOrGetTextureFromFile(const char* imageFilePath)
 	else
 	{
 		//Create the new tex
-		Texture* texture = CreateTextureFromFile(imageFilePath);
+		TextureView* texture = CreateTextureViewFromFile(imageFilePath.c_str());
 		return texture;
 	}
 }
+*/
 
 BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile(const std::string& bitmapName)
 {

@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Math/IntVec2.hpp"
 
 struct ID3D11ShaderResourceView;
 struct ID3D11Resource;
@@ -27,7 +28,7 @@ public:
 												 // this is a good use case for ref-counting (since each view should
 												 // hold onto the texture it is a view of.  For now, we'll just
 												 // taking advantage of D3D11's ref counting, but in other APIs (D3D12 or Vulkan)
-												 // you would need to do this manually to keep the teture from disapearing from under the view
+												 // you would need to do this manually to keep the texture from disappearing from under the view
 												 // std::shared_ptr<Texture> m_source_texture; 
 }; 
 

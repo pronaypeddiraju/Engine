@@ -1,8 +1,9 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Core/Image.hpp"
-#include "Engine/Renderer/RenderBuffer.cpp"
+#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/TextureView.hpp"
+#include "Engine/Renderer/RenderBuffer.hpp"
 #include <d3d11.h>
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -20,6 +21,17 @@ static uint DXBindFromUsage( uint usage )
 	}
 
 	return binds; 
+}
+
+Texture2D::Texture2D( RenderContext *renderContext )
+	: Texture(renderContext)
+{
+
+}
+
+Texture2D::~Texture2D()
+{
+
 }
 
 bool Texture2D::LoadTextureFromFile( std::string const &filename ) 
@@ -63,7 +75,7 @@ bool Texture2D::LoadTextureFromImage( Image const &image )
 	texDesc.Height = dimensions.y;
 	texDesc.MipLevels = 1; // setting to 0 means there's a full chain (or can generate a full chain)
 	texDesc.ArraySize = 1; // only one texture
-	texDesc.Usage = DXUsageFromMemoryUsage(m_memoryUsage);  // loaded from image - probably not changing
+	texDesc.Usage = RenderBuffer::DXUsageFromMemoryUsage(m_memoryUsage);  // loaded from image - probably not changing
 	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;            // if you support different image types  - this could change!  
 	texDesc.BindFlags = DXBindFromUsage(m_textureUsage);   // only allowing rendertarget for mipmap generation
 	texDesc.CPUAccessFlags = 0U;                            // Determines how I can access this resource CPU side 
@@ -140,4 +152,15 @@ TextureView2D* Texture2D::CreateTextureView2D() const
 	} else {
 		return nullptr; 
 	}
+}
+
+Texture::Texture( RenderContext *renderContext )
+{
+	m_owner = renderContext;
+}
+
+Texture::~Texture()
+{
+	delete m_handle;
+	m_handle = nullptr;
 }

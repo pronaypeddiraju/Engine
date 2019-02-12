@@ -30,4 +30,10 @@ private:
 	std::string			m_imageFilePath;
 	IntVec2				m_dimensions = IntVec2::ZERO;
 	std::vector<Rgba*>	m_texelRepository;
+
+	//Raw data
+	unsigned char		m_redByte = 0U;
+	unsigned char		m_greenByte = 0U;
+	unsigned char		m_blueByte = 0U;
+	unsigned char		m_alphaByte = 0U;
 };

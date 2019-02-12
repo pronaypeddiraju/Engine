@@ -1,9 +1,11 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Commons/StringUtils.hpp"
 
-BitmapFont::BitmapFont( std::string bitmapName, Texture* bitmapTexture )
+//------------------------------------------------------------------------------------------------------------------------------
+BitmapFont::BitmapFont( std::string bitmapName, TextureView* bitmapTexture )
 	: m_bitmapName (bitmapName),
 	m_bitmapTexture (bitmapTexture),
 	m_bitmapSpriteSheet (new SpriteSheet(bitmapTexture, IntVec2(16,16)))
@@ -23,7 +25,6 @@ AABB2& BitmapFont::GetTextBoundingBox()
 	return m_boundingBox;
 }
 
-//Add verts for text 2D
 void BitmapFont::AddVertsForText2D( std::vector<Vertex_PCU>& textVerts, const Vec2& textStartPosition, float cellHeight, std::string printText, const Rgba &color, float cellAspect, int maxGlyphsToDraw)
 {
 	//For now unused
@@ -47,7 +48,7 @@ void BitmapFont::AddVertsForText2D( std::vector<Vertex_PCU>& textVerts, const Ve
 		Vec2 maxUVs = Vec2::ZERO;
 		sd.GetUVs(minUVs, maxUVs);
 
-		//Now add the verts for each char
+		//Now add the vertices for each char
 		AddVertsForAABB2D(textVerts, box, color, minUVs, maxUVs);
 
 		//Move the minBounds on x
@@ -80,7 +81,7 @@ void BitmapFont::AddVertsForTextInBox2D( std::vector<Vertex_PCU>& textVerts, con
 	//Align the bounding box within the box specified
 	m_boundingBox.AlignWithinBox(box, alignment);
 
-	//Add verts for the text after you align the box
+	//Add vertices for the text after you align the box
 	AddVertsForText2D(textVerts, m_boundingBox.m_minBounds, cellHeight, printText, tintColor, cellAspect, maxGlyphsToDraw);
 }
 
@@ -132,7 +133,7 @@ float BitmapFont::GetNewCellAspect(const AABB2& box, float cellHeight, float cel
 	return cellAspect;
 }
 
-Texture* BitmapFont::GetTexture()
+TextureView* BitmapFont::GetTexture()
 {
 	return m_bitmapTexture;
 }

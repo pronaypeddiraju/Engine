@@ -1,21 +1,24 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Math/Vertex_PCU.hpp"
 #include "Engine/Math/AABB2.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 enum TextBoxMode
 {
 	TEXT_BOX_MODE_OVERLAP,
 	TEXT_BOX_MODE_SHRINK
 };
 
+//------------------------------------------------------------------------------------------------------------------------------
 class BitmapFont
 {
 	friend class RenderContext;
 
 public:
-	BitmapFont(std::string bitmapName, Texture* bitmapTexture);
+	BitmapFont(std::string bitmapName, TextureView* bitmapTexture);
 	
 	float				GetGlyphAspect(int glyphCode);
 	AABB2&				GetTextBoundingBox();
@@ -29,11 +32,11 @@ public:
 
 	
 	float				GetNewCellAspect( const AABB2& box, float cellHeight, float cellAspect, const std::string& printText );
-	Texture*			GetTexture();
+	TextureView*		GetTexture();
 private:
 
 	std::string					m_bitmapName;
 	SpriteSheet*				m_bitmapSpriteSheet;
-	Texture*					m_bitmapTexture;
+	TextureView*				m_bitmapTexture;
 	AABB2						m_boundingBox = AABB2(Vec2::ZERO, Vec2::ONE);
 };
