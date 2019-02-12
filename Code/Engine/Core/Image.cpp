@@ -17,7 +17,7 @@ Image::Image( const char* imageFilePath )
 	//D3D prefers it to be (0,0) at the bottom
 	//stbi_set_flip_vertically_on_load( 1 ); // We prefer uvTexCoords has origin (0,0) at BOTTOM LEFT
 	
-	unsigned char* imageData = stbi_load( imageFilePath, &imageTexelSizeX, &imageTexelSizeY, &numComponents, numComponentsRequested );
+	m_imageRawData = stbi_load( imageFilePath, &imageTexelSizeX, &imageTexelSizeY, &numComponents, numComponentsRequested );
 
 	//To-do: For loop through each of the imageData[] and get the RGB data from them
 	m_dimensions.x = imageTexelSizeX;
@@ -35,9 +35,9 @@ Image::Image( const char* imageFilePath )
 			int greenByteIndex = redByteIndex + 1;
 			int blueByteIndex = redByteIndex + 2;
 
-			unsigned char redByte = imageData[redByteIndex];
-			unsigned char greenByte = imageData[greenByteIndex];
-			unsigned char blueByte = imageData[blueByteIndex];
+			unsigned char redByte = m_imageRawData[redByteIndex];
+			unsigned char greenByte = m_imageRawData[greenByteIndex];
+			unsigned char blueByte = m_imageRawData[blueByteIndex];
 
 			m_texelRepository[texelIndex]->SetFromBytes(redByte, greenByte, blueByte);
 		}
@@ -52,22 +52,25 @@ Image::Image( const char* imageFilePath )
 			int blueByteIndex = redByteIndex + 2;
 			int alphaByteIndex = redByteIndex + 3;
 
-			unsigned char redByte = imageData[redByteIndex];
-			unsigned char greenByte = imageData[greenByteIndex];
-			unsigned char blueByte = imageData[blueByteIndex];
-			unsigned char alphaByte = imageData[alphaByteIndex];
+			unsigned char redByte = m_imageRawData[redByteIndex];
+			unsigned char greenByte = m_imageRawData[greenByteIndex];
+			unsigned char blueByte = m_imageRawData[blueByteIndex];
+			unsigned char alphaByte = m_imageRawData[alphaByteIndex];
 
 			//Store Raw data also
-			m_redByte = imageData[redByteIndex];
-			m_greenByte = imageData[greenByteIndex];
-			m_blueByte = imageData[blueByteIndex];
-			m_alphaByte = imageData[alphaByteIndex];
-
+			m_texelRepository[texelIndex] = new Rgba;
 			m_texelRepository[texelIndex]->SetFromBytes(redByte, greenByte, blueByte, alphaByte);
 		}
 	}
 
-	stbi_image_free(imageData);
+	//Free this in the destructor
+	//stbi_image_free(imageData);
+}
+
+Image::~Image()
+{
+	stbi_image_free(m_imageRawData);
+	m_imageRawData = nullptr;
 }
 
 const Rgba& Image::GetTexelColor( const IntVec2& texelCoordinates ) const
@@ -101,7 +104,7 @@ const uint Image::GetBytesPerPixel() const
 
 const void* Image::GetImageBuffer() const
 {
-	return m_texelRepository[0];
+	return m_imageRawData;
 }
 
 void Image::SetTexelColor( int xCoord, int yCoord, const Rgba& setColor )

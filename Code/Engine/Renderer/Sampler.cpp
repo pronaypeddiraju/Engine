@@ -82,7 +82,7 @@ void Sampler::CreateStateIfDirty( RenderContext *renderContext )
 
 	m_isDirty = false; 
 	//ASSERT( m_handle != nullptr );   // this should honestly never fail.  If it does - check your output!
-	if(m_handle != nullptr)
+	if(m_handle == nullptr)
 	{
 		ERROR_AND_DIE("The handle was not null in Sampler::CreateStateIfDirty");
 	}

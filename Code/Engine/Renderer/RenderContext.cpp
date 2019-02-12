@@ -367,7 +367,7 @@ void RenderContext::BindTextureView( uint slot, TextureView *view )
 		if(slot == 0)
 		{
 			//Bind to white texture
-			
+			//BindTextureView(0U, "WHITE");
 		}
 	}
 
@@ -458,7 +458,6 @@ void RenderContext::Draw( uint vertexCount, uint byteOffset )
 	
 	// TODO: m_currentShader->CreateInputLayoutFor( VertexPCU::LAYOUT ); 
 
-	
 	//A02 Implementation
 	if (result) 
 	{
@@ -471,18 +470,6 @@ void RenderContext::Draw( uint vertexCount, uint byteOffset )
 		// error/warning
 		ERROR_AND_DIE("Could not create input layout!");
 	}
-	
-
-	/*
-	A01 Implementation
-	//Topology Type - the data in the Vertex Buffer/Index Buffer describes what kind of shapes.  
-	//In this class - I only deal with POINTS, LINES, and TRIANGLES.
-	m_D3DContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	// Now that everything is bound, we can draw!
-	m_D3DContext->Draw( vertexCount, byteOffset );                      // I'm drawing one triangle, so 3 vertices total.  Starting at index 0.
-	*/
-
 }
 
 void RenderContext::ClearColorTargets( const Rgba& clearColor )

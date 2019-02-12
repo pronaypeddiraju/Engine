@@ -39,7 +39,7 @@ bool Texture2D::LoadTextureFromFile( std::string const &filename )
 	std::string path = IMAGE_PATH + filename;
 	Image image(path.c_str());
 
-	if (image.GetImageDimensions() != IntVec2::ZERO) 
+	if (image.GetImageDimensions() == IntVec2::ZERO) 
 	{
 		return false; 
 	}
@@ -51,7 +51,9 @@ bool Texture2D::LoadTextureFromFile( std::string const &filename )
 bool Texture2D::LoadTextureFromImage( Image const &image ) 
 {
 	// cleanup old resources before creating new one just in case; 
-	m_owner->D3D11Cleanup();
+	delete m_handle;
+	DX_SAFE_RELEASE(m_handle);
+	
 
 	ID3D11Device *dd = m_owner->m_D3DDevice; 
 
@@ -161,6 +163,5 @@ Texture::Texture( RenderContext *renderContext )
 
 Texture::~Texture()
 {
-	delete m_handle;
-	m_handle = nullptr;
+	DX_SAFE_RELEASE(m_handle);
 }

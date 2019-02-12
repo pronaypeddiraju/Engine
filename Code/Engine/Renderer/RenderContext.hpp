@@ -139,6 +139,8 @@ private:
 	Camera*												m_currentCamera = nullptr;
 	Shader*												m_currentShader = nullptr;
 
+	void*												m_hwnd = nullptr;
+
 public:
 
 	VertexBuffer*										m_immediateVBO = nullptr; 
