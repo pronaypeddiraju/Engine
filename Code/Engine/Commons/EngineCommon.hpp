@@ -42,6 +42,7 @@ const unsigned short F8_KEY = 119;
 //const unsigned char DOWN_ARROW;
 constexpr char SHADER_PATH[] = "Data/Shaders/"; 
 constexpr char IMAGE_PATH[] = "Data/Images/";
+constexpr char FONT_PATH[] = "Data/Fonts/";
 
 constexpr float		 CONSOLE_LINE_SPACE = 0.05f;
 

@@ -56,7 +56,7 @@ public:
 
 	//Get resources
 	//Texture*			CreateOrGetTextureFromFile(const char* imageFilePath);
-	TextureView*		GetOrCreateTextureViewFromFile( std::string const &filename ); 
+	TextureView*		GetOrCreateTextureViewFromFile( std::string const &filename, bool isFont = false); 
 	BitmapFont*			CreateOrGetBitmapFontFromFile (const std::string& bitmapName);
 	Shader*				CreateOrGetShaderFromFile(const std::string& fileName);
 

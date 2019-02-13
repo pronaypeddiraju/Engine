@@ -47,7 +47,7 @@ public:
 	Texture2D( RenderContext *renderContext );  // textures always come from a context; 
 	virtual ~Texture2D(); 
 
-	bool				LoadTextureFromFile( std::string const &filename );
+	bool				LoadTextureFromFile( std::string const &filename, bool isFont = false );
 	bool				LoadTextureFromImage( Image const &image ); 
 
 	// Create a view of this texture usable in the shader; 

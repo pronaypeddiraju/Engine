@@ -31,12 +31,22 @@ Texture2D::Texture2D( RenderContext *renderContext )
 
 Texture2D::~Texture2D()
 {
-
+	DX_SAFE_RELEASE(m_handle);
 }
 
-bool Texture2D::LoadTextureFromFile( std::string const &filename ) 
+bool Texture2D::LoadTextureFromFile( std::string const &filename, bool isFont ) 
 {
-	std::string path = IMAGE_PATH + filename;
+	std::string path;
+
+	if(!isFont)
+	{
+		path = IMAGE_PATH + filename;
+	}
+	else
+	{
+		path = FONT_PATH + filename + ".png";
+	}
+
 	Image image(path.c_str());
 
 	if (image.GetImageDimensions() == IntVec2::ZERO) 
@@ -150,8 +160,9 @@ TextureView2D* Texture2D::CreateTextureView2D() const
 
 		// done - return!
 		return view; 
-
-	} else {
+	} 
+	else 
+	{
 		return nullptr; 
 	}
 }

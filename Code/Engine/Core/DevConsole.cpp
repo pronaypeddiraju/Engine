@@ -115,7 +115,10 @@ void DevConsole::Render( RenderContext& renderer, const Camera& camera, float li
 	AABB2 blackBox = AABB2(camera.GetOrthoBottomLeft(), camera.GetOrthoTopRight());
 	std::vector<Vertex_PCU> boxVerts;
 	AddVertsForAABB2D(boxVerts, blackBox, CONSOLE_BG_COLOR);
-	renderer.DrawVertexArray(boxVerts);
+
+	//DEBUG
+	//renderer.BindTextureView(0U, nullptr);
+	//renderer.DrawVertexArray(boxVerts);
 
 	//Set the text based on Camera size
 	Vec2 leftBot = camera.GetOrthoBottomLeft();

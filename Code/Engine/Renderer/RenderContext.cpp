@@ -12,6 +12,7 @@
 #include "Engine/Renderer/TextureView.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Core/Image.hpp"
+#include "Engine/Renderer/Shader.hpp"
 
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
@@ -215,9 +216,8 @@ TextureView* RenderContext::CreateTextureViewFromFile( const char* imageFilePath
 
 BitmapFont* RenderContext::CreateBitmapFontFromFile(const std::string& bitmapName)
 {
-	// "Data/Fonts/" should be a constexpr char DEFAULT_FONT_PATH[]
-	std::string filePath = "Data/Fonts/" + bitmapName + ".png";
-	TextureView* bitmapTexture = CreateTextureViewFromFile(filePath.c_str());
+	//std::string filePath = "Data/Fonts/" + bitmapName + ".png";
+	TextureView* bitmapTexture = GetOrCreateTextureViewFromFile(bitmapName.c_str(), true);
 
 	BitmapFont* newFont = new BitmapFont(bitmapName, bitmapTexture);
 
@@ -408,7 +408,7 @@ void RenderContext::BindTextureViewWithSampler( uint slot, TextureView *view )
 //------------------------------------------------------------------------
 // (NOTE: This design is fairly different from my Engine, 
 // so while I'm fairly sure this should work, if it doesn't, please let me know)
-TextureView* RenderContext::GetOrCreateTextureViewFromFile( std::string const &filename )
+TextureView* RenderContext::GetOrCreateTextureViewFromFile( std::string const &filename, bool isFont )
 {
 	TextureView* view = nullptr; 
 
@@ -420,7 +420,8 @@ TextureView* RenderContext::GetOrCreateTextureViewFromFile( std::string const &f
 	} 
 
 	Texture2D *tex = new Texture2D(this); 
-	if (!tex->LoadTextureFromFile( filename))
+
+	if (!tex->LoadTextureFromFile( filename, isFont))
 	{
 		delete tex;
 

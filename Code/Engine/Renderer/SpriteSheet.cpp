@@ -23,9 +23,10 @@ SpriteSheet::SpriteSheet( const TextureView* texture, const IntVec2 spriteGridDe
 		//Make the UVs min and max values
 		float uAtMinX = static_cast<float>(spriteGridX) * uPerSpriteGrid;
 		float uAtMaxX = uAtMinX + uPerSpriteGrid;
-
-		float vAtMaxV = 1.f - (static_cast<float>(spriteGridY) * vPerSpriteGrid);
-		float vAtMinV = vAtMaxV - vPerSpriteGrid;
+		
+		//For D3D
+		float vAtMaxV = (static_cast<float>(spriteGridY) * vPerSpriteGrid);
+		float vAtMinV = vAtMaxV + vPerSpriteGrid;
 
 		Vec2 UV_U = Vec2(uAtMinX, vAtMinV);
 		Vec2 UV_V = Vec2(uAtMaxX, vAtMaxV);

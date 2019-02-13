@@ -12,7 +12,7 @@ Sampler::Sampler()
 
 Sampler::~Sampler()
 {
-
+	DX_SAFE_RELEASE(m_handle);
 }
 
 STATIC D3D11_FILTER Sampler::DXGetFilter( eFilterMode min, eFilterMode mag ) 
