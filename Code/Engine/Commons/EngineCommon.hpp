@@ -25,9 +25,13 @@ extern NamedStrings g_gameConfigBlackboard; // declared in EngineCommon.hpp, def
 
 const unsigned short KEY_ESC = 27;
 const unsigned short UP_ARROW = 38;
+const unsigned short DOWN_ARROW = 40;
 const unsigned short LEFT_ARROW = 37;
 const unsigned short RIGHT_ARROW = 39;
 const unsigned short SPACE_KEY = 32;
+const unsigned short DEL_KEY = 46;
+const unsigned short BACK_SPACE = 8;
+const unsigned short ENTER_KEY = 13;
 const unsigned short A_KEY = 'A';
 const unsigned short N_KEY = 'N';
 const unsigned short T_KEY = 'T';
@@ -41,7 +45,7 @@ const unsigned short F6_KEY = 117;
 const unsigned short F7_KEY = 118;
 const unsigned short F8_KEY = 119;
 const unsigned short TILDY_KEY = 192;
-//const unsigned char DOWN_ARROW;
+
 constexpr char SHADER_PATH[] = "Data/Shaders/"; 
 constexpr char IMAGE_PATH[] = "Data/Images/";
 constexpr char FONT_PATH[] = "Data/Fonts/";

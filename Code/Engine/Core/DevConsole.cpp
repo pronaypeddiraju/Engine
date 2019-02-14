@@ -16,13 +16,13 @@ const STATIC Rgba DevConsole::CONSOLE_ERROR   		=	Rgba(1.0f, 0.0f, 0.0f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_ERROR_DESC	=	Rgba(1.0f, 0.5f, 0.3f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_INPUT			=	Rgba(1.0f, 1.0f, 1.0f, 1.0f);
 
-void DevConsole::ExecuteCommandLine( const std::string& commandLine )
+bool DevConsole::ExecuteCommandLine( const std::string& commandLine )
 {
 	//Split the string to sensible key value pairs
 	std::vector<std::string> splitStrings = SplitStringOnDelimiter(commandLine, ' ');
 	if(splitStrings[0] != "Exec")
 	{
-		return;
+		return false;
 	}
 
 	else
@@ -52,6 +52,8 @@ void DevConsole::ExecuteCommandLine( const std::string& commandLine )
 				g_devConsole->PrintString(CONSOLE_ECHO, printS);
 			}
 		}
+
+		return true;
 	}
 }
 
@@ -63,14 +65,119 @@ void DevConsole::HandleKeyUp( unsigned char vkKeyCode )
 
 void DevConsole::HandleKeyDown( unsigned char vkKeyCode )
 {
-	UNUSED(vkKeyCode);
-	GUARANTEE_RECOVERABLE(true, "Nothing to handle");
+	switch( vkKeyCode )
+	{
+	case UP_ARROW:
+	{
+
+	}
+	break;
+	case DOWN_ARROW:
+	{
+
+	}
+	break;
+	case LEFT_ARROW:
+	{
+		if(m_carotPosition > 0)
+		{
+			m_carotPosition -= 1;
+		}
+	}
+	break;
+	case RIGHT_ARROW:
+	{
+		if(m_carotPosition < static_cast<int>(m_currentInput.size()))
+		{
+			m_carotPosition += 1;
+		}
+	}
+	break;
+	case DEL_KEY:
+	{
+		//Delete the char after carot
+		if(m_carotPosition < static_cast<int>(m_currentInput.size()))
+		{
+			std::string firstSubString = m_currentInput.substr(0, m_carotPosition);
+			std::string secondSubString = m_currentInput.substr(m_carotPosition + 1, m_currentInput.size());
+
+			m_currentInput = firstSubString;
+			m_currentInput += secondSubString;
+		}
+	}
+	break;
+	case BACK_SPACE:
+	{
+		if(m_carotPosition > 0)
+		{
+			std::string firstSubString = m_currentInput.substr(0, m_carotPosition - 1);
+			std::string secondSubString = m_currentInput.substr(m_carotPosition, m_currentInput.size());
+
+			m_currentInput = firstSubString;
+			m_currentInput += secondSubString;
+
+			m_carotPosition--;
+		}
+	}
+	break;
+	case KEY_ESC:
+	{
+		if(m_currentInput.size() > 0)
+		{
+			//Clear the input string
+			m_currentInput.clear();
+			m_carotPosition = 0;
+		}
+		else
+		{
+			//shut the console
+			m_isOpen = false;
+		}
+	}
+	break;
+	case ENTER_KEY:
+	{
+		//Run inputString as command only if not empty
+		if(m_currentInput.size() == 0)
+		{
+			return;
+		}
+
+		bool result = g_eventSystem->FireEvent(m_currentInput);
+
+		if(!result)
+		{
+			PrintString(CONSOLE_ERROR, m_currentInput + ": Command was not found");
+		}
+		
+		m_currentInput.clear();
+		m_carotPosition = 0;
+	}
+	break;
+	default:
+	break;
+	}
 }
 
 void DevConsole::HandleCharacter( unsigned char charCode )
 {
-	m_currentInput += charCode;
-	m_carotPosition += 1;
+	if(m_carotPosition == m_currentInput.size())
+	{
+		m_currentInput += charCode;
+		m_carotPosition += 1;
+	}
+	else
+	{
+		//carot is not at the end so add at the correct pos
+		std::string m_firstSubString = m_currentInput.substr(0, m_carotPosition);
+		std::string m_secondSubString = m_currentInput.substr(m_carotPosition, m_currentInput.size());
+
+		m_currentInput = m_firstSubString;
+		m_currentInput += charCode;
+		m_currentInput += m_secondSubString;
+
+		m_carotPosition++;
+	}
 }
 
 const STATIC Rgba DevConsole::CONSOLE_ECHO		=	Rgba(0.255f, 0.450f, 1.0f, 1.0f);

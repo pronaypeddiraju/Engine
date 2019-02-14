@@ -40,7 +40,7 @@ public:
 	void			ToggleOpenFull();
 	bool			IsOpen() const;
 
-	void			ExecuteCommandLine(const std::string& commandLine);
+	bool			ExecuteCommandLine(const std::string& commandLine);
 
 	// handle arrows, enter, escape, backspace, delete, etc...
 	void			HandleKeyUp( unsigned char vkKeyCode );          // WM_KEYUP
