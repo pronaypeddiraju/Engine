@@ -7,6 +7,7 @@
 #include "Engine/Core/Time.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/Rgba.hpp"
+#include <algorithm>
 
 DevConsole* g_devConsole = nullptr;
 
@@ -63,18 +64,71 @@ void DevConsole::HandleKeyUp( unsigned char vkKeyCode )
 	GUARANTEE_RECOVERABLE(true, "Nothing to handle");
 }
 
+void DevConsole::ShowLastCommand()
+{
+	if(m_lastCommandIndex == 0)
+	{
+		int cmdSize = static_cast<int>(m_commandLog.size());
+		if(cmdSize > 0)
+		{
+			m_lastCommandIndex = static_cast<int>(m_commandLog.size()) - 1;
+			m_currentInput = m_commandLog[m_lastCommandIndex];
+		}
+	}
+	else
+	{
+		if(m_lastCommandIndex > 0)
+		{
+			m_lastCommandIndex--;
+			m_currentInput = m_commandLog[m_lastCommandIndex];
+		}
+	}
+
+	m_carotPosition = static_cast<int>(m_currentInput.size());
+}
+
+void DevConsole::ShowNextCommand()
+{
+	if(m_lastCommandIndex == 0)
+	{
+		int cmdSize = static_cast<int>(m_commandLog.size());
+		if(cmdSize > 0)
+		{
+			m_currentInput = m_commandLog[m_lastCommandIndex];
+			m_lastCommandIndex++;
+		}
+	}
+	else
+	{
+		if(m_lastCommandIndex < static_cast<unsigned int>(m_commandLog.size()))
+		{
+			m_currentInput = m_commandLog[m_lastCommandIndex];
+			m_lastCommandIndex++;
+		}
+		else
+		{
+			m_lastCommandIndex = 0;
+			m_currentInput = m_commandLog[m_lastCommandIndex];
+			m_lastCommandIndex++;
+		}
+	}
+
+	m_carotPosition = static_cast<int>(m_currentInput.size());
+}
+
 void DevConsole::HandleKeyDown( unsigned char vkKeyCode )
 {
 	switch( vkKeyCode )
 	{
 	case UP_ARROW:
 	{
-
+		//Show the last command executed
+		ShowLastCommand();
 	}
 	break;
 	case DOWN_ARROW:
 	{
-
+		ShowNextCommand();
 	}
 	break;
 	case LEFT_ARROW:
@@ -150,8 +204,20 @@ void DevConsole::HandleKeyDown( unsigned char vkKeyCode )
 			PrintString(CONSOLE_ERROR, m_currentInput + ": Command was not found");
 		}
 		
+		//Store the last command that was executed but remove copies
+		m_commandLog.push_back(m_currentInput);
+
+		// order of unique elements is preserved
+		auto end_unique = std::end(m_commandLog) ;
+		for( auto iter = std::begin(m_commandLog) ; iter != end_unique ; ++iter )
+		{
+			end_unique = std::remove( iter+1, end_unique, *iter ) ;
+		}
+		m_commandLog.erase( end_unique, std::end(m_commandLog) ) ;
+
 		m_currentInput.clear();
 		m_carotPosition = 0;
+		m_lastCommandIndex = 0;
 	}
 	break;
 	default:

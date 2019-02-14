@@ -41,6 +41,8 @@ public:
 	bool			IsOpen() const;
 
 	bool			ExecuteCommandLine(const std::string& commandLine);
+	void			ShowLastCommand();
+	void			ShowNextCommand();
 
 	// handle arrows, enter, escape, backspace, delete, etc...
 	void			HandleKeyUp( unsigned char vkKeyCode );          // WM_KEYUP
@@ -69,6 +71,7 @@ private:
 	bool									m_isOpen = false;
 	int										m_currentFrameNumber = 0;
 	std::vector<ConsoleEntry>				m_printLog;
+	std::vector<std::string>				m_commandLog;
 	unsigned int							m_frameCount = 0;
 	float									m_timeAtStart;
 
@@ -77,4 +80,6 @@ private:
 
 	float									m_carotTimeDiff = 0.f;
 	bool									m_carotActive = true;
+
+	unsigned int							m_lastCommandIndex = 0;
 };
