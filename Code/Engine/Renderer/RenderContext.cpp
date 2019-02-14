@@ -127,7 +127,7 @@ void RenderContext::D3D11Cleanup()
 	if(SUCCEEDED(hr))
 	{
 		//Uncomment when debugging
-		//debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 		DX_SAFE_RELEASE(debugObject);
 	}
 }
@@ -188,17 +188,17 @@ void RenderContext::Startup()
 	linear->SetFilterModes( FILTER_MODE_LINEAR, FILTER_MODE_LINEAR ); 
 	m_cachedSamplers[SAMPLE_MODE_LINEAR] = linear; 
 
-	//PremakeDefaults();
+	PremakeDefaults();
 }
 
 void RenderContext::PremakeDefaults()
 {
 	// premake defaults 
-	std::string path = IMAGE_PATH;
-	path += "WHITE.png";
+	std::string name = "WHITE.png";
 	
-	TextureView* white  = CreateTextureViewFromFile(path.c_str());
+	TextureView* white  = GetOrCreateTextureViewFromFile(name);
 	m_loadedTextures["WHITE"] = white;
+	
 }
 
 void RenderContext::SetBlendMode(eBlendMode blendMode)
@@ -211,14 +211,6 @@ void RenderContext::SetBlendMode(eBlendMode blendMode)
 	{
 		m_currentShader->m_blendMode = blendMode;
 	}
-}
-
-TextureView* RenderContext::CreateTextureViewFromFile( const char* imageFilePath )
-{
-	UNUSED(imageFilePath);
-	GUARANTEE_RECOVERABLE(false, "Reached Create Texture From File");
-
-	return nullptr;
 }
 
 BitmapFont* RenderContext::CreateBitmapFontFromFile(const std::string& bitmapName)
@@ -348,6 +340,18 @@ void RenderContext::Shutdown()
 
 	m_cachedTextureViews.clear();
 
+	/*
+	texIterator = m_loadedTextures.begin();
+	lastTexIterator = m_loadedTextures.end();
+
+	for(texIterator; texIterator != lastTexIterator; texIterator++)
+	{
+		delete texIterator->second;
+	}
+
+	m_loadedTextures.clear();
+	*/
+
 	D3D11Cleanup();
 
 }
@@ -380,6 +384,7 @@ void RenderContext::BindTextureView( uint slot, TextureView *view )
 	if (view != nullptr) 
 	{
 		srv = view->m_view; 
+		m_D3DContext->PSSetShaderResources(slot, 1U, &srv);
 	} 
 	else 
 	{
@@ -389,7 +394,7 @@ void RenderContext::BindTextureView( uint slot, TextureView *view )
 		if(slot == 0)
 		{
 			//Bind to white texture
-			//BindTextureView(0U, "WHITE");
+			BindTextureView(0U, "WHITE");
 		}
 	}
 
@@ -397,8 +402,6 @@ void RenderContext::BindTextureView( uint slot, TextureView *view )
 	// We're *not* for now since no effect we do at Guildhall requires it, but
 	// be aware it is an option; 
 	// m_context->VSSetShaderResource( slot, 1U, &srv ); 
-
-	m_D3DContext->PSSetShaderResources(slot, 1U, &srv);
 }
 
 void RenderContext::BindTextureView( uint slot, std::string const &name )
@@ -476,7 +479,7 @@ TextureView* RenderContext::GetOrCreateTextureViewFromFile( std::string const &f
 	TextureView* view = nullptr; 
 
 	// normal stuff - if it exists, return it; 
-	auto item = m_cachedTextureViews.find(filename); 
+	std::map<std::string, TextureView*>::iterator item = m_cachedTextureViews.find(filename); 
 	if (item != m_cachedTextureViews.end()) 
 	{
 		return item->second; 

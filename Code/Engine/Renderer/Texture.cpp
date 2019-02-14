@@ -61,9 +61,11 @@ bool Texture2D::LoadTextureFromFile( std::string const &filename, bool isFont )
 bool Texture2D::LoadTextureFromImage( Image const &image ) 
 {
 	// cleanup old resources before creating new one just in case; 
-	delete m_handle;
-	DX_SAFE_RELEASE(m_handle);
-	
+	if(m_handle != nullptr)
+	{
+		delete m_handle;
+		DX_SAFE_RELEASE(m_handle);
+	}
 
 	ID3D11Device *dd = m_owner->m_D3DDevice; 
 
@@ -120,7 +122,9 @@ bool Texture2D::LoadTextureFromImage( Image const &image )
 
 		return true; 
 
-	} else {
+	} 
+	else 
+	{
 		ASSERT( tex2D == nullptr ); // should be, just like to have the postcondition; 
 		return false; 
 	}

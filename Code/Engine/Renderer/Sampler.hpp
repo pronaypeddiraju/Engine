@@ -50,5 +50,4 @@ public:
 
 	bool m_isDirty                = true; // marked when state has changed so we know to recreate; 
 
-	static D3D11_FILTER DXGetFilter( eFilterMode min, eFilterMode mag );
 };

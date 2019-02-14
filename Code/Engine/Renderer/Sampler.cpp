@@ -15,7 +15,7 @@ Sampler::~Sampler()
 	DX_SAFE_RELEASE(m_handle);
 }
 
-STATIC D3D11_FILTER Sampler::DXGetFilter( eFilterMode min, eFilterMode mag ) 
+static D3D11_FILTER DXGetFilter( eFilterMode min, eFilterMode mag ) 
 {
 	if (min == FILTER_MODE_POINT) 
 	{

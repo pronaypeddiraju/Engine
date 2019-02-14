@@ -21,6 +21,7 @@ class Texture;
 class Texture2D;
 class TextureView;
 class BitmapFont;
+class Image;
 
 //D3D11
 struct ID3D11Device;
@@ -114,7 +115,6 @@ private:
 	void				DemoRender();            // Does rendering for this demo
 
 	// Private (internal) member functions will go here
-	TextureView*		CreateTextureViewFromFile( const char* imageFilePath);
 	BitmapFont*			CreateBitmapFontFromFile(const std::string& bitmapName);
 	Shader*				CreateShaderFromFile(const std::string& fileName);
 	void				CreateAndSetDefaultRasterState();
@@ -144,6 +144,7 @@ public:
 
 	VertexBuffer*										m_immediateVBO = nullptr; 
 	UniformBuffer*										m_immediateUBO = nullptr;
+	Image*												m_whiteImage = nullptr;
 
 	// There are a small set of sampler state that
 	// we can get by with just reusing everywhere, 

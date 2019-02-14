@@ -26,36 +26,41 @@ class DevConsole
 public:
 	DevConsole();
 	~DevConsole();
-	void Startup();
-	void BeginFrame();
-	void EndFrame();
-	void Shutdown();
+	void			Startup();
+	void			BeginFrame();
+	void			EndFrame();
+	void			Shutdown();
 
-	void SetBitmapFont(BitmapFont& bitmapFont);
+	void			SetBitmapFont(BitmapFont& bitmapFont);
 
-	void PrintString( const Rgba& textColor, const std::string& devConsolePrintString );
-	void Render( RenderContext& renderer, const Camera& camera, float lineHeight ) const;
+	void			PrintString( const Rgba& textColor, const std::string& devConsolePrintString );
+	void			Render( RenderContext& renderer, const Camera& camera, float lineHeight ) const;
 
-	void ToggleOpenFull();
-	bool IsOpen() const;
+	void			ToggleOpenFull();
+	bool			IsOpen() const;
 
-	void ExecuteCommandLine(const std::string& commandLine);
+	void			ExecuteCommandLine(const std::string& commandLine);
+
+	// handle arrows, enter, escape, backspace, delete, etc...
+	void			HandleKeyUp( uint vkKeyCode );          // WM_KEYUP
+	void			HandleKeyDown( uint vkKeyCode );        // WM_KEYDOWN
+	void			HandleCharacter( uint charCode );       // WM_CHAR
 
 public:
 	//Public Event Systems test
-	static bool Command_Test(EventArgs& args);
-	static bool	Command_Help(EventArgs& args);
+	static bool		Command_Test(EventArgs& args);
+	static bool		Command_Help(EventArgs& args);
 	//Uses ExecuteCommandLine for now
-	static bool	Command_Exec(EventArgs& args);
+	static bool		Command_Exec(EventArgs& args);
 
 
 public:
 
- 	const static Rgba CONSOLE_INFO;
- 	const static Rgba CONSOLE_ERROR;
- 	const static Rgba CONSOLE_ERROR_DESC;
- 	const static Rgba CONSOLE_ECHO;
-	const static Rgba CONSOLE_BG_COLOR;
+ 	const static Rgba						CONSOLE_INFO;
+ 	const static Rgba						CONSOLE_ERROR;
+ 	const static Rgba						CONSOLE_ERROR_DESC;
+ 	const static Rgba						CONSOLE_ECHO;
+	const static Rgba						CONSOLE_BG_COLOR;
 
 private:
 	BitmapFont*								m_consoleFont = nullptr;
@@ -64,4 +69,7 @@ private:
 	std::vector<ConsoleEntry>				m_printLog;
 	unsigned int							m_frameCount = 0;
 	float									m_timeAtStart;
+
+	std::string								m_currentInput;
+	unsigned int							m_carotPosition;
 };

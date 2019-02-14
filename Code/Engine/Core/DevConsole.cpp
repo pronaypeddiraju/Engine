@@ -54,6 +54,24 @@ void DevConsole::ExecuteCommandLine( const std::string& commandLine )
 	}
 }
 
+void DevConsole::HandleKeyUp( uint vkKeyCode )
+{
+	UNUSED(vkKeyCode);
+	GUARANTEE_RECOVERABLE(true, "Nothing to handle");
+}
+
+void DevConsole::HandleKeyDown( uint vkKeyCode )
+{
+	UNUSED(vkKeyCode);
+	GUARANTEE_RECOVERABLE(true, "Nothing to handle");
+}
+
+void DevConsole::HandleCharacter( uint charCode )
+{
+	UNUSED(charCode);
+	GUARANTEE_RECOVERABLE(true, "Nothing to handle");
+}
+
 const STATIC Rgba DevConsole::CONSOLE_ECHO		=	Rgba(0.255f, 0.450f, 1.0f, 1.0f);
 
 DevConsole::DevConsole()
@@ -125,10 +143,12 @@ void DevConsole::Render( RenderContext& renderer, const Camera& camera, float li
 	Vec2 rightTop = camera.GetOrthoTopRight();
 
 	float screenHeight = rightTop.y - leftBot.y;
+	float screenWidth = rightTop.x - leftBot.x;
+
 	int numLines = static_cast<int>(screenHeight / lineHeight);
 	int numStrings = static_cast<int>(m_printLog.size());
 
-	Vec2 boxBottomLeft = leftBot + Vec2(lineHeight, lineHeight);
+	Vec2 boxBottomLeft = leftBot + Vec2(lineHeight, lineHeight * 2);
 	Vec2 boxTopRight = boxBottomLeft;
 
 	//Get the last string in the map and work your way back
@@ -176,7 +196,15 @@ void DevConsole::Render( RenderContext& renderer, const Camera& camera, float li
 		//boxBottomLeft.y += CONSOLE_LINE_SPACE;
 	}
 
+	Vec2 textBoxBottomLeft = leftBot + Vec2(lineHeight, lineHeight * 0.25f);
+	Vec2 textBoxTopRight = textBoxBottomLeft + Vec2(screenWidth - lineHeight * 2, lineHeight * 1.25f);
+
 	renderer.BindTextureView(0U, nullptr);
+	
+	std::vector<Vertex_PCU> inputBoxVerts;
+	AddVertsForBoundingBox(inputBoxVerts, AABB2(textBoxBottomLeft, textBoxTopRight), Rgba::WHITE, lineHeight * 0.1f);
+	renderer.DrawVertexArray(inputBoxVerts);
+
 }
 
 void DevConsole::ToggleOpenFull()

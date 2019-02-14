@@ -19,6 +19,7 @@
 
 class NamedStrings;
 class EventSystems;
+class DevConsole;
 
 extern NamedStrings g_gameConfigBlackboard; // declared in EngineCommon.hpp, defined in EngineCommon.cpp
 
@@ -39,6 +40,7 @@ const unsigned short F5_KEY = 116;
 const unsigned short F6_KEY = 117;
 const unsigned short F7_KEY = 118;
 const unsigned short F8_KEY = 119;
+const unsigned short TILDY_KEY = 192;
 //const unsigned char DOWN_ARROW;
 constexpr char SHADER_PATH[] = "Data/Shaders/"; 
 constexpr char IMAGE_PATH[] = "Data/Images/";
@@ -48,8 +50,6 @@ constexpr float		 CONSOLE_LINE_SPACE = 0.05f;
 
 typedef unsigned int uint;
 typedef NamedStrings EventArgs;
-
-class DevConsole;
 
 extern DevConsole* g_devConsole;
 extern EventSystems* g_eventSystem;
