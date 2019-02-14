@@ -89,28 +89,15 @@ void DevConsole::ShowLastCommand()
 
 void DevConsole::ShowNextCommand()
 {
-	if(m_lastCommandIndex == 0)
+	if(m_lastCommandIndex == static_cast<unsigned int>(m_commandLog.size()) - 1)
 	{
-		int cmdSize = static_cast<int>(m_commandLog.size());
-		if(cmdSize > 0)
-		{
-			m_currentInput = m_commandLog[m_lastCommandIndex];
-			m_lastCommandIndex++;
-		}
+		m_lastCommandIndex = 0;
+		m_currentInput = m_commandLog[m_lastCommandIndex];
 	}
 	else
 	{
-		if(m_lastCommandIndex < static_cast<unsigned int>(m_commandLog.size()))
-		{
-			m_currentInput = m_commandLog[m_lastCommandIndex];
-			m_lastCommandIndex++;
-		}
-		else
-		{
-			m_lastCommandIndex = 0;
-			m_currentInput = m_commandLog[m_lastCommandIndex];
-			m_lastCommandIndex++;
-		}
+		m_lastCommandIndex++;
+		m_currentInput = m_commandLog[m_lastCommandIndex];
 	}
 
 	m_carotPosition = static_cast<int>(m_currentInput.size());
@@ -158,6 +145,8 @@ void DevConsole::HandleKeyDown( unsigned char vkKeyCode )
 			m_currentInput = firstSubString;
 			m_currentInput += secondSubString;
 		}
+
+		ResetIndexValues();
 	}
 	break;
 	case BACK_SPACE:
@@ -172,6 +161,8 @@ void DevConsole::HandleKeyDown( unsigned char vkKeyCode )
 
 			m_carotPosition--;
 		}
+
+		ResetIndexValues();
 	}
 	break;
 	case KEY_ESC:
@@ -231,6 +222,11 @@ void DevConsole::HandleKeyDown( unsigned char vkKeyCode )
 	default:
 	break;
 	}
+}
+
+void DevConsole::ResetIndexValues()
+{
+	m_lastCommandIndex = 0;
 }
 
 void DevConsole::HandleCharacter( unsigned char charCode )

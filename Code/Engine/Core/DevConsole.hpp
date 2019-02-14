@@ -43,6 +43,7 @@ public:
 	bool			ExecuteCommandLine(const std::string& commandLine);
 	void			ShowLastCommand();
 	void			ShowNextCommand();
+	void			ResetIndexValues();
 
 	// handle arrows, enter, escape, backspace, delete, etc...
 	void			HandleKeyUp( unsigned char vkKeyCode );          // WM_KEYUP
