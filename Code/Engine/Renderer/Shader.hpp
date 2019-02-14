@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Renderer/RendererTypes.hpp"
+#include <d3d11.h>
 #include <string>
 
 struct ID3D11Resource;
@@ -37,6 +38,8 @@ public:
 class Shader 
 {
 public:
+	STATIC D3D11_BLEND_OP	DXUsageFromBlendOp( eBlendOperation const usage );
+	STATIC D3D11_BLEND		DXUsageFromBlendFactor( eBlendFactor const usage );
 	Shader();
 	~Shader();
 	
@@ -53,12 +56,12 @@ public:
 	ShaderStage				m_vertexStage; 
 	ShaderStage				m_pixelStage; 
 
-	// blend state - not sure how your SD1 exposes this.  Some Engines expose the blend factors
+	// blend state - Some Engines expose the blend factors
 	// and some engines will expose an enum for common setups (like alpha, additive, etc...)
 	eBlendMode				m_blendMode = BLEND_MODE_ALPHA; 
 
-	// eBlendFactor m_srcFactor;  
-	// eBlendFactor m_dstFactor; 
+	eBlendFactor			m_srcFactor = FACTOR_SOURCE_ALPHA;  
+	eBlendFactor			m_dstFactor = FACTOR_INV_SOURCE_ALPHA; 
 	bool					m_blendStateDirty = true; 
 
 

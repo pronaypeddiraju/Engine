@@ -112,7 +112,6 @@ private:
 	void				D3D11Cleanup();          // Cleans up D3D11 Objects
 
 	void				DemoRender();            // Does rendering for this demo
-	void				DemoRun();               // Demo setup and update loop
 
 	// Private (internal) member functions will go here
 	TextureView*		CreateTextureViewFromFile( const char* imageFilePath);

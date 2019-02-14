@@ -118,17 +118,18 @@ void RenderContext::D3D11Cleanup()
 	ID3D11Debug* debugObject = nullptr;
 
 	HRESULT hr = m_D3DDevice->QueryInterface(__uuidof(ID3D11Debug), (void**)&debugObject);
-
-	if(SUCCEEDED(hr))
-	{
-		debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-		DX_SAFE_RELEASE(debugObject);
-	}
-
+	
 	DX_SAFE_RELEASE(m_defaultRasterState);
 	DX_SAFE_RELEASE(m_D3DSwapChain);
 	DX_SAFE_RELEASE(m_D3DContext);
 	DX_SAFE_RELEASE(m_D3DDevice);
+
+	if(SUCCEEDED(hr))
+	{
+		//Uncomment when debugging
+		//debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		DX_SAFE_RELEASE(debugObject);
+	}
 }
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -202,8 +203,14 @@ void RenderContext::PremakeDefaults()
 
 void RenderContext::SetBlendMode(eBlendMode blendMode)
 {
-	UNUSED(blendMode);
-	GUARANTEE_RECOVERABLE(false, "Reached Set blend mode in RC");
+	if(m_currentShader == nullptr)
+	{
+		ERROR_AND_DIE("No active shader to set blend mode");
+	}
+	else
+	{
+		m_currentShader->m_blendMode = blendMode;
+	}
 }
 
 TextureView* RenderContext::CreateTextureViewFromFile( const char* imageFilePath )
@@ -304,8 +311,6 @@ void RenderContext::Shutdown()
 	delete m_immediateUBO;
 	m_immediateUBO = nullptr;
 
-	D3D11Cleanup();
-
 	//m_loadedShaders;
 	std::map< std::string, Shader*>::iterator shaderIterator;
 	std::map< std::string, Shader*>::iterator lastShaderIterator;
@@ -328,6 +333,23 @@ void RenderContext::Shutdown()
 	}
 
 	m_loadedShaders.clear();
+
+	//Clear all Textures
+	std::map< std::string, TextureView*>::iterator texIterator;
+	std::map< std::string, TextureView*>::iterator lastTexIterator;
+
+	texIterator = m_cachedTextureViews.begin();
+	lastTexIterator = m_cachedTextureViews.end();
+
+	for(texIterator; texIterator != lastTexIterator; texIterator++)
+	{
+		delete texIterator->second;
+	}
+
+	m_cachedTextureViews.clear();
+
+	D3D11Cleanup();
+
 }
 
 void RenderContext::BindShader( Shader* shader )
@@ -379,6 +401,14 @@ void RenderContext::BindTextureView( uint slot, TextureView *view )
 	m_D3DContext->PSSetShaderResources(slot, 1U, &srv);
 }
 
+void RenderContext::BindTextureView( uint slot, std::string const &name )
+{
+	std::map<std::string, TextureView*>::iterator textureIterator;
+	textureIterator = m_loadedTextures.find(name);
+
+	BindTextureView(slot, textureIterator->second);
+}
+
 //------------------------------------------------------------------------
 void RenderContext::BindSampler( uint slot, Sampler *sampler ) 
 {
@@ -393,6 +423,11 @@ void RenderContext::BindSampler( uint slot, Sampler *sampler )
 	m_D3DContext->PSSetSamplers( slot, 1U, &handle ); 
 }
 
+void RenderContext::BindSampler( eSampleMode mode )
+{
+	BindSampler(0U, m_cachedSamplers[mode]);
+}
+
 //------------------------------------------------------------------------
 void RenderContext::BindTextureViewWithSampler( uint slot, TextureView *view )
 {
@@ -403,6 +438,34 @@ void RenderContext::BindTextureViewWithSampler( uint slot, TextureView *view )
 	} else {
 		BindSampler( slot, nullptr ); 
 	}
+}
+
+void RenderContext::BindTextureViewWithSampler( uint slot, std::string const &name )
+{
+	std::map< std::string, TextureView* >::iterator textureIterator;
+	textureIterator = m_loadedTextures.find(name);
+
+	BindTextureViewWithSampler(slot, textureIterator->second);
+}
+
+void RenderContext::BindTextureViewWithSampler( uint slot, TextureView *view, Sampler *sampler )
+{
+	view->m_sampler = sampler;
+	BindTextureViewWithSampler(slot, view);
+}
+
+void RenderContext::BindTextureViewWithSampler( uint slot, TextureView *view, eSampleMode mode )
+{
+	view->m_sampler = m_cachedSamplers[mode];
+	BindTextureViewWithSampler(slot, view);
+}
+
+void RenderContext::BindTextureViewWithSampler( uint slot, std::string const &name, eSampleMode mode )
+{
+	std::map<std::string, TextureView*>::iterator texIterator;
+	texIterator = m_loadedTextures.find(name);
+
+	BindTextureViewWithSampler(slot, texIterator->second, mode);
 }
 
 //------------------------------------------------------------------------

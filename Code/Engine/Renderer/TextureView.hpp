@@ -12,7 +12,7 @@ class TextureView
 {
 public:
 	TextureView(); 
-	~TextureView(); // be sure to release your D3D11 resources (view and source)
+	virtual ~TextureView(); // be sure to release your D3D11 resources (view and source)
 
 	void SetSampler( Sampler *samp )       { m_sampler = samp; }
 

@@ -94,6 +94,33 @@ STATIC ID3D10Blob* CompileHLSLToShaderBlob( char const *opt_filename,  // option
 	return code;
 }
 
+STATIC D3D11_BLEND_OP Shader::DXUsageFromBlendOp( eBlendOperation const usage )
+{
+	switch (usage) 
+	{
+	case BLEND_OP_ADD:      return D3D11_BLEND_OP_ADD;
+	default:
+	{
+		GUARANTEE_RECOVERABLE(false, "Setting D3D11 Blend op to ADD"); 
+		return D3D11_BLEND_OP_ADD;
+	}
+	}
+}
+
+STATIC D3D11_BLEND Shader::DXUsageFromBlendFactor( eBlendFactor const usage)
+{
+	switch (usage) 
+	{
+	case FACTOR_ONE:				return D3D11_BLEND_ONE;
+	case FACTOR_SOURCE_ALPHA:		return D3D11_BLEND_SRC_ALPHA;
+	case FACTOR_INV_SOURCE_ALPHA:	return D3D11_BLEND_INV_SRC_ALPHA;
+	default:
+	{
+		GUARANTEE_RECOVERABLE(false, "Setting D3D11 Blend op to ADD"); 
+		return D3D11_BLEND_ONE;
+	}
+	}
+}
 
 Shader::Shader()
 {
@@ -123,22 +150,22 @@ bool Shader::UpdateBlendStateIfDirty( RenderContext *renderContext )
 	desc.AlphaToCoverageEnable = false;  // used in MSAA to treat alpha as coverage (usual example is foliage rendering, we will not be using this)
 	desc.IndependentBlendEnable = false;   // if you have multiple outputs bound, you can set this to true to have different blend state per output
 
-										 // Blending is setting put the equation...
-										 // FinalColor = BlendOp( SrcFactor * outputColor, DestFactor * destColor )
-										 // where outputColor is what the pixel shader outputs
-										 // and destColor is the color already in the pixel shader
+	// Blending is setting put the equation...
+	// FinalColor = BlendOp( SrcFactor * outputColor, DestFactor * destColor )
+	// where outputColor is what the pixel shader outputs
+	// and destColor is the color already in the pixel shader
 
-										 // the below describes the equation...
-										 // FinalColor = outputColor.a * outputColor + (1.0f - outputColor.a) * destColor;  
+	// the below describes the equation...
+	// FinalColor = outputColor.a * outputColor + (1.0f - outputColor.a) * destColor;  
 
-										 // since we disabled independent blend, we only have to setup the first blend state
-										 // and I'm setting it up for "alpha blending"
+	// since we disabled independent blend, we only have to setup the first blend state
+	// and I'm setting it up for "alpha blending"
 	desc.RenderTarget[0].BlendEnable = TRUE;  // we want to blend
 	desc.RenderTarget[0].SrcBlend    = D3D11_BLEND_SRC_ALPHA;      // output color is multiplied by the output colors alpha and added to...
 	desc.RenderTarget[0].DestBlend   = D3D11_BLEND_INV_SRC_ALPHA;  // the current destination multiplied by (1 - output.a); 
 	desc.RenderTarget[0].BlendOp     = D3D11_BLEND_OP_ADD;        // we add the two results together
 
-																   // you can compute alpha seperately, in this case, we'll just set it to be the max alpha between the src & destination
+	// you can compute alpha seperately, in this case, we'll just set it to be the max alpha between the src & destination
 	desc.RenderTarget[0].SrcBlendAlpha  = D3D11_BLEND_ONE;
 	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE; 
 	desc.RenderTarget[0].BlendOpAlpha   = D3D11_BLEND_OP_MAX;

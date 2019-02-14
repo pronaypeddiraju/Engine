@@ -117,13 +117,18 @@ enum eBlendMode
 // enum eBlendOp { ... }; // maps to https://docs.microsoft.com/en-us/windows/desktop/api/d3d11/ne-d3d11-d3d11_blend_op
 enum eBlendOperation
 {
+	BLEND_OP_ADD,
 
+	BLEND_OP_DEFAULT = BLEND_OP_ADD
 };
 
 // enum eBlendFactor { ... }; // maps to https://docs.microsoft.com/en-us/windows/desktop/api/d3d11/ne-d3d11-d3d11_blend
 enum eBlendFactor
 {
-
+	FACTOR_SOURCE_ALPHA,
+	FACTOR_INV_SOURCE_ALPHA,
+	FACTOR_ONE,
+	FACTOR_ZERO,
 };
 
 // struct blend_info_t { eBlendOp op; eBlendFactor srcFactor;  eBlendFactor dstFactor; }; 
