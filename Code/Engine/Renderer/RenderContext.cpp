@@ -655,6 +655,11 @@ void RenderContext::DrawVertexArray( int numVertexes, const Vertex_PCU* vertexes
 
 void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertexes )
 {
+	if(vertexes.size() == 0)
+	{
+		return;
+	}
+
 	DrawVertexArray( static_cast<int>(vertexes.size()), &vertexes[0]);
 }
 

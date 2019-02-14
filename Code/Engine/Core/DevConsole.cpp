@@ -14,6 +14,7 @@ const STATIC Rgba DevConsole::CONSOLE_INFO			=	Rgba(1.0f, 1.0f, 0.0f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_BG_COLOR		=	Rgba(0.0f, 0.0f, 0.0f, 0.75f);
 const STATIC Rgba DevConsole::CONSOLE_ERROR   		=	Rgba(1.0f, 0.0f, 0.0f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_ERROR_DESC	=	Rgba(1.0f, 0.5f, 0.3f, 1.0f);
+const STATIC Rgba DevConsole::CONSOLE_INPUT			=	Rgba(1.0f, 1.0f, 1.0f, 1.0f);
 
 void DevConsole::ExecuteCommandLine( const std::string& commandLine )
 {
@@ -54,22 +55,22 @@ void DevConsole::ExecuteCommandLine( const std::string& commandLine )
 	}
 }
 
-void DevConsole::HandleKeyUp( uint vkKeyCode )
+void DevConsole::HandleKeyUp( unsigned char vkKeyCode )
 {
 	UNUSED(vkKeyCode);
 	GUARANTEE_RECOVERABLE(true, "Nothing to handle");
 }
 
-void DevConsole::HandleKeyDown( uint vkKeyCode )
+void DevConsole::HandleKeyDown( unsigned char vkKeyCode )
 {
 	UNUSED(vkKeyCode);
 	GUARANTEE_RECOVERABLE(true, "Nothing to handle");
 }
 
-void DevConsole::HandleCharacter( uint charCode )
+void DevConsole::HandleCharacter( unsigned char charCode )
 {
-	UNUSED(charCode);
-	GUARANTEE_RECOVERABLE(true, "Nothing to handle");
+	m_currentInput += charCode;
+	m_carotPosition += 1;
 }
 
 const STATIC Rgba DevConsole::CONSOLE_ECHO		=	Rgba(0.255f, 0.450f, 1.0f, 1.0f);
@@ -88,11 +89,23 @@ void DevConsole::Startup()
 {
 	g_eventSystem->SubscribeEventCallBackFn( "Test", Command_Test );
 	g_eventSystem->SubscribeEventCallBackFn( "Help", Command_Help );
+	m_currentInput.empty();
 }
 
 void DevConsole::BeginFrame()
 {
-	
+
+}
+
+void DevConsole::UpdateConsole(float deltaTime)
+{
+	m_carotTimeDiff += deltaTime;
+
+	if(m_carotTimeDiff > 0.5f)
+	{
+		m_carotActive = !m_carotActive;
+		m_carotTimeDiff = 0.f;
+	}
 }
 
 void DevConsole::EndFrame()
@@ -196,15 +209,38 @@ void DevConsole::Render( RenderContext& renderer, const Camera& camera, float li
 		//boxBottomLeft.y += CONSOLE_LINE_SPACE;
 	}
 
+	//Draw Text Input box
 	Vec2 textBoxBottomLeft = leftBot + Vec2(lineHeight, lineHeight * 0.25f);
 	Vec2 textBoxTopRight = textBoxBottomLeft + Vec2(screenWidth - lineHeight * 2, lineHeight * 1.25f);
+
+	AABB2 inputBox = AABB2(textBoxBottomLeft, textBoxTopRight);
 
 	renderer.BindTextureView(0U, nullptr);
 	
 	std::vector<Vertex_PCU> inputBoxVerts;
-	AddVertsForBoundingBox(inputBoxVerts, AABB2(textBoxBottomLeft, textBoxTopRight), Rgba::WHITE, lineHeight * 0.1f);
+	AddVertsForBoundingBox(inputBoxVerts, inputBox, CONSOLE_INFO, lineHeight * 0.1f);
 	renderer.DrawVertexArray(inputBoxVerts);
 
+	//Draw current string
+	renderer.BindTextureView(0U, m_consoleFont->GetTexture());
+
+	std::vector<Vertex_PCU> inputStringVerts;
+	m_consoleFont->AddVertsForTextInBox2D(inputStringVerts, inputBox, lineHeight, m_currentInput, CONSOLE_INPUT, 1.f, Vec2::ALIGN_LEFT_CENTERED);
+	renderer.DrawVertexArray(inputStringVerts);
+
+	if(m_carotActive)
+	{
+		//Draw carot
+		renderer.BindTextureView(0U, nullptr);
+
+		Vec2 carotStart = inputBox.m_minBounds;
+		carotStart.x += m_carotPosition * lineHeight;
+		Vec2 carotEnd = carotStart + Vec2(0.f, lineHeight * 1.25f);
+
+		std::vector<Vertex_PCU> carotVerts;
+		AddVertsForLine2D(carotVerts, carotStart, carotEnd, lineHeight * 0.1f, CONSOLE_INPUT);
+		renderer.DrawVertexArray(carotVerts);
+	}
 }
 
 void DevConsole::ToggleOpenFull()

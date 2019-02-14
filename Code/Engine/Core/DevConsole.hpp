@@ -28,6 +28,7 @@ public:
 	~DevConsole();
 	void			Startup();
 	void			BeginFrame();
+	void			UpdateConsole(float deltaTime);
 	void			EndFrame();
 	void			Shutdown();
 
@@ -42,9 +43,9 @@ public:
 	void			ExecuteCommandLine(const std::string& commandLine);
 
 	// handle arrows, enter, escape, backspace, delete, etc...
-	void			HandleKeyUp( uint vkKeyCode );          // WM_KEYUP
-	void			HandleKeyDown( uint vkKeyCode );        // WM_KEYDOWN
-	void			HandleCharacter( uint charCode );       // WM_CHAR
+	void			HandleKeyUp( unsigned char vkKeyCode );          // WM_KEYUP
+	void			HandleKeyDown( unsigned char vkKeyCode );        // WM_KEYDOWN
+	void			HandleCharacter( unsigned char charCode );       // WM_CHAR
 
 public:
 	//Public Event Systems test
@@ -61,6 +62,7 @@ public:
  	const static Rgba						CONSOLE_ERROR_DESC;
  	const static Rgba						CONSOLE_ECHO;
 	const static Rgba						CONSOLE_BG_COLOR;
+	const static Rgba						CONSOLE_INPUT;
 
 private:
 	BitmapFont*								m_consoleFont = nullptr;
@@ -71,5 +73,8 @@ private:
 	float									m_timeAtStart;
 
 	std::string								m_currentInput;
-	unsigned int							m_carotPosition;
+	unsigned int							m_carotPosition = 0;
+
+	float									m_carotTimeDiff = 0.f;
+	bool									m_carotActive = true;
 };
