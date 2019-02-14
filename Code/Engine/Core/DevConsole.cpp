@@ -205,7 +205,6 @@ void DevConsole::HandleKeyDown( unsigned char vkKeyCode )
 		}
 		
 		//Store the last command that was executed but remove copies
-		m_commandLog.push_back(m_currentInput);
 
 		// order of unique elements is preserved
 		auto end_unique = std::end(m_commandLog) ;
@@ -214,6 +213,15 @@ void DevConsole::HandleKeyDown( unsigned char vkKeyCode )
 			end_unique = std::remove( iter+1, end_unique, *iter ) ;
 		}
 		m_commandLog.erase( end_unique, std::end(m_commandLog) ) ;
+
+		
+		auto findItr = std::find(m_commandLog.begin(), m_commandLog.end(), m_currentInput);
+		if(findItr != m_commandLog.end())
+		{
+			m_commandLog.erase(findItr);
+		}
+
+		m_commandLog.push_back(m_currentInput);
 
 		m_currentInput.clear();
 		m_carotPosition = 0;
