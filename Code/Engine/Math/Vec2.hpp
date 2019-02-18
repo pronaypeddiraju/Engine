@@ -73,6 +73,7 @@ public:
 	bool operator==( const Vec2& compare ) const;				// vec2 == vec2
 	bool operator!=( const Vec2& compare ) const;				// vec2 != vec2
 	bool operator<( const Vec2& compare ) const;
+	bool operator>( const Vec2& compare ) const;
 
 	Vec2		Min(const Vec2& compare);
 	Vec2		Max(const Vec2& compare);

@@ -18,6 +18,11 @@ enum eSimulationType
 	NUM_SIMULATION_TYPES
 };
 
+struct PhysicsMaterialT
+{
+	float restitution = 1.f;
+};
+
 class Rigidbody2D
 {
 public:
@@ -50,6 +55,8 @@ public :
 	float									m_mass;  						// how heavy am I
 
 	Collider2D*								m_collider = nullptr;						// my shape; (could eventually be made a set)
+	bool									m_isTrigger = false;
+	PhysicsMaterialT						m_material;
 
 private:
 	eSimulationType							m_simulationType = TYPE_UNKOWN;

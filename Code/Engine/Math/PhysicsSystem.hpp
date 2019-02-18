@@ -6,6 +6,7 @@
 
 class RenderContext;
 class Collider2D;
+class RigidBodyBucket;
 
 class PhysicsSystem
 {
@@ -33,10 +34,15 @@ private:
 
 	void					RunStep(float deltaTime);
 
+	void					MoveAllDynamicObjects(float deltaTime);
+	void					CheckStaticVsStaticCollisions();
+	void					ResolveDynamicVsStaticCollisions( bool canResolve );
+	void					ResolveDynamicVsDynamicCollisions( bool canResolve );
 public:
 
 	//Way to store all rigidbodies
-	std::vector<Rigidbody2D*>		m_rigidbodyVector;
+	//std::vector<Rigidbody2D*>		m_rigidbodyVector;
+	RigidBodyBucket*				m_rbBucket;
 
 	//system info like gravity
 	Vec2							m_gravity = Vec2(0.0f, -9.8f);

@@ -5,6 +5,7 @@
 #include "Engine/Math/Vertex_PCU.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Math/RigidBodyBucket.hpp"
 
 Rigidbody2D::Rigidbody2D(float mass)
 {
@@ -20,13 +21,16 @@ Rigidbody2D::Rigidbody2D( PhysicsSystem* physicsSystem, eSimulationType simulati
 
 Rigidbody2D::~Rigidbody2D()
 {
-	int rbCount = static_cast<int>(m_system->m_rigidbodyVector.size());
-
-	for(int rbIndex = 0; rbIndex < rbCount; rbIndex++)
+	for(int rbType = 0; rbType < NUM_SIMULATION_TYPES; rbType++)
 	{
-		if(m_system->m_rigidbodyVector[rbIndex] == this)
+		int rbCount = static_cast<int>(m_system->m_rbBucket->m_RbBucket[rbType].size());
+
+		for(int rbIndex = 0; rbIndex < rbCount; rbIndex++)
 		{
-			m_system->m_rigidbodyVector[rbIndex] = nullptr;
+			if(m_system->m_rbBucket->m_RbBucket[rbType][rbIndex] == this)
+			{
+				m_system->m_rbBucket->m_RbBucket[rbType][rbIndex] = nullptr;
+			}
 		}
 	}
 

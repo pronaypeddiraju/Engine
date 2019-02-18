@@ -157,6 +157,12 @@
     <ClCompile Include="Math\CollisionHandler.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="Math\RigidBodyBucket.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Manifold.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -313,6 +319,12 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="Math\CollisionHandler.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\RigidBodyBucket.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Manifold.hpp">
       <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>

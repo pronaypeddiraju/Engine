@@ -2,12 +2,14 @@
 #include "Engine/Math/PhysicsSystem.hpp"
 #include "Engine/Math/Collider2D.hpp"
 #include "Engine/Renderer/Rgba.hpp"
+#include "Engine/Math/CollisionHandler.hpp"
+#include "Engine/Math/RigidBodyBucket.hpp"
 
 PhysicsSystem* g_physicsSystem = nullptr;
 
 PhysicsSystem::PhysicsSystem()
 {
-
+	m_rbBucket = new RigidBodyBucket;
 }
 
 PhysicsSystem::~PhysicsSystem()
@@ -24,7 +26,7 @@ Rigidbody2D* PhysicsSystem::CreateRigidbody( eSimulationType simulationType )
 
 void PhysicsSystem::AddRigidbodyToVector(Rigidbody2D* rigidbody)
 {
-	m_rigidbodyVector.push_back(rigidbody);
+	m_rbBucket->m_RbBucket[rigidbody->GetSimulationType()].push_back(rigidbody);
 }
 
 void PhysicsSystem::DestroyRigidbody( Rigidbody2D* rigidbody )
@@ -42,13 +44,16 @@ void PhysicsSystem::CopyTransformsFromObjects()
 {
 	// reset per frame stuff; 
 	// copy all transforms over;
-	int numRigidbodies = static_cast<int>(m_rigidbodyVector.size());
-
-	for(int rigidbodyIndex = 0; rigidbodyIndex < numRigidbodies; rigidbodyIndex++)
+	for(int rigidTypes = 0; rigidTypes < NUM_SIMULATION_TYPES; rigidTypes++)
 	{
-		if(m_rigidbodyVector[rigidbodyIndex] != nullptr)
+		int numRigidbodies = static_cast<int>(m_rbBucket->m_RbBucket[rigidTypes].size());
+
+		for(int rigidbodyIndex = 0; rigidbodyIndex < numRigidbodies; rigidbodyIndex++)
 		{
-			m_rigidbodyVector[rigidbodyIndex]->m_transform = *m_rigidbodyVector[rigidbodyIndex]->m_object_transform;
+			if(m_rbBucket->m_RbBucket[rigidTypes][rigidbodyIndex] != nullptr)
+			{
+				m_rbBucket->m_RbBucket[rigidTypes][rigidbodyIndex]->m_transform = *m_rbBucket->m_RbBucket[rigidTypes][rigidbodyIndex]->m_object_transform;
+			}
 		}
 	}
 }
@@ -56,13 +61,16 @@ void PhysicsSystem::CopyTransformsFromObjects()
 void PhysicsSystem::CopyTransformsToObjects()
 {
 	// figure out movement, apply to actual game object;
-	int numRigidbodies = static_cast<int>(m_rigidbodyVector.size());
-
-	for(int rigidbodyIndex = 0; rigidbodyIndex < numRigidbodies; rigidbodyIndex++)
+	for(int rigidTypes = 0; rigidTypes < NUM_SIMULATION_TYPES; rigidTypes++)
 	{
-		if(m_rigidbodyVector[rigidbodyIndex] != nullptr)
+		int numRigidbodies = static_cast<int>(m_rbBucket->m_RbBucket[rigidTypes].size());
+
+		for(int rigidbodyIndex = 0; rigidbodyIndex < numRigidbodies; rigidbodyIndex++)
 		{
-			*m_rigidbodyVector[rigidbodyIndex]->m_object_transform = m_rigidbodyVector[rigidbodyIndex]->m_transform;
+			if(m_rbBucket->m_RbBucket[rigidTypes][rigidbodyIndex] != nullptr)
+			{
+				*m_rbBucket->m_RbBucket[rigidTypes][rigidbodyIndex]->m_object_transform = m_rbBucket->m_RbBucket[rigidTypes][rigidbodyIndex]->m_transform;
+			}
 		}
 	}
 }
@@ -83,62 +91,68 @@ void PhysicsSystem::Update( float deltaTime )
 
 void PhysicsSystem::SetAllCollisionsToFalse()
 {
-	int numRigidbodies = static_cast<int>(m_rigidbodyVector.size());
-
-	for(int rbIndex = 0; rbIndex < numRigidbodies; rbIndex++)
+	for(int rigidTypes = 0; rigidTypes < NUM_SIMULATION_TYPES; rigidTypes++)
 	{
-		if(m_rigidbodyVector[rbIndex] != nullptr)
+		int numRigidbodies = static_cast<int>(m_rbBucket->m_RbBucket[rigidTypes].size());
+
+		for(int rigidbodyIndex = 0; rigidbodyIndex < numRigidbodies; rigidbodyIndex++)
 		{
-			m_rigidbodyVector[rbIndex]->m_collider->SetCollision(false);
+			if(m_rbBucket->m_RbBucket[rigidTypes][rigidbodyIndex] != nullptr)
+			{
+				m_rbBucket->m_RbBucket[rigidTypes][rigidbodyIndex]->m_collider->SetCollision(false);
+			}
 		}
 	}
 }
 
 void PhysicsSystem::DebugRender( RenderContext* renderContext ) const
 {
-	int numRigidbodies = static_cast<int>(m_rigidbodyVector.size());
-	for(int rbIndex = 0; rbIndex < numRigidbodies; rbIndex++)
+	for (int rbTypes = 0; rbTypes < NUM_SIMULATION_TYPES; rbTypes++)
 	{
-		//Nullptr check first
-		if(m_rigidbodyVector[rbIndex] == nullptr)
+		int numRigidbodies = static_cast<int>(m_rbBucket->m_RbBucket[rbTypes].size());
+		for(int rbIndex = 0; rbIndex < numRigidbodies; rbIndex++)
 		{
-			continue;
-		}
+			//Nullptr check first
+			if(m_rbBucket->m_RbBucket[rbTypes][rbIndex] == nullptr)
+			{
+				continue;
+			}
 
-		eSimulationType simType = m_rigidbodyVector[rbIndex]->GetSimulationType();
-	
-		switch( simType )
-		{
-		case TYPE_UNKOWN:
-		break;
-		case STATIC_SIMULATION:
-		{
-			if(m_rigidbodyVector[rbIndex]->m_collider->m_inCollision)
+			eSimulationType simType = m_rbBucket->m_RbBucket[rbTypes][rbIndex]->GetSimulationType();
+
+			switch( simType )
 			{
-				m_rigidbodyVector[rbIndex]->DebugRender(renderContext, Rgba::MAGENTA);
-			}
-			else
+			case TYPE_UNKOWN:
+			break;
+			case STATIC_SIMULATION:
 			{
-				m_rigidbodyVector[rbIndex]->DebugRender(renderContext, Rgba::YELLOW);
+				if(m_rbBucket->m_RbBucket[rbTypes][rbIndex]->m_collider->m_inCollision)
+				{
+					m_rbBucket->m_RbBucket[rbTypes][rbIndex]->DebugRender(renderContext, Rgba::MAGENTA);
+				}
+				else
+				{
+					m_rbBucket->m_RbBucket[rbTypes][rbIndex]->DebugRender(renderContext, Rgba::YELLOW);
+				}
 			}
-		}
-		break;
-		case DYNAMIC_SIMULATION:
-		{
-			if(m_rigidbodyVector[rbIndex]->m_collider->m_inCollision)
+			break;
+			case DYNAMIC_SIMULATION:
 			{
-				m_rigidbodyVector[rbIndex]->DebugRender(renderContext, Rgba::RED);
+				if(m_rbBucket->m_RbBucket[rbTypes][rbIndex]->m_collider->m_inCollision)
+				{
+					m_rbBucket->m_RbBucket[rbTypes][rbIndex]->DebugRender(renderContext, Rgba::RED);
+				}
+				else
+				{
+					m_rbBucket->m_RbBucket[rbTypes][rbIndex]->DebugRender(renderContext, Rgba::BLUE);
+				}
 			}
-			else
-			{
-				m_rigidbodyVector[rbIndex]->DebugRender(renderContext, Rgba::BLUE);
+			break;
+			case NUM_SIMULATION_TYPES:
+			break;
+			default:
+			break;
 			}
-		}
-		break;
-		case NUM_SIMULATION_TYPES:
-		break;
-		default:
-		break;
 		}
 	}
 }
@@ -151,44 +165,168 @@ const Vec2& PhysicsSystem::GetGravity() const
 void PhysicsSystem::RunStep( float deltaTime )
 {
 	//First move all rigidbodies
-	int numObjects = static_cast<int>(m_rigidbodyVector.size());
+	MoveAllDynamicObjects(deltaTime);
+
+	//For A2
+	//Check Static vs Static to mark as collided
+	CheckStaticVsStaticCollisions();
+
+	//Dynamic vs Static set 
+	ResolveDynamicVsStaticCollisions(true);
+
+	//Dynamic vs Dynamic set
+	ResolveDynamicVsDynamicCollisions(true);
+
+	//Dynamic vs static set with no resolution
+	ResolveDynamicVsStaticCollisions(false);
+}
+
+void PhysicsSystem::MoveAllDynamicObjects(float deltaTime)
+{
+	int numObjects = static_cast<int>(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION].size());
 	for (int objectIndex = 0; objectIndex < numObjects; objectIndex++)
 	{
-		if(m_rigidbodyVector[objectIndex] != nullptr)
+		if(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][objectIndex] != nullptr)
 		{
-			m_rigidbodyVector[objectIndex]->Move(deltaTime);
+			m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][objectIndex]->Move(deltaTime);
 		}
 	}
+}
+
+void PhysicsSystem::CheckStaticVsStaticCollisions()
+{
+	int numStaticObjects = static_cast<int>(m_rbBucket->m_RbBucket[STATIC_SIMULATION].size());
 
 	//Set colliding or not colliding here
-	for(int colliderIndex = 0; colliderIndex < numObjects; colliderIndex++)
+	for(int colliderIndex = 0; colliderIndex < numStaticObjects; colliderIndex++)
 	{
-		if(m_rigidbodyVector[colliderIndex] == nullptr)
+		if(m_rbBucket->m_RbBucket[STATIC_SIMULATION][colliderIndex] == nullptr)
 		{
 			continue;
 		}
 
-		for(int otherColliderIndex = 0; otherColliderIndex < numObjects; otherColliderIndex++)
+		for(int otherColliderIndex = 0; otherColliderIndex < numStaticObjects; otherColliderIndex++)
 		{
 			//check condition where the other collider is nullptr
-			if(m_rigidbodyVector[otherColliderIndex] == nullptr)
+			if(m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex] == nullptr)
 			{
 				continue;
 			}
 
 			//Make sure we aren't the same rigidbody
-			if(m_rigidbodyVector[colliderIndex] == m_rigidbodyVector[otherColliderIndex])
+			if(m_rbBucket->m_RbBucket[STATIC_SIMULATION][colliderIndex] == m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex])
 			{
 				continue;
 			}
-						
-			if(m_rigidbodyVector[colliderIndex]->m_collider->IsTouching(m_rigidbodyVector[otherColliderIndex]->m_collider))
+
+			Collision2D collision;
+			if(m_rbBucket->m_RbBucket[STATIC_SIMULATION][colliderIndex]->m_collider->IsTouching(&collision, m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex]->m_collider))
 			{
 				//Set collision to true
-				m_rigidbodyVector[colliderIndex]->m_collider->SetCollision(true);
-				m_rigidbodyVector[otherColliderIndex]->m_collider->SetCollision(true);
+				m_rbBucket->m_RbBucket[STATIC_SIMULATION][colliderIndex]->m_collider->SetCollision(true);
+				m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex]->m_collider->SetCollision(true);
 			}
 		}
 	}
 }
 
+void PhysicsSystem::ResolveDynamicVsStaticCollisions(bool canResolve)
+{
+	int numDynamicObjects = static_cast<int>(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION].size());
+	int numStaticObjects = static_cast<int>(m_rbBucket->m_RbBucket[STATIC_SIMULATION].size());
+
+	//Set colliding or not colliding here
+	for(int colliderIndex = 0; colliderIndex < numDynamicObjects; colliderIndex++)
+	{
+		if(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex] == nullptr)
+		{
+			continue;
+		}
+
+		for(int otherColliderIndex = 0; otherColliderIndex < numStaticObjects; otherColliderIndex++)
+		{
+			//check condition where the other collider is nullptr
+			if(m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex] == nullptr)
+			{
+				continue;
+			}
+
+			Collision2D collision;
+			if(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_collider->IsTouching(&collision, m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex]->m_collider))
+			{
+				//Set collision to true
+				m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_collider->SetCollision(true);
+				m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex]->m_collider->SetCollision(true);
+
+				//Push the object out based on the collision manifold
+				if(collision.m_manifold.m_normal != Vec2::ZERO)
+				{
+					m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_transform.m_position += collision.m_manifold.m_normal * collision.m_manifold.m_penetration;
+				}
+
+				if(canResolve)
+				{
+					//Resolve
+				}
+			}
+		}
+	}
+}
+
+void PhysicsSystem::ResolveDynamicVsDynamicCollisions(bool canResolve)
+{
+	int numDynamicObjects = static_cast<int>(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION].size());
+
+	//Set colliding or not colliding here
+	for(int colliderIndex = 0; colliderIndex < numDynamicObjects; colliderIndex++)
+	{
+		if(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex] == nullptr)
+		{
+			continue;
+		}
+
+		for(int otherColliderIndex = 0; otherColliderIndex < numDynamicObjects; otherColliderIndex++)
+		{
+			//check condition where the other collider is nullptr
+			if(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][otherColliderIndex] == nullptr)
+			{
+				continue;
+			}
+
+			
+			//Make sure we aren't the same rigidbody
+			if(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex] == m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][otherColliderIndex])
+			{
+				continue;
+			}
+
+			Collision2D collision;
+			if(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_collider->IsTouching(&collision, m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][otherColliderIndex]->m_collider))
+			{
+				//Set collision to true
+				m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_collider->SetCollision(true);
+				m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][otherColliderIndex]->m_collider->SetCollision(true);
+
+				//Push the object out based on the collision manifold
+				if(collision.m_manifold.m_normal != Vec2::ZERO)
+				{
+					float mass0 = m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_mass; 
+					float mass1 = m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][otherColliderIndex]->m_mass; 
+					float totalMass = mass0 + mass1;
+
+					//Correction on system mass
+					float correct0 = mass1 / totalMass;   // move myself along the correction normal
+					float correct1 = mass0 / totalMass;  // move opposite along the normal
+
+					m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_transform.m_position += collision.m_manifold.m_normal * collision.m_manifold.m_penetration * correct0;
+					m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][otherColliderIndex]->m_transform.m_position += (collision.m_manifold.m_normal * -1) * collision.m_manifold.m_penetration * correct1;
+				}
+
+				if(canResolve)
+				{
+					//resolve
+				}
+			}
+		}
+	}
+}

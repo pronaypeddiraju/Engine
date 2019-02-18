@@ -199,12 +199,14 @@
     <ClCompile Include="Math\FloatRange.cpp" />
     <ClCompile Include="Math\IntRange.cpp" />
     <ClCompile Include="Math\IntVec2.cpp" />
+    <ClCompile Include="Math\Manifold.cpp" />
     <ClCompile Include="Math\MathUtils.cpp" />
     <ClCompile Include="Math\Matrix44.cpp" />
     <ClCompile Include="Math\Noise\SmoothNoise.cpp" />
     <ClCompile Include="Math\PhysicsSystem.cpp" />
     <ClCompile Include="Math\RandomNumberGenerator.cpp" />
     <ClCompile Include="Math\Rigidbody2D.cpp" />
+    <ClCompile Include="Math\RigidBodyBucket.cpp" />
     <ClCompile Include="Math\Transform2.cpp" />
     <ClCompile Include="Math\Vec2.cpp" />
     <ClCompile Include="Math\Vec3.cpp" />
@@ -252,6 +254,7 @@
     <ClInclude Include="Math\FloatRange.hpp" />
     <ClInclude Include="Math\IntRange.hpp" />
     <ClInclude Include="Math\IntVec2.hpp" />
+    <ClInclude Include="Math\Manifold.hpp" />
     <ClInclude Include="Math\MathUtils.hpp" />
     <ClInclude Include="Math\Matrix44.hpp" />
     <ClInclude Include="Math\Noise\RawNoise.hpp" />
@@ -259,6 +262,7 @@
     <ClInclude Include="Math\PhysicsSystem.hpp" />
     <ClInclude Include="Math\RandomNumberGenerator.hpp" />
     <ClInclude Include="Math\Rigidbody2D.hpp" />
+    <ClInclude Include="Math\RigidBodyBucket.hpp" />
     <ClInclude Include="Math\Transform2.hpp" />
     <ClInclude Include="Math\Vec2.hpp" />
     <ClInclude Include="Math\Vec3.hpp" />

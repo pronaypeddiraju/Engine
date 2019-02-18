@@ -4,10 +4,9 @@
 #include "Engine/Math/Rigidbody2D.hpp"
 #include "Engine/Math/Disc2D.hpp"
 
-bool Collider2D::IsTouching( Collider2D* otherCollider )
+bool Collider2D::IsTouching(Collision2D* collision, Collider2D* otherCollider )
 {
-	Collision2D collision; 
-	return GetCollisionInfo( &collision, this, otherCollider); 
+	return GetCollisionInfo( collision, this, otherCollider); 
 }
 
 eColliderType2D Collider2D::GetType()
@@ -30,16 +29,21 @@ AABB2Collider::~AABB2Collider()
 
 }
 
-AABB2 AABB2Collider::GetLocalShape()
+AABB2 AABB2Collider::GetLocalShape() const
 {
 	return m_localShape;
 }
 
-AABB2 AABB2Collider::GetWorldShape()
+AABB2 AABB2Collider::GetWorldShape() const
 {
 	AABB2 box = GetLocalShape();
 	box.TranslateByVector(m_rigidbody->GetPosition());
 	return box;
+}
+
+Vec2 AABB2Collider::GetBoxCenter() const
+{
+	return m_localShape.GetBoxCenter();
 }
 
 Disc2DCollider::Disc2DCollider( const Vec2& centre, float radius )
@@ -52,12 +56,12 @@ Disc2DCollider::~Disc2DCollider()
 
 }
 
-Disc2D Disc2DCollider::GetLocalShape()
+Disc2D Disc2DCollider::GetLocalShape() const
 {
 	return m_localShape;
 }
 
-Disc2D Disc2DCollider::GetWorldShape()
+Disc2D Disc2DCollider::GetWorldShape() const
 {
 	Disc2D disc = GetLocalShape();
 	disc.TranslateByVector(m_rigidbody->GetPosition());

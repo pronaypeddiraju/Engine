@@ -296,6 +296,11 @@ bool Vec2::operator<( const Vec2& compare ) const
 	return (x < compare.x && y < compare.y);
 }
 
+bool Vec2::operator>( const Vec2& compare ) const
+{
+	return (x > compare.x && y > compare.y);
+}
+
 Vec2 Vec2::Min( const Vec2& compare )
 {
 	return Vec2(GetLowerValue(x, compare.x), GetLowerValue(y, compare.y));

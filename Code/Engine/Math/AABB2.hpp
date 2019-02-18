@@ -12,8 +12,11 @@ public:
 	Vec2 m_minBounds;
 	Vec2 m_maxBounds;
 
+	Vec2 m_center;
+
 	//Accessors
 	//AABB2			GetAABB2Bounds() const	{return AABB2(m_minBounds, m_maxBounds);}
+	const Vec2&		GetBoxCenter() const;
 
 	//Mutators
 	void			SetFromText(const char* asText);

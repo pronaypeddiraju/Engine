@@ -12,11 +12,18 @@ AABB2::AABB2( const Vec2 &minBounds, const Vec2 &maxBounds )
 {
 	m_minBounds = minBounds;
 	m_maxBounds = maxBounds;
+
+	m_center = Vec2(m_maxBounds.x - m_minBounds.x, m_maxBounds.y - m_minBounds.y);
 }
 
 AABB2::AABB2( const char* asText )
 {
 	SetFromText(asText);
+}
+
+const Vec2& AABB2::GetBoxCenter() const
+{
+	return m_center;
 }
 
 void AABB2::SetFromText( const char* asText )

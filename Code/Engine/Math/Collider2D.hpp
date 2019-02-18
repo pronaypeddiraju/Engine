@@ -5,6 +5,7 @@
 #include "Engine/Math/Disc2D.hpp"
 
 class Rigidbody2D;
+struct Collision2D;
 
 enum eColliderType2D
 {
@@ -23,7 +24,7 @@ enum eColliderType2D
 class Collider2D
 {
 public:
-	bool				IsTouching(Collider2D* otherCollider);
+	bool				IsTouching(Collision2D* collision, Collider2D* otherCollider);
 	eColliderType2D		GetType();
 	void				SetCollision(bool inCollision);
 
@@ -40,9 +41,10 @@ public:
 	explicit AABB2Collider(const Vec2& minBounds, const Vec2& maxBounds);
 	~AABB2Collider();
 
-	AABB2				GetLocalShape();		//Shape relative to rigidbody
-	AABB2				GetWorldShape();		//Shape in world
+	AABB2				GetLocalShape() const;		//Shape relative to rigidbody
+	AABB2				GetWorldShape() const;		//Shape in world
 
+	Vec2				GetBoxCenter() const;
 public:
 	AABB2				m_localShape;
 };
@@ -53,8 +55,8 @@ public:
 	explicit Disc2DCollider(const Vec2& centre, float radius);
 	~Disc2DCollider();
 
-	Disc2D				GetLocalShape();
-	Disc2D				GetWorldShape();
+	Disc2D				GetLocalShape() const;
+	Disc2D				GetWorldShape() const;
 
 public:
 	Disc2D				m_localShape;
