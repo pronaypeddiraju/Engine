@@ -358,11 +358,20 @@ void PhysicsSystem::ResolveDynamicVsDynamicCollisions(bool canResolve)
 					Vec2 tangentialVelocity0 = velocity0 - normalVelocity0;
 					Vec2 tangentialVelocity1 = velocity1 - normalVelocity1;
 
+					//Old collision formula
+					/*
 					float finalVelocity0Scale = ((rb0->m_mass - rb1->m_mass) / (rb0->m_mass + rb1->m_mass)) * velocity0OnNormal + (2 * rb1->m_mass / (rb0->m_mass + rb1->m_mass)) * velocity1OnNormal;
 					finalVelocity0Scale *= (collision.m_Obj->m_rigidbody->m_material.restitution) * (collision.m_otherObj->m_rigidbody->m_material.restitution);
 					
 					float finalVelocity1Scale = ((rb1->m_mass - rb0->m_mass) / (rb1->m_mass + rb0->m_mass)) * velocity1OnNormal + (2 * rb0->m_mass / (rb0->m_mass + rb1->m_mass)) * velocity0OnNormal;
 					finalVelocity1Scale *= (collision.m_Obj->m_rigidbody->m_material.restitution) * (collision.m_otherObj->m_rigidbody->m_material.restitution);
+					*/
+
+					//New collision formula
+					float CoefficientOfRestitution = (collision.m_Obj->m_rigidbody->m_material.restitution) * (collision.m_otherObj->m_rigidbody->m_material.restitution);
+
+					float finalVelocity0Scale = (CoefficientOfRestitution * rb1->m_mass * (velocity1OnNormal - velocity0OnNormal) + (rb0->m_mass * velocity0OnNormal) +  (rb1->m_mass * velocity1OnNormal)) / (rb0->m_mass + rb1->m_mass);
+					float finalVelocity1Scale = (CoefficientOfRestitution * rb0->m_mass * (velocity0OnNormal - velocity1OnNormal) + (rb1->m_mass * velocity1OnNormal) +  (rb0->m_mass * velocity0OnNormal)) / (rb0->m_mass + rb1->m_mass);
 
 					//Compute final velocity along normal and add to existing velocity on tangent
 					Vec2 fVelocity0Normal = collision.m_manifold.m_normal * finalVelocity0Scale;
