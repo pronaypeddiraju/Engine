@@ -56,7 +56,7 @@ bool GetManifold( Manifold2D *out, AABB2Collider const &boxA, AABB2Collider cons
 
 		if(out->m_normal.y == 0.f)
 		{	
-			if((boxAShape.GetBoxCenter() + boxAShape.m_minBounds).x < (boxB.GetWorldShape().m_center + boxAShape.m_minBounds).x)
+			if(((boxAShape.m_maxBounds + boxAShape.m_minBounds)/2).x < ((boxBShape.m_maxBounds + boxBShape.m_minBounds)/2).x)
 			{
 				//pushing out on x
 				out->m_normal *= -1;
@@ -64,13 +64,13 @@ bool GetManifold( Manifold2D *out, AABB2Collider const &boxA, AABB2Collider cons
 		}
 		else if(out->m_normal.x == 0.f)
 		{
-			if((boxAShape.GetBoxCenter() + boxAShape.m_minBounds).y < (boxB.GetWorldShape().m_center + boxAShape.m_minBounds).y)
+			if(((boxAShape.m_maxBounds + boxAShape.m_minBounds)/2).y < ((boxBShape.m_maxBounds + boxBShape.m_minBounds)/2).y)
 			{
 				//pushing out on y
 				out->m_normal *= -1;
 			}
 		}
-
+		
 		return true;
 	}
 	else 
@@ -256,15 +256,13 @@ void GenerateManifoldBoxToBox(Manifold2D* manifold, Vec2 const &min, Vec2 const 
 	if(minValue == boxWidth)
 	{
 		//normal is along X
-		normal = Vec2(min.x, 0.f) - Vec2(max.x, 0.f);
+		normal = Vec2(1.f, 0.f);
 	}
 	else
 	{
 		//Normal is along Y
-		normal = Vec2(0.f, min.y) - Vec2(0.f, max.y);
+		normal = Vec2(0.f, 1.f);
 	}
-
-	normal.Normalize();
 
 	manifold->m_normal = normal;
 	manifold->m_penetration = minValue;

@@ -265,6 +265,7 @@ void PhysicsSystem::ResolveDynamicVsStaticCollisions(bool canResolve)
 					m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_transform.m_position += collision.m_manifold.m_normal * collision.m_manifold.m_penetration;
 				}
 
+				
 				if(canResolve)
 				{
 					//Resolve
@@ -288,6 +289,7 @@ void PhysicsSystem::ResolveDynamicVsStaticCollisions(bool canResolve)
 
 					m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_velocity = finalVelocity;
 				}
+				
 			}
 		}
 	}
@@ -305,17 +307,10 @@ void PhysicsSystem::ResolveDynamicVsDynamicCollisions(bool canResolve)
 			continue;
 		}
 
-		for(int otherColliderIndex = 0; otherColliderIndex < numDynamicObjects; otherColliderIndex++)
+		for(int otherColliderIndex = colliderIndex + 1; otherColliderIndex < numDynamicObjects; otherColliderIndex++)
 		{
 			//check condition where the other collider is nullptr
 			if(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][otherColliderIndex] == nullptr)
-			{
-				continue;
-			}
-
-			
-			//Make sure we aren't the same rigidbody
-			if(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex] == m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][otherColliderIndex])
 			{
 				continue;
 			}
@@ -342,10 +337,42 @@ void PhysicsSystem::ResolveDynamicVsDynamicCollisions(bool canResolve)
 					m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][otherColliderIndex]->m_transform.m_position += (collision.m_manifold.m_normal * -1) * collision.m_manifold.m_penetration * correct1;
 				}
 
+				
 				if(canResolve)
 				{
 					//resolve
+					Rigidbody2D* rb0 = m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex];
+					Rigidbody2D* rb1 = m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][otherColliderIndex];
+
+					Vec2 velocity0 = rb0->m_velocity;
+					Vec2 velocity1 = rb1->m_velocity;
+
+					float velocity0OnNormal = GetDotProduct(velocity0, collision.m_manifold.m_normal);
+					float velocity1OnNormal = GetDotProduct(velocity1, collision.m_manifold.m_normal);
+
+					Vec2 tangent = collision.m_manifold.m_normal.GetRotated90Degrees();
+
+					Vec2 normalVelocity0 = GetProjectedVector(velocity0, collision.m_manifold.m_normal);
+					Vec2 normalVelocity1 = GetProjectedVector(velocity1, collision.m_manifold.m_normal);
+
+					Vec2 tangentialVelocity0 = velocity0 - normalVelocity0;
+					Vec2 tangentialVelocity1 = velocity1 - normalVelocity1;
+
+					float finalVelocity0Scale = ((rb0->m_mass - rb1->m_mass) / (rb0->m_mass + rb1->m_mass)) * velocity0OnNormal + (2 * rb1->m_mass / (rb0->m_mass + rb1->m_mass)) * velocity1OnNormal;
+					float finalVelocity1Scale = ((rb1->m_mass - rb0->m_mass) / (rb1->m_mass + rb0->m_mass)) * velocity1OnNormal + (2 * rb0->m_mass / (rb0->m_mass + rb1->m_mass)) * velocity0OnNormal;
+
+					//Compute final velocity along normal and add to existing velocity on tangent
+					Vec2 fVelocity0Normal = collision.m_manifold.m_normal * finalVelocity0Scale;
+					Vec2 finalVelocity0 = fVelocity0Normal + tangentialVelocity0;
+
+					Vec2 fVelocity1Normal = collision.m_manifold.m_normal * finalVelocity1Scale;
+					Vec2 finalVelocity1 = fVelocity1Normal + tangentialVelocity1;
+
+					rb0->m_velocity = finalVelocity0;
+					rb1->m_velocity = finalVelocity1;
+
 				}
+				
 			}
 		}
 	}
