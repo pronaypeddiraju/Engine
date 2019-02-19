@@ -579,10 +579,14 @@ float GetHigherValue(const float a, const float b)
 //------------------------------------------------------------------------------------------------------------------------------
 float Clamp( float x, float minClamp, float maxClamp )
 {
-	if(x < minClamp)
+	if(x <= minClamp)
+	{
 		x = minClamp;
-	else if(x > maxClamp)
+	}
+	else if(x >= maxClamp)
+	{
 		x = maxClamp;
+	}
 
 	return x;
 }

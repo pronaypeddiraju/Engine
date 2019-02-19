@@ -20,7 +20,7 @@ enum eSimulationType
 
 struct PhysicsMaterialT
 {
-	float restitution = 0.5f;
+	float restitution = 1.f;
 };
 
 class Rigidbody2D
