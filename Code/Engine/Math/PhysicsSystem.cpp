@@ -4,6 +4,7 @@
 #include "Engine/Renderer/Rgba.hpp"
 #include "Engine/Math/CollisionHandler.hpp"
 #include "Engine/Math/RigidBodyBucket.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 PhysicsSystem* g_physicsSystem = nullptr;
 
@@ -267,6 +268,25 @@ void PhysicsSystem::ResolveDynamicVsStaticCollisions(bool canResolve)
 				if(canResolve)
 				{
 					//Resolve
+					Vec2 velocity = m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_velocity;
+					
+					float velocityOnNormal = GetDotProduct(velocity, collision.m_manifold.m_normal);
+					if(velocityOnNormal > 0.f)
+					{
+						//Ignore this collision as we are already moving out of object
+						return;
+					}
+
+					Vec2 tangent = collision.m_manifold.m_normal.GetRotated90Degrees();
+					Vec2 tangentialVelocity = GetProjectedVector(velocity, tangent);
+
+					float finalVelocityScale = -velocityOnNormal * (collision.m_Obj->m_rigidbody->m_material.restitution) * (collision.m_otherObj->m_rigidbody->m_material.restitution);
+
+					//Comute final velocity along normal and add to existing velocity on tangent
+					Vec2 fVelocityNormal = collision.m_manifold.m_normal * finalVelocityScale;
+					Vec2 finalVelocity = fVelocityNormal + tangentialVelocity;
+
+					m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_velocity = finalVelocity;
 				}
 			}
 		}

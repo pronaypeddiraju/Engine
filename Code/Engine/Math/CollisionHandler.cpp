@@ -45,17 +45,32 @@ bool GetManifold( Manifold2D *out, AABB2Collider const &boxA, AABB2Collider cons
 	Vec2 min = boxA.GetWorldShape().m_maxBounds.Min(boxB.GetWorldShape().m_maxBounds);
 	Vec2 max = boxA.GetWorldShape().m_minBounds.Max(boxB.GetWorldShape().m_minBounds);
 
+	//AABB2 collisionBox = AABB2(max, min);
+	
 	if(max < min)
 	{
 		GenerateManifoldBoxToBox(out, min, max);
+
+		AABB2 boxAShape = boxA.GetWorldShape();
+		AABB2 boxBShape = boxB.GetWorldShape();
+
 		if(out->m_normal.y == 0.f)
-		{
-			//pushing out on x
-			if(boxA.GetWorldShape().m_center.x < boxB.GetWorldShape().m_center.x)
+		{	
+			if((boxAShape.GetBoxCenter() + boxAShape.m_minBounds).x < (boxB.GetWorldShape().m_center + boxAShape.m_minBounds).x)
 			{
+				//pushing out on x
 				out->m_normal *= -1;
 			}
 		}
+		else if(out->m_normal.x == 0.f)
+		{
+			if((boxAShape.GetBoxCenter() + boxAShape.m_minBounds).y < (boxB.GetWorldShape().m_center + boxAShape.m_minBounds).y)
+			{
+				//pushing out on y
+				out->m_normal *= -1;
+			}
+		}
+
 		return true;
 	}
 	else 
@@ -67,17 +82,33 @@ bool GetManifold( Manifold2D *out, AABB2Collider const &boxA, AABB2Collider cons
 bool GetManifold( Manifold2D *out, AABB2Collider const &box, Disc2DCollider const &disc )
 {
 	Vec2 discCentre = disc.GetWorldShape().GetCentre();
-
 	AABB2 boxShape = box.GetWorldShape();
 	Vec2 closestPoint = GetClosestPointOnAABB2( discCentre, boxShape );
+	Vec2 boxCenter = boxShape.GetBoxCenter() + boxShape.m_minBounds;
 
 	float distanceSquared = GetDistanceSquared2D(discCentre, closestPoint);
 	float radius = disc.GetWorldShape().GetRadius();
+	//float distanceBwCenters = GetDistanceSquared2D(discCentre, boxCenter);
+
+	float distance = 0;
+
+	//Check is box inside disc
+	if(closestPoint == discCentre)
+	{
+		//box is inside disc
+		distance = GetDistance2D(discCentre, boxCenter);
+		Vec2 normal = boxCenter - discCentre;
+		normal.Normalize();
+
+		out->m_normal = normal;
+		out->m_penetration = distance;
+		return true;
+	}
 
 	if(distanceSquared < radius * radius)
 	{
 		//out here
-		float distance = GetDistance2D(discCentre, closestPoint);
+		distance = GetDistance2D(discCentre, closestPoint);
 		Vec2 normal = closestPoint - discCentre;
 		normal.Normalize();
 
@@ -110,6 +141,7 @@ bool GetManifold( Manifold2D *out, Disc2DCollider const &disc, AABB2Collider con
 	{
 		//out here
 		float distance = GetDistance2D(discCentre, closestPoint);
+
 		Vec2 normal = discCentre - closestPoint;
 		normal.Normalize();
 

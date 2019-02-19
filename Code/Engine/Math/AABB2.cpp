@@ -13,7 +13,7 @@ AABB2::AABB2( const Vec2 &minBounds, const Vec2 &maxBounds )
 	m_minBounds = minBounds;
 	m_maxBounds = maxBounds;
 
-	m_center = Vec2(m_maxBounds.x - m_minBounds.x, m_maxBounds.y - m_minBounds.y);
+	m_center = (m_maxBounds + m_minBounds) / 2;
 }
 
 AABB2::AABB2( const char* asText )
@@ -38,6 +38,8 @@ void AABB2::SetFromText( const char* asText )
 	{
 		m_minBounds = Vec2(static_cast<float>(atof(splitStrings[0].c_str())), static_cast<float>(atof(splitStrings[1].c_str())));
 		m_maxBounds = Vec2(static_cast<float>(atof(splitStrings[2].c_str())), static_cast<float>(atof(splitStrings[3].c_str())));
+
+		m_center = (m_maxBounds + m_minBounds) / 2;
 	}
 }
 
