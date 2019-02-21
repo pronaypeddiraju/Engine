@@ -72,7 +72,7 @@ void Rigidbody2D::DebugRender( RenderContext* renderContext, const Rgba& color )
 	{
 		AABB2Collider* collider = reinterpret_cast<AABB2Collider*>(m_collider);
 
-		AddVertsForWireBox2D(verts, collider->GetWorldShape(), 0.5f, color);
+		AddVertsForBoundingBox(verts, collider->GetWorldShape(), color, 0.5f);
 	}
 	break;
 	case COLLIDER_DISC:
