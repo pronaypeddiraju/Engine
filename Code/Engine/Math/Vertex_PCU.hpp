@@ -9,8 +9,8 @@ struct Vertex_PCU
 public:
 
 	Vec3 m_position;
-	Rgba m_color;
 	Vec2 m_uvTexCoords;
+	Rgba m_color;
 
 public:
 

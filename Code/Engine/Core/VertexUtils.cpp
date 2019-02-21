@@ -32,31 +32,26 @@ void AddVertsForLine2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& start,
 	centerToBoundVector.SetLength(thickness/2);
 	Vec2 centreToBoundRotated = centerToBoundVector.GetRotated90Degrees();
 
-	//Point 1 (End left)
-	Vec3 lineCorner = Vec3(end.x, end.y, 0.f) + Vec3(centerToBoundVector.x, centerToBoundVector.y, 0.f) + Vec3(centreToBoundRotated.x, centreToBoundRotated.y, 0.f);
+	Vec3 lineCorner = Vec3(start.x, start.y, 0.f) - Vec3(centerToBoundVector.x, centerToBoundVector.y, 0.f) + Vec3(centreToBoundRotated.x, centreToBoundRotated.y, 0.f);
 	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2(0.f, 0.f)));
 
-	//Point 2 (End Right)
+	lineCorner = Vec3(start.x, start.y, 0.f) - Vec3(centerToBoundVector.x, centerToBoundVector.y, 0.f) - Vec3(centreToBoundRotated.x, centreToBoundRotated.y, 0.f);
+	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2(0.f, 0.f)));
+
 	lineCorner = Vec3(end.x, end.y, 0.f) + Vec3(centerToBoundVector.x, centerToBoundVector.y, 0.f) - Vec3(centreToBoundRotated.x, centreToBoundRotated.y, 0.f);
-	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2(0.f, 0.f)));
-
-	//Point 3 (Start Left)
-	lineCorner = Vec3(start.x, start.y, 0.f) - Vec3(centerToBoundVector.x, centerToBoundVector.y, 0.f) + Vec3(centreToBoundRotated.x, centreToBoundRotated.y, 0.f);
 	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2(0.f, 0.f)));
 
 	//We have our first triangle now
 
-	//Point 4 (start left)
+	lineCorner = Vec3(end.x, end.y, 0.f) + Vec3(centerToBoundVector.x, centerToBoundVector.y, 0.f) - Vec3(centreToBoundRotated.x, centreToBoundRotated.y, 0.f);
+	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2(0.f, 0.f)));
+
+	lineCorner = Vec3(end.x, end.y, 0.f) + Vec3(centerToBoundVector.x, centerToBoundVector.y, 0.f) + Vec3(centreToBoundRotated.x, centreToBoundRotated.y, 0.f);
+	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2(0.f, 0.f)));
+
 	lineCorner = Vec3(start.x, start.y, 0.f) - Vec3(centerToBoundVector.x, centerToBoundVector.y, 0.f) + Vec3(centreToBoundRotated.x, centreToBoundRotated.y, 0.f);
 	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2(0.f, 0.f)));
 
-	//Point 5 (Start Right)
-	lineCorner = Vec3(start.x, start.y, 0.f) - Vec3(centerToBoundVector.x, centerToBoundVector.y, 0.f) - Vec3(centreToBoundRotated.x, centreToBoundRotated.y, 0.f);
-	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2(0.f, 0.f)));
-
-	//Point 6 (End right)
-	lineCorner = Vec3(end.x, end.y, 0.f) + Vec3(centerToBoundVector.x, centerToBoundVector.y, 0.f) - Vec3(centreToBoundRotated.x, centreToBoundRotated.y, 0.f);
-	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2(0.f, 0.f)));
 }
 
 void AddVertsForRing2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, float thickness, const Rgba& color, int numSides /*= 64 */ )
@@ -120,15 +115,25 @@ void AddVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, 
 	Vec3 boxTopLeft = Vec3(box.m_minBounds.x, box.m_maxBounds.y, 0.f);
 	Vec3 boxTopRight = Vec3(box.m_maxBounds.x, box.m_maxBounds.y, 0.f);
 
+	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
+	vertexArray.push_back(Vertex_PCU(boxTopLeft, color, Vec2(uvAtMins.x, uvAtMaxs.y)));
+	vertexArray.push_back(Vertex_PCU(boxBottomLeft, color, uvAtMins));
+
 	vertexArray.push_back(Vertex_PCU(boxBottomLeft, color, uvAtMins));
 	vertexArray.push_back(Vertex_PCU(boxBottomRight, color, Vec2(uvAtMaxs.x, uvAtMins.y)));
 	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
+}
 
-	vertexArray.push_back(Vertex_PCU(boxBottomLeft, color, uvAtMins));
-	vertexArray.push_back(Vertex_PCU(boxTopLeft, color, Vec2(uvAtMins.x, uvAtMaxs.y)));
-	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
-
-
+void AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba& color, float thickness )
+{
+	//Left Line
+	AddVertsForLine2D(vertexArray, box.m_minBounds, Vec2(box.m_minBounds.x, box.m_maxBounds.y), thickness, color);
+	//Top line
+	AddVertsForLine2D(vertexArray, Vec2(box.m_minBounds.x, box.m_maxBounds.y), box.m_maxBounds, thickness, color);
+	//Right line
+	AddVertsForLine2D(vertexArray, box.m_maxBounds, Vec2(box.m_maxBounds.x, box.m_minBounds.y), thickness, color);
+	//Bottom Line
+	AddVertsForLine2D(vertexArray, Vec2(box.m_maxBounds.x, box.m_minBounds.y), box.m_minBounds, thickness, color);
 }
 
 //Move a vertex

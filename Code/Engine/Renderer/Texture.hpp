@@ -1,11 +1,23 @@
 #pragma once
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Renderer/RendererTypes.hpp"
 
+struct ID3D11Resource;
+
+class Image;
+class TextureView2D;
+class RenderContext;
+
+//------------------------------------------------------------------------------------------------------------------------------
 class Texture
 {
 	friend class RenderContext;
 public: 
+	Texture( RenderContext *renderContext ); 
+	virtual ~Texture(); // virtual, as this will release the resource; 
+
 	unsigned int			GetTextureID() const	{return m_textureID; }
 	
 protected:
@@ -14,7 +26,30 @@ protected:
 
 private:
 	unsigned int			m_textureID = 0;
-	IntVec2					m_dimensions;
 
+public:
+	RenderContext*			m_owner = nullptr; 
+	IntVec2					m_dimensions = IntVec2::ZERO;
+	// D3D11 objets; 
+	ID3D11Resource*			m_handle = nullptr; 
+	eGPUMemoryUsage			m_memoryUsage; 
+	eTextureUsageBits		m_textureUsage; 
+
+	// If you have the concept of an image format (RGBA8, R8, D24S8, etc..)
+	// It would go here.  If you only have support for RGBA8, we'll just assume it; 
+	// eImageFormat m_format; 
 };
 
+//------------------------------------------------------------------------
+class Texture2D : public Texture
+{
+public:
+	Texture2D( RenderContext *renderContext );  // textures always come from a context; 
+	virtual ~Texture2D(); 
+
+	bool				LoadTextureFromFile( std::string const &filename, bool isFont = false );
+	bool				LoadTextureFromImage( Image const &image ); 
+
+	// Create a view of this texture usable in the shader; 
+	TextureView2D*		CreateTextureView2D() const;  
+};

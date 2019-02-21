@@ -5,6 +5,9 @@
 #include "Engine/Core/EventSystems.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Core/Time.hpp"
+#include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Renderer/Rgba.hpp"
+#include <algorithm>
 
 DevConsole* g_devConsole = nullptr;
 
@@ -12,14 +15,15 @@ const STATIC Rgba DevConsole::CONSOLE_INFO			=	Rgba(1.0f, 1.0f, 0.0f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_BG_COLOR		=	Rgba(0.0f, 0.0f, 0.0f, 0.75f);
 const STATIC Rgba DevConsole::CONSOLE_ERROR   		=	Rgba(1.0f, 0.0f, 0.0f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_ERROR_DESC	=	Rgba(1.0f, 0.5f, 0.3f, 1.0f);
+const STATIC Rgba DevConsole::CONSOLE_INPUT			=	Rgba(1.0f, 1.0f, 1.0f, 1.0f);
 
-void DevConsole::ExecuteCommandLine( const std::string& commandLine )
+bool DevConsole::ExecuteCommandLine( const std::string& commandLine )
 {
 	//Split the string to sensible key value pairs
 	std::vector<std::string> splitStrings = SplitStringOnDelimiter(commandLine, ' ');
 	if(splitStrings[0] != "Exec")
 	{
-		return;
+		return false;
 	}
 
 	else
@@ -49,6 +53,200 @@ void DevConsole::ExecuteCommandLine( const std::string& commandLine )
 				g_devConsole->PrintString(CONSOLE_ECHO, printS);
 			}
 		}
+
+		return true;
+	}
+}
+
+void DevConsole::HandleKeyUp( unsigned char vkKeyCode )
+{
+	UNUSED(vkKeyCode);
+	GUARANTEE_RECOVERABLE(true, "Nothing to handle");
+}
+
+void DevConsole::ShowLastCommand()
+{
+	if(m_lastCommandIndex == 0)
+	{
+		int cmdSize = static_cast<int>(m_commandLog.size());
+		if(cmdSize > 0)
+		{
+			m_lastCommandIndex = static_cast<int>(m_commandLog.size()) - 1;
+			m_currentInput = m_commandLog[m_lastCommandIndex];
+		}
+	}
+	else
+	{
+		if(m_lastCommandIndex > 0)
+		{
+			m_lastCommandIndex--;
+			m_currentInput = m_commandLog[m_lastCommandIndex];
+		}
+	}
+
+	m_carotPosition = static_cast<int>(m_currentInput.size());
+}
+
+void DevConsole::ShowNextCommand()
+{
+	if(m_lastCommandIndex == static_cast<unsigned int>(m_commandLog.size()) - 1)
+	{
+		m_lastCommandIndex = 0;
+		m_currentInput = m_commandLog[m_lastCommandIndex];
+	}
+	else
+	{
+		m_lastCommandIndex++;
+		m_currentInput = m_commandLog[m_lastCommandIndex];
+	}
+
+	m_carotPosition = static_cast<int>(m_currentInput.size());
+}
+
+void DevConsole::HandleKeyDown( unsigned char vkKeyCode )
+{
+	switch( vkKeyCode )
+	{
+	case UP_ARROW:
+	{
+		//Show the last command executed
+		ShowLastCommand();
+	}
+	break;
+	case DOWN_ARROW:
+	{
+		ShowNextCommand();
+	}
+	break;
+	case LEFT_ARROW:
+	{
+		if(m_carotPosition > 0)
+		{
+			m_carotPosition -= 1;
+		}
+	}
+	break;
+	case RIGHT_ARROW:
+	{
+		if(m_carotPosition < static_cast<int>(m_currentInput.size()))
+		{
+			m_carotPosition += 1;
+		}
+	}
+	break;
+	case DEL_KEY:
+	{
+		//Delete the char after carot
+		if(m_carotPosition < static_cast<int>(m_currentInput.size()))
+		{
+			std::string firstSubString = m_currentInput.substr(0, m_carotPosition);
+			std::string secondSubString = m_currentInput.substr(m_carotPosition + 1, m_currentInput.size());
+
+			m_currentInput = firstSubString;
+			m_currentInput += secondSubString;
+		}
+
+		ResetIndexValues();
+	}
+	break;
+	case BACK_SPACE:
+	{
+		if(m_carotPosition > 0)
+		{
+			std::string firstSubString = m_currentInput.substr(0, m_carotPosition - 1);
+			std::string secondSubString = m_currentInput.substr(m_carotPosition, m_currentInput.size());
+
+			m_currentInput = firstSubString;
+			m_currentInput += secondSubString;
+
+			m_carotPosition--;
+		}
+
+		ResetIndexValues();
+	}
+	break;
+	case KEY_ESC:
+	{
+		if(m_currentInput.size() > 0)
+		{
+			//Clear the input string
+			m_currentInput.clear();
+			m_carotPosition = 0;
+		}
+		else
+		{
+			//shut the console
+			m_isOpen = false;
+		}
+	}
+	break;
+	case ENTER_KEY:
+	{
+		//Run inputString as command only if not empty
+		if(m_currentInput.size() == 0)
+		{
+			return;
+		}
+
+		bool result = g_eventSystem->FireEvent(m_currentInput);
+
+		if(!result)
+		{
+			PrintString(CONSOLE_ERROR, m_currentInput + ": Command was not found");
+		}
+		
+		//Store the last command that was executed but remove copies
+
+		// order of unique elements is preserved
+		auto end_unique = std::end(m_commandLog) ;
+		for( auto iter = std::begin(m_commandLog) ; iter != end_unique ; ++iter )
+		{
+			end_unique = std::remove( iter+1, end_unique, *iter ) ;
+		}
+		m_commandLog.erase( end_unique, std::end(m_commandLog) ) ;
+
+		
+		auto findItr = std::find(m_commandLog.begin(), m_commandLog.end(), m_currentInput);
+		if(findItr != m_commandLog.end())
+		{
+			m_commandLog.erase(findItr);
+		}
+
+		m_commandLog.push_back(m_currentInput);
+
+		m_currentInput.clear();
+		m_carotPosition = 0;
+		m_lastCommandIndex = 0;
+	}
+	break;
+	default:
+	break;
+	}
+}
+
+void DevConsole::ResetIndexValues()
+{
+	m_lastCommandIndex = 0;
+}
+
+void DevConsole::HandleCharacter( unsigned char charCode )
+{
+	if(m_carotPosition == m_currentInput.size())
+	{
+		m_currentInput += charCode;
+		m_carotPosition += 1;
+	}
+	else
+	{
+		//carot is not at the end so add at the correct pos
+		std::string m_firstSubString = m_currentInput.substr(0, m_carotPosition);
+		std::string m_secondSubString = m_currentInput.substr(m_carotPosition, m_currentInput.size());
+
+		m_currentInput = m_firstSubString;
+		m_currentInput += charCode;
+		m_currentInput += m_secondSubString;
+
+		m_carotPosition++;
 	}
 }
 
@@ -68,11 +266,23 @@ void DevConsole::Startup()
 {
 	g_eventSystem->SubscribeEventCallBackFn( "Test", Command_Test );
 	g_eventSystem->SubscribeEventCallBackFn( "Help", Command_Help );
+	m_currentInput.empty();
 }
 
 void DevConsole::BeginFrame()
 {
-	
+
+}
+
+void DevConsole::UpdateConsole(float deltaTime)
+{
+	m_carotTimeDiff += deltaTime;
+
+	if(m_carotTimeDiff > 0.5f)
+	{
+		m_carotActive = !m_carotActive;
+		m_carotTimeDiff = 0.f;
+	}
 }
 
 void DevConsole::EndFrame()
@@ -113,24 +323,29 @@ void DevConsole::Render( RenderContext& renderer, const Camera& camera, float li
 	AABB2 blackBox = AABB2(camera.GetOrthoBottomLeft(), camera.GetOrthoTopRight());
 	std::vector<Vertex_PCU> boxVerts;
 	AddVertsForAABB2D(boxVerts, blackBox, CONSOLE_BG_COLOR);
-	renderer.DrawVertexArray(boxVerts);
+
+	//DEBUG
+	//renderer.BindTextureView(0U, nullptr);
+	//renderer.DrawVertexArray(boxVerts);
 
 	//Set the text based on Camera size
 	Vec2 leftBot = camera.GetOrthoBottomLeft();
 	Vec2 rightTop = camera.GetOrthoTopRight();
 
 	float screenHeight = rightTop.y - leftBot.y;
+	float screenWidth = rightTop.x - leftBot.x;
+
 	int numLines = static_cast<int>(screenHeight / lineHeight);
 	int numStrings = static_cast<int>(m_printLog.size());
 
-	Vec2 boxBottomLeft = leftBot + Vec2(lineHeight, lineHeight);
+	Vec2 boxBottomLeft = leftBot + Vec2(lineHeight, lineHeight * 2);
 	Vec2 boxTopRight = boxBottomLeft;
 
 	//Get the last string in the map and work your way back
 	std::vector<ConsoleEntry>::const_iterator vecIterator = m_printLog.end();
 
 	std::vector<Vertex_PCU> textVerts;
-	renderer.BindTexture(m_consoleFont->GetTexture());
+	renderer.BindTextureView(0U, m_consoleFont->GetTexture());
 
 	//Setup your loop end condition
 	int endCondition = 0;
@@ -150,7 +365,7 @@ void DevConsole::Render( RenderContext& renderer, const Camera& camera, float li
 
 		textVerts.empty();
 
-		//Get lenght of string
+		//Get length of string
 		std::string printString = "[ T:" + Stringf("%03f", vecIterator->m_calledTime) + " Frame:" + std::to_string(vecIterator->m_frameNum) + " ] " + vecIterator->m_printString;
 		int numChars = static_cast<int>(printString.length());
 
@@ -171,7 +386,38 @@ void DevConsole::Render( RenderContext& renderer, const Camera& camera, float li
 		//boxBottomLeft.y += CONSOLE_LINE_SPACE;
 	}
 
-	renderer.BindTexture(nullptr);
+	//Draw Text Input box
+	Vec2 textBoxBottomLeft = leftBot + Vec2(lineHeight, lineHeight * 0.25f);
+	Vec2 textBoxTopRight = textBoxBottomLeft + Vec2(screenWidth - lineHeight * 2, lineHeight * 1.25f);
+
+	AABB2 inputBox = AABB2(textBoxBottomLeft, textBoxTopRight);
+
+	renderer.BindTextureView(0U, nullptr);
+	
+	std::vector<Vertex_PCU> inputBoxVerts;
+	AddVertsForBoundingBox(inputBoxVerts, inputBox, CONSOLE_INFO, lineHeight * 0.1f);
+	renderer.DrawVertexArray(inputBoxVerts);
+
+	//Draw current string
+	renderer.BindTextureView(0U, m_consoleFont->GetTexture());
+
+	std::vector<Vertex_PCU> inputStringVerts;
+	m_consoleFont->AddVertsForTextInBox2D(inputStringVerts, inputBox, lineHeight, m_currentInput, CONSOLE_INPUT, 1.f, Vec2::ALIGN_LEFT_CENTERED);
+	renderer.DrawVertexArray(inputStringVerts);
+
+	if(m_carotActive)
+	{
+		//Draw carot
+		renderer.BindTextureView(0U, nullptr);
+
+		Vec2 carotStart = inputBox.m_minBounds;
+		carotStart.x += m_carotPosition * lineHeight;
+		Vec2 carotEnd = carotStart + Vec2(0.f, lineHeight * 1.25f);
+
+		std::vector<Vertex_PCU> carotVerts;
+		AddVertsForLine2D(carotVerts, carotStart, carotEnd, lineHeight * 0.1f, CONSOLE_INPUT);
+		renderer.DrawVertexArray(carotVerts);
+	}
 }
 
 void DevConsole::ToggleOpenFull()
