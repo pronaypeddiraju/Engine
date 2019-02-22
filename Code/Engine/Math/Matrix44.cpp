@@ -222,6 +222,29 @@ Matrix44::Matrix44( const Vec4& iBasisHomogeneous, const Vec4& jBasisHomogeneous
 	m_values[Tw] = translationHomogeneous.w;
 }
 
+Matrix44::Matrix44( float ix, float iy, float iz, float iw, float jx, float jy, float jz, float jw, float kx, float ky, float kz, float kw, float tx, float ty, float tz, float tw )
+{
+	m_values[Ix] = ix;
+	m_values[Iy] = iy;
+	m_values[Iz] = iz;
+	m_values[Iw] = iw;
+
+	m_values[Jx] = jx;
+	m_values[Jy] = jy;
+	m_values[Jz] = jz;
+	m_values[Jw] = jw;
+
+	m_values[Kx] = kx;
+	m_values[Ky] = ky;
+	m_values[Kz] = kz;
+	m_values[Kw] = kw;
+
+	m_values[Tx] = tx;
+	m_values[Ty] = ty;
+	m_values[Tz] = tz;
+	m_values[Tw] = tw;
+}
+
 Matrix44::~Matrix44()
 {
 

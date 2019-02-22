@@ -20,6 +20,11 @@ public:
 	explicit Matrix44 (const Vec2& iBasis2D, const Vec2& jBasis2D, const Vec2& translation2D);
 	explicit Matrix44 (const Vec3& iBasis3D, const Vec3& jBasis3D, const Vec3& kBasis3D, const Vec3& translation3D);
 	explicit Matrix44 (const Vec4& iBasisHomogeneous, const Vec4& jBasisHomogeneous, const Vec4& kBasisHomogeneous, const Vec4& translationHomogeneous);
+	explicit Matrix44 (float ix, float iy, float iz, float iw, 
+					   float jx, float jy, float jz, float jw,
+					   float kx, float ky, float kz, float kw,
+					   float tx, float ty, float tz, float tw);
+
 	~Matrix44();
 
 	const static Matrix44 IDENTITY;

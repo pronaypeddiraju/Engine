@@ -256,6 +256,7 @@
     <ClInclude Include="Math\Matrix44.hpp" />
     <ClInclude Include="Math\Noise\RawNoise.hpp" />
     <ClInclude Include="Math\Noise\SmoothNoise.hpp" />
+    <ClInclude Include="Math\Projection.hpp" />
     <ClInclude Include="Math\RandomNumberGenerator.hpp" />
     <ClInclude Include="Math\Vec2.hpp" />
     <ClInclude Include="Math\Vec3.hpp" />

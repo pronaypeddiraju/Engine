@@ -330,5 +330,8 @@
     <ClInclude Include="Renderer\RendererTypes.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Math\Projection.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
