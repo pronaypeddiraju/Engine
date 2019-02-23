@@ -17,7 +17,7 @@ public:
 	void			Translate2D(const Vec2& translation2D);
 
 	// Projections
-	void			SetPerspectiveProjection(float FieldOfView, float nearZ, float farZ);
+	void			SetPerspectiveProjection(float FieldOfView, float nearZ, float farZ, float aspectRatio = 16.f/9.f);
 	void			SetOrthoView(const Vec2& bottomLeft, const Vec2& topRight, float minZ = -1.f, float maxZ = 1.f);
 	Vec2			GetOrthoBottomLeft() const;
 	Vec2			GetOrthoTopRight() const;
@@ -29,9 +29,9 @@ public:
 
 	//Transforms and Matrices
 	void			SetModelMatrix(Matrix44 camModel);
-	Matrix44		GetModelMatrix() const;
-	Matrix44		GetViewMatrix() const;
-	Matrix44		GetProjectionMatrix() const;
+	const Matrix44&	GetModelMatrix() const;
+	const Matrix44&	GetViewMatrix() const;
+	const Matrix44&	GetProjectionMatrix() const;
 
 	//Buffer functions
 	void			UpdateUniformBuffer(RenderContext* renderContext);

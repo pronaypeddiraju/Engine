@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Math/Matrix44.hpp"
 
 // As the engine designer, we're going to make the decision to 
 // just reserve certain slot indices for specific constant buffers
@@ -44,8 +45,8 @@ struct FrameBufferT
 // camera slot I usually bind all constants that change per view; 
 struct CameraBufferT 
 {
-	Vec2 orthoMin; 
-	Vec2 orthoMax; 
+	Matrix44 ViewMatrix; 
+	Matrix44 ProjectionMatrix; 
 };
 
 // I start at slot 1 out of habit.  I reserve slot 0 for what I call the "SYTEM" buffer, which

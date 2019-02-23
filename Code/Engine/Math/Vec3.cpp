@@ -4,8 +4,8 @@
 #include <vector>
 #include <string>
 
-//Debug only
-#include <stdio.h>
+const STATIC Vec3 Vec3::ZERO(0.f, 0.f, 0.f);
+const STATIC Vec3 Vec3::ONE(1.f, 1.f, 1.f);
 
 //-----------------------------------------------------------------------------------------------
 Vec3::Vec3( const Vec3& copy )

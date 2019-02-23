@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include "Engine/Math/Matrix44.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 // In D3D11, NDC clip space is defined as only 0 to 1 on the z, as opposed to -1 to 1 
 // that OpenGL does.  So I have implementations for both;
@@ -46,9 +47,9 @@ Matrix44 MakeProjectionOrthographic( float nx, float fx,
 Matrix44 MakeProjectionPerspective( float fovDegrees,  // what is our view angle; 
 	float aspect,     // width/height of your target
 	float nz,         // near clip plane
-	float fz );       // far clip plane
+	float fz )       // far clip plane
 {
-	float rads = DegreesToRads(fovDegrees); 
+	float rads = DegreesToRadians(fovDegrees); 
 	float size = 1.0f / tanf(rads / 2.0f);
 
 	float w = size;
@@ -73,7 +74,7 @@ Matrix44 MakeProjectionPerspective( float fovDegrees,  // what is our view angle
 		0.0f,       0.0f,         -nz * fz * q,    0.0f
 	);
 #else
-	return mat44(
+	return Matrix44(
 		w,          0.0f,         0.0f,                 0.0f,
 		0.0f,       h,            0.0f,                 0.0f,
 		0.0f,       0.0f,         (fz + nz) * q,        1.0f,

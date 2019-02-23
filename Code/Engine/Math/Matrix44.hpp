@@ -1,19 +1,34 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 
 struct Vec2;
 struct Vec3;
 struct Vec4;
 
+// Matrix Needs
+// Translate
+// RotationAroundX
+// RotationAroundY
+// RotationAroundZ
+// RotationEuler( vec3, eRotationOrder ); 
+
+enum eRotationOrder
+{
+	ROTATION_ORDER_XYZ,     // Unreal/Squirrel Defualt
+	ROTATION_ORDER_ZXY,     // Unity/Forseth Defualt
+
+	ROTATION_ORDER_DEFAULT = ROTATION_ORDER_ZXY 
+}; 
+
 struct Matrix44
 {
 	float m_values[16];
 
+public:
 	enum Indices
 	{
 		Ix, Iy, Iz, Iw, Jx, Jy, Jz, Jw, Kx, Ky, Kz, Kw, Tx, Ty, Tz, Tw
 	};
-
-public:
 
 	Matrix44();
 	explicit Matrix44 (float* sixteenValuesBasisMajor);
@@ -36,8 +51,20 @@ public:
 	const Vec3 TransformVector3D( const Vec3& vecQuantity ) const;				 //assumes w = 0;
 	const Vec4 TransformHomogeneousPoint3D ( const Vec4& homogeneousVec ) const; //assumes nothing; 
 
+	Matrix44 AppendMatrix( const Matrix44& matrix);
+
 	//Static methods to create required matrix
 	static const Matrix44 MakeZRotationDegrees ( float RotationZ );
+	static const Matrix44 MakeXRotationDegrees ( float RotationX );
+	static const Matrix44 MakeYRotationDegrees ( float RotationY );
+	static const Matrix44 MakeOrthoMatrix (const Vec2& min,const Vec2& max, float nearZ, float farZ);
+	static const Matrix44 MakePerspectiveMatrix ( float FieldOfView, float nearZ, float farZ, float aspectRatio);
+
 	static const Matrix44 MakeTranslation2D ( const Vec2& translation );
+	static const Matrix44 MakeTranslation3D ( const Vec3& translation );
 	static const Matrix44 MakeUniformScale2D ( float uniformScale );
+	static const Matrix44 MakeFromEuler (Vec3 euler, eRotationOrder rot = ROTATION_ORDER_ZXY);
+
+	//Operations on Matrix
+
 };

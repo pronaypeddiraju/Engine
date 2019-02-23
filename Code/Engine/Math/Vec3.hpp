@@ -11,6 +11,10 @@ public:
 	explicit Vec3( float initialX, float initialY, float initialZ );		// explicit constructor (from x, y, z)
 	explicit Vec3(const char* asText);
 
+	//Static Vectors
+	const static Vec3 ZERO;
+	const static Vec3 ONE;
+
 	//Access Methods
 	float				GetLength() const;
 	float				GetLengthXY() const;

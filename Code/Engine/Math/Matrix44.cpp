@@ -101,6 +101,118 @@ const Vec4 Matrix44::TransformHomogeneousPoint3D( const Vec4& homogeneousVec ) c
 	return transformedPos;
 }
 
+/*
+
+Matrix.Append()
+
+A= (AIx, AJx, AKx, ATx,
+	AIy, AJy, AKy, ATy,
+	AIz, AJz, AKz, ATz,
+	AIw, AJw, AKw, ATw )
+
+B= (BIx, BJx, BKx, BTx,
+	BIy, BJy, BKy, BTy,
+	BIz, BJz, BKz, BTz,
+	BIw, BJw, BKw, BTw )
+
+C= (BIxAIx+(BIyAJx+(BIzAKx+BIwATx)), BJxAIx+(BJyAJx+(BJzAKx+BJwATx)), BKxAIx+(BKyAJx+(BKzAKx+BKwATx)), BTxAIx+(BTyAJx+(BTzAKx+BTwATx)),
+	BIxAIy+(BIyAJy+(BIzAKy+BIwATy)), BJxAIy+(BJyAJy+(BJzAKy+BJwATy)), BKxAIy+(BKyAJy+(BKzAKy+BKwATy)), BTxAIy+(BTyAJy+(BTzAKy+BTwATy)),
+	BIxAIz+(BIyAJz+(BIzAKz+BIwATz)), BJxAIz+(BJyAJz+(BJzAKz+BJwATz)), BKxAIz+(BKyAJz+(BKzAKz+BKwATz)), BTxAIz+(BTyAJz+(BTzAKz+BTwATz)),
+	BIxAIw+(BIyAJw+(BIzAKw+BIwATw)), BJxAIw+(BJyAJw+(BJzAKw+BJwATw)), BKxAIw+(BKyAJw+(BKzAKw+BKwATw)), BTxAIw+(BTyAJw+(BTzAKw+BTwATw)) )
+	
+*/
+
+Matrix44 Matrix44::AppendMatrix( const Matrix44& matrix )
+{
+	Matrix44 appendMatrix;
+
+	//Row 1
+	appendMatrix.m_values[Ix] = (m_values[Ix] * matrix.m_values[Ix]) +
+								(m_values[Jx] * matrix.m_values[Iy]) + 
+								(m_values[Kx] * matrix.m_values[Iz]) +
+								(m_values[Tx] * matrix.m_values[Iw]);
+
+	appendMatrix.m_values[Jx] = (m_values[Ix] * matrix.m_values[Jx]) +
+								(m_values[Jx] * matrix.m_values[Jy]) + 
+								(m_values[Kx] * matrix.m_values[Jz]) +
+								(m_values[Tx] * matrix.m_values[Jw]);
+
+	appendMatrix.m_values[Kx] = (m_values[Ix] * matrix.m_values[Kx]) +
+								(m_values[Jx] * matrix.m_values[Ky]) + 
+								(m_values[Kx] * matrix.m_values[Kz]) +
+								(m_values[Tx] * matrix.m_values[Kw]);
+
+	appendMatrix.m_values[Tx] = (m_values[Ix] * matrix.m_values[Tx]) +
+								(m_values[Jx] * matrix.m_values[Ty]) + 
+								(m_values[Kx] * matrix.m_values[Tz]) +
+								(m_values[Tx] * matrix.m_values[Tw]);
+
+	//Row 2
+	appendMatrix.m_values[Iy] = (m_values[Iy] * matrix.m_values[Ix]) +
+								(m_values[Jy] * matrix.m_values[Iy]) + 
+								(m_values[Ky] * matrix.m_values[Iz]) +
+								(m_values[Ty] * matrix.m_values[Iw]);
+
+	appendMatrix.m_values[Jy] = (m_values[Iy] * matrix.m_values[Jx]) +
+								(m_values[Jy] * matrix.m_values[Jy]) + 
+								(m_values[Ky] * matrix.m_values[Jz]) +
+								(m_values[Ty] * matrix.m_values[Jw]);
+
+	appendMatrix.m_values[Ky] = (m_values[Iy] * matrix.m_values[Kx]) +
+								(m_values[Jy] * matrix.m_values[Ky]) + 
+								(m_values[Ky] * matrix.m_values[Kz]) +
+								(m_values[Ty] * matrix.m_values[Kw]);
+
+	appendMatrix.m_values[Ty] = (m_values[Iy] * matrix.m_values[Tx]) +
+								(m_values[Jy] * matrix.m_values[Ty]) + 
+								(m_values[Ky] * matrix.m_values[Tz]) +
+								(m_values[Ty] * matrix.m_values[Tw]);
+
+	//Row 3
+	appendMatrix.m_values[Iz] = (m_values[Iz] * matrix.m_values[Ix]) +
+								(m_values[Jz] * matrix.m_values[Iy]) + 
+								(m_values[Kz] * matrix.m_values[Iz]) +
+								(m_values[Tz] * matrix.m_values[Iw]);
+
+	appendMatrix.m_values[Jz] = (m_values[Iz] * matrix.m_values[Jx]) +
+								(m_values[Jz] * matrix.m_values[Jy]) + 
+								(m_values[Kz] * matrix.m_values[Jz]) +
+								(m_values[Tz] * matrix.m_values[Jw]);
+
+	appendMatrix.m_values[Kz] = (m_values[Iz] * matrix.m_values[Kx]) +
+								(m_values[Jz] * matrix.m_values[Ky]) + 
+								(m_values[Kz] * matrix.m_values[Kz]) +
+								(m_values[Tz] * matrix.m_values[Kw]);
+
+	appendMatrix.m_values[Tz] = (m_values[Iz] * matrix.m_values[Tx]) +
+								(m_values[Jz] * matrix.m_values[Ty]) + 
+								(m_values[Kz] * matrix.m_values[Tz]) +
+								(m_values[Tz] * matrix.m_values[Tw]);
+
+	//Row 4
+	appendMatrix.m_values[Iw] = (m_values[Iw] * matrix.m_values[Ix]) +
+								(m_values[Jw] * matrix.m_values[Iy]) + 
+								(m_values[Kw] * matrix.m_values[Iz]) +
+								(m_values[Tw] * matrix.m_values[Iw]);
+
+	appendMatrix.m_values[Jw] = (m_values[Iw] * matrix.m_values[Jx]) +
+								(m_values[Jw] * matrix.m_values[Jy]) + 
+								(m_values[Kw] * matrix.m_values[Jz]) +
+								(m_values[Tw] * matrix.m_values[Jw]);
+
+	appendMatrix.m_values[Kw] = (m_values[Iw] * matrix.m_values[Kx]) +
+								(m_values[Jw] * matrix.m_values[Ky]) + 
+								(m_values[Kw] * matrix.m_values[Kz]) +
+								(m_values[Tw] * matrix.m_values[Kw]);
+
+	appendMatrix.m_values[Tw] = (m_values[Iw] * matrix.m_values[Tx]) +
+								(m_values[Jw] * matrix.m_values[Ty]) + 
+								(m_values[Kw] * matrix.m_values[Tz]) +
+								(m_values[Tw] * matrix.m_values[Tw]);
+
+	return appendMatrix;
+}
+
 Matrix44::Matrix44()
 {
 	//Create an identity matrix by default
@@ -259,6 +371,16 @@ const STATIC Matrix44 Matrix44::MakeTranslation2D( const Vec2& translation )
 	return translationMatrix;
 }
 
+const Matrix44 Matrix44::MakeTranslation3D( const Vec3& translation )
+{
+	Matrix44 translationMatrix;
+	translationMatrix.m_values[Tx] = translation.x;
+	translationMatrix.m_values[Ty] = translation.y;
+	translationMatrix.m_values[Tz] = translation.z;
+
+	return translationMatrix;
+}
+
 const STATIC Matrix44 Matrix44::MakeZRotationDegrees( float RotationZ )
 {
 	float consine = CosDegrees(RotationZ);
@@ -273,6 +395,79 @@ const STATIC Matrix44 Matrix44::MakeZRotationDegrees( float RotationZ )
 	return rotationMatrix;
 }
 
+const STATIC Matrix44 Matrix44::MakeXRotationDegrees( float RotationX )
+{
+	float cosine = CosDegrees(RotationX);
+	float sine = SinDegrees(RotationX);
+
+	Matrix44 rotationMatrix;
+	rotationMatrix.m_values[Jy] = cosine;
+	rotationMatrix.m_values[Jz] = -sine;
+	rotationMatrix.m_values[Ky] = sine;
+	rotationMatrix.m_values[Kz] = cosine;
+
+	return rotationMatrix;
+}
+
+const STATIC Matrix44 Matrix44::MakeYRotationDegrees( float RotationY )
+{
+	float cosine = CosDegrees(RotationY);
+	float sine = SinDegrees(RotationY);
+
+	Matrix44 rotationMatrix;
+	rotationMatrix.m_values[Ix] = cosine;
+	rotationMatrix.m_values[Iz] = sine;
+	rotationMatrix.m_values[Kx] = -sine;
+	rotationMatrix.m_values[Kz] = cosine;
+
+	return rotationMatrix;
+}
+
+//TODO: Discuss this math with Forseth. Also refer to Projection
+const Matrix44 Matrix44::MakeOrthoMatrix(const Vec2& min, const Vec2& max, float nearZ, float farZ)
+{
+	Matrix44 orthoMatrix;
+
+	orthoMatrix.m_values[Matrix44::Ix] = 2 / (max.x - min.x); 
+	orthoMatrix.m_values[Matrix44::Jy] = 2 / (max.y - min.y);	
+	orthoMatrix.m_values[Matrix44::Kz] = 1 / (farZ - nearZ); // used to remap z to [0,1]
+	orthoMatrix.m_values[Matrix44::Tx] = -(min.x + max.x )/ (max.x - min.x);
+	orthoMatrix.m_values[Matrix44::Ty] = -(min.y + max.y )/ (max.y - min.y);	
+	orthoMatrix.m_values[Matrix44::Tz] = -nearZ / (farZ - nearZ) ;
+	
+	return orthoMatrix;
+}
+
+//refer to the projection class for more clarity on wtf this does
+const Matrix44 Matrix44::MakePerspectiveMatrix( float FieldOfView, float nearZ, float farZ, float aspectRatio )
+{
+	Matrix44 projectionMatrix;
+
+	float rads = DegreesToRadians(FieldOfView); 
+	float size = 1.0f / tanf(rads / 2.0f);
+
+	float width = size;
+	float height = size;
+
+	// I always grow the side that is large (so fov is for the minimum dimension)
+	// This is a personal choice - most engines will just always prefer either width
+	// or height (usually height); 
+	if (aspectRatio > 1.0f) {
+		width /= aspectRatio;
+	} else {
+		height *= aspectRatio;
+	}
+
+	projectionMatrix.m_values[Matrix44::Ix] = width; //Scale the x coordinates of the projected point
+	projectionMatrix.m_values[Matrix44::Jy] = height;	// scale the y coordinates of the projected point
+	projectionMatrix.m_values[Matrix44::Kz] = -farZ / (farZ - nearZ); // used to remap z to [0,1]
+	projectionMatrix.m_values[Matrix44::Tz] = -farZ * nearZ / (farZ - nearZ); // used to remap z to [0,1]
+	projectionMatrix.m_values[Matrix44::Kw] = 1; 
+	projectionMatrix.m_values[Matrix44::Tw] = 0;
+
+	return projectionMatrix;
+}
+
 const STATIC Matrix44 Matrix44::MakeUniformScale2D( float uniformScale )
 {
 	Matrix44 uniformScaleMatrix;
@@ -280,4 +475,29 @@ const STATIC Matrix44 Matrix44::MakeUniformScale2D( float uniformScale )
 	uniformScaleMatrix.m_values[Jy] = uniformScale;
 
 	return uniformScaleMatrix;
+}
+
+//To do: Write down the actual multiplication of the 3 matrices and quickly plug in those values to make this process faster
+// as opposed to making the 3 rotation matrices and then appending 2 of them 
+const STATIC Matrix44 Matrix44::MakeFromEuler( Vec3 euler, eRotationOrder rotationOrder )
+{
+	Matrix44 rotatedX = MakeXRotationDegrees(euler.x); 
+	Matrix44 rotatedY = MakeYRotationDegrees(euler.y); 
+	Matrix44 rotatedZ = MakeZRotationDegrees(euler.z); 
+
+	// for games, we usually go around
+	// forward, then right, then up
+	Matrix44 returnMatrix; 
+	if (rotationOrder == ROTATION_ORDER_ZXY) {
+		returnMatrix = rotatedZ;  // same as rotz.transform(returnMatrix) since returnMatrix is the identity
+		returnMatrix = rotatedX.AppendMatrix(returnMatrix); 
+		returnMatrix = rotatedY.AppendMatrix(returnMatrix); 
+	} else {
+		// other case of XYZ
+		returnMatrix = rotatedX;  // same as rotz.transform(returnMatrix) since returnMatrix is the identity
+		returnMatrix = rotatedY.AppendMatrix(returnMatrix); 
+		returnMatrix = rotatedZ.AppendMatrix(returnMatrix); 
+	}
+
+	return returnMatrix; 
 }
