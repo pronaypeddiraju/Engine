@@ -63,8 +63,14 @@ public:
 	static const Matrix44 MakeTranslation2D ( const Vec2& translation );
 	static const Matrix44 MakeTranslation3D ( const Vec3& translation );
 	static const Matrix44 MakeUniformScale2D ( float uniformScale );
-	static const Matrix44 MakeFromEuler (Vec3 euler, eRotationOrder rot = ROTATION_ORDER_ZXY);
+	static const Matrix44 MakeFromEuler (const Vec3& euler, const Vec3& position, eRotationOrder rot = ROTATION_ORDER_ZXY);
+	static const Matrix44 InvertOrthoNormal(const Matrix44 sourceMatrix);
+
+	static const Matrix44 SetTranslation3D (const Vec3& position, Matrix44& setMatrix);
 
 	//Operations on Matrix
+	// Mat44 * Vec3
+	// Mat44 * Vec2
+	// Mat44 * Mat44 ?
 
 };

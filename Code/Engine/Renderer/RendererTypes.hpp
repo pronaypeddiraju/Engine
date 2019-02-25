@@ -49,6 +49,15 @@ struct CameraBufferT
 	Matrix44 ProjectionMatrix; 
 };
 
+//------------------------------------------------------------------------------------------------------------------------------
+// slot 3
+// This is going to be the model matrix. This is gonna be updated on each draw call for each of the objects 
+// in the scene that we wish to render.
+struct ModelBufferT
+{
+	Matrix44 ModelMatrix;
+};
+
 // I start at slot 1 out of habit.  I reserve slot 0 for what I call the "SYTEM" buffer, which
 // is usually just debug constants and configurations as I'm working. 
 // The uniform buffer system is very free-form, you can bind any data to any slot

@@ -50,6 +50,28 @@ void Camera::SetColorTarget( ColorTargetView *colorTargetView )
 	m_colorTargetView = colorTargetView;
 }
 
+void Camera::SetModelMatrix( Matrix44 camModel )
+{
+	m_cameraModel = camModel;
+
+	m_view = Matrix44::InvertOrthoNormal(m_cameraModel);
+}
+
+const Matrix44& Camera::GetModelMatrix() const
+{
+	return m_cameraModel;
+}
+
+const Matrix44& Camera::GetViewMatrix() const
+{
+	return m_view;
+}
+
+const Matrix44& Camera::GetProjectionMatrix() const
+{
+	return m_projection;
+}
+
 void Camera::UpdateUniformBuffer( RenderContext* renderContext )
 {
 	if (m_cameraUBO == nullptr) 

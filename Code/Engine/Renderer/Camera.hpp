@@ -56,6 +56,6 @@ public:
 
 	//Cached Matrices
 	Matrix44					m_projection;
-	Matrix44					m_camera;
+	Matrix44					m_cameraModel;
 	Matrix44					m_view;			//This is the inverse of m_camera
 };

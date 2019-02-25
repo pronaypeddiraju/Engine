@@ -423,7 +423,6 @@ const STATIC Matrix44 Matrix44::MakeYRotationDegrees( float RotationY )
 	return rotationMatrix;
 }
 
-//TODO: Discuss this math with Forseth. Also refer to Projection
 const Matrix44 Matrix44::MakeOrthoMatrix(const Vec2& min, const Vec2& max, float nearZ, float farZ)
 {
 	Matrix44 orthoMatrix;
@@ -438,7 +437,6 @@ const Matrix44 Matrix44::MakeOrthoMatrix(const Vec2& min, const Vec2& max, float
 	return orthoMatrix;
 }
 
-//refer to the projection class for more clarity on wtf this does
 const Matrix44 Matrix44::MakePerspectiveMatrix( float FieldOfView, float nearZ, float farZ, float aspectRatio )
 {
 	Matrix44 projectionMatrix;
@@ -449,7 +447,7 @@ const Matrix44 Matrix44::MakePerspectiveMatrix( float FieldOfView, float nearZ, 
 	float width = size;
 	float height = size;
 
-	// I always grow the side that is large (so fov is for the minimum dimension)
+	// Forseth always grows the side that is large (so fov is for the minimum dimension)
 	// This is a personal choice - most engines will just always prefer either width
 	// or height (usually height); 
 	if (aspectRatio > 1.0f) {
@@ -460,7 +458,7 @@ const Matrix44 Matrix44::MakePerspectiveMatrix( float FieldOfView, float nearZ, 
 
 	projectionMatrix.m_values[Matrix44::Ix] = width; //Scale the x coordinates of the projected point
 	projectionMatrix.m_values[Matrix44::Jy] = height;	// scale the y coordinates of the projected point
-	projectionMatrix.m_values[Matrix44::Kz] = -farZ / (farZ - nearZ); // used to remap z to [0,1]
+	projectionMatrix.m_values[Matrix44::Kz] = farZ / (farZ - nearZ); // used to remap z to [0,1]
 	projectionMatrix.m_values[Matrix44::Tz] = -farZ * nearZ / (farZ - nearZ); // used to remap z to [0,1]
 	projectionMatrix.m_values[Matrix44::Kw] = 1; 
 	projectionMatrix.m_values[Matrix44::Tw] = 0;
@@ -479,7 +477,7 @@ const STATIC Matrix44 Matrix44::MakeUniformScale2D( float uniformScale )
 
 //To do: Write down the actual multiplication of the 3 matrices and quickly plug in those values to make this process faster
 // as opposed to making the 3 rotation matrices and then appending 2 of them 
-const STATIC Matrix44 Matrix44::MakeFromEuler( Vec3 euler, eRotationOrder rotationOrder )
+const STATIC Matrix44 Matrix44::MakeFromEuler( const Vec3& euler, const Vec3& position, eRotationOrder rotationOrder )
 {
 	Matrix44 rotatedX = MakeXRotationDegrees(euler.x); 
 	Matrix44 rotatedY = MakeYRotationDegrees(euler.y); 
@@ -499,5 +497,32 @@ const STATIC Matrix44 Matrix44::MakeFromEuler( Vec3 euler, eRotationOrder rotati
 		returnMatrix = rotatedZ.AppendMatrix(returnMatrix); 
 	}
 
+	if(position == Vec3::ZERO)
+	{
+		return returnMatrix;
+	}
+
+	returnMatrix = SetTranslation3D(position, returnMatrix);
+
 	return returnMatrix; 
+}
+
+const STATIC Matrix44 Matrix44::InvertOrthoNormal( const Matrix44 sourceMatrix )
+{
+	Matrix44 invertedMatrix = sourceMatrix;
+	
+	invertedMatrix.m_values[Tx] *= -1;
+	invertedMatrix.m_values[Ty] *= -1;
+	invertedMatrix.m_values[Tz] *= -1;
+
+	return invertedMatrix;
+}
+
+const STATIC Matrix44 Matrix44::SetTranslation3D(const Vec3& position, Matrix44& setMatrix)
+{
+	setMatrix.m_values[Tx] = position.x;
+	setMatrix.m_values[Ty] = position.y;
+	setMatrix.m_values[Tz] = position.z;
+
+	return setMatrix;
 }
