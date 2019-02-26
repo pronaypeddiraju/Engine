@@ -41,6 +41,26 @@ void AABB2::SetFromText( const char* asText )
 	}
 }
 
+Vec3 AABB2::GetTopLeft() const
+{
+	return Vec3(m_minBounds.x, m_maxBounds.y, 0.f);
+}
+
+Vec3 AABB2::GetTopRight() const
+{
+	return Vec3(m_maxBounds.x, m_maxBounds.y, 0.f);
+}
+
+Vec3 AABB2::GetBottomLeft() const
+{
+	return Vec3(m_minBounds.x, m_minBounds.y, 0.f);
+}
+
+Vec3 AABB2::GetBottomRight() const
+{
+	return Vec3(m_maxBounds.x, m_minBounds.y, 0.f);
+}
+
 void AABB2::AlignWithinBox( const AABB2& box, const Vec2& alignment )
 {
 	float boxWidth = box.m_maxBounds.x - box.m_minBounds.x;

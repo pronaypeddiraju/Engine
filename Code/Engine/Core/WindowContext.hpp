@@ -22,37 +22,37 @@ public:
 	WindowContext();
 	~WindowContext(); 
 
-	void Create( std::string const &name, float aspect, float percent, windows_proc_cb cb ); 
-	void Close(); 
+	void				Create( std::string const &name, float aspect, float percent, windows_proc_cb cb ); 
+	void				Close(); 
 
-	void BeginFrame(); 
-	IntVec2 GetClientCenter() const; 
+	void				BeginFrame(); 
+	IntVec2				GetClientCenter() const; 
 
-	IntVec2 GetClientMousePosition(); 
-	void SetClientMousePosition( IntVec2 &clientPos ); 
+	IntVec2				GetClientMousePosition(); 
+	void				SetClientMousePosition( IntVec2 &clientPos ); 
 
-	IntVec2 GetClientMouseRelativeMovement(); 
+	IntVec2				GetClientMouseRelativeMovement(); 
 
-	void LockMouse(); 
-	void UnlockMouse(); 
-	inline bool IsMouseLocked() const   { return m_lockCount > 0; }
+	void				LockMouse(); 
+	void				UnlockMouse(); 
+	inline bool			IsMouseLocked() const   { return m_lockCount > 0; }
 
-	void ShowMouse(); 
-	void HideMouse();
+	void				ShowMouse(); 
+	void				HideMouse();
 
-	bool HasFocus() const; 
+	bool				HasFocus() const; 
 
-	void SetMouseMode( eMouseMode mode ); 
+	void				SetMouseMode( eMouseMode mode ); 
 
-	inline bool IsOpen() const       { return m_hwnd != nullptr; }
+	inline bool			IsOpen() const       { return m_hwnd != nullptr; }
 
 public:
-	void *m_hwnd; // void* if you're avoiding Windows.h
-	windows_proc_cb m_gameCB;  
+	void*				m_hwnd; // void* if you're avoiding Windows.h
+	windows_proc_cb		m_gameCB;  
 
-	eMouseMode m_mouseMode     = MOUSE_MODE_ABSOLUTE; 
-	IntVec2 m_lastFrameMousePosition; 
-	IntVec2 m_currentMousePosition; 
-	int m_lockCount            = 0; 
+	eMouseMode			m_mouseMode     = MOUSE_MODE_ABSOLUTE; 
+	IntVec2				m_lastFrameMousePosition; 
+	IntVec2				m_currentMousePosition; 
+	int					m_lockCount            = 0; 
 };
 

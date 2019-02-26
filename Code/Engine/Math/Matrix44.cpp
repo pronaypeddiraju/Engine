@@ -511,6 +511,8 @@ const STATIC Matrix44 Matrix44::InvertOrthoNormal( const Matrix44 sourceMatrix )
 {
 	Matrix44 invertedMatrix = sourceMatrix;
 	
+	invertedMatrix = Matrix44::TransposeRotationComponents(sourceMatrix);
+
 	invertedMatrix.m_values[Tx] *= -1;
 	invertedMatrix.m_values[Ty] *= -1;
 	invertedMatrix.m_values[Tz] *= -1;
@@ -525,4 +527,153 @@ const STATIC Matrix44 Matrix44::SetTranslation3D(const Vec3& position, Matrix44&
 	setMatrix.m_values[Tz] = position.z;
 
 	return setMatrix;
+}
+
+const Matrix44 Matrix44::TransposeRotationComponents( const Matrix44& sourceMatrix )
+{
+	//Transpose all the R component values and return that matrix;
+	Matrix44 RTransposeMat = sourceMatrix;
+
+	RTransposeMat.m_values[Jx] = sourceMatrix.m_values[Iy];
+	RTransposeMat.m_values[Kx] = sourceMatrix.m_values[Iz];
+
+	RTransposeMat.m_values[Iy] = sourceMatrix.m_values[Jx];
+	RTransposeMat.m_values[Ky] = sourceMatrix.m_values[Jz];
+
+	RTransposeMat.m_values[Iz] = sourceMatrix.m_values[Kx];
+	RTransposeMat.m_values[Jz] = sourceMatrix.m_values[Ky];
+
+	return RTransposeMat;
+}
+
+//------------------------------------------------------------------------
+void Matrix44::InverseMatrix()
+{
+	double inverse[16];
+	double det;
+	double m[16];
+	uint i;
+
+	for (i = 0; i < 16; ++i) {
+		m[i] = (double) m_values[i];
+	}
+
+	inverse[0] = m[5]  * m[10] * m[15] - 
+		m[5]  * m[11] * m[14] - 
+		m[9]  * m[6]  * m[15] + 
+		m[9]  * m[7]  * m[14] +
+		m[13] * m[6]  * m[11] - 
+		m[13] * m[7]  * m[10];
+
+	inverse[4] = -m[4]  * m[10] * m[15] + 
+		m[4]  * m[11] * m[14] + 
+		m[8]  * m[6]  * m[15] - 
+		m[8]  * m[7]  * m[14] - 
+		m[12] * m[6]  * m[11] + 
+		m[12] * m[7]  * m[10];
+
+	inverse[8] = m[4]  * m[9] * m[15] - 
+		m[4]  * m[11] * m[13] - 
+		m[8]  * m[5] * m[15] + 
+		m[8]  * m[7] * m[13] + 
+		m[12] * m[5] * m[11] - 
+		m[12] * m[7] * m[9];
+
+	inverse[12] = -m[4]  * m[9] * m[14] + 
+		m[4]  * m[10] * m[13] +
+		m[8]  * m[5] * m[14] - 
+		m[8]  * m[6] * m[13] - 
+		m[12] * m[5] * m[10] + 
+		m[12] * m[6] * m[9];
+
+	inverse[1] = -m[1]  * m[10] * m[15] + 
+		m[1]  * m[11] * m[14] + 
+		m[9]  * m[2] * m[15] - 
+		m[9]  * m[3] * m[14] - 
+		m[13] * m[2] * m[11] + 
+		m[13] * m[3] * m[10];
+
+	inverse[5] = m[0]  * m[10] * m[15] - 
+		m[0]  * m[11] * m[14] - 
+		m[8]  * m[2] * m[15] + 
+		m[8]  * m[3] * m[14] + 
+		m[12] * m[2] * m[11] - 
+		m[12] * m[3] * m[10];
+
+	inverse[9] = -m[0]  * m[9] * m[15] + 
+		m[0]  * m[11] * m[13] + 
+		m[8]  * m[1] * m[15] - 
+		m[8]  * m[3] * m[13] - 
+		m[12] * m[1] * m[11] + 
+		m[12] * m[3] * m[9];
+
+	inverse[13] = m[0]  * m[9] * m[14] - 
+		m[0]  * m[10] * m[13] - 
+		m[8]  * m[1] * m[14] + 
+		m[8]  * m[2] * m[13] + 
+		m[12] * m[1] * m[10] - 
+		m[12] * m[2] * m[9];
+
+	inverse[2] = m[1]  * m[6] * m[15] - 
+		m[1]  * m[7] * m[14] - 
+		m[5]  * m[2] * m[15] + 
+		m[5]  * m[3] * m[14] + 
+		m[13] * m[2] * m[7] - 
+		m[13] * m[3] * m[6];
+
+	inverse[6] = -m[0]  * m[6] * m[15] + 
+		m[0]  * m[7] * m[14] + 
+		m[4]  * m[2] * m[15] - 
+		m[4]  * m[3] * m[14] - 
+		m[12] * m[2] * m[7] + 
+		m[12] * m[3] * m[6];
+
+	inverse[10] = m[0]  * m[5] * m[15] - 
+		m[0]  * m[7] * m[13] - 
+		m[4]  * m[1] * m[15] + 
+		m[4]  * m[3] * m[13] + 
+		m[12] * m[1] * m[7] - 
+		m[12] * m[3] * m[5];
+
+	inverse[14] = -m[0]  * m[5] * m[14] + 
+		m[0]  * m[6] * m[13] + 
+		m[4]  * m[1] * m[14] - 
+		m[4]  * m[2] * m[13] - 
+		m[12] * m[1] * m[6] + 
+		m[12] * m[2] * m[5];
+
+	inverse[3] = -m[1] * m[6] * m[11] + 
+		m[1] * m[7] * m[10] + 
+		m[5] * m[2] * m[11] - 
+		m[5] * m[3] * m[10] - 
+		m[9] * m[2] * m[7] + 
+		m[9] * m[3] * m[6];
+
+	inverse[7] = m[0] * m[6] * m[11] - 
+		m[0] * m[7] * m[10] - 
+		m[4] * m[2] * m[11] + 
+		m[4] * m[3] * m[10] + 
+		m[8] * m[2] * m[7] - 
+		m[8] * m[3] * m[6];
+
+	inverse[11] = -m[0] * m[5] * m[11] + 
+		m[0] * m[7] * m[9] + 
+		m[4] * m[1] * m[11] - 
+		m[4] * m[3] * m[9] - 
+		m[8] * m[1] * m[7] + 
+		m[8] * m[3] * m[5];
+
+	inverse[15] = m[0] * m[5] * m[10] - 
+		m[0] * m[6] * m[9] - 
+		m[4] * m[1] * m[10] + 
+		m[4] * m[2] * m[9] + 
+		m[8] * m[1] * m[6] - 
+		m[8] * m[2] * m[5];
+
+	det = m[0] * inverse[0] + m[1] * inverse[4] + m[2] * inverse[8] + m[3] * inverse[12];
+	det = 1.0 / det;
+
+	for (i = 0; i < 16; i++) {
+		m_values[i] = (float)(inverse[i] * det);
+	}
 }

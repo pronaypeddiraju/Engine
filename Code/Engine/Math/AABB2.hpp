@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/Vec3.hpp"
 
 struct AABB2
 {
@@ -20,6 +21,11 @@ public:
 
 	//Mutators
 	void			SetFromText(const char* asText);
+
+	Vec3			GetTopLeft() const;
+	Vec3			GetTopRight() const;
+	Vec3			GetBottomLeft() const;
+	Vec3			GetBottomRight() const;
 
 	void			Resize( const Vec2& newDimensions, const Vec2& pivotAnchorAlignment = Vec2::ALIGN_CENTERED );
 	void			AlignWithinBox( const AABB2& box, const Vec2& alignment );

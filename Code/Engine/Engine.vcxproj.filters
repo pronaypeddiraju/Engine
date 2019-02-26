@@ -193,6 +193,9 @@
     <ClCompile Include="Core\WindowContext.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\CPUMesh.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -391,5 +394,6 @@
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Core\WindowContext.hpp" />
+    <ClInclude Include="Renderer\CPUMesh.hpp" />
   </ItemGroup>
 </Project>
