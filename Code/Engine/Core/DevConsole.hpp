@@ -45,6 +45,8 @@ public:
 	void			ShowNextCommand();
 	void			ResetIndexValues();
 
+	inline int		GetFrameCount() {return m_frameCount;}
+
 	// handle arrows, enter, escape, backspace, delete, etc...
 	void			HandleKeyUp( unsigned char vkKeyCode );          // WM_KEYUP
 	void			HandleKeyDown( unsigned char vkKeyCode );        // WM_KEYDOWN

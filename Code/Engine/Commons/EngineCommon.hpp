@@ -1,3 +1,4 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Commons/StringUtils.hpp"
@@ -15,13 +16,13 @@
 #define ASSERT_RETURN_VALUE(assertThis, returnValue) if(!(assertThis)) {return returnValue;}
 #define ASSERT(assertThis) if(!(assertThis)) {return false;}
 
-//#define ASSERT GUARANTEE_RECOVERABLE;
-
+//------------------------------------------------------------------------------------------------------------------------------
 class NamedStrings;
 class EventSystems;
 class PhysicsSystem;
 class DevConsole;
 
+//------------------------------------------------------------------------------------------------------------------------------
 extern DevConsole* g_devConsole;
 extern EventSystems* g_eventSystem;
 extern PhysicsSystem* g_physicsSystem;
@@ -29,6 +30,7 @@ extern NamedStrings g_gameConfigBlackboard; // declared in EngineCommon.hpp, def
 
 typedef NamedStrings EventArgs;
 
+//------------------------------------------------------------------------------------------------------------------------------
 const unsigned short KEY_ESC = 27;
 const unsigned short UP_ARROW = 38;
 const unsigned short DOWN_ARROW = 40;
@@ -55,10 +57,12 @@ const unsigned short F7_KEY = 118;
 const unsigned short F8_KEY = 119;
 const unsigned short TILDY_KEY = 192;
 
+//------------------------------------------------------------------------------------------------------------------------------
 constexpr char SHADER_PATH[] = "Data/Shaders/"; 
 constexpr char IMAGE_PATH[] = "Data/Images/";
 constexpr char FONT_PATH[] = "Data/Fonts/";
 
+//------------------------------------------------------------------------------------------------------------------------------
 constexpr float		 CONSOLE_LINE_SPACE = 0.05f;
 constexpr int		 COLLIDER2D_COUNT = 6;
 

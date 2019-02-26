@@ -1,9 +1,9 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Core/WindowContext.hpp"
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-// #include "Core/Internal/WindowsCommon.hpp"
 
 static constexpr const TCHAR* GAME_WINDOW_CLASS_NAME = TEXT("GameWindowClass");
 
