@@ -317,8 +317,15 @@ void DevConsole::PrintString( const Rgba& textColor, const std::string& devConso
 	m_printLog.push_back(consoleEntry);
 }
 
-void DevConsole::Render( RenderContext& renderer, const Camera& camera, float lineHeight ) const
+void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeight ) const
 {
+	camera.SetModelMatrix(Matrix44::IDENTITY);
+	camera.UpdateUniformBuffer(&renderer);
+
+	renderer.BeginCamera(camera);
+
+	renderer.BindTextureViewWithSampler( 0U, m_consoleFont->GetTexture()); 
+
 	//Draw a black box over the entire screen
 	AABB2 blackBox = AABB2(camera.GetOrthoBottomLeft(), camera.GetOrthoTopRight());
 	std::vector<Vertex_PCU> boxVerts;
@@ -418,6 +425,8 @@ void DevConsole::Render( RenderContext& renderer, const Camera& camera, float li
 		AddVertsForLine2D(carotVerts, carotStart, carotEnd, lineHeight * 0.1f, CONSOLE_INPUT);
 		renderer.DrawVertexArray(carotVerts);
 	}
+
+	renderer.EndCamera();
 }
 
 void DevConsole::ToggleOpenFull()

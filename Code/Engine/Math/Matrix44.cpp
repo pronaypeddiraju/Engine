@@ -507,16 +507,17 @@ const STATIC Matrix44 Matrix44::MakeFromEuler( const Vec3& euler, const Vec3& po
 	return returnMatrix; 
 }
 
+//Is this correct? Double check this!
 const STATIC Matrix44 Matrix44::InvertOrthoNormal( const Matrix44 sourceMatrix )
 {
 	Matrix44 invertedMatrix = sourceMatrix;
 	
 	invertedMatrix = Matrix44::TransposeRotationComponents(sourceMatrix);
-
+	
 	invertedMatrix.m_values[Tx] *= -1;
 	invertedMatrix.m_values[Ty] *= -1;
 	invertedMatrix.m_values[Tz] *= -1;
-
+	
 	return invertedMatrix;
 }
 
@@ -544,6 +545,29 @@ const Matrix44 Matrix44::TransposeRotationComponents( const Matrix44& sourceMatr
 	RTransposeMat.m_values[Jz] = sourceMatrix.m_values[Ky];
 
 	return RTransposeMat;
+}
+
+const Matrix44 Matrix44::Transpose( const Matrix44& sourceMatrix )
+{
+	Matrix44 TransposeMat = sourceMatrix;
+
+	TransposeMat.m_values[Jx] = sourceMatrix.m_values[Iy];
+	TransposeMat.m_values[Kx] = sourceMatrix.m_values[Iz];
+	TransposeMat.m_values[Tx] = sourceMatrix.m_values[Iw];
+
+	TransposeMat.m_values[Iy] = sourceMatrix.m_values[Jx];
+	TransposeMat.m_values[Ky] = sourceMatrix.m_values[Jz];
+	TransposeMat.m_values[Ty] = sourceMatrix.m_values[Jw];
+
+	TransposeMat.m_values[Iz] = sourceMatrix.m_values[Kx];
+	TransposeMat.m_values[Jz] = sourceMatrix.m_values[Ky];
+	TransposeMat.m_values[Tz] = sourceMatrix.m_values[Kz];
+
+	TransposeMat.m_values[Iw] = sourceMatrix.m_values[Tx];
+	TransposeMat.m_values[Jw] = sourceMatrix.m_values[Ty];
+	TransposeMat.m_values[Kw] = sourceMatrix.m_values[Tz];
+
+	return TransposeMat;
 }
 
 //------------------------------------------------------------------------

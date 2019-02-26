@@ -69,6 +69,7 @@ public:
 	static const Matrix44 InvertOrthoNormal(const Matrix44 sourceMatrix);
 	static const Matrix44 SetTranslation3D (const Vec3& position, Matrix44& setMatrix);
 	static const Matrix44 TransposeRotationComponents( const Matrix44& sourceMatrix);
+	static const Matrix44 Transpose( const Matrix44& sourceMatrix );
 
 	//Operations on Matrix
 	// Mat44 * Vec3

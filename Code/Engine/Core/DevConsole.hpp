@@ -35,7 +35,7 @@ public:
 	void			SetBitmapFont(BitmapFont& bitmapFont);
 
 	void			PrintString( const Rgba& textColor, const std::string& devConsolePrintString );
-	void			Render( RenderContext& renderer, const Camera& camera, float lineHeight ) const;
+	void			Render( RenderContext& renderer, Camera& camera, float lineHeight ) const;
 
 	void			ToggleOpenFull();
 	bool			IsOpen() const;

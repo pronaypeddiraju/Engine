@@ -304,6 +304,9 @@ void RenderContext::Shutdown()
 	delete m_immediateUBO;
 	m_immediateUBO = nullptr;
 
+	delete m_FrameBuffer_ColorTargetView;
+	m_FrameBuffer_ColorTargetView = nullptr;
+
 	//m_loadedShaders;
 	std::map< std::string, Shader*>::iterator shaderIterator;
 	std::map< std::string, Shader*>::iterator lastShaderIterator;
@@ -545,8 +548,6 @@ void RenderContext::ClearColorTargets( const Rgba& clearColor )
 	// Clear the buffer.
 	float clearColorArray[4] = { clearColor.r, clearColor.g, clearColor.b, clearColor.a};
 	m_D3DContext->ClearRenderTargetView( m_currentCamera->m_colorTargetView->m_renderTargetView, clearColorArray);
-
-	DX_SAFE_RELEASE( m_currentCamera->m_colorTargetView->m_renderTargetView); // done with the view - can release it (if you save it frame to frame, skip this step)
 }
 
 
