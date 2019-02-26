@@ -188,6 +188,7 @@
     <ClCompile Include="Core\Tags.cpp" />
     <ClCompile Include="Core\Time.cpp" />
     <ClCompile Include="Core\VertexUtils.cpp" />
+    <ClCompile Include="Core\WindowContext.cpp" />
     <ClCompile Include="Core\XMLUtils\XMLUtils.cpp" />
     <ClCompile Include="Input\AnalogJoystick.cpp" />
     <ClCompile Include="Input\InputSystem.cpp" />
@@ -252,6 +253,7 @@
     <ClInclude Include="Core\Tags.hpp" />
     <ClInclude Include="Core\Time.hpp" />
     <ClInclude Include="Core\VertexUtils.hpp" />
+    <ClInclude Include="Core\WindowContext.hpp" />
     <ClInclude Include="Core\XMLUtils\XMLUtils.hpp" />
     <ClInclude Include="Input\AnalogJoystick.hpp" />
     <ClInclude Include="Input\InputSystem.hpp" />

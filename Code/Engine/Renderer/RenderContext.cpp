@@ -13,6 +13,7 @@
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Renderer/Shader.hpp"
+#include "Engine/Core/WindowContext.hpp"
 
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
@@ -163,9 +164,9 @@ void RenderContext::DemoRender()
 
 RenderContext* g_renderContext = nullptr;
 
-RenderContext::RenderContext(void* windowHandle)
+RenderContext::RenderContext(WindowContext* window)
 {
-	D3D11Setup(windowHandle);
+	D3D11Setup(window->m_hwnd);
 	Startup();
 }
 

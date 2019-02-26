@@ -22,6 +22,7 @@ class Texture2D;
 class TextureView;
 class BitmapFont;
 class Image;
+class WindowContext;
 
 //D3D11
 struct ID3D11Device;
@@ -41,7 +42,7 @@ class RenderContext
 	friend class Texture2D;
 
 public:
-	explicit RenderContext(void* windowHandle);
+	explicit RenderContext(WindowContext* window);
 	~RenderContext();
 
 	void				Startup();

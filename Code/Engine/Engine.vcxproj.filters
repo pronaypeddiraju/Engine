@@ -190,6 +190,9 @@
     <ClCompile Include="Renderer\IndexBuffer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Core\WindowContext.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -387,5 +390,6 @@
     <ClInclude Include="Renderer\IndexBuffer.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Core\WindowContext.hpp" />
   </ItemGroup>
 </Project>
