@@ -9,7 +9,7 @@ CPUMesh::CPUMesh()
 }
 
 //------------------------------------------------------------------------
-void CPUMeshAddQuad( CPUMesh *out, AABB2 quad )
+void CPUMeshAddQuad( CPUMesh *out, AABB2 quad)
 {
 	out->Clear(); 
 
@@ -36,10 +36,143 @@ void CPUMeshAddQuad( CPUMesh *out, AABB2 quad )
 	out->AddIndexedTriangle( 2, 3, 1 ); 
 }
 
-void CPUMeshAddCube( CPUMesh *out, AABB3 box )
+void CPUMeshAddBoxFace(CPUMesh *out, AABB2 quad)
 {
-	//Create your box here
+	out->SetColor( Rgba::WHITE ); 
+	// out->SetNormal( vec3::BACK ); 
 
+	// 0 --- 1
+	// |   / |
+	// | /   |
+	// 2 --- 3
+	out->SetUV( Vec2(0.0f, 0.0f) ); 
+	out->AddVertex( quad.GetTopLeft() ); 
+
+	out->SetUV( Vec2(1.0f, 0.0f) ); 
+	out->AddVertex( quad.GetTopRight() ); 
+
+	out->SetUV( Vec2(0.0f, 1.0f) ); 
+	out->AddVertex( quad.GetBottomLeft() ); 
+
+	out->SetUV( Vec2(1.0f, 1.0f) ); 
+	out->AddVertex( quad.GetBottomRight() ); 
+
+	out->AddIndexedTriangle( 0, 2, 1 ); 
+	out->AddIndexedTriangle( 2, 3, 1 ); 
+}
+
+void CPUMeshAddCube( CPUMesh *out, AABB3 box, bool clearMesh )
+{
+	if(clearMesh)
+	{
+		out->Clear();
+	}
+
+	out->SetColor( Rgba::WHITE ); 
+
+	AABB2 boxFace;
+
+	//Add front face
+	// 0 --- 1
+	// |   / |
+	// | /   |
+	// 2 --- 3
+	out->SetUV( Vec2(0.0f, 0.0f) ); 
+	out->AddVertex( box.m_frontTopLeft); 
+	out->SetUV( Vec2(1.0f, 0.0f) ); 
+	out->AddVertex( box.m_frontTopRight ); 
+	out->SetUV( Vec2(0.0f, 1.0f) ); 
+	out->AddVertex( box.m_frontBottomLeft ); 
+	out->SetUV( Vec2(1.0f, 1.0f) ); 
+	out->AddVertex( box.m_frontBottomRight ); 
+
+	out->AddIndexedTriangle( 0, 2, 1 ); 
+	out->AddIndexedTriangle( 2, 3, 1 ); 
+
+	//Add back face
+	// 0 --- 1
+	// |   / |
+	// | /   |
+	// 2 --- 3
+	out->SetUV( Vec2(0.0f, 0.0f) ); 
+	out->AddVertex( box.m_backTopLeft); 
+	out->SetUV( Vec2(1.0f, 0.0f) ); 
+	out->AddVertex( box.m_backTopRight ); 
+	out->SetUV( Vec2(0.0f, 1.0f) ); 
+	out->AddVertex( box.m_backBottomLeft ); 
+	out->SetUV( Vec2(1.0f, 1.0f) ); 
+	out->AddVertex( box.m_backBottomRight ); 
+
+	out->AddIndexedTriangle( 3, 5, 4 ); 
+	out->AddIndexedTriangle( 5, 6, 4 ); 
+
+	//Add top face
+	// 0 --- 1
+	// |   / |
+	// | /   |
+	// 2 --- 3
+	out->SetUV( Vec2(0.0f, 0.0f) ); 
+	out->AddVertex( box.m_backTopLeft); 
+	out->SetUV( Vec2(1.0f, 0.0f) ); 
+	out->AddVertex( box.m_backTopRight ); 
+	out->SetUV( Vec2(0.0f, 1.0f) ); 
+	out->AddVertex( box.m_frontTopLeft ); 
+	out->SetUV( Vec2(1.0f, 1.0f) ); 
+	out->AddVertex( box.m_frontTopRight ); 
+
+	out->AddIndexedTriangle( 6, 8, 7 ); 
+	out->AddIndexedTriangle( 8, 9, 7 );
+
+	//Add bottom face
+	// 0 --- 1
+	// |   / |
+	// | /   |
+	// 2 --- 3
+	out->SetUV( Vec2(0.0f, 0.0f) ); 
+	out->AddVertex( box.m_backBottomLeft); 
+	out->SetUV( Vec2(1.0f, 0.0f) ); 
+	out->AddVertex( box.m_backBottomRight ); 
+	out->SetUV( Vec2(0.0f, 1.0f) ); 
+	out->AddVertex( box.m_frontBottomLeft ); 
+	out->SetUV( Vec2(1.0f, 1.0f) ); 
+	out->AddVertex( box.m_frontBottomRight ); 
+
+	out->AddIndexedTriangle( 9, 11, 10 ); 
+	out->AddIndexedTriangle( 11, 12, 10 );
+
+	//Add left face
+	// 0 --- 1
+	// |   / |
+	// | /   |
+	// 2 --- 3
+	out->SetUV( Vec2(0.0f, 0.0f) ); 
+	out->AddVertex( box.m_backTopLeft); 
+	out->SetUV( Vec2(1.0f, 0.0f) ); 
+	out->AddVertex( box.m_frontTopLeft); 
+	out->SetUV( Vec2(0.0f, 1.0f) ); 
+	out->AddVertex( box.m_backBottomLeft ); 
+	out->SetUV( Vec2(1.0f, 1.0f) ); 
+	out->AddVertex( box.m_frontBottomLeft ); 
+
+	out->AddIndexedTriangle( 12, 14, 13 ); 
+	out->AddIndexedTriangle( 14, 15, 13 );
+
+	//Add right face
+	// 0 --- 1
+	// |   / |
+	// | /   |
+	// 2 --- 3
+	out->SetUV( Vec2(0.0f, 0.0f) ); 
+	out->AddVertex( box.m_frontTopRight); 
+	out->SetUV( Vec2(1.0f, 0.0f) ); 
+	out->AddVertex( box.m_backTopRight); 
+	out->SetUV( Vec2(0.0f, 1.0f) ); 
+	out->AddVertex( box.m_frontBottomRight ); 
+	out->SetUV( Vec2(1.0f, 1.0f) ); 
+	out->AddVertex( box.m_backBottomRight ); 
+
+	out->AddIndexedTriangle( 15, 17, 16 ); 
+	out->AddIndexedTriangle( 17, 18, 16 );
 }
 
 //------------------------------------------------------------------------
@@ -69,6 +202,10 @@ void CPUMesh::Clear()
 {
 	m_vertices.empty();
 	m_indices.empty();
+
+	m_stamp.position = Vec3::ZERO;
+	m_stamp.color = Rgba::WHITE;
+	m_stamp.uv = Vec2::ZERO;
 }
 
 CPUMesh::~CPUMesh()

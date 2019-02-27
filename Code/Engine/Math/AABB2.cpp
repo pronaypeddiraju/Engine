@@ -14,11 +14,24 @@ AABB2::AABB2( const Vec2 &minBounds, const Vec2 &maxBounds )
 	m_maxBounds = maxBounds;
 
 	m_center = Vec2(m_maxBounds.x - m_minBounds.x, m_maxBounds.y - m_minBounds.y);
+
+	m_3Dmin = Vec3(minBounds.x, minBounds.y, 0.f);
+	m_3Dmax = Vec3(maxBounds.x, maxBounds.y, 0.f);
+
+	m_3Dcenter = Vec3(m_3Dmax - m_3Dmin);
 }
 
 AABB2::AABB2( const char* asText )
 {
 	SetFromText(asText);
+}
+
+AABB2::AABB2( const Vec3& min3D, const Vec3& max3D )
+{
+	m_3Dmin = min3D;
+	m_3Dmax = max3D;
+
+	m_3Dcenter = Vec3(max3D - min3D);
 }
 
 const Vec2& AABB2::GetBoxCenter() const
@@ -43,22 +56,22 @@ void AABB2::SetFromText( const char* asText )
 
 Vec3 AABB2::GetTopLeft() const
 {
-	return Vec3(m_minBounds.x, m_maxBounds.y, 0.f);
+	return Vec3(m_3Dmin.x, m_3Dmax.y, 0.f);
 }
 
 Vec3 AABB2::GetTopRight() const
 {
-	return Vec3(m_maxBounds.x, m_maxBounds.y, 0.f);
+	return Vec3(m_3Dmax.x, m_3Dmax.y, 0.f);
 }
 
 Vec3 AABB2::GetBottomLeft() const
 {
-	return Vec3(m_minBounds.x, m_minBounds.y, 0.f);
+	return Vec3(m_3Dmin.x, m_3Dmin.y, 0.f);
 }
 
 Vec3 AABB2::GetBottomRight() const
 {
-	return Vec3(m_maxBounds.x, m_minBounds.y, 0.f);
+	return Vec3(m_3Dmax.x, m_3Dmin.y, 0.f);
 }
 
 void AABB2::AlignWithinBox( const AABB2& box, const Vec2& alignment )

@@ -39,6 +39,7 @@ Image::Image( const char* imageFilePath )
 			unsigned char greenByte = m_imageRawData[greenByteIndex];
 			unsigned char blueByte = m_imageRawData[blueByteIndex];
 
+			m_texelRepository[texelIndex] = new Rgba;
 			m_texelRepository[texelIndex]->SetFromBytes(redByte, greenByte, blueByte);
 		}
 	}

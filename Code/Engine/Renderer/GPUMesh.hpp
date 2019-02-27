@@ -1,11 +1,11 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/VertexBuffer.hpp"
 
 class CPUMesh;
-struct Vertex_PCU;
-class VertexBuffer;
 class IndexBuffer;
+struct Vertex_PCU;
 
 class GPUMesh                            // A04
 {
@@ -22,6 +22,10 @@ public:
 	void					CopyIndices( uint const *indices, uint count );                                      // A04 Optional;
 
 	void					SetDrawCall( bool useIndexBuffer, uint elemCount ); 
+
+	inline bool				UsesIndexBuffer() {return m_useIndexBuffer;}
+	inline uint				GetElementCount() {return m_elementCount;}
+	inline uint				GetVertexCount() {return m_vertexBuffer->GetVertexCount();}
 
 public: 
 	VertexBuffer*			m_vertexBuffer = nullptr; 

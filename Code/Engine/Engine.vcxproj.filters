@@ -202,6 +202,9 @@
     <ClCompile Include="Renderer\GPUMesh.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\DepthStencilTargetView.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -403,5 +406,6 @@
     <ClInclude Include="Renderer\CPUMesh.hpp" />
     <ClInclude Include="Math\AABB3.hpp" />
     <ClInclude Include="Renderer\GPUMesh.hpp" />
+    <ClInclude Include="Renderer\DepthStencilTargetView.hpp" />
   </ItemGroup>
 </Project>

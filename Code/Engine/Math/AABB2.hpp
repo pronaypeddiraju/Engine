@@ -8,12 +8,17 @@ public:
 	AABB2();
 	~AABB2();
 	explicit AABB2(const Vec2& minBounds,const Vec2& maxBounds);
+	explicit AABB2(const Vec3& min3D, const Vec3& max3D);
 	explicit AABB2(const char* asText);
 
 	Vec2 m_minBounds;
 	Vec2 m_maxBounds;
 
+	Vec3 m_3Dmin = Vec3::ZERO;
+	Vec3 m_3Dmax = Vec3::ZERO;
+
 	Vec2 m_center;
+	Vec3 m_3Dcenter;
 
 	//Accessors
 	//AABB2			GetAABB2Bounds() const	{return AABB2(m_minBounds, m_maxBounds);}

@@ -14,6 +14,10 @@
 #include "Engine/Core/Image.hpp"
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Core/WindowContext.hpp"
+#include "Engine/Renderer/DepthStencilTargetView.hpp"
+#include "Engine/Core/Time.hpp"
+#include "Engine/Renderer/IndexBuffer.hpp"
+#include "Engine/Renderer/GPUMesh.hpp"
 
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
@@ -39,7 +43,6 @@ NUKED!
 
 // DEBUG STUFF
 #include <dxgidebug.h>
-#include "../Core/Time.hpp"
 // #pragma comment( lib, "dxguid.lib" )
 
 #pragma comment( lib, "d3d11.lib" )
@@ -117,7 +120,6 @@ bool RenderContext::D3D11Setup( void* hwndVoid )
 void RenderContext::D3D11Cleanup()
 {
 	ID3D11Debug* debugObject = nullptr;
-
 	HRESULT hr = m_D3DDevice->QueryInterface(__uuidof(ID3D11Debug), (void**)&debugObject);
 	
 	DX_SAFE_RELEASE(m_defaultRasterState);
@@ -190,6 +192,12 @@ void RenderContext::Startup()
 	m_cachedSamplers[SAMPLE_MODE_LINEAR] = linear; 
 
 	PremakeDefaults();
+
+	ModelBufferT buffer; 
+	buffer.ModelMatrix = Matrix44::IDENTITY; 
+
+	m_modelBuffer = new UniformBuffer( this ); 
+	m_modelBuffer->CopyCPUToGPU( &buffer, sizeof(buffer) ); 
 }
 
 void RenderContext::PremakeDefaults()
@@ -306,6 +314,15 @@ void RenderContext::Shutdown()
 
 	delete m_FrameBuffer_ColorTargetView;
 	m_FrameBuffer_ColorTargetView = nullptr;
+
+	delete m_defaultDepthStencilView;
+	m_defaultDepthStencilView = nullptr;
+
+	delete m_modelBuffer;
+	m_modelBuffer = nullptr;
+
+	delete m_immediateMesh;
+	m_immediateMesh = nullptr;
 
 	//m_loadedShaders;
 	std::map< std::string, Shader*>::iterator shaderIterator;
@@ -475,6 +492,19 @@ void RenderContext::BindTextureViewWithSampler( uint slot, std::string const &na
 	BindTextureViewWithSampler(slot, texIterator->second, mode);
 }
 
+void RenderContext::BindModelMatrix( Matrix44 const &model ) 
+{
+	ModelBufferT buffer; 
+	buffer.ModelMatrix = model; 
+
+	m_modelBuffer->CopyCPUToGPU( &buffer, sizeof(buffer) ); 
+}
+
+void RenderContext::SetModelMatrix( Matrix44 const &modelMatrix )
+{
+	BindModelMatrix(modelMatrix);
+}
+
 //------------------------------------------------------------------------
 // (NOTE: This design is fairly different from my Engine, 
 // so while I'm fairly sure this should work, if it doesn't, please let me know)
@@ -543,6 +573,31 @@ void RenderContext::Draw( uint vertexCount, uint byteOffset )
 	}
 }
 
+void RenderContext::DrawIndexed( uint indexCount, uint vertexCount, uint byteOffset )
+{
+	bool result =  m_currentShader->CreateInputLayoutForVertexPCU(); 
+
+	// TODO: m_currentShader->CreateInputLayoutFor( VertexPCU::LAYOUT ); 
+
+	//A02 Implementation
+	if (result) 
+	{
+		m_D3DContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_D3DContext->IASetInputLayout( m_currentShader->m_inputLayout );
+		m_D3DContext->Draw( vertexCount, byteOffset ); 
+	} 
+	else 
+	{
+		// error/warning
+		ERROR_AND_DIE("Could not create input layout!");
+	}
+
+	// Draw
+	m_D3DContext->DrawIndexed( indexCount, 
+		0,       // elem offset 
+		0 );     // vert offset 
+}
+
 void RenderContext::ClearColorTargets( const Rgba& clearColor )
 {
 	// Clear the buffer.
@@ -550,6 +605,13 @@ void RenderContext::ClearColorTargets( const Rgba& clearColor )
 	m_D3DContext->ClearRenderTargetView( m_currentCamera->m_colorTargetView->m_renderTargetView, clearColorArray);
 }
 
+
+void RenderContext::ClearDepthStencilTarget( float depth /*= 1.0f*/, uint8_t stencil /*= 0U */ )
+{
+	ID3D11DepthStencilView *dsv = nullptr; 
+	dsv = m_currentCamera->m_depthStencilView->m_renderTargetView; 
+	m_D3DContext->ClearDepthStencilView( dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depth, stencil ); 
+}
 
 void RenderContext::BindVertexStream( VertexBuffer *vbo )
 {
@@ -561,6 +623,19 @@ void RenderContext::BindVertexStream( VertexBuffer *vbo )
 		&vbo->m_handle, // Array of buffers
 		&stride,                // Stride (read: vertex size, or amount we move forward each vertex) for each buffer
 		&offset );             // Offset into each buffer (array - we are only passing one. 
+}
+
+void RenderContext::BindIndexStream( IndexBuffer *ibo )
+{
+	ID3D11Buffer *handle = nullptr; 
+	if (ibo != nullptr) {
+		handle = ibo->m_handle; 
+	}
+
+	m_D3DContext->IASetIndexBuffer( handle, 
+		DXGI_FORMAT_R32_UINT,      // 32-bit indices;            
+		0 );  // byte offset 
+
 }
 
 void RenderContext::BindUniformBuffer( uint slot, UniformBuffer *uniformBuffer )
@@ -588,9 +663,27 @@ void RenderContext::BeginCamera( Camera& camera )
 	// first, figure out what we're rendering to; 
 	ColorTargetView* colorTargetView = camera.m_colorTargetView;
 
+	// bind targets
+	ID3D11RenderTargetView *dx_rtv = nullptr; 
+	uint colorCount = 0U; 
+	if (colorTargetView != nullptr) {
+		dx_rtv = colorTargetView->m_renderTargetView; 
+		colorCount = 1U; 
+	}
+
+	// if we have a depth target, bind that as well; 
+	DepthStencilTargetView *dsv = camera.m_depthStencilView; 
+	ID3D11DepthStencilView *dx_dsv = nullptr; 
+	if(camera.m_depthStencilView != nullptr)
+	{
+		if (dsv != nullptr) {
+			dx_dsv = dsv->m_renderTargetView; 
+		}
+	}
+
 	// Bind this as our output (this method takes an array, so 
 	// this is binding an array of one)
-	m_D3DContext->OMSetRenderTargets( 1, &(colorTargetView->m_renderTargetView), nullptr );
+	m_D3DContext->OMSetRenderTargets( colorCount, &dx_rtv, dx_dsv);
 
 	// Next, we have to describe WHAT part of the texture we're rendering to (called the viewport)
 	// This is also usually managed by the camera, but for now, we will just render to the whole texture
@@ -613,6 +706,9 @@ void RenderContext::BeginCamera( Camera& camera )
 	UpdateFrameBuffer();
 	BindUniformBuffer( UNIFORM_SLOT_FRAME, m_immediateUBO);
 
+	// Bind model matrix; 
+	BindModelMatrix( Matrix44::IDENTITY ); 
+	BindUniformBuffer( UNIFORM_SLOT_MODEL_MATRIX, m_modelBuffer ); 
 }
 
 void RenderContext::UpdateFrameBuffer()
@@ -679,6 +775,26 @@ void RenderContext::DrawVertexArray( Vertex_PCU const *vertices, uint count )
 	BindVertexStream( m_immediateVBO ); 
 
 	Draw( count ); 
+	
+	//To Do implementation:
+	/*
+	m_immediateMesh->CopyFromVertexArray( vertices, count ); 
+	m_immediateMesh->SetDrawCall( false, count ); 
+
+	DrawMesh( m_immediateMesh ); 
+	*/
+}
+
+void RenderContext::DrawMesh( GPUMesh *mesh )
+{
+	BindVertexStream( mesh->m_vertexBuffer ); 
+	BindIndexStream( mesh->m_indexBuffer ); 
+
+	if (mesh->UsesIndexBuffer()) {
+		DrawIndexed( mesh->GetElementCount(), mesh->GetVertexCount() ); 
+	} else {
+		Draw( mesh->GetVertexCount() ); 
+	}
 }
 
 //Depricated. To be removed

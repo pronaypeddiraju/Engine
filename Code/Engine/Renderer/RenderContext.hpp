@@ -24,6 +24,7 @@ class BitmapFont;
 class Image;
 class WindowContext;
 class GPUMesh;
+class IndexBuffer;
 
 //D3D11
 struct ID3D11Device;
@@ -46,31 +47,34 @@ public:
 	explicit RenderContext(WindowContext* window);
 	~RenderContext();
 
-	void				Startup();
-	void				PremakeDefaults();
-	void				BeginFrame();
-	ColorTargetView*	GetFrameColorTarget();
-	void				EndFrame();
+	void						Startup();
+	void						PremakeDefaults();
+	void						BeginFrame();
 
-	void				BeginCamera( Camera& camera );
-	void				EndCamera();
+	ColorTargetView*			GetFrameColorTarget();
+	DepthStencilTargetView*		GetFrameDepthStencilTarget(); 
+	
+	void						EndFrame();
 
-	void				Shutdown();
+	void						BeginCamera( Camera& camera );
+	void						EndCamera();
+
+	void						Shutdown();
 
 	//Get resources
-	//Texture*			CreateOrGetTextureFromFile(const char* imageFilePath);
-	TextureView*		GetOrCreateTextureViewFromFile( std::string const &filename, bool isFont = false); 
-	BitmapFont*			CreateOrGetBitmapFontFromFile (const std::string& bitmapName);
-	Shader*				CreateOrGetShaderFromFile(const std::string& fileName);
+	//Texture*					CreateOrGetTextureFromFile(const char* imageFilePath);
+	TextureView*				GetOrCreateTextureViewFromFile( std::string const &filename, bool isFont = false); 
+	BitmapFont*					CreateOrGetBitmapFontFromFile (const std::string& bitmapName);
+	Shader*						CreateOrGetShaderFromFile(const std::string& fileName);
 
-	void				BindShader(Shader* shader);
-	void				SetBlendMode(eBlendMode blendMode);
+	void						BindShader(Shader* shader);
+	void						SetBlendMode(eBlendMode blendMode);
 	
-	//void				BindTexture(Texture* texture);
-	void				BindTextureView( uint slot, TextureView *view ); 
-	void				BindSampler( uint slot, Sampler *sampler ); 
-	void				BindTextureView( uint slot, std::string const &name ); 
-	void				BindSampler( eSampleMode mode );
+	//void						BindTexture(Texture* texture);
+	void						BindTextureView( uint slot, TextureView *view ); 
+	void						BindSampler( uint slot, Sampler *sampler ); 
+	void						BindTextureView( uint slot, std::string const &name ); 
+	void						BindSampler( eSampleMode mode );
 
 	// more convince - I store samplers WITH a texture view for convenience (what
 	// is the desired way to sample this texture).  
@@ -79,47 +83,53 @@ public:
 
 	// sampler I'm storing with the view in this design - but still giving
 	// the context the option of binding a view with a different sampler if we so choose; 
-	void				BindTextureViewWithSampler( uint slot, TextureView *view ); 
-	void				BindTextureViewWithSampler( uint slot, std::string const &name ); 
-	void				BindTextureViewWithSampler( uint slot, TextureView *view, Sampler *sampler ); 
-	void				BindTextureViewWithSampler( uint slot, TextureView *view, eSampleMode mode ); 
-	void				BindTextureViewWithSampler( uint slot, std::string const &name, eSampleMode mode ); 
+	void						BindTextureViewWithSampler( uint slot, TextureView *view ); 
+	void						BindTextureViewWithSampler( uint slot, std::string const &name ); 
+	void						BindTextureViewWithSampler( uint slot, TextureView *view, Sampler *sampler ); 
+	void						BindTextureViewWithSampler( uint slot, TextureView *view, eSampleMode mode ); 
+	void						BindTextureViewWithSampler( uint slot, std::string const &name, eSampleMode mode ); 
 
+	void						BindModelMatrix( Matrix44 const &model );
 
-	void				Draw(uint vertexCount, uint byteOffset = 0U);
+	// Be able to set a model matrix (updates the uniform buffer; 
+	void						SetModelMatrix( Matrix44 const &modelMatrix );            // A04
 
-	void				ClearColorTargets( const Rgba& clearColor );		//Previously was ClearScreen
+	void						ClearColorTargets( const Rgba& clearColor );		//Previously was ClearScreen
+	void						ClearDepthStencilTarget( float depth = 1.0f, uint8_t stencil = 0U ); // A04
 
 	// Stream Data
-	void				BindVertexStream( VertexBuffer *vbo ); 
+	void						BindVertexStream( VertexBuffer *vbo ); 
+	// Be able to bind index buffers; 
+	void						BindIndexStream( IndexBuffer *ibo );    // A04
 
 	// Uniform/Constant Data
-	void				UpdateFrameBuffer();
-	void				BindUniformBuffer( uint slot, UniformBuffer *ubo ); 
+	void						UpdateFrameBuffer();
+	void						BindUniformBuffer( uint slot, UniformBuffer *ubo ); 
 
-	// Resurrected Functions
-	void				DrawVertexArray( Vertex_PCU const *vertices, uint count ); 
+	void						Draw(uint vertexCount, uint byteOffset = 0U);
+	void						DrawIndexed( uint indexCount, uint vertexCount, uint byteOffset = 0U);                                 // A04
 
+	void						DrawVertexArray( Vertex_PCU const *vertices, uint count ); 
+	void						DrawVertexArray( int numVertexes, const Vertex_PCU* vertexes );
+	void						DrawVertexArray( const std::vector<Vertex_PCU>& vertexes);
 
-	void				DrawVertexArray( int numVertexes, const Vertex_PCU* vertexes );
-	void				DrawVertexArray( const std::vector<Vertex_PCU>& vertexes);
-
+	void						DrawMesh( GPUMesh *mesh );                                         // A04
 	
 public:
 	//White texture
-	unsigned char		plainWhiteImageData[4] = {255, 255, 255, 255};
+	unsigned char				plainWhiteImageData[4] = {255, 255, 255, 255};
 
 private:
 	//D3D11 Functions
-	bool				D3D11Setup(void* hwnd);   // Creates required D3D Objects
-	void				D3D11Cleanup();          // Cleans up D3D11 Objects
+	bool						D3D11Setup(void* hwnd);   // Creates required D3D Objects
+	void						D3D11Cleanup();          // Cleans up D3D11 Objects
 
-	void				DemoRender();            // Does rendering for this demo
+	void						DemoRender();            // Does rendering for this demo
 
 	// Private (internal) member functions will go here
-	BitmapFont*			CreateBitmapFontFromFile(const std::string& bitmapName);
-	Shader*				CreateShaderFromFile(const std::string& fileName);
-	void				CreateAndSetDefaultRasterState();
+	BitmapFont*					CreateBitmapFontFromFile(const std::string& bitmapName);
+	Shader*						CreateShaderFromFile(const std::string& fileName);
+	void						CreateAndSetDefaultRasterState();
 
 private:
 	// Private (internal) data members will go here
@@ -142,11 +152,16 @@ private:
 
 	void*												m_hwnd = nullptr;
 
+	//Matrix44											m_modelMatrix;
+
 public:
 
 	VertexBuffer*										m_immediateVBO = nullptr; 
 	UniformBuffer*										m_immediateUBO = nullptr;
 	Image*												m_whiteImage = nullptr;
+
+	DepthStencilTargetView*								m_defaultDepthStencilView = nullptr; // A04
+	UniformBuffer*										m_modelBuffer = nullptr;                      // A04
 
 	// There are a small set of sampler state that
 	// we can get by with just reusing everywhere, 

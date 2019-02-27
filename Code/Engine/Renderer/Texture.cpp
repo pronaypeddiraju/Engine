@@ -38,6 +38,8 @@ bool Texture2D::LoadTextureFromFile( std::string const &filename, bool isFont )
 {
 	std::string path;
 
+	std::vector<std::string> splitStrings = SplitStringOnDelimiter(path, '.');
+
 	if(!isFont)
 	{
 		path = IMAGE_PATH + filename;

@@ -2,7 +2,6 @@
 #include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Renderer/IndexBuffer.hpp"
-#include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 
 GPUMesh::GPUMesh( RenderContext *renderContext )

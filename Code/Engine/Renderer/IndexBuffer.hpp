@@ -16,6 +16,6 @@ public:
 	inline uint	GetIndexCount() {return m_indexCount;}
 
 public: 
-	uint m_indexCount;                      // A04
+	uint m_indexCount = 0U;                      // A04
 };
 

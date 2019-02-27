@@ -18,8 +18,8 @@ typedef unsigned int uint;
 struct VertexMaster
 {
 	Vec3 position;          // A04
-	Rgba color;             // A04
-	Vec2 uv;                // A04;
+	Rgba color = Rgba::WHITE;             // A04
+	Vec2 uv = Vec2::ZERO;                // A04;
 
 	// vec3 normal;         // A05
 	// vec4 tangent;        // A06
@@ -73,9 +73,9 @@ public:
 // as I like to pick and choose the ones I want instead of having them
 // all live in CPUMesh.hpp
 //------------------------------------------------------------------------
-void			CPUMeshAddQuad( CPUMesh *out, AABB2 quad ); 
+void			CPUMeshAddQuad( CPUMesh *out, AABB2 quad); 
 
-void			CPUMeshAddCube( CPUMesh *out, AABB3 box );                                                          // A04
+void			CPUMeshAddCube( CPUMesh *out, AABB3 box, bool clearMesh = true );                                                          // A04
 void			CPUMeshAddUVSphere( CPUMesh *out, Vec3 center, float radius, uint wedges = 32, uint slices = 16 );  // A04
 
 

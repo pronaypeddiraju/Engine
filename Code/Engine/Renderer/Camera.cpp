@@ -50,6 +50,11 @@ void Camera::SetColorTarget( ColorTargetView *colorTargetView )
 	m_colorTargetView = colorTargetView;
 }
 
+void Camera::SetDepthStencilTarget( DepthStencilTargetView *depthStencilView )
+{
+	m_depthStencilView = depthStencilView;
+}
+
 void Camera::SetModelMatrix( Matrix44 camModel )
 {
 	m_cameraModel = camModel;

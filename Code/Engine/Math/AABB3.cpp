@@ -27,9 +27,55 @@ AABB3::AABB3( const Vec3& frontMinBounds, const Vec3& frontMaxBounds, float boxD
 
 }
 
+const AABB2& AABB3::GetFrontFace() const
+{
+	return m_frontFace;
+}
+
+const AABB2& AABB3::GetBackFace() const
+{
+	return m_backFace;
+}
+
+const AABB2 & AABB3::GetTopFace() const
+{
+	return m_topFace;
+}
+
+const AABB2 & AABB3::GetBottomFace() const
+{
+	return m_bottomFace;
+}
+
+const AABB2 & AABB3::GetLeftFace() const
+{
+	return m_leftFace;
+}
+
+const AABB2 & AABB3::GetRightFace() const
+{
+	return m_rightFace;
+}
+
 void AABB3::ConstructAllFaces()
 {
+	//Front Face
+	m_frontFace = AABB2(m_frontBottomLeft, m_frontTopRight);
 
+	//Back Face
+	m_backFace = AABB2(m_backBottomLeft, m_backTopRight);
+
+	//Top Face
+	m_topFace = AABB2(m_frontTopLeft, m_backTopRight);
+
+	//Bottom Face
+	m_bottomFace = AABB2(m_frontBottomLeft, m_backBottomRight);
+
+	//Left Face
+	m_leftFace = AABB2(m_backBottomLeft, m_frontTopLeft);
+
+	//Right Face
+	m_rightFace = AABB2(m_frontBottomRight, m_backTopRight);
 }
 
 AABB3::~AABB3()

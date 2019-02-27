@@ -219,6 +219,7 @@
     <ClCompile Include="Renderer\Camera.cpp" />
     <ClCompile Include="Renderer\ColorTargetView.cpp" />
     <ClCompile Include="Renderer\CPUMesh.cpp" />
+    <ClCompile Include="Renderer\DepthStencilTargetView.cpp" />
     <ClCompile Include="Renderer\GPUMesh.cpp" />
     <ClCompile Include="Renderer\IndexBuffer.cpp" />
     <ClCompile Include="Renderer\RenderBuffer.cpp" />
@@ -289,6 +290,7 @@
     <ClInclude Include="Renderer\Camera.hpp" />
     <ClInclude Include="Renderer\ColorTargetView.hpp" />
     <ClInclude Include="Renderer\CPUMesh.hpp" />
+    <ClInclude Include="Renderer\DepthStencilTargetView.hpp" />
     <ClInclude Include="Renderer\GPUMesh.hpp" />
     <ClInclude Include="Renderer\IndexBuffer.hpp" />
     <ClInclude Include="Renderer\RenderBuffer.hpp" />

@@ -11,6 +11,7 @@ enum eCoreUniformSlot
 {
 	UNIFORM_SLOT_FRAME         = 1,
 	UNIFORM_SLOT_CAMERA        = 2, 
+	UNIFORM_SLOT_MODEL_MATRIX  = 3,
 }; 
 
 // A constant buffer can address up 64KB,
