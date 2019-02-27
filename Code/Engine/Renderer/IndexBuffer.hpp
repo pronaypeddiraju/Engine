@@ -13,6 +13,8 @@ public:
 	bool CreateStaticFor( uint const *indices, uint const count );          // A04
 	bool CopyCPUToGPU( uint const *indices, uint const count );            // A04
 
+	inline uint	GetIndexCount() {return m_indexCount;}
+
 public: 
 	uint m_indexCount;                      // A04
 };

@@ -1,6 +1,7 @@
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Commons/ErrorWarningAssert.hpp"
+#include "Engine/Math/AABB3.hpp"
 
 CPUMesh::CPUMesh()
 {
@@ -33,6 +34,12 @@ void CPUMeshAddQuad( CPUMesh *out, AABB2 quad )
 
 	out->AddIndexedTriangle( 0, 2, 1 ); 
 	out->AddIndexedTriangle( 2, 3, 1 ); 
+}
+
+void CPUMeshAddCube( CPUMesh *out, AABB3 box )
+{
+	//Create your box here
+
 }
 
 //------------------------------------------------------------------------

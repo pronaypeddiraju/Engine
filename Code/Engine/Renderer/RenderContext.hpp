@@ -23,6 +23,7 @@ class TextureView;
 class BitmapFont;
 class Image;
 class WindowContext;
+class GPUMesh;
 
 //D3D11
 struct ID3D11Device;
@@ -155,6 +156,8 @@ public:
 	std::map<std::string, TextureView*>					m_cachedTextureViews;
 
 	unsigned int										m_frameCount = 0;
+
+	GPUMesh*											m_immediateMesh = nullptr;   //A04
 };
 
 

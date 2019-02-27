@@ -195,6 +195,7 @@
     <ClCompile Include="Input\KeyButtonState.cpp" />
     <ClCompile Include="Input\XboxController.cpp" />
     <ClCompile Include="Math\AABB2.cpp" />
+    <ClCompile Include="Math\AABB3.cpp" />
     <ClCompile Include="Math\Collider2D.cpp" />
     <ClCompile Include="Math\CollisionHandler.cpp" />
     <ClCompile Include="Math\Disc2D.cpp" />
@@ -218,6 +219,7 @@
     <ClCompile Include="Renderer\Camera.cpp" />
     <ClCompile Include="Renderer\ColorTargetView.cpp" />
     <ClCompile Include="Renderer\CPUMesh.cpp" />
+    <ClCompile Include="Renderer\GPUMesh.cpp" />
     <ClCompile Include="Renderer\IndexBuffer.cpp" />
     <ClCompile Include="Renderer\RenderBuffer.cpp" />
     <ClCompile Include="Renderer\RenderContext.cpp" />
@@ -261,6 +263,7 @@
     <ClInclude Include="Input\KeyButtonState.hpp" />
     <ClInclude Include="Input\XboxController.hpp" />
     <ClInclude Include="Math\AABB2.hpp" />
+    <ClInclude Include="Math\AABB3.hpp" />
     <ClInclude Include="Math\Collider2D.hpp" />
     <ClInclude Include="Math\CollisionHandler.hpp" />
     <ClInclude Include="Math\Disc2D.hpp" />
@@ -286,6 +289,7 @@
     <ClInclude Include="Renderer\Camera.hpp" />
     <ClInclude Include="Renderer\ColorTargetView.hpp" />
     <ClInclude Include="Renderer\CPUMesh.hpp" />
+    <ClInclude Include="Renderer\GPUMesh.hpp" />
     <ClInclude Include="Renderer\IndexBuffer.hpp" />
     <ClInclude Include="Renderer\RenderBuffer.hpp" />
     <ClInclude Include="Renderer\RenderContext.hpp" />

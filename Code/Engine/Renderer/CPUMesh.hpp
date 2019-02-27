@@ -6,6 +6,7 @@
 #include <vector>
 
 struct AABB2;
+struct AABB3;
 
 typedef unsigned int uint;
 
@@ -74,7 +75,7 @@ public:
 //------------------------------------------------------------------------
 void			CPUMeshAddQuad( CPUMesh *out, AABB2 quad ); 
 
-void			CPUMeshAddCube( CPUMesh *out, AABB2 box );                                                          // A04
+void			CPUMeshAddCube( CPUMesh *out, AABB3 box );                                                          // A04
 void			CPUMeshAddUVSphere( CPUMesh *out, Vec3 center, float radius, uint wedges = 32, uint slices = 16 );  // A04
 
 
