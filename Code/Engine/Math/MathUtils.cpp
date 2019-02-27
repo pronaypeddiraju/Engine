@@ -387,6 +387,18 @@ bool IsPointInCapsule2D( const Vec2& point, const Vec2& capsuleStart, const Vec2
 	}
 }
 
+Vec3 GetSphericalCoordinates( float radius, float angleTheta, float anglePhi )
+{
+	Vec3 coordinates;
+
+	coordinates.x = CosDegrees(anglePhi) * CosDegrees(angleTheta);
+	coordinates.y = SinDegrees(anglePhi);
+	coordinates.z = CosDegrees(anglePhi) * SinDegrees(angleTheta);
+
+	coordinates *= radius;
+	return coordinates;
+}
+
 //------------------------------------------------------------------------------------------------------------------------------
 void PushDiscOutOfPoint(Vec2& discPosition, float radius, const Vec2& pushOutOfPoint)
 {

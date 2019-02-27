@@ -50,6 +50,7 @@ Vec2			GetClosestPointOnLineSegment2D( const Vec2& referencePos, const Vec2& lin
 Vec2			GetClosestPointOnCapsule2D( const Vec2& referencePos, const Vec2& capsuleStart, const Vec2& capsuleEnd, float capsuleRadius );
 float			GetRayImpactFractionVsDisc2D( const Vec2& rayStart, const Vec2& rayNormalizedDir, float rayLength, const Vec2& discCenter, float discRadius );
 bool			IsPointInCapsule2D( const Vec2& point, const Vec2& capsuleStart, const Vec2& capsuleEnd, float capsuleRadius );
+Vec3			GetSphericalCoordinates(float radius, float angleTheta, float anglePhi);
 
 //Transform Utilities
 Vec2			TransformPosition2D( const Vec2& position, float uniformScale, float rotationDegreesOnZ, const Vec2& translateXY);

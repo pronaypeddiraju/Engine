@@ -15,12 +15,12 @@ IndexBuffer::~IndexBuffer()
 bool IndexBuffer::CreateStaticFor( uint const *indices, uint const count )
 {
 	// how many bytes do we need
-	size_t sizeNeeded = count * sizeof(Vertex_PCU); 
+	size_t sizeNeeded = count * sizeof(unsigned int); 
 
 	// just always create for static a new static buffer; 
 	bool result = CreateBuffer( indices, 
 		sizeNeeded,        // total size needed for buffer?
-		sizeof(Vertex_PCU), // stride - size from one vertex to another
+		sizeof(unsigned int), // stride - size from one vertex to another
 		RENDER_BUFFER_USAGE_INDEX_STREAM_BIT, 
 		GPU_MEMORY_USAGE_STATIC ); // probably want dynamic if we're using copy
 

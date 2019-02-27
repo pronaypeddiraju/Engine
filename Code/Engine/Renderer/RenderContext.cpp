@@ -256,7 +256,7 @@ void RenderContext::CreateAndSetDefaultRasterState()
 
 	desc.FillMode = D3D11_FILL_SOLID;
 	desc.CullMode = D3D11_CULL_BACK;
-	desc.FrontCounterClockwise = TRUE; // the only reason we're doing this; 
+	desc.FrontCounterClockwise = TRUE; 
 	desc.DepthBias = 0U; 
 	desc.DepthBiasClamp = 0.0f; 
 	desc.SlopeScaledDepthBias = 0.0f; 
@@ -467,7 +467,13 @@ void RenderContext::BindTextureViewWithSampler( uint slot, TextureView *view )
 void RenderContext::BindTextureViewWithSampler( uint slot, std::string const &name )
 {
 	std::map< std::string, TextureView* >::iterator textureIterator;
-	textureIterator = m_loadedTextures.find(name);
+	textureIterator = m_cachedTextureViews.find(name);
+
+	if(textureIterator == m_cachedTextureViews.end())
+	{
+		//Only for now. Later add a line of code that calls GetOrCreateTextureView
+		ERROR_AND_DIE("Texture requested does not exist");
+	}
 
 	BindTextureViewWithSampler(slot, textureIterator->second);
 }
@@ -573,7 +579,7 @@ void RenderContext::Draw( uint vertexCount, uint byteOffset )
 	}
 }
 
-void RenderContext::DrawIndexed( uint indexCount, uint vertexCount, uint byteOffset )
+void RenderContext::DrawIndexed( uint indexCount)
 {
 	bool result =  m_currentShader->CreateInputLayoutForVertexPCU(); 
 
@@ -584,7 +590,6 @@ void RenderContext::DrawIndexed( uint indexCount, uint vertexCount, uint byteOff
 	{
 		m_D3DContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_D3DContext->IASetInputLayout( m_currentShader->m_inputLayout );
-		m_D3DContext->Draw( vertexCount, byteOffset ); 
 	} 
 	else 
 	{
@@ -790,9 +795,12 @@ void RenderContext::DrawMesh( GPUMesh *mesh )
 	BindVertexStream( mesh->m_vertexBuffer ); 
 	BindIndexStream( mesh->m_indexBuffer ); 
 
-	if (mesh->UsesIndexBuffer()) {
-		DrawIndexed( mesh->GetElementCount(), mesh->GetVertexCount() ); 
-	} else {
+	if (mesh->UsesIndexBuffer()) 
+	{
+		DrawIndexed( mesh->GetElementCount()); 
+	} 
+	else 
+	{
 		Draw( mesh->GetVertexCount() ); 
 	}
 }

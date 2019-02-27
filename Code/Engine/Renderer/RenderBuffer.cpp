@@ -108,7 +108,7 @@ bool RenderBuffer::CreateBuffer( void const *initialData,
 	}
 
 	// TODO: support structured buffers (Summer Semester)
-	//       I will probably forget about this....
+	//I will probably forget about this....
 
 	// Map initial data if relevant (something was passed in)
 	D3D11_SUBRESOURCE_DATA data;

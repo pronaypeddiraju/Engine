@@ -2,6 +2,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Math/AABB3.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 CPUMesh::CPUMesh()
 {
@@ -90,10 +91,10 @@ void CPUMeshAddCube( CPUMesh *out, AABB3 box, bool clearMesh )
 	out->AddIndexedTriangle( 2, 3, 1 ); 
 
 	//Add back face
-	// 0 --- 1
+	// 4 --- 5
 	// |   / |
 	// | /   |
-	// 2 --- 3
+	// 6 --- 7
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
 	out->AddVertex( box.m_backTopLeft); 
 	out->SetUV( Vec2(1.0f, 0.0f) ); 
@@ -103,76 +104,116 @@ void CPUMeshAddCube( CPUMesh *out, AABB3 box, bool clearMesh )
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
 	out->AddVertex( box.m_backBottomRight ); 
 
-	out->AddIndexedTriangle( 3, 5, 4 ); 
-	out->AddIndexedTriangle( 5, 6, 4 ); 
+	out->AddIndexedTriangle( 4, 6, 5 ); 
+	out->AddIndexedTriangle( 6, 7, 5 ); 
 
 	//Add top face
-	// 0 --- 1
+	// 8 --- 9
 	// |   / |
 	// | /   |
-	// 2 --- 3
+	// 10 --- 11
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
-	out->AddVertex( box.m_backTopLeft); 
+	out->AddVertex( box.m_backTopRight); 
 	out->SetUV( Vec2(1.0f, 0.0f) ); 
-	out->AddVertex( box.m_backTopRight ); 
+	out->AddVertex( box.m_backTopLeft ); 
 	out->SetUV( Vec2(0.0f, 1.0f) ); 
 	out->AddVertex( box.m_frontTopLeft ); 
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
 	out->AddVertex( box.m_frontTopRight ); 
 
-	out->AddIndexedTriangle( 6, 8, 7 ); 
-	out->AddIndexedTriangle( 8, 9, 7 );
+	out->AddIndexedTriangle( 8, 10, 9 ); 
+	out->AddIndexedTriangle( 10, 11, 9 );
 
 	//Add bottom face
-	// 0 --- 1
+	// 12 --- 13
 	// |   / |
 	// | /   |
-	// 2 --- 3
+	// 14 --- 15
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
-	out->AddVertex( box.m_backBottomLeft); 
+	out->AddVertex( box.m_frontBottomLeft); 
 	out->SetUV( Vec2(1.0f, 0.0f) ); 
-	out->AddVertex( box.m_backBottomRight ); 
-	out->SetUV( Vec2(0.0f, 1.0f) ); 
-	out->AddVertex( box.m_frontBottomLeft ); 
-	out->SetUV( Vec2(1.0f, 1.0f) ); 
 	out->AddVertex( box.m_frontBottomRight ); 
-
-	out->AddIndexedTriangle( 9, 11, 10 ); 
-	out->AddIndexedTriangle( 11, 12, 10 );
-
-	//Add left face
-	// 0 --- 1
-	// |   / |
-	// | /   |
-	// 2 --- 3
-	out->SetUV( Vec2(0.0f, 0.0f) ); 
-	out->AddVertex( box.m_backTopLeft); 
-	out->SetUV( Vec2(1.0f, 0.0f) ); 
-	out->AddVertex( box.m_frontTopLeft); 
 	out->SetUV( Vec2(0.0f, 1.0f) ); 
-	out->AddVertex( box.m_backBottomLeft ); 
+	out->AddVertex( box.m_backBottomRight ); 
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
-	out->AddVertex( box.m_frontBottomLeft ); 
+	out->AddVertex( box.m_backBottomLeft ); 
 
 	out->AddIndexedTriangle( 12, 14, 13 ); 
 	out->AddIndexedTriangle( 14, 15, 13 );
 
-	//Add right face
-	// 0 --- 1
+	//Add left face
+	// 16 --- 17
 	// |   / |
 	// | /   |
-	// 2 --- 3
+	// 18 --- 19
+	out->SetUV( Vec2(0.0f, 0.0f) ); 
+	out->AddVertex( box.m_backTopRight); 
+	out->SetUV( Vec2(1.0f, 0.0f) ); 
+	out->AddVertex( box.m_frontTopLeft); 
+	out->SetUV( Vec2(0.0f, 1.0f) ); 
+	out->AddVertex( box.m_backBottomRight ); 
+	out->SetUV( Vec2(1.0f, 1.0f) ); 
+	out->AddVertex( box.m_frontBottomLeft ); 
+
+	out->AddIndexedTriangle( 16, 18, 17 ); 
+	out->AddIndexedTriangle( 18, 19, 17 );
+
+	//Add right face
+	// 20 --- 21
+	// |   / |
+	// | /   |
+	// 22 --- 23
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
 	out->AddVertex( box.m_frontTopRight); 
 	out->SetUV( Vec2(1.0f, 0.0f) ); 
-	out->AddVertex( box.m_backTopRight); 
+	out->AddVertex( box.m_backTopLeft); 
 	out->SetUV( Vec2(0.0f, 1.0f) ); 
 	out->AddVertex( box.m_frontBottomRight ); 
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
-	out->AddVertex( box.m_backBottomRight ); 
+	out->AddVertex( box.m_backBottomLeft ); 
 
-	out->AddIndexedTriangle( 15, 17, 16 ); 
-	out->AddIndexedTriangle( 17, 18, 16 );
+	out->AddIndexedTriangle( 20, 22, 21 ); 
+	out->AddIndexedTriangle( 22, 23, 21 );
+}
+
+void CPUMeshAddUVSphere( CPUMesh *out, Vec3 center, float radius, uint wedges /*= 32*/, uint slices /*= 16 */ )
+{
+	out->Clear();
+
+	int ustep = wedges + 1;
+	int vstep = slices + 1;
+
+	float phi;			//Angle along the j,k plane
+	float theta;		//Angle along the i,k plane
+
+	//Map out all the vertices
+	for(int vIndex = 0; vIndex < vstep; vIndex++)
+	{
+		float v = static_cast<float>(vIndex) / static_cast<float>(slices);
+		phi = RangeMapFloat(v, 0, 1, 90, -90);
+
+		for(int uIndex = 0; uIndex < ustep; uIndex++)
+		{
+			float u = static_cast<float>(uIndex) / static_cast<float>(wedges);
+			theta = u * 360;
+			Vec3 position = GetSphericalCoordinates(radius, theta, phi);
+			out->AddVertex(position);
+		}
+	}
+
+	//Map out all the Indices
+	for(int y = 0; y < static_cast<int>(slices); y++)
+	{
+		for(int x = 0; x < static_cast<int>(wedges); x++)
+		{
+			uint TL = y * ustep + 1;
+			uint TR = TL + 1;
+			uint BL = TL + ustep;
+			uint BR = BL + 1;
+			out->AddIndexedQuad(TL, TR, BL, BR);
+		}
+	}
+
 }
 
 //------------------------------------------------------------------------

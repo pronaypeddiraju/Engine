@@ -107,7 +107,7 @@ public:
 	void						BindUniformBuffer( uint slot, UniformBuffer *ubo ); 
 
 	void						Draw(uint vertexCount, uint byteOffset = 0U);
-	void						DrawIndexed( uint indexCount, uint vertexCount, uint byteOffset = 0U);                                 // A04
+	void						DrawIndexed( uint indexCount);                                 // A04
 
 	void						DrawVertexArray( Vertex_PCU const *vertices, uint count ); 
 	void						DrawVertexArray( int numVertexes, const Vertex_PCU* vertexes );

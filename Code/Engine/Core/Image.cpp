@@ -12,7 +12,7 @@ Image::Image( const char* imageFilePath )
 	int imageTexelSizeX = 0; // Filled in for us to indicate image width
 	int imageTexelSizeY = 0; // Filled in for us to indicate image height
 	int numComponents = 0; // Filled in for us to indicate how many color components the image had (e.g. 3=RGB=24bit, 4=RGBA=32bit)
-	int numComponentsRequested = 0; // don't care; we support 3 (24-bit RGB) or 4 (32-bit RGBA)
+	int numComponentsRequested = 4; // don't care; we support 3 (24-bit RGB) or 4 (32-bit RGBA)
 
 	//D3D prefers it to be (0,0) at the bottom
 	//stbi_set_flip_vertically_on_load( 1 ); // We prefer uvTexCoords has origin (0,0) at BOTTOM LEFT
