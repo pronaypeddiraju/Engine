@@ -38,8 +38,9 @@ public:
 class Shader 
 {
 public:
-	STATIC D3D11_BLEND_OP	DXUsageFromBlendOp( eBlendOperation const usage );
-	STATIC D3D11_BLEND		DXUsageFromBlendFactor( eBlendFactor const usage );
+	STATIC D3D11_BLEND_OP			DXUsageFromBlendOp( eBlendOperation const usage );
+	STATIC D3D11_BLEND				DXUsageFromBlendFactor( eBlendFactor const usage );
+	STATIC D3D11_COMPARISON_FUNC	DXGetCompareFunction( eCompareOp const usage );
 	Shader();
 	~Shader();
 	
@@ -47,8 +48,12 @@ public:
 	static char const*		GetShaderModelForStage(eShaderStage stage );
 
 	bool					CreateInputLayoutForVertexPCU(); 
+	// Depth stencil state now also needs to be generated; 
 	bool					UpdateBlendStateIfDirty(RenderContext *renderContext); 
+	bool					UpdateDepthStateIfDirty(RenderContext *renderContext);
 
+	// Can now set our depth compare mode; 
+	void					SetDepth( eCompareOp op, bool write );                 // A04
 	void					SetBlendMode( eBlendMode mode ); 
 
 public:
@@ -63,10 +68,15 @@ public:
 	eBlendFactor			m_srcFactor = FACTOR_SOURCE_ALPHA;  
 	eBlendFactor			m_dstFactor = FACTOR_INV_SOURCE_ALPHA; 
 	bool					m_blendStateDirty = true; 
+	bool					m_depthStateDirty = true;              // A04
 
+	// Depth/Stencil Mode
+	eCompareOp				m_depthCompareOp = COMPARE_LEQUAL;    // A04
+	bool					m_writeDepth = false;             // A04
 
-	ID3D11InputLayout*		m_inputLayout = nullptr; 
-	ID3D11BlendState*		m_blendState = nullptr; 
+	ID3D11InputLayout*			m_inputLayout = nullptr; 
+	ID3D11BlendState*			m_blendState = nullptr; 
+	ID3D11DepthStencilState*	m_depthStencilState = nullptr;     // A04
 }; 
 
 ID3D10Blob* CompileHLSLToShaderBlob( char const *opt_filename,		// optional: used for error messages

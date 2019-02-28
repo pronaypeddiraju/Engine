@@ -122,6 +122,26 @@ STATIC D3D11_BLEND Shader::DXUsageFromBlendFactor( eBlendFactor const usage)
 	}
 }
 
+STATIC D3D11_COMPARISON_FUNC Shader::DXGetCompareFunction( eCompareOp const usage)
+{
+	switch (usage) 
+	{
+	case COMPARE_NEVER:				return D3D11_COMPARISON_NEVER;
+	case COMPARE_ALWAYS:			return D3D11_COMPARISON_ALWAYS;
+	case COMPARE_EQUAL:				return D3D11_COMPARISON_EQUAL;
+	case COMPARE_NOTEQUAL:		    return D3D11_COMPARISON_NOT_EQUAL;
+	case COMPARE_LESS:				return D3D11_COMPARISON_LESS;
+	case COMPARE_LEQUAL:			return D3D11_COMPARISON_LESS_EQUAL;
+	case COMPARE_GREATER:			return D3D11_COMPARISON_GREATER;
+	case COMPARE_GEQUAL:			return D3D11_COMPARISON_GREATER_EQUAL;
+	default:
+	{
+		GUARANTEE_RECOVERABLE(false, "Setting D3D11 Depth op to Always"); 
+		return D3D11_COMPARISON_LESS_EQUAL;
+	}
+	}
+}
+
 Shader::Shader()
 {
 
@@ -131,6 +151,7 @@ Shader::~Shader()
 {
 	DX_SAFE_RELEASE(m_inputLayout);
 	DX_SAFE_RELEASE(m_blendState);
+	DX_SAFE_RELEASE(m_depthStencilState);
 }
 
 bool Shader::UpdateBlendStateIfDirty( RenderContext *renderContext )
@@ -179,9 +200,60 @@ bool Shader::UpdateBlendStateIfDirty( RenderContext *renderContext )
 	return (m_blendState != nullptr); 
 }
 
+bool Shader::UpdateDepthStateIfDirty( RenderContext *renderContext )
+{
+	if (m_depthStateDirty || (m_depthStencilState == nullptr)) 
+	{
+		D3D11_DEPTH_STENCIL_DESC ds_desc = {};
+
+		ds_desc.DepthEnable = TRUE;  // for simplicity, just set to true (could set to false if write is false and comprae is always)
+		ds_desc.DepthWriteMask = m_writeDepth ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO; 
+		ds_desc.DepthFunc = DXGetCompareFunction( m_depthCompareOp ); //  
+
+		// Stencil - just use defaults for now; 
+		ds_desc.StencilEnable = false; 
+		ds_desc.StencilReadMask = 0xFF; 
+		ds_desc.StencilWriteMask = 0xFF; 
+
+		D3D11_DEPTH_STENCILOP_DESC default_stencil_op = {}; 
+		default_stencil_op.StencilFailOp = D3D11_STENCIL_OP_KEEP;      // what to do if stencil fails
+		default_stencil_op.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP; // What to do if stencil succeeds but depth fails
+		default_stencil_op.StencilPassOp = D3D11_STENCIL_OP_KEEP;      // what to do if the stencil succeeds
+		default_stencil_op.StencilFunc = D3D11_COMPARISON_ALWAYS;      // function to test against
+
+		// can have different rules setup for front and backface
+		ds_desc.FrontFace = default_stencil_op; 
+		ds_desc.BackFace = default_stencil_op; 
+
+		DX_SAFE_RELEASE(m_depthStencilState); 
+		renderContext->m_D3DDevice->CreateDepthStencilState( &ds_desc, &m_depthStencilState ); 
+		m_depthStateDirty = false; 
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void Shader::SetDepth( eCompareOp op, bool write )
+{
+	if(m_depthCompareOp != op || m_writeDepth != write)
+	{
+		m_depthCompareOp = op;
+		m_writeDepth = write;
+
+		m_depthStateDirty = true;
+	}
+}
+
 void Shader::SetBlendMode( eBlendMode mode )
 {
-	m_blendMode = mode;
+	if(m_blendMode != mode)
+	{
+		m_blendMode = mode;
+		m_blendStateDirty = true;
+	}
 }
 
 bool Shader::CreateInputLayoutForVertexPCU()

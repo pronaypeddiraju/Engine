@@ -143,3 +143,15 @@ enum eBlendFactor
 };
 
 // struct blend_info_t { eBlendOp op; eBlendFactor srcFactor;  eBlendFactor dstFactor; }; 
+
+enum eCompareOp            // A04
+{
+	COMPARE_NEVER,       // false,      "never"
+	COMPARE_ALWAYS,      // true,       "always"
+	COMPARE_EQUAL,       // ==,         "equal"
+	COMPARE_NOTEQUAL,    // !=,         "not"
+	COMPARE_LESS,        // <           "less"
+	COMPARE_LEQUAL,      // <=          "lequal"
+	COMPARE_GREATER,     // >           "greater"
+	COMPARE_GEQUAL,      // >=          "gequal"
+}; 

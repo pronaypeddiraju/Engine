@@ -278,7 +278,15 @@ void RenderContext::BeginFrame()
 
 	// Okay, we have an rtv, store it in our own class
 	m_FrameBuffer_ColorTargetView = new ColorTargetView();
-	m_FrameBuffer_ColorTargetView->CreateForInternalTexture( *back_buffer, *m_D3DDevice ); 
+	m_FrameBuffer_ColorTargetView->CreateForInternalTexture( *back_buffer, *m_D3DDevice ); 	
+
+	m_defaultDepthTexture = Texture2D::CreateDepthStencilTarget(this, m_FrameBuffer_ColorTargetView->m_width, m_FrameBuffer_ColorTargetView->m_height);
+	m_defaultDepthStencilView = m_defaultDepthTexture->CreateDepthStencilTargetView();
+	
+	m_defaultDepthStencilView->ClearDepthStencilView(this, 1.0f);
+
+	delete m_defaultDepthTexture;
+	m_defaultDepthTexture = nullptr;
 
 	//ColorTargetView holds a reference to the back_buffer so we can now release it from this function
 	DX_SAFE_RELEASE( back_buffer ); // I'm done using this - so release my hold on it (does not destroy it!)
@@ -301,7 +309,8 @@ void RenderContext::EndFrame()
 	delete m_FrameBuffer_ColorTargetView;
 	m_FrameBuffer_ColorTargetView = nullptr;
 
-	//Note: Ask Forseth what he means by reusing this by releasing it every frame
+	delete m_defaultDepthStencilView;
+	m_defaultDepthStencilView = nullptr;
 }
 
 void RenderContext::Shutdown()
@@ -390,6 +399,9 @@ void RenderContext::BindShader( Shader* shader )
 	m_D3DContext->OMSetBlendState( shader->m_blendState, // the d3d11 blend state object; 
 		black,         // blend factor (some blend options use this) 
 		0xffffffff );  // mask (what channels will get blended, this means ALL)  
+
+	shader->UpdateDepthStateIfDirty(this);
+	m_D3DContext->OMSetDepthStencilState(shader->m_depthStencilState, 1U);
 
 	m_currentShader = shader;
 }
@@ -679,11 +691,13 @@ void RenderContext::BeginCamera( Camera& camera )
 	// if we have a depth target, bind that as well; 
 	DepthStencilTargetView *dsv = camera.m_depthStencilView; 
 	ID3D11DepthStencilView *dx_dsv = nullptr; 
-	if(camera.m_depthStencilView != nullptr)
+	if (dsv != nullptr) 
 	{
-		if (dsv != nullptr) {
-			dx_dsv = dsv->m_renderTargetView; 
-		}
+		dx_dsv = dsv->m_renderTargetView; 
+	}
+	else
+	{
+		dx_dsv = m_defaultDepthStencilView->m_renderTargetView;
 	}
 
 	// Bind this as our output (this method takes an array, so 
@@ -696,8 +710,8 @@ void RenderContext::BeginCamera( Camera& camera )
 	memset( &viewport, 0, sizeof(viewport) );
 	viewport.TopLeftX = 0U;
 	viewport.TopLeftY = 0U;
-	viewport.Width = colorTargetView->m_width;
-	viewport.Height = colorTargetView->m_height;
+	viewport.Width = static_cast<float>(colorTargetView->m_width);
+	viewport.Height = static_cast<float>(colorTargetView->m_height);
 	viewport.MinDepth = 0.0f;        // must be between 0 and 1 (defualt is 0);
 	viewport.MaxDepth = 1.0f;        // must be between 0 and 1 (default is 1)
 	m_D3DContext->RSSetViewports( 1, &viewport );

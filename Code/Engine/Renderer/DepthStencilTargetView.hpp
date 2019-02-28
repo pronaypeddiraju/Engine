@@ -1,9 +1,10 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
-#include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/IntVec2.hpp"
 
 struct ID3D11Resource;
 struct ID3D11DepthStencilView;
+class RenderContext;
 
 class DepthStencilTargetView                             // A04
 {
@@ -15,10 +16,11 @@ public:
 	float GetWidth() const;                            // A04
 	float GetHeight() const;                           // A04
 
+	void ClearDepthStencilView(RenderContext* renderContext, float depth);
+
 public:
 	
 	ID3D11Resource*						m_source				= nullptr;        // A04
 	ID3D11DepthStencilView*				m_renderTargetView		= nullptr;        // A04
-	Vec2								m_size					= Vec2::ZERO;     // A04
-
+	IntVec2								m_dimensions			= IntVec2::ZERO;     // A04
 }; 

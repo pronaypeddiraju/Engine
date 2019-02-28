@@ -21,8 +21,8 @@ public:
 public:
 	//Renderable view of a texture
 	ID3D11RenderTargetView	*m_renderTargetView = nullptr;
-	float					m_width = 0.0f;
-	float					m_height = 0.0f;
+	uint					m_width = 0U;
+	uint					m_height = 0U;
 
 private:
 	void			CreateForInternalTexture( ID3D11Texture2D &tex, ID3D11Device &D3Ddevice );

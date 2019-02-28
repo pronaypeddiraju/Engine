@@ -42,6 +42,7 @@ class RenderContext
 	friend class UniformBuffer;
 	friend class Sampler;
 	friend class Texture2D;
+	friend class DepthStencilTargetView;
 
 public:
 	explicit RenderContext(WindowContext* window);
@@ -160,6 +161,7 @@ public:
 	UniformBuffer*										m_immediateUBO = nullptr;
 	Image*												m_whiteImage = nullptr;
 
+	Texture2D*											m_defaultDepthTexture = nullptr;
 	DepthStencilTargetView*								m_defaultDepthStencilView = nullptr; // A04
 	UniformBuffer*										m_modelBuffer = nullptr;                      // A04
 

@@ -42,7 +42,7 @@ void ColorTargetView::CreateForInternalTexture( ID3D11Texture2D &D3D11texture, I
 	D3D11_TEXTURE2D_DESC textureDescription;
 	D3D11texture.GetDesc(&textureDescription);
 	//Set the width and the height of the target view to the m_ values 
-	m_width = static_cast<float>(textureDescription.Width);
-	m_height = static_cast<float>(textureDescription.Height);
+	m_width = textureDescription.Width;
+	m_height = textureDescription.Height;
 
 }

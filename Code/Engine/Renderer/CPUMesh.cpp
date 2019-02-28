@@ -190,13 +190,14 @@ void CPUMeshAddUVSphere( CPUMesh *out, Vec3 center, float radius, uint wedges /*
 	for(int vIndex = 0; vIndex < vstep; vIndex++)
 	{
 		float v = static_cast<float>(vIndex) / static_cast<float>(slices);
-		phi = RangeMapFloat(v, 0, 1, 90, -90);
+		phi = RangeMapFloat(v, 0.f, 1.f, 90.f, 270.f);
 
 		for(int uIndex = 0; uIndex < ustep; uIndex++)
 		{
 			float u = static_cast<float>(uIndex) / static_cast<float>(wedges);
-			theta = u * 360;
-			Vec3 position = GetSphericalCoordinates(radius, theta, phi);
+			theta = u * 360.f;
+			Vec3 position = GetSphericalToCartesian(radius, theta, phi) + center;
+			out->SetUV(Vec2(u,v));
 			out->AddVertex(position);
 		}
 	}
@@ -206,7 +207,7 @@ void CPUMeshAddUVSphere( CPUMesh *out, Vec3 center, float radius, uint wedges /*
 	{
 		for(int x = 0; x < static_cast<int>(wedges); x++)
 		{
-			uint TL = y * ustep + 1;
+			uint TL = y * ustep + x;
 			uint TR = TL + 1;
 			uint BL = TL + ustep;
 			uint BR = BL + 1;
@@ -241,8 +242,8 @@ uint CPUMesh::GetVertexCount() const
 
 void CPUMesh::Clear()
 {
-	m_vertices.empty();
-	m_indices.empty();
+	m_vertices.clear();
+	m_indices.clear();
 
 	m_stamp.position = Vec3::ZERO;
 	m_stamp.color = Rgba::WHITE;

@@ -8,6 +8,7 @@ struct ID3D11Resource;
 
 class Image;
 class TextureView2D;
+class DepthStencilTargetView;
 class RenderContext;
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -19,7 +20,9 @@ public:
 	virtual ~Texture(); // virtual, as this will release the resource; 
 
 	unsigned int			GetTextureID() const	{return m_textureID; }
-	
+	void					FreeHandles();
+
+
 protected:
 	//Only render context can set my m_textureID so we don't need a method for it since RenderContext is my friend :')
 	//void					SetTextureID(unsigned int TextureID)	{m_textureID = TextureID;}
@@ -50,6 +53,12 @@ public:
 	bool				LoadTextureFromFile( std::string const &filename, bool isFont = false );
 	bool				LoadTextureFromImage( Image const &image ); 
 
+	bool				CreateDepthStencilTarget( uint width, uint height ); 
+
 	// Create a view of this texture usable in the shader; 
-	TextureView2D*		CreateTextureView2D() const;  
+	TextureView2D*				CreateTextureView2D() const;  
+	DepthStencilTargetView*		CreateDepthStencilTargetView();  // A04
+
+	static Texture2D* CreateDepthStencilTarget( RenderContext *renderContext, uint width, uint height );   // A04
+	static Texture2D* CreateDepthStencilTargetFor( Texture2D *colorTarget );   // A04
 };
