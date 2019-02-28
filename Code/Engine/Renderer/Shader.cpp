@@ -2,6 +2,7 @@
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Math/Vertex_PCU.hpp"
+#include "Engine/Core/FileUtils.hpp"
 
 // Required Headers
 #include <d3d11.h>  
@@ -335,13 +336,89 @@ STATIC char const* Shader::GetShaderModelForStage( eShaderStage stage )
 }
 
 
+void Shader::LoadShaderFromXMLSource(const std::string &fileName )
+{
+	//Open the xml file and parse it
+	tinyxml2::XMLDocument shaderDoc;
+	shaderDoc.LoadFile(fileName.c_str());
+
+	if(shaderDoc.ErrorID() != tinyxml2::XML_SUCCESS)
+	{
+		/*
+		printf("\n >> Error loading XML file from %s ", fileName);
+		printf("\n >> Error ID : %i ", shaderDoc.ErrorID());
+		printf("\n >> Error line number is : %i", shaderDoc.ErrorLineNum());
+		printf("\n >> Error name : %s", shaderDoc.ErrorName());
+		*/
+		ERROR_AND_DIE(">> Error loading GameConfig XML file ")
+			return;
+	}
+	else
+	{
+		//We read everything fine. Now just shove all that data into the required place
+		XMLElement* rootElement = shaderDoc.RootElement();
+		
+		//Read from Pass
+		rootElement = rootElement->FirstChildElement();
+		ReadFromPass(*rootElement);
+		
+		//Set vertex entry function
+		rootElement = rootElement->FirstChildElement();
+		m_vertexStage.m_stageEntry = ParseXmlAttribute(*rootElement, "entry", "");
+		
+		//Set fragement entry function
+		rootElement = rootElement->NextSiblingElement();
+		m_pixelStage.m_stageEntry = ParseXmlAttribute(*rootElement, "entry", "");
+
+		//Set depth data
+		rootElement = rootElement->NextSiblingElement();
+		m_writeDepth = ParseXmlAttribute(*rootElement, "write", m_writeDepth);
+		m_depthCompareOpString = ParseXmlAttribute(*rootElement, "test", m_depthCompareOpString);
+
+		//Set Blend data
+		rootElement = rootElement->NextSiblingElement();
+	}
+
+	SetDepthOpFromString();
+}
+
+void Shader::SetDepthOpFromString()
+{
+	if(m_depthCompareOpString == "lequal")
+	{
+		m_depthCompareOp = COMPARE_LEQUAL;
+	}
+	else if(m_depthCompareOpString == "equal")
+	{
+		m_depthCompareOp = COMPARE_EQUAL;
+	}
+
+	//Add other depth operations when you start using them here
+}
+
+void Shader::ReadFromPass( XMLElement& passEntry )
+{
+	m_shaderSourcePath = ParseXmlAttribute(passEntry, "src", m_shaderSourcePath);
+}
+
 bool ShaderStage::LoadShaderFromSource( RenderContext *renderContext, const std::string &fileName, void const *source, unsigned long sourceSize, eShaderStage stage )
 {
 	m_stage = stage; 
 	m_owningRenderContext = renderContext;
 	ID3D11Device *device = renderContext->m_D3DDevice; 
 
-	m_byteCode = CompileHLSLToShaderBlob( fileName.c_str(), source, sourceSize, Shader::GetEntryForStage(stage), Shader::GetShaderModelForStage(stage) ); 
+	const char* stageEntry;
+	if(m_stageEntry == "")
+	{
+		stageEntry = Shader::GetEntryForStage(stage);
+	}
+	else
+	{
+		stageEntry = m_stageEntry.c_str();
+	}
+
+
+	m_byteCode = CompileHLSLToShaderBlob( fileName.c_str(), source, sourceSize, stageEntry, Shader::GetShaderModelForStage(stage) ); 
 	if (m_byteCode == nullptr) {
 		return false; 
 	}
@@ -371,5 +448,4 @@ bool ShaderStage::LoadShaderFromSource( RenderContext *renderContext, const std:
 	}
 	return IsValid();
 }
-
 

@@ -130,7 +130,7 @@ void RenderContext::D3D11Cleanup()
 	if(SUCCEEDED(hr))
 	{
 		//Uncomment when debugging
-		debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		//debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 		DX_SAFE_RELEASE(debugObject);
 	}
 }
@@ -235,14 +235,41 @@ BitmapFont* RenderContext::CreateBitmapFontFromFile(const std::string& bitmapNam
 
 Shader* RenderContext::CreateShaderFromFile(const std::string& fileName)
 {
-	char* outData = nullptr;
-	unsigned long bufferSize = CreateFileBuffer( fileName, &outData); 
+	//Check the file extention
+	std::vector<std::string> strings = SplitStringOnDelimiter(fileName, '.');
+	bool isDataDriven = false;
+	if(strings.size() > 1)
+	{
+		for(int i = 0; i < strings.size(); i++)
+		{
+			if(strings[i] == "xml")
+			{
+				isDataDriven = true;
+			}
+		}
+	}
 
 	Shader* shader = new Shader();
-	
-	shader->m_vertexStage.LoadShaderFromSource(this, fileName, outData, bufferSize, SHADER_STAGE_VERTEX );
-	shader->m_pixelStage.LoadShaderFromSource(this, fileName, outData, bufferSize, SHADER_STAGE_FRAGMENT);
-	
+	char* outData = nullptr;
+	unsigned long bufferSize;
+	if(isDataDriven)
+	{
+		//Load the Shader from XML
+		shader->LoadShaderFromXMLSource(fileName);
+
+		bufferSize = CreateFileBuffer( shader->m_shaderSourcePath, &outData); 
+
+		shader->m_vertexStage.LoadShaderFromSource(this, shader->m_shaderSourcePath, outData, bufferSize, SHADER_STAGE_VERTEX);
+		shader->m_pixelStage.LoadShaderFromSource(this, shader->m_shaderSourcePath, outData, bufferSize, SHADER_STAGE_FRAGMENT);
+	}
+	else
+	{
+		bufferSize = CreateFileBuffer( fileName, &outData); 
+
+		shader->m_vertexStage.LoadShaderFromSource(this, fileName, outData, bufferSize, SHADER_STAGE_VERTEX );
+		shader->m_pixelStage.LoadShaderFromSource(this, fileName, outData, bufferSize, SHADER_STAGE_FRAGMENT);
+	}
+
 	//Delete your outData!
 	delete[] outData;
 

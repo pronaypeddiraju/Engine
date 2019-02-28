@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Renderer/RendererTypes.hpp"
+#include "Engine/Core/XMLUtils/XMLUtils.hpp"
 #include <d3d11.h>
 #include <string>
 
@@ -30,6 +31,7 @@ public:
 	};
 	ID3D10Blob *m_byteCode = nullptr;
 	RenderContext *m_owningRenderContext = nullptr;
+	std::string		m_stageEntry = "";				
 
 	inline bool IsValid() const { return m_handle != nullptr; }
 }; 
@@ -47,6 +49,9 @@ public:
 	static char const*		GetEntryForStage(eShaderStage stage);
 	static char const*		GetShaderModelForStage(eShaderStage stage );
 
+	void					LoadShaderFromXMLSource( const std::string &fileName);
+	void					SetDepthOpFromString();
+	void					ReadFromPass( XMLElement& passEntry );
 	bool					CreateInputLayoutForVertexPCU(); 
 	// Depth stencil state now also needs to be generated; 
 	bool					UpdateBlendStateIfDirty(RenderContext *renderContext); 
@@ -73,6 +78,10 @@ public:
 	// Depth/Stencil Mode
 	eCompareOp				m_depthCompareOp = COMPARE_LEQUAL;    // A04
 	bool					m_writeDepth = false;             // A04
+
+	//XML Parsed information
+	std::string		m_shaderSourcePath = "";
+	std::string		m_depthCompareOpString = "";
 
 	ID3D11InputLayout*			m_inputLayout = nullptr; 
 	ID3D11BlendState*			m_blendState = nullptr; 
