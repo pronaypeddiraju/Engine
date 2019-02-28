@@ -1,3 +1,4 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h> // must #include Windows.h before #including Xinput.h
 #include <Xinput.h> // include the Xinput API header file (interface)
@@ -10,6 +11,7 @@ extern RenderContext* g_renderContext;
 
 XINPUT_STATE g_xboxControllerState;
 
+//------------------------------------------------------------------------------------------------------------------------------
 XboxController::XboxController( int ControllerID )
 	: m_controllerID(ControllerID)
 {
@@ -158,9 +160,6 @@ void XboxController::SetupDebugController()
 		m_innerDeadZone[j].m_color = deadZoneColor;
 		j++;
 	}
-
-	//We need to transform these vertices to the required spots and draw em
-	//TransformVertexArray(48, m_outerDeadZone, 1.0f, 0.f, 0.f);
 
 }
 

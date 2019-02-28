@@ -1,5 +1,6 @@
-#include "Engine/Math/Vec4.hpp"
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Math/Vec4.hpp"
 #include <vector>
 #include <string>
 
@@ -12,6 +13,7 @@ Vec4::Vec4( const Vec4& copy )
 {
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec4::Vec4( float initialX, float initialY, float initialZ, float initialW )
 	: x( initialX )
 	, y( initialY )
@@ -20,6 +22,7 @@ Vec4::Vec4( float initialX, float initialY, float initialZ, float initialW )
 {
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec4::Vec4( const char* asText )
 {
 	SetFromText(asText);
@@ -43,34 +46,31 @@ void Vec4::SetFromText( const char* asText )
 	}
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec4 Vec4::operator + ( const Vec4& vecToAdd ) const
 {
 	return Vec4( x + vecToAdd.x, y + vecToAdd.y, z + vecToAdd.z , w + vecToAdd.w); 
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec4 Vec4::operator-( const Vec4& vecToSubtract ) const
 {
 	return Vec4( x - vecToSubtract.x, y - vecToSubtract.y, z - vecToSubtract.z, w - vecToSubtract.w ); 
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec4 Vec4::operator*( float uniformScale ) const
 {
 	return Vec4( x * uniformScale, y * uniformScale, z * uniformScale, w * uniformScale ); 
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec4 Vec4::operator/( float inverseScale ) const
 {
 	return Vec4( x / inverseScale, y / inverseScale, z / inverseScale, w / inverseScale ); 
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec4::operator+=( const Vec4& vecToAdd )
 {
 	x += vecToAdd.x;
@@ -79,8 +79,7 @@ void Vec4::operator+=( const Vec4& vecToAdd )
 	w += vecToAdd.w;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec4::operator-=( const Vec4& vecToSubtract )
 {
 	x -= vecToSubtract.x;
@@ -89,8 +88,7 @@ void Vec4::operator-=( const Vec4& vecToSubtract )
 	w -= vecToSubtract.w;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec4::operator*=( const float uniformScale )
 {
 	x *= uniformScale;
@@ -99,8 +97,7 @@ void Vec4::operator*=( const float uniformScale )
 	w *= uniformScale;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec4::operator/=( const float uniformDivisor )
 {
 	x /= uniformDivisor;
@@ -109,8 +106,7 @@ void Vec4::operator/=( const float uniformDivisor )
 	w /= uniformDivisor;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec4::operator=( const Vec4& copyFrom )
 {
 	x = copyFrom.x;
@@ -119,15 +115,13 @@ void Vec4::operator=( const Vec4& copyFrom )
 	w = copyFrom.w;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec4 operator*( float uniformScale, const Vec4& vecToScale )
 {
 	return Vec4( vecToScale.x * uniformScale, vecToScale.y * uniformScale, vecToScale.z * uniformScale, vecToScale.w * uniformScale);
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 bool Vec4::operator==( const Vec4& compare ) const
 {
 	if(x == compare.x && y == compare.y && z == compare.z && w == compare.w)
@@ -136,8 +130,7 @@ bool Vec4::operator==( const Vec4& compare ) const
 		return false;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 bool Vec4::operator!=( const Vec4& compare ) const
 {
 	if(x == compare.x && y == compare.y && z == compare.z && w == compare.w)
@@ -145,4 +138,3 @@ bool Vec4::operator!=( const Vec4& compare ) const
 	else
 		return true;
 }
-

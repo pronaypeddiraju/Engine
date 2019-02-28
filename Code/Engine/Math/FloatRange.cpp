@@ -1,8 +1,10 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Math/FloatRange.hpp"
 #include "Engine/Commons/EngineCommon.hpp"
 
 const STATIC FloatRange FloatRange::ZeroToOne(0.f,1.f);
 
+//------------------------------------------------------------------------------------------------------------------------------
 void FloatRange::SetFromText( const char* asText )
 {
 	std::vector<std::string> splitStrings = SplitStringOnDelimiter(asText, '~');

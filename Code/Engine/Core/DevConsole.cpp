@@ -1,11 +1,11 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Core/DevConsole.hpp"
-#include "Engine/Renderer/Camera.hpp"
-#include "Engine/Renderer/BitmapFont.hpp"
-#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Core/EventSystems.hpp"
-#include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Core/Time.hpp"
+#include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Rgba.hpp"
 #include <algorithm>
 
@@ -17,6 +17,7 @@ const STATIC Rgba DevConsole::CONSOLE_ERROR   		=	Rgba(1.0f, 0.0f, 0.0f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_ERROR_DESC	=	Rgba(1.0f, 0.5f, 0.3f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_INPUT			=	Rgba(1.0f, 1.0f, 1.0f, 1.0f);
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool DevConsole::ExecuteCommandLine( const std::string& commandLine )
 {
 	//Split the string to sensible key value pairs
@@ -330,10 +331,6 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 	AABB2 blackBox = AABB2(camera.GetOrthoBottomLeft(), camera.GetOrthoTopRight());
 	std::vector<Vertex_PCU> boxVerts;
 	AddVertsForAABB2D(boxVerts, blackBox, CONSOLE_BG_COLOR);
-
-	//DEBUG
-	//renderer.BindTextureView(0U, nullptr);
-	//renderer.DrawVertexArray(boxVerts);
 
 	//Set the text based on Camera size
 	Vec2 leftBot = camera.GetOrthoBottomLeft();

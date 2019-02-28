@@ -8,6 +8,7 @@ class Collider2D;
 class RenderContext;
 struct Rgba;
 
+//------------------------------------------------------------------------------------------------------------------------------
 enum eSimulationType
 {
 	TYPE_UNKOWN = -1,
@@ -18,11 +19,13 @@ enum eSimulationType
 	NUM_SIMULATION_TYPES
 };
 
+//------------------------------------------------------------------------------------------------------------------------------
 struct PhysicsMaterialT
 {
 	float restitution = 1.f;
 };
 
+//------------------------------------------------------------------------------------------------------------------------------
 class Rigidbody2D
 {
 public:
@@ -31,18 +34,18 @@ public:
 	~Rigidbody2D();
 
 	//Apply a single step of movement
-	void			Move(float deltaTime);
+	void									Move(float deltaTime);
 
-	void			DebugRender(RenderContext* renderContext, const Rgba& color) const;
+	void									DebugRender(RenderContext* renderContext, const Rgba& color) const;
 	
 	//Mutators
-	void			SetSimulationMode(eSimulationType simulationType);
-	Collider2D*		SetCollider(Collider2D* collider);
-	void			SetObject(void* object, Transform2* objectTransform);
+	void									SetSimulationMode(eSimulationType simulationType);
+	Collider2D*								SetCollider(Collider2D* collider);
+	void									SetObject(void* object, Transform2* objectTransform);
 
 	//Accessors
-	Vec2			GetPosition() const;
-	eSimulationType	GetSimulationType();
+	Vec2									GetPosition() const;
+	eSimulationType							GetSimulationType();
 
 public :
 	PhysicsSystem*							m_system = nullptr; 			// system this rigidbody belongs to; 

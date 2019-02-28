@@ -12,8 +12,8 @@ public:
 	explicit Vec3(const char* asText);
 
 	//Static Vectors
-	const static Vec3 ZERO;
-	const static Vec3 ONE;
+	const static Vec3	ZERO;
+	const static Vec3	ONE;
 
 	//Access Methods
 	float				GetLength() const;
@@ -34,21 +34,21 @@ public:
 	void				SetLengthXY(float setLength);
 	
 	// Operators
-	const Vec3 operator+( const Vec3& vecToAdd ) const;			// vec3 + vec3
-	const Vec3 operator-( const Vec3& vecToSubtract ) const;	// vec3 - vec3
-	const Vec3 operator*( float uniformScale ) const;			// vec3 * float
-	const Vec3 operator/( float inverseScale ) const;			// vec3 / float
-	void operator+=( const Vec3& vecToAdd );					// vec3 += vec3
-	void operator-=( const Vec3& vecToSubtract );				// vec3 -= vec3
-	void operator*=( const float uniformScale );				// vec3 *= float
-	void operator/=( const float uniformDivisor );				// vec3 /= float
-	void operator=( const Vec3& copyFrom );						// vec3 = vec3
-	bool operator==( const Vec3& compare ) const;				// vec3 == vec3
-	bool operator!=( const Vec3& compare ) const;				// vec3 != vec3
+	const Vec3			operator+( const Vec3& vecToAdd ) const;					// vec3 + vec3
+	const Vec3			operator-( const Vec3& vecToSubtract ) const;				// vec3 - vec3
+	const Vec3			operator*( float uniformScale ) const;						// vec3 * float
+	const Vec3			operator/( float inverseScale ) const;						// vec3 / float
+	void				operator+=( const Vec3& vecToAdd );							// vec3 += vec3
+	void				operator-=( const Vec3& vecToSubtract );					// vec3 -= vec3
+	void				operator*=( const float uniformScale );						// vec3 *= float
+	void				operator/=( const float uniformDivisor );					// vec3 /= float
+	void				operator=( const Vec3& copyFrom );							// vec3 = vec3
+	bool				operator==( const Vec3& compare ) const;					// vec3 == vec3
+	bool				operator!=( const Vec3& compare ) const;					// vec3 != vec3
 
-	friend const Vec3 operator*( float uniformScale, const Vec3& vecToScale );	// float * vec3
+	friend const Vec3	operator*( float uniformScale, const Vec3& vecToScale );	// float * vec3
 
-public: // NOTE: this is one of the few cases where we break both the "m_" naming rule AND the avoid-public-members rule
+public: 
 	float x;
 	float y;
 	float z;

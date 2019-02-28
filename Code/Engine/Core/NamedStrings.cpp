@@ -1,10 +1,11 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Core/NamedStrings.hpp"
-#include "Engine/Renderer/Rgba.hpp"
+#include "Engine/Math/FloatRange.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/IntRange.hpp"
-#include "Engine/Math/FloatRange.hpp"
+#include "Engine/Renderer/Rgba.hpp"
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 NamedStrings::NamedStrings()
 {
 
@@ -28,7 +29,6 @@ void NamedStrings::PopulateFromXmlElementAttributes( const XMLElement& element )
 		//m_keyValuePairs.insert(std::pair<std::string,std::string> (attribute->Name(), attribute->Value()));
 	}
 }
-
 
 void NamedStrings::SetValue( const std::string& keyName, const std::string& newValue )
 {
@@ -68,7 +68,9 @@ int NamedStrings::GetValue( const std::string& keyName, int defaultValue ) const
 		return atoi(stringPair->second.c_str());
 	}
 	else
+	{
 		return defaultValue;
+	}
 }
 
 float NamedStrings::GetValue( const std::string& keyName, float defaultValue ) const
@@ -182,4 +184,3 @@ size_t NamedStrings::GetNamedStringSize() const
 {
 	return m_keyValuePairs.size();
 }
-

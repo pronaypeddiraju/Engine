@@ -1,6 +1,5 @@
 #pragma once
 
-
 //-----------------------------------------------------------------------------------------------
 struct Vec2
 {
@@ -12,18 +11,18 @@ public:
 	explicit Vec2( const char* asText);
 
 	//Static Vectors
-	const static Vec2 ZERO;
-	const static Vec2 ONE;
+	const static Vec2	ZERO;
+	const static Vec2	ONE;
 	
-	const static Vec2 ALIGN_CENTERED;
-	const static Vec2 ALIGN_LEFT_CENTERED;
-	const static Vec2 ALIGN_LEFT_BOTTOM;
-	const static Vec2 ALIGN_LEFT_TOP;
-	const static Vec2 ALIGN_RIGHT_CENTERED;
-	const static Vec2 ALIGN_RIGHT_BOTTOM;
-	const static Vec2 ALIGN_RIGHT_TOP;
-	const static Vec2 ALIGN_TOP_CENTERED;
-	const static Vec2 ALIGN_BOTTOM_CENTERED;
+	const static Vec2	ALIGN_CENTERED;
+	const static Vec2	ALIGN_LEFT_CENTERED;
+	const static Vec2	ALIGN_LEFT_BOTTOM;
+	const static Vec2	ALIGN_LEFT_TOP;
+	const static Vec2	ALIGN_RIGHT_CENTERED;
+	const static Vec2	ALIGN_RIGHT_BOTTOM;
+	const static Vec2	ALIGN_RIGHT_TOP;
+	const static Vec2	ALIGN_TOP_CENTERED;
+	const static Vec2	ALIGN_BOTTOM_CENTERED;
 
 	//Accessor methods
 	float				GetLength() const;
@@ -56,31 +55,31 @@ public:
 	void				SetFromText(const char* asText);
 
 	//Debug
-	const float				GetX();
-	const float				GetY();
+	const float			GetX();
+	const float			GetY();
 
 	// Operators
-	const Vec2 operator+( const Vec2& vecToAdd ) const;			// vec2 + vec2
-	const Vec2 operator-( const Vec2& vecToSubtract ) const;	// vec2 - vec2
-	const Vec2 operator*( float uniformScale ) const;			// vec2 * float
-	const Vec2 operator*( const Vec2& vecToMultiply) const;		// vec2 * vec2
-	const Vec2 operator/( float inverseScale ) const;			// vec2 / float
-	void operator+=( const Vec2& vecToAdd );					// vec2 += vec2
-	void operator-=( const Vec2& vecToSubtract );				// vec2 -= vec2
-	void operator*=( const float uniformScale );				// vec2 *= float
-	void operator/=( const float uniformDivisor );				// vec2 /= float
-	void operator=( const Vec2& copyFrom );						// vec2 = vec2
-	bool operator==( const Vec2& compare ) const;				// vec2 == vec2
-	bool operator!=( const Vec2& compare ) const;				// vec2 != vec2
-	bool operator<( const Vec2& compare ) const;
-	bool operator>( const Vec2& compare ) const;
+	const Vec2			operator+( const Vec2& vecToAdd ) const;				// vec2 + vec2
+	const Vec2			operator-( const Vec2& vecToSubtract ) const;			// vec2 - vec2
+	const Vec2			operator*( float uniformScale ) const;					// vec2 * float
+	const Vec2			operator*( const Vec2& vecToMultiply) const;			// vec2 * vec2
+	const Vec2			operator/( float inverseScale ) const;					// vec2 / float
+	void				operator+=( const Vec2& vecToAdd );						// vec2 += vec2
+	void				operator-=( const Vec2& vecToSubtract );				// vec2 -= vec2
+	void				operator*=( const float uniformScale );					// vec2 *= float
+	void				operator/=( const float uniformDivisor );				// vec2 /= float
+	void				operator=( const Vec2& copyFrom );						// vec2 = vec2
+	bool				operator==( const Vec2& compare ) const;				// vec2 == vec2
+	bool				operator!=( const Vec2& compare ) const;				// vec2 != vec2
+	bool				operator<( const Vec2& compare ) const;					// vec2 < vec2
+	bool				operator>( const Vec2& compare ) const;					// vec2 > vec2
 
-	Vec2		Min(const Vec2& compare);
-	Vec2		Max(const Vec2& compare);
+	Vec2				Min(const Vec2& compare);
+	Vec2				Max(const Vec2& compare);
 
 	friend const Vec2 operator*( float uniformScale, const Vec2& vecToScale );	// float * vec2
 
-public: // NOTE: this is one of the few cases where we break both the "m_" naming rule AND the avoid-public-members rule
+public:
 	float x;
 	float y;
 };

@@ -1,10 +1,12 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Core/XMLUtils/XMLUtils.hpp"
-#include "Engine/Renderer/Rgba.hpp"
-#include "Engine/Math/Vec2.hpp"
-#include "Engine/Math/IntVec2.hpp"
-#include "Engine/Math/IntRange.hpp"
 #include "Engine/Math/FloatRange.hpp"
+#include "Engine/Math/IntRange.hpp"
+#include "Engine/Math/IntVec2.hpp"
+#include "Engine/Math/Vec2.hpp"
+#include "Engine/Renderer/Rgba.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 std::string ParseXmlAttribute( const XMLElement& xmlElement, const char* attributeName, const std::string& defaultValue )
 {
 	if(!xmlElement.Attribute(attributeName))
@@ -20,8 +22,6 @@ std::string ParseXmlAttribute( const XMLElement& xmlElement, const char* attribu
 		return s;
 	}
 }
-
-
 
 int ParseXmlAttribute( const XMLElement& xmlElement, const char* attributeName, int defaultValue )
 {
@@ -163,4 +163,3 @@ std::string ParseXmlAttribute( const XMLElement& xmlElement, const char* attribu
 		return s;
 	}
 }
-

@@ -4,6 +4,7 @@
 #include "Engine/Math/Rigidbody2D.hpp"
 #include "Engine/Math/Disc2D.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool Collider2D::IsTouching(Collision2D* collision, Collider2D* otherCollider )
 {
 	return GetCollisionInfo( collision, this, otherCollider); 

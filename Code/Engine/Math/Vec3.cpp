@@ -1,6 +1,7 @@
+//------------------------------------------------------------------------------------------------------------------------------
+#include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/MathUtils.hpp"
-#include "Engine/Commons/EngineCommon.hpp"
 #include <vector>
 #include <string>
 
@@ -15,6 +16,7 @@ Vec3::Vec3( const Vec3& copy )
 {
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec3::Vec3( float initialX, float initialY, float initialZ )
 	: x( initialX )
 	, y( initialY )
@@ -22,50 +24,49 @@ Vec3::Vec3( float initialX, float initialY, float initialZ )
 {
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec3::Vec3( const char* asText )
 {
 	SetFromText(asText);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-
-//Get length of vector
 float Vec3::GetLength() const
 {
 	return sqrtf(x*x + y*y + z*z);
 }
 
-//Get length using only X and Y coordinated of the vector
+//------------------------------------------------------------------------------------------------------------------------------
 float Vec3::GetLengthXY() const
 {
 	return sqrtf(x*x + y*y);
 }
 
-//Return squared length of the vector
+//------------------------------------------------------------------------------------------------------------------------------
 float Vec3::GetLengthSquared() const
 {
 	return (x*x + y*y + z*z);
 }
 
-//Return squared length of XY magnitude
+//------------------------------------------------------------------------------------------------------------------------------
 float Vec3::GetLengthSquaredXY() const
 {
 	return (x*x + y*y);
 }
 
-//Rotate the vector about an angle on Z
+//------------------------------------------------------------------------------------------------------------------------------
 float Vec3::GetAngleAboutZDegrees() const
 {
 	return ATan2Degrees(y ,x);
 }
 
-//Rotate the vector about an angle on Z
+//------------------------------------------------------------------------------------------------------------------------------
 float Vec3::GetAngleAboutZRadians() const
 {
 	return atan2f(y, x);
 }
 
-//Rotated vector about Z degrees
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Vec3::GetRotatedAboutZDegrees( float degreesToRotateAroundZ ) const
 {
 	float radiansToRotate = DegreesToRadians(degreesToRotateAroundZ);
@@ -73,29 +74,22 @@ const Vec3 Vec3::GetRotatedAboutZDegrees( float degreesToRotateAroundZ ) const
 	return resultVec;
 }
 
-//Rotated vector about Z radians
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Vec3::GetRotatedAboutZRadians( float radiansToRotateAroundZ ) const
 {
-	//printf("\n Radians to Rotate around : %f", radiansToRotateAroundZ);
-
 	float r = GetLengthXY();
-	//printf("\n Length: %f ", r);
 
 	float currentRadians = GetAngleAboutZRadians();
-	//printf("\n Current Radians: %f", currentRadians);
 
 	float newRadians = currentRadians + radiansToRotateAroundZ;
-	//printf("\n New Radians: %f", newRadians);
 
 	float newX = r * cosf(newRadians);
 	float newY = r * sinf(newRadians);
 
-	//printf("\n New X: %f", newX);
-	//printf("\n New Y: %f", newY);
-	//printf("\n New Z: %f", z);
 	return Vec3(newX, newY, z);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Vec3::GetNormalized() const
 {
 	if(GetLength() == NULL)
@@ -110,6 +104,7 @@ const Vec3 Vec3::GetNormalized() const
 	return Vec3(xNorm, yNorm, zNorm);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec3::SetFromText( const char* asText )
 {
 	//Read the data, break using the delimiter and save each block to it's respective Vec2 component
@@ -126,6 +121,7 @@ void Vec3::SetFromText( const char* asText )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec3::ClampLengthXY( float maxLength )
 {
 	float r = sqrtf(x*x + y*y);
@@ -140,34 +136,31 @@ void Vec3::ClampLengthXY( float maxLength )
 	}
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Vec3::operator + ( const Vec3& vecToAdd ) const
 {
 	return Vec3( x + vecToAdd.x, y + vecToAdd.y, z + vecToAdd.z ); 
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Vec3::operator-( const Vec3& vecToSubtract ) const
 {
 	return Vec3( x - vecToSubtract.x, y - vecToSubtract.y, z - vecToSubtract.z ); 
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Vec3::operator*( float uniformScale ) const
 {
 	return Vec3( x * uniformScale, y * uniformScale, z * uniformScale ); 
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Vec3::operator/( float inverseScale ) const
 {
 	return Vec3( x / inverseScale, y / inverseScale, z / inverseScale ); 
 }
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec3::SetLengthXY( float setLength )
 {
 	float newLength = setLength;
@@ -177,7 +170,7 @@ void Vec3::SetLengthXY( float setLength )
 	z = 0.f;
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec3::operator+=( const Vec3& vecToAdd )
 {
 	x += vecToAdd.x;
@@ -185,8 +178,7 @@ void Vec3::operator+=( const Vec3& vecToAdd )
 	z += vecToAdd.z;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec3::operator-=( const Vec3& vecToSubtract )
 {
 	x -= vecToSubtract.x;
@@ -194,8 +186,7 @@ void Vec3::operator-=( const Vec3& vecToSubtract )
 	z -= vecToSubtract.z;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec3::operator*=( const float uniformScale )
 {
 	x *= uniformScale;
@@ -203,8 +194,7 @@ void Vec3::operator*=( const float uniformScale )
 	z *= uniformScale;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec3::operator/=( const float uniformDivisor )
 {
 	x /= uniformDivisor;
@@ -212,8 +202,7 @@ void Vec3::operator/=( const float uniformDivisor )
 	z /= uniformDivisor;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec3::operator=( const Vec3& copyFrom )
 {
 	x = copyFrom.x;
@@ -221,15 +210,13 @@ void Vec3::operator=( const Vec3& copyFrom )
 	z = copyFrom.z;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 operator*( float uniformScale, const Vec3& vecToScale )
 {
 	return Vec3( vecToScale.x * uniformScale, vecToScale.y * uniformScale, vecToScale.z * uniformScale);
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 bool Vec3::operator==( const Vec3& compare ) const
 {
 	if(x == compare.x && y == compare.y && z == compare.z)
@@ -238,8 +225,7 @@ bool Vec3::operator==( const Vec3& compare ) const
 		return false;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 bool Vec3::operator!=( const Vec3& compare ) const
 {
 	if(x == compare.x && y == compare.y && z == compare.z)
@@ -247,4 +233,3 @@ bool Vec3::operator!=( const Vec3& compare ) const
 	else
 		return true;
 }
-

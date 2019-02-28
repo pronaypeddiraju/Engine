@@ -1,12 +1,13 @@
 //------------------------------------------------------------------------------------------------------------------------------
-#include "Engine/Math/PhysicsSystem.hpp"
 #include "Engine/Math/Collider2D.hpp"
-#include "Engine/Renderer/Rgba.hpp"
 #include "Engine/Math/CollisionHandler.hpp"
+#include "Engine/Math/PhysicsSystem.hpp"
 #include "Engine/Math/RigidBodyBucket.hpp"
+#include "Engine/Renderer/Rgba.hpp"
 
 PhysicsSystem* g_physicsSystem = nullptr;
 
+//------------------------------------------------------------------------------------------------------------------------------
 PhysicsSystem::PhysicsSystem()
 {
 	m_rbBucket = new RigidBodyBucket;

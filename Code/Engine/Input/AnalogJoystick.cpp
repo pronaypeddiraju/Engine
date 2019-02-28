@@ -1,6 +1,8 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Input/AnalogJoystick.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 AnalogJoyStick::AnalogJoyStick( float innerDeadZoneFraction, float outerDeadZoneFraction )
 	:m_innerDeadZoneFraction (innerDeadZoneFraction),
 	 m_outerDeadZoneFraction (outerDeadZoneFraction)

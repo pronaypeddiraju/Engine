@@ -1,9 +1,11 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "RandomNumberGenerator.hpp"
 #include "Engine/Math/Noise/RawNoise.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
 RandomNumberGenerator* g_RNG;
 
+//------------------------------------------------------------------------------------------------------------------------------
 RandomNumberGenerator::RandomNumberGenerator(unsigned int seed)
 	: m_currentSeed(seed)
 	, m_position(0)

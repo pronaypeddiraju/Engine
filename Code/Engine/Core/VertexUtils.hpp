@@ -1,13 +1,16 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #pragma once
-#include <vector>
 #include "Engine/Math/Vec2.hpp"
+#include <vector>
 
+//------------------------------------------------------------------------------------------------------------------------------
 #define UNUSED(x) (void)(x);
 
 struct Vertex_PCU;
 struct AABB2;
 struct Rgba;
 
+//------------------------------------------------------------------------------------------------------------------------------
 //Vertex Utils
 void			AddVertsForDisc2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, const Rgba& color, int numSides = 64 );
 void			AddVertsForLine2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& start, const Vec2& end, float thickness, const Rgba& color );

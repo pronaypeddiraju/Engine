@@ -4,6 +4,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Manifold.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 CollisionCheck2DCallback COLLISION_LOOKUP_TABLE[COLLIDER2D_COUNT][COLLIDER2D_COUNT] = {
 	/*******| aabb2 | disc  | point | capsl | line  | obb2  */
 	/*aabb2*/ { CheckAABB2ByAABB2, CheckAABB2ByDisc, nullptr,           nullptr, nullptr, nullptr },

@@ -1,10 +1,12 @@
-#include "Engine/Math/IntRange.hpp"
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Math/IntRange.hpp"
 
 const STATIC IntRange IntRange::ZeroToOne(0,1);
 const STATIC IntRange IntRange::Zero(0,0);
 const STATIC IntRange IntRange::One(1,1);
 
+//------------------------------------------------------------------------------------------------------------------------------
 void IntRange::SetFromText( const char* asText )
 {
 	std::vector<std::string> splitStrings = SplitStringOnDelimiter(asText, '~');

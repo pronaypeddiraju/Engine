@@ -1,10 +1,12 @@
-#include "Engine/Math/Matrix44.hpp"
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Math/Matrix44.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vec4.hpp"
 
 const STATIC Matrix44 Matrix44::IDENTITY;
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec2 Matrix44::TransformPosition2D( const Vec2& posQuantity ) const				//assumes z = 0, w = 1;
 {
 	Vec2 transformedPos;

@@ -1,10 +1,12 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Core/VertexUtils.hpp"
-#include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vertex_PCU.hpp"
 #include "Engine/Renderer/Rgba.hpp"
-#include "Engine/Math/MathUtils.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForDisc2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, const Rgba& color, int numSides /*= 64 */ )
 {
 	float angleToAdd = 360.f / numSides;

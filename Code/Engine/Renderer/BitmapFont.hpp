@@ -20,19 +20,19 @@ class BitmapFont
 public:
 	BitmapFont(std::string bitmapName, TextureView* bitmapTexture);
 	
-	float				GetGlyphAspect(int glyphCode);
-	AABB2&				GetTextBoundingBox();
+	float						GetGlyphAspect(int glyphCode);
+	AABB2&						GetTextBoundingBox();
 
-	void				AddVertsForText2D( std::vector<Vertex_PCU>& textVerts, const Vec2& textStartPosition, float cellHeight, std::string printText,
-						const Rgba &tintColor = Rgba::WHITE, float cellAspect = 1.f, int maxGlyphsToDraw = 999999999);
+	void						AddVertsForText2D( std::vector<Vertex_PCU>& textVerts, const Vec2& textStartPosition, float cellHeight, std::string printText,
+								const Rgba &tintColor = Rgba::WHITE, float cellAspect = 1.f, int maxGlyphsToDraw = 999999999);
 
-	void				AddVertsForTextInBox2D( std::vector<Vertex_PCU>& textVerts, const AABB2& box, float cellHeight,
-						const std::string& printText, const Rgba& tintColor = Rgba::WHITE, float cellAspect = 1.f,
-						const Vec2& alignment = Vec2::ALIGN_CENTERED, TextBoxMode mode = TEXT_BOX_MODE_SHRINK, int maxGlyphsToDraw = 999999999 );
+	void						AddVertsForTextInBox2D( std::vector<Vertex_PCU>& textVerts, const AABB2& box, float cellHeight,
+								const std::string& printText, const Rgba& tintColor = Rgba::WHITE, float cellAspect = 1.f,
+								const Vec2& alignment = Vec2::ALIGN_CENTERED, TextBoxMode mode = TEXT_BOX_MODE_SHRINK, int maxGlyphsToDraw = 999999999 );
 
 	
-	float				GetNewCellAspect( const AABB2& box, float cellHeight, float cellAspect, const std::string& printText );
-	TextureView*		GetTexture();
+	float						GetNewCellAspect( const AABB2& box, float cellHeight, float cellAspect, const std::string& printText );
+	TextureView*				GetTexture();
 private:
 
 	std::string					m_bitmapName;

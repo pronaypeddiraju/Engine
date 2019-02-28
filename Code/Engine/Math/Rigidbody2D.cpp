@@ -1,12 +1,13 @@
 //------------------------------------------------------------------------------------------------------------------------------
-#include "Engine/Math/Rigidbody2D.hpp"
-#include "Engine/Math/PhysicsSystem.hpp"
-#include "Engine/Math/Collider2D.hpp"
-#include "Engine/Math/Vertex_PCU.hpp"
 #include "Engine/Core/VertexUtils.hpp"
-#include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Math/Collider2D.hpp"
+#include "Engine/Math/PhysicsSystem.hpp"
+#include "Engine/Math/Rigidbody2D.hpp"
 #include "Engine/Math/RigidBodyBucket.hpp"
+#include "Engine/Math/Vertex_PCU.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 Rigidbody2D::Rigidbody2D(float mass)
 {
 	m_mass = mass;

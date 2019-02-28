@@ -1,8 +1,9 @@
+//------------------------------------------------------------------------------------------------------------------------------
+#include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Vec4.hpp"
-#include "Engine/Math/AABB2.hpp"
 #include <stdio.h>
 
 //180.f/PI to degrees per radian
@@ -387,6 +388,7 @@ bool IsPointInCapsule2D( const Vec2& point, const Vec2& capsuleStart, const Vec2
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec3 GetSphericalToCartesian( float radius, float angleTheta, float anglePhi )
 {
 	Vec3 coordinates;
@@ -493,6 +495,7 @@ Vec2 ReflectVectorOffSurfaceNormal( const Vec2& vecToReflect, const Vec2& normal
 	return Vec2(vecAlongSurface + vecAlongNormal);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 //Move a 2D position vector
 //------------------------------------------------------------------------------------------------------------------------------
 Vec2 TransformPosition2D( const Vec2& position, float uniformScale, float rotationDegreesOnZ, const Vec2& translateXY )
@@ -512,6 +515,7 @@ Vec2 TransformPosition2D( const Vec2& position, float uniformScale, float rotati
 	return tempPos;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 //Move a 3D vector
 //------------------------------------------------------------------------------------------------------------------------------
 Vec3 TransformPosition3D( const Vec3& position, float uniformScale, float rotationDegreesOnZ, const Vec2& translateXY )
@@ -533,6 +537,7 @@ Vec3 TransformPosition3D( const Vec3& position, float uniformScale, float rotati
 	return tempPos;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 //Convert to a range
 //------------------------------------------------------------------------------------------------------------------------------
 float RangeMapFloat( float inputValue, float inRangeStart, float inRangeEnd, float outRangeStart, float outRangeEnd)
@@ -599,6 +604,7 @@ float Clamp( float x, float minClamp, float maxClamp )
 	return x;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 //Method to get angular displacement
 //------------------------------------------------------------------------------------------------------------------------------
 float GetAngluarDisplacement(float startDegrees, float endDegrees)
@@ -678,60 +684,70 @@ Vec2 GetWorldPositionFromWorld2D( const Vec2& localPosition, const Vec2& iBasis,
 	return worldPosition;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float SmoothStart2( float inputZeroToOne )
 {
 	float t2 = inputZeroToOne * inputZeroToOne;
 	return t2;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float SmoothStart3( float inputZeroToOne )
 {
 	float t3 = inputZeroToOne * inputZeroToOne * inputZeroToOne;
 	return t3;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float SmoothStart4( float inputZeroToOne )
 {
 	float t4 = inputZeroToOne * inputZeroToOne * inputZeroToOne * inputZeroToOne;
 	return t4;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float SmoothStart5( float inputZeroToOne )
 {
 	float t5 = inputZeroToOne * inputZeroToOne * inputZeroToOne * inputZeroToOne * inputZeroToOne;
 	return t5;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float SmoothStop2( float inputZeroToOne )
 {
 	float var = 1.0f - inputZeroToOne;
 	return 1 - (var * var) ;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float SmoothStop3( float inputZeroToOne )
 {
 	float var = 1.0f - inputZeroToOne;
 	return 1 - (var * var * var) ;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float SmoothStop4( float inputZeroToOne )
 {
 	float var = 1.0f - inputZeroToOne;
 	return 1 - (var * var * var * var) ;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float SmoothStop5( float inputZeroToOne )
 {
 	float var = 1.0f - inputZeroToOne;
 	return 1 - (var * var * var * var * var) ;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float SmoothStep3( float inputZeroToOne )
 {
 	float t = inputZeroToOne; 
 	return (3.f * t * t * t) - (2.f * t * t);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float SmoothStep5( float inputZeroToOne )
 {
 	float t = inputZeroToOne;

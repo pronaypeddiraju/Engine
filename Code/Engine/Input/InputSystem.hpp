@@ -1,3 +1,4 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include "Engine/Input/XboxController.hpp"
 
@@ -25,12 +26,12 @@ public:
 	InputSystem();
 	~InputSystem();
 
-	void StartUp();
-	void BeginFrame();
-	void EndFrame();
-	void ShutDown();
+	void						StartUp();
+	void						BeginFrame();
+	void						EndFrame();
+	void						ShutDown();
 
-	const XboxController& GetXboxController (int controllerID);
+	const XboxController&		GetXboxController (int controllerID);
 
 private:
 	XboxController m_controllers[MAX_XBOX_CONTROLLERS] =
@@ -41,5 +42,5 @@ private:
 		XboxController(3)
 	};
 public:
-	void ResetController( int controllerID );
+	void						ResetController( int controllerID );
 };

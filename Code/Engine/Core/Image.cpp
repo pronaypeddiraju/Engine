@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------------------------------------
-#include "Image.hpp"
+#include "Engine/Core/Image.hpp"
 #include "Engine/Renderer/Rgba.hpp"
 
 #pragma warning( disable: 4100) //Unreferenced formal parameter
@@ -63,9 +63,6 @@ Image::Image( const char* imageFilePath )
 			m_texelRepository[texelIndex]->SetFromBytes(redByte, greenByte, blueByte, alphaByte);
 		}
 	}
-
-	//Free this in the destructor
-	//stbi_image_free(imageData);
 }
 
 Image::~Image()

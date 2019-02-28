@@ -4,10 +4,12 @@
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/Rigidbody2D.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 class RenderContext;
 class Collider2D;
 class RigidBodyBucket;
 
+//------------------------------------------------------------------------------------------------------------------------------
 class PhysicsSystem
 {
 	friend class Rigidbody2D;

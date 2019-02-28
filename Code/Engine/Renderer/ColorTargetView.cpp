@@ -1,3 +1,4 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Renderer/ColorTargetView.hpp"
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 
@@ -14,6 +15,7 @@
 
 #define DX_SAFE_RELEASE(dx_resource)   if ((dx_resource) != nullptr) { dx_resource->Release(); dx_resource = nullptr; }
 
+//------------------------------------------------------------------------------------------------------------------------------
 ColorTargetView::ColorTargetView()
 {
 
