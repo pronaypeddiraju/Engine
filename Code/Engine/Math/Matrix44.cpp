@@ -101,6 +101,30 @@ const Vec4 Matrix44::TransformHomogeneousPoint3D( const Vec4& homogeneousVec ) c
 	return transformedPos;
 }
 
+const Vec3 Matrix44::GetIVector()
+{
+	Vec3 iVector = Vec3(m_values[Ix], m_values[Iy], m_values[Iz]);
+	iVector = iVector.GetNormalized();
+
+	return iVector;
+}
+
+const Vec3 Matrix44::GetJVector()
+{
+	Vec3 jVector = Vec3(m_values[Jx], m_values[Jy], m_values[Jz]);
+	jVector = jVector.GetNormalized();
+
+	return jVector;
+}
+
+const Vec3 Matrix44::GetKVector()
+{
+	Vec3 kVector = Vec3(m_values[Kx], m_values[Ky], m_values[Kz]);
+	kVector = kVector.GetNormalized();
+
+	return kVector;
+}
+
 /*
 
 Matrix.Append()
@@ -477,7 +501,7 @@ const STATIC Matrix44 Matrix44::MakeUniformScale2D( float uniformScale )
 
 //To do: Write down the actual multiplication of the 3 matrices and quickly plug in those values to make this process faster
 // as opposed to making the 3 rotation matrices and then appending 2 of them 
-const STATIC Matrix44 Matrix44::MakeFromEuler( const Vec3& euler, const Vec3& position, eRotationOrder rotationOrder )
+const STATIC Matrix44 Matrix44::MakeFromEuler( const Vec3& euler, eRotationOrder rotationOrder )
 {
 	Matrix44 rotatedX = MakeXRotationDegrees(euler.x); 
 	Matrix44 rotatedY = MakeYRotationDegrees(euler.y); 
@@ -497,13 +521,6 @@ const STATIC Matrix44 Matrix44::MakeFromEuler( const Vec3& euler, const Vec3& po
 		returnMatrix = rotatedZ.AppendMatrix(returnMatrix); 
 	}
 
-	if(position == Vec3::ZERO)
-	{
-		return returnMatrix;
-	}
-
-	returnMatrix = SetTranslation3D(position, returnMatrix);
-
 	return returnMatrix; 
 }
 
@@ -511,13 +528,16 @@ const STATIC Matrix44 Matrix44::MakeFromEuler( const Vec3& euler, const Vec3& po
 const STATIC Matrix44 Matrix44::InvertOrthoNormal( const Matrix44 sourceMatrix )
 {
 	Matrix44 invertedMatrix = sourceMatrix;
-	
+	invertedMatrix.InverseMatrix();
+
+	/*
 	invertedMatrix = Matrix44::TransposeRotationComponents(sourceMatrix);
 	
 	invertedMatrix.m_values[Tx] *= -1;
 	invertedMatrix.m_values[Ty] *= -1;
 	invertedMatrix.m_values[Tz] *= -1;
-	
+	*/
+
 	return invertedMatrix;
 }
 

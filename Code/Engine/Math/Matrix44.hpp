@@ -51,6 +51,11 @@ public:
 	const Vec3 TransformVector3D( const Vec3& vecQuantity ) const;				 //assumes w = 0;
 	const Vec4 TransformHomogeneousPoint3D ( const Vec4& homogeneousVec ) const; //assumes nothing; 
 
+	//Get axis methods
+	const Vec3	GetIVector();
+	const Vec3	GetJVector();
+	const Vec3	GetKVector();
+
 	Matrix44	AppendMatrix( const Matrix44& matrix);
 
 	void		InverseMatrix();
@@ -65,7 +70,7 @@ public:
 	static const Matrix44 MakeTranslation2D ( const Vec2& translation );
 	static const Matrix44 MakeTranslation3D ( const Vec3& translation );
 	static const Matrix44 MakeUniformScale2D ( float uniformScale );
-	static const Matrix44 MakeFromEuler (const Vec3& euler, const Vec3& position, eRotationOrder rot = ROTATION_ORDER_ZXY);
+	static const Matrix44 MakeFromEuler (const Vec3& euler, eRotationOrder rot = ROTATION_ORDER_ZXY);
 	static const Matrix44 InvertOrthoNormal(const Matrix44 sourceMatrix);
 	static const Matrix44 SetTranslation3D (const Vec3& position, Matrix44& setMatrix);
 	static const Matrix44 TransposeRotationComponents( const Matrix44& sourceMatrix);

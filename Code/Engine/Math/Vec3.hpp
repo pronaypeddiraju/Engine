@@ -26,6 +26,7 @@ public:
 	float				GetAngleRadiansXY() const;
 	const Vec3			GetRotatedAboutZDegrees(float degreesToRotateAroundZ) const;
 	const Vec3			GetRotatedAboutZRadians(float radiansToRotateAroundZ) const;
+	const Vec3			GetNormalized() const;
 
 	//Mutator methods
 	void				SetFromText(const char* asText);

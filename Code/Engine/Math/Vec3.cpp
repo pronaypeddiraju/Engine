@@ -96,6 +96,20 @@ const Vec3 Vec3::GetRotatedAboutZRadians( float radiansToRotateAroundZ ) const
 	return Vec3(newX, newY, z);
 }
 
+const Vec3 Vec3::GetNormalized() const
+{
+	if(GetLength() == NULL)
+	{
+		return Vec3(0.0f ,0.0f, 0.0f);
+	}
+
+	float xNorm = x / sqrtf(x*x + y*y + z*z);
+	float yNorm = y / sqrtf(x*x + y*y + z*z);
+	float zNorm = z / sqrtf(x*x + y*y + z*z);
+
+	return Vec3(xNorm, yNorm, zNorm);
+}
+
 void Vec3::SetFromText( const char* asText )
 {
 	//Read the data, break using the delimiter and save each block to it's respective Vec2 component
