@@ -407,5 +407,6 @@
     <ClInclude Include="Math\AABB3.hpp" />
     <ClInclude Include="Renderer\GPUMesh.hpp" />
     <ClInclude Include="Renderer\DepthStencilTargetView.hpp" />
+    <ClInclude Include="Renderer\DebugRender.hpp" />
   </ItemGroup>
 </Project>

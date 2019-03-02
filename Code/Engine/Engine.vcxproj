@@ -290,6 +290,7 @@
     <ClInclude Include="Renderer\Camera.hpp" />
     <ClInclude Include="Renderer\ColorTargetView.hpp" />
     <ClInclude Include="Renderer\CPUMesh.hpp" />
+    <ClInclude Include="Renderer\DebugRender.hpp" />
     <ClInclude Include="Renderer\DepthStencilTargetView.hpp" />
     <ClInclude Include="Renderer\GPUMesh.hpp" />
     <ClInclude Include="Renderer\IndexBuffer.hpp" />

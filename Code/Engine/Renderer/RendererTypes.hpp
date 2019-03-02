@@ -122,6 +122,7 @@ enum eBlendMode
 	BLEND_MODE_OPAQUE,   // ADD, ONE,         ZERO              (or blend disabled)
 	BLEND_MODE_ALPHA,    // ADD, SRC_ALPHA,   INV_SRC_ALPHA,
 	BLEND_MODE_ADDTIVE,  // ADD, ONE,         ONE
+	BLEND_MODE_CUSTOM,	 // Setup based on XML Values read
 }; 
 
 // other options - fully expose the options; 
@@ -129,6 +130,7 @@ enum eBlendMode
 enum eBlendOperation
 {
 	BLEND_OP_ADD,
+	BLEND_OP_MAX,
 
 	BLEND_OP_DEFAULT = BLEND_OP_ADD
 };
@@ -138,6 +140,7 @@ enum eBlendFactor
 {
 	FACTOR_SOURCE_ALPHA,
 	FACTOR_INV_SOURCE_ALPHA,
+	FACTOR_INV_DEST_ALPHA,
 	FACTOR_ONE,
 	FACTOR_ZERO,
 };
