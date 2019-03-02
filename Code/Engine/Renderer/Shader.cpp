@@ -100,6 +100,7 @@ STATIC D3D11_BLEND_OP Shader::DXUsageFromBlendOp( eBlendOperation const usage )
 	switch (usage) 
 	{
 	case BLEND_OP_ADD:      return D3D11_BLEND_OP_ADD;
+	case BLEND_OP_MAX:		return D3D11_BLEND_OP_MAX;
 	default:
 	{
 		GUARANTEE_RECOVERABLE(false, "Setting D3D11 Blend op to ADD"); 
@@ -115,9 +116,11 @@ STATIC D3D11_BLEND Shader::DXUsageFromBlendFactor( eBlendFactor const usage)
 	case FACTOR_ONE:				return D3D11_BLEND_ONE;
 	case FACTOR_SOURCE_ALPHA:		return D3D11_BLEND_SRC_ALPHA;
 	case FACTOR_INV_SOURCE_ALPHA:	return D3D11_BLEND_INV_SRC_ALPHA;
+	case FACTOR_ZERO:				return D3D11_BLEND_ZERO;
+	case FACTOR_INV_DEST_ALPHA:		return D3D11_BLEND_INV_DEST_ALPHA;
 	default:
 	{
-		GUARANTEE_RECOVERABLE(false, "Setting D3D11 Blend op to ADD"); 
+		GUARANTEE_RECOVERABLE(false, "Setting D3D11 Blend factor to ONE"); 
 		return D3D11_BLEND_ONE;
 	}
 	}
@@ -172,6 +175,15 @@ bool Shader::UpdateBlendStateIfDirty( RenderContext *renderContext )
 	desc.AlphaToCoverageEnable = false;  // used in MSAA to treat alpha as coverage (usual example is foliage rendering, we will not be using this)
 	desc.IndependentBlendEnable = false;   // if you have multiple outputs bound, you can set this to true to have different blend state per output
 
+	if(m_blendMode != BLEND_MODE_CUSTOM)
+	{
+		m_srcFactor = GetSourceFactorForBlendMode(m_blendMode);
+		m_dstFactor = GetDestFactorForBlendMode(m_blendMode);
+		m_blendOp = GetBlendOpForBlendMode(m_blendMode);
+	}
+
+	//TODO: Add logic to setup blend alpha for various operations. Ask Forseth about this
+
 	// Blending is setting put the equation...
 	// FinalColor = BlendOp( SrcFactor * outputColor, DestFactor * destColor )
 	// where outputColor is what the pixel shader outputs
@@ -183,14 +195,14 @@ bool Shader::UpdateBlendStateIfDirty( RenderContext *renderContext )
 	// since we disabled independent blend, we only have to setup the first blend state
 	// and I'm setting it up for "alpha blending"
 	desc.RenderTarget[0].BlendEnable = TRUE;  // we want to blend
-	desc.RenderTarget[0].SrcBlend    = D3D11_BLEND_SRC_ALPHA;      // output color is multiplied by the output colors alpha and added to...
-	desc.RenderTarget[0].DestBlend   = D3D11_BLEND_INV_SRC_ALPHA;  // the current destination multiplied by (1 - output.a); 
-	desc.RenderTarget[0].BlendOp     = D3D11_BLEND_OP_ADD;        // we add the two results together
+	desc.RenderTarget[0].SrcBlend    = DXUsageFromBlendFactor(m_srcFactor);      // output color is multiplied by the output colors alpha and added to...
+	desc.RenderTarget[0].DestBlend   = DXUsageFromBlendFactor(m_dstFactor);  // the current destination multiplied by (1 - output.a); 
+	desc.RenderTarget[0].BlendOp     = DXUsageFromBlendOp(m_blendOp);        // we add the two results together
 
 	// you can compute alpha seperately, in this case, we'll just set it to be the max alpha between the src & destination
-	desc.RenderTarget[0].SrcBlendAlpha  = D3D11_BLEND_ONE;
-	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE; 
-	desc.RenderTarget[0].BlendOpAlpha   = D3D11_BLEND_OP_MAX;
+	desc.RenderTarget[0].SrcBlendAlpha  = DXUsageFromBlendFactor(m_srcAlphaFactor);
+	desc.RenderTarget[0].DestBlendAlpha = DXUsageFromBlendFactor(m_dstAlphaFactor); 
+	desc.RenderTarget[0].BlendOpAlpha   = DXUsageFromBlendOp(m_alphaBlendOp);
 
 	desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;  // can mask off outputs;  we won't be doing that; 
 	
@@ -207,7 +219,7 @@ bool Shader::UpdateDepthStateIfDirty( RenderContext *renderContext )
 	{
 		D3D11_DEPTH_STENCIL_DESC ds_desc = {};
 
-		ds_desc.DepthEnable = TRUE;  // for simplicity, just set to true (could set to false if write is false and comprae is always)
+		ds_desc.DepthEnable = TRUE;  // for simplicity, just set to true (could set to false if write is false and compare is always)
 		ds_desc.DepthWriteMask = m_writeDepth ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO; 
 		ds_desc.DepthFunc = DXGetCompareFunction( m_depthCompareOp ); //  
 
@@ -222,7 +234,7 @@ bool Shader::UpdateDepthStateIfDirty( RenderContext *renderContext )
 		default_stencil_op.StencilPassOp = D3D11_STENCIL_OP_KEEP;      // what to do if the stencil succeeds
 		default_stencil_op.StencilFunc = D3D11_COMPARISON_ALWAYS;      // function to test against
 
-		// can have different rules setup for front and backface
+		// can have different rules setup for front and back face
 		ds_desc.FrontFace = default_stencil_op; 
 		ds_desc.BackFace = default_stencil_op; 
 
@@ -336,6 +348,39 @@ STATIC char const* Shader::GetShaderModelForStage( eShaderStage stage )
 }
 
 
+eBlendOperation Shader::GetBlendOpForBlendMode( eBlendMode blendMode )
+{
+	switch (blendMode)
+	{
+	case BLEND_MODE_ALPHA:				return BLEND_OP_ADD;
+	case BLEND_MODE_ADDTIVE:			return BLEND_OP_ADD;
+	case BLEND_MODE_OPAQUE:				return BLEND_OP_ADD;
+	default: GUARANTEE_OR_DIE(false, "Unknown Blend Mode"); 
+	}
+}
+
+eBlendFactor Shader::GetSourceFactorForBlendMode( eBlendMode blendMode )
+{
+	switch (blendMode)
+	{
+	case BLEND_MODE_ALPHA:				return FACTOR_SOURCE_ALPHA;
+	case BLEND_MODE_ADDTIVE:			return FACTOR_ONE;
+	case BLEND_MODE_OPAQUE:				return FACTOR_ONE;
+	default: GUARANTEE_OR_DIE(false, "Unknown Blend Mode"); 
+	}
+}
+
+eBlendFactor Shader::GetDestFactorForBlendMode( eBlendMode blendMode )
+{
+	switch (blendMode)
+	{
+	case BLEND_MODE_ALPHA:				return FACTOR_INV_SOURCE_ALPHA;
+	case BLEND_MODE_ADDTIVE:			return FACTOR_ONE;
+	case BLEND_MODE_OPAQUE:				return FACTOR_ZERO;
+	default: GUARANTEE_OR_DIE(false, "Unknown Blend Mode"); 
+	}
+}
+
 void Shader::LoadShaderFromXMLSource(const std::string &fileName )
 {
 	//Open the xml file and parse it
@@ -377,9 +422,92 @@ void Shader::LoadShaderFromXMLSource(const std::string &fileName )
 
 		//Set Blend data
 		rootElement = rootElement->NextSiblingElement();
+		XMLElement* childElement = rootElement->FirstChildElement();
+		//See if it's a custom blend mode.
+		m_customMode = ParseXmlAttribute(*childElement, "customMode", m_customMode);
+		if(m_customMode)
+		{
+			m_blendMode = BLEND_MODE_CUSTOM;
+		}
+
+		childElement = childElement->NextSiblingElement();
+		m_blendOpString = ParseXmlAttribute(*childElement, "op", m_blendOpString);
+		m_blendSrcString = ParseXmlAttribute(*childElement, "src", m_blendSrcString);
+		m_blendDstString= ParseXmlAttribute(*childElement, "dst", m_blendDstString);
+
+		childElement = childElement->NextSiblingElement();
+		m_blendOpAlphaString = ParseXmlAttribute(*childElement, "op", m_blendOpAlphaString);
+		m_blendSrcAlphaString = ParseXmlAttribute(*childElement, "src", m_blendSrcAlphaString);
+		m_blendDstAlphaString = ParseXmlAttribute(*childElement, "dst", m_blendDstAlphaString);
 	}
 
 	SetDepthOpFromString();
+	SetBlendDataFromString();
+}
+
+void Shader::SetBlendDataFromString()
+{
+	//Set Blend Op
+	m_blendOp = SetOpFromString(m_blendOpString);
+
+	//Set Blend Factors
+	m_srcFactor = SetFactorFromString(m_blendSrcString);
+	m_dstFactor = SetFactorFromString(m_blendDstString);
+
+	//Set Blend Alpha Op
+	m_alphaBlendOp = SetOpFromString(m_blendOpAlphaString);
+
+	//Set Blend Factors
+	m_srcAlphaFactor = SetFactorFromString(m_blendSrcAlphaString);
+	m_dstAlphaFactor = SetFactorFromString(m_blendDstAlphaString);
+}
+
+eBlendOperation Shader::SetOpFromString(const std::string& blendOp)
+{
+	if(blendOp == "add")
+	{
+		return BLEND_OP_ADD;
+	}
+	else if(blendOp == "max")
+	{
+		return BLEND_OP_MAX;
+	}
+	else
+	{
+		// Add an assert here; 
+		GUARANTEE_RECOVERABLE(false, "Blend operation not yet handled");
+		return BLEND_OP_DEFAULT;
+	}
+}
+
+eBlendFactor Shader::SetFactorFromString(const std::string& blendFactor)
+{
+	if(blendFactor == "one")
+	{
+		return FACTOR_ONE;
+	}
+	else if(blendFactor == "zero")
+	{
+		 return FACTOR_ZERO;
+	}
+	else if(blendFactor == "inv_src_alpha")
+	{
+		return FACTOR_INV_SOURCE_ALPHA;
+	}
+	else if(blendFactor == "src_alpha")
+	{
+		return FACTOR_SOURCE_ALPHA;
+	}
+	else if(blendFactor == "inv_dst_alpha")
+	{
+		return FACTOR_INV_DEST_ALPHA;
+	}
+	else
+	{
+		// Add an assert here; 
+		GUARANTEE_RECOVERABLE(false, "Blend Factor not yet handled");
+		return FACTOR_ONE;
+	}
 }
 
 void Shader::SetDepthOpFromString()
@@ -391,6 +519,11 @@ void Shader::SetDepthOpFromString()
 	else if(m_depthCompareOpString == "equal")
 	{
 		m_depthCompareOp = COMPARE_EQUAL;
+	} 
+	else 
+	{
+		// Add an assert here; 
+		GUARANTEE_RECOVERABLE(false, "Depth compare operation not yet handled");
 	}
 
 	//Add other depth operations when you start using them here
