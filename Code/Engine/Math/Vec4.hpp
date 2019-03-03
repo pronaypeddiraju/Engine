@@ -10,6 +10,10 @@ public:
 	explicit Vec4( float initialX, float initialY, float initialZ, float initialW );		// explicit constructor (from x, y, z, w)
 	explicit Vec4(const char* asText);
 
+	//Statics
+	const static Vec4	ZERO;
+	const static Vec4	ONE;
+
 	//Access Methods
 	
 	//Mutator methods

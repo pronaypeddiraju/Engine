@@ -22,6 +22,7 @@ class EventSystems;
 class PhysicsSystem;
 class DevConsole;
 class WindowContext;
+class DebugRender;
 
 //------------------------------------------------------------------------------------------------------------------------------
 extern DevConsole* g_devConsole;
@@ -29,6 +30,7 @@ extern EventSystems* g_eventSystem;
 extern PhysicsSystem* g_physicsSystem;
 extern NamedStrings g_gameConfigBlackboard; // declared in EngineCommon.hpp, defined in EngineCommon.cpp
 extern WindowContext* g_windowContext;
+extern DebugRender*	g_debugRenderer;
 
 typedef NamedStrings EventArgs;
 

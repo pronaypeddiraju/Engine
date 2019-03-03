@@ -70,6 +70,7 @@ public:
 
 	void						BindShader(Shader* shader);
 	void						SetBlendMode(eBlendMode blendMode);
+	void						SetDepth(bool write);
 	
 	//void						BindTexture(Texture* texture);
 	void						BindTextureView( uint slot, TextureView *view ); 
@@ -94,6 +95,8 @@ public:
 
 	// Be able to set a model matrix (updates the uniform buffer; 
 	void						SetModelMatrix( Matrix44 const &modelMatrix );            // A04
+	inline const Matrix44&		GetProjectionMatrix()	{return m_currentCamera->m_projection;}
+	inline const Matrix44&		GetViewMatrix() {return m_currentCamera->m_view;}
 
 	void						ClearColorTargets( const Rgba& clearColor );		//Previously was ClearScreen
 	void						ClearDepthStencilTarget( float depth = 1.0f, uint8_t stencil = 0U ); // A04

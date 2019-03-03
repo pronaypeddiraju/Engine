@@ -222,6 +222,11 @@ void RenderContext::SetBlendMode(eBlendMode blendMode)
 	}
 }
 
+void RenderContext::SetDepth( bool write )
+{
+	m_currentShader->m_writeDepth = write;
+}
+
 BitmapFont* RenderContext::CreateBitmapFontFromFile(const std::string& bitmapName)
 {
 	//std::string filePath = "Data/Fonts/" + bitmapName + ".png";
