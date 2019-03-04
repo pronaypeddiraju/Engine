@@ -50,17 +50,30 @@ void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT const &options, Vec2 p
 
 	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
 
-	if(options.mode == DEBUG_RENDER_USE_DEPTH)
-	{
-		m_renderContext->SetDepth(true);
-	}
-
 	//TODO: Implement code to handle duration logic
-	Vec2 minBounds = Vec2(position.x * size * -0.5f, position.y * size * -0.5f);
-	Vec2 maxBounds = Vec2(position.x * size * 0.5f, position.y * size * 0.5f);
+	Vec2 minBounds = Vec2(size * -0.5f, size * -0.5f);
+	Vec2 maxBounds = Vec2(size * 0.5f, size * 0.5f);
+	minBounds += position;
+	maxBounds += position;
+
 	AABB2 box = AABB2(minBounds, maxBounds);
 	std::vector<Vertex_PCU> pointVerts;
-	AddVertsForAABB2D(pointVerts, box, options.endColor );
+	AddVertsForAABB2D(pointVerts, box, options.beginColor );
+
+	switch (options.mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
 	m_renderContext->DrawVertexArray(pointVerts);
 
 }
