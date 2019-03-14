@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Matrix44.hpp"
 
 class ColorTargetView;
@@ -14,27 +15,31 @@ struct Camera
 public:
 	~Camera();
 
-	void			Translate2D(const Vec2& translation2D);
+	void					Translate2D(const Vec2& translation2D);
 
 	// Projections
-	void			SetPerspectiveProjection(float FieldOfView, float nearZ, float farZ, float aspectRatio = 16.f/9.f);
-	void			SetOrthoView(const Vec2& bottomLeft, const Vec2& topRight, float minZ = -1.f, float maxZ = 1.f);
-	Vec2			GetOrthoBottomLeft() const;
-	Vec2			GetOrthoTopRight() const;
+	void					SetPerspectiveProjection(float FieldOfView, float nearZ, float farZ, float aspectRatio = 16.f/9.f);
+	void					SetOrthoView(const Vec2& bottomLeft, const Vec2& topRight, float minZ = -1.f, float maxZ = 1.f);
+	Vec2					GetOrthoBottomLeft() const;
+	Vec2					GetOrthoTopRight() const;
 
 	//Targets
 	//Function to set the color target view that we are rendering to
-	void			SetColorTarget(ColorTargetView *colorTargetView);
-	void			SetDepthStencilTarget( DepthStencilTargetView *depthStencilView);
+	void					SetColorTarget(ColorTargetView *colorTargetView);
+	void					SetDepthStencilTarget( DepthStencilTargetView *depthStencilView);
+
+	//Utility
+	inline const Vec3&		GetEuler() {return m_Euler;}
+	inline void				SetEuler(const Vec3& euler) {m_Euler = euler;}
 
 	//Transforms and Matrices
-	void			SetModelMatrix(Matrix44 camModel);
-	const Matrix44&	GetModelMatrix() const;
-	const Matrix44&	GetViewMatrix() const;
-	const Matrix44&	GetProjectionMatrix() const;
+	void					SetModelMatrix(Matrix44 camModel);
+	const Matrix44&			GetModelMatrix() const;
+	const Matrix44&			GetViewMatrix() const;
+	const Matrix44&			GetProjectionMatrix() const;
 
 	//Buffer functions
-	void			UpdateUniformBuffer(RenderContext* renderContext);
+	void					UpdateUniformBuffer(RenderContext* renderContext);
 
 public:
 	//Variables
@@ -58,4 +63,6 @@ public:
 	Matrix44					m_projection;
 	Matrix44					m_cameraModel;
 	Matrix44					m_view;			//This is the inverse of m_camera
+
+	Vec3						m_Euler = Vec3::ZERO;
 };

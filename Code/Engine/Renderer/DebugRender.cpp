@@ -158,3 +158,68 @@ IntVec2 DebugRender::ConvertWorldToScreenPoint( Vec3 worldPoint)
 
 	return IntVec2(winX, winY);
 }
+
+void DebugRender::DebugRenderPoint( DebugRenderOptionsT const & options, Vec3 position, float size )
+{
+	//Create a quad in 3D space and make it face the camera
+
+	//m_debug3DCam
+
+	m_debug3DCam->SetModelMatrix(Matrix44::IDENTITY);
+	m_debug3DCam->UpdateUniformBuffer(m_renderContext);
+
+	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
+
+	std::vector<Vertex_PCU> pointVerts;
+	Vec2 boxMins = Vec2((position.x - size * 0.5f), (position.y - size * 0.5f));
+	Vec2 boxMaxs = Vec2((position.x + size * 0.5f), (position.y + size * 0.5f));
+	AABB2 pointBox = AABB2(boxMins, boxMaxs);
+
+
+
+	AddVertsForAABB2D(pointVerts, pointBox, Rgba::DARK_GREY);
+}
+
+void DebugRender::DebugRenderPoint( Camera & camera, DebugRenderOptionsT const & options, Vec3 position, TextureView* texture, float size )
+{
+	m_debug3DCam = &camera;
+
+	m_debug3DCam->UpdateUniformBuffer(m_renderContext);
+
+	//Setup the point's model matrix
+	Matrix44 pointTransform = m_debug3DCam->GetModelMatrix();
+	Vec3 euler = camera.GetEuler();
+	Matrix44 objectMatrix = Matrix44::MakeFromEuler(euler);
+	Matrix44::SetTranslation3D(position, objectMatrix);
+
+	//objectMatrix.AppendMatrix(pointTransform);
+	//Setup the matrix and textures on the render context used
+	m_renderContext->BindTextureViewWithSampler(0U, texture); 
+	m_renderContext->SetModelMatrix( objectMatrix ); 
+	
+	//Draw
+	std::vector<Vertex_PCU> pointVerts;
+	Vec2 boxMins = Vec2((-size * 0.5f), (-size * 0.5f));
+	Vec2 boxMaxs = Vec2((size * 0.5f), (size * 0.5f));
+	AABB2 pointBox = AABB2(boxMins, boxMaxs);
+
+	AddVertsForAABB2D(pointVerts, pointBox, Rgba::DARK_GREY);
+
+	//TODO: Implement code to handle duration logic
+	switch (options.mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
+	m_renderContext->DrawVertexArray(pointVerts);
+	m_debug3DCam = nullptr;
+}

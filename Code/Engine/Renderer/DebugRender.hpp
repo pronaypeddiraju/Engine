@@ -110,6 +110,11 @@ public:
 											Vec3 position, 
 											float size = DEFAULT_POINT_SIZE );
 
+	void				DebugRenderPoint( Camera& camera, DebugRenderOptionsT const &options,
+											Vec3 position,
+											TextureView* texture = nullptr,
+											float size = DEFAULT_POINT_SIZE );
+
 	void				DebugRenderLine( DebugRenderOptionsT const &options, 
 											Vec3 start, Vec3 end, 
 											float lineWidth = DEFAULT_LINE_WIDTH );
