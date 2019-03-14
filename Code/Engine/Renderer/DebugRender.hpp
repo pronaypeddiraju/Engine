@@ -20,6 +20,8 @@ class RenderContext;
 //------------------------------------------------------------------------
 #define DEFAULT_POINT_SIZE       (4.0f)
 #define DEFAULT_LINE_WIDTH       (1.0f)
+#define DEFAULT_HEIGHT			 ( 720.f )
+#define DEFAULT_ASPECT			 ( 1.77f )
 
 //------------------------------------------------------------------------
 enum eDebugRenderSpace 
@@ -67,10 +69,10 @@ public:
 
 	void					Startup(RenderContext* renderContext);
 	void					Shutdown();
+	void					BeginFrame();
 	void					Update(float deltaTime);
 	void					Render() const;
 
-	void					Set2DCamera(Camera* camera);
 	Camera&					Get2DCamera();
 
 	//------------------------------------------------------------------------
@@ -154,6 +156,7 @@ private:
 	int					m_clientHeight;
 	Camera*				m_debug3DCam = nullptr;
 	Camera*				m_debug2DCam = nullptr;
+	bool				m_canRender = true;
 };
 
 /*

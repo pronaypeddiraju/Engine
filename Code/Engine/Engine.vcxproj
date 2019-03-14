@@ -294,6 +294,7 @@
     <ClInclude Include="Renderer\DebugRender.hpp" />
     <ClInclude Include="Renderer\DepthStencilTargetView.hpp" />
     <ClInclude Include="Renderer\GPUMesh.hpp" />
+    <ClInclude Include="Renderer\HSL.hpp" />
     <ClInclude Include="Renderer\IndexBuffer.hpp" />
     <ClInclude Include="Renderer\RenderBuffer.hpp" />
     <ClInclude Include="Renderer\RenderContext.hpp" />

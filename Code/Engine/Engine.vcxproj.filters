@@ -411,5 +411,6 @@
     <ClInclude Include="Renderer\GPUMesh.hpp" />
     <ClInclude Include="Renderer\DepthStencilTargetView.hpp" />
     <ClInclude Include="Renderer\DebugRender.hpp" />
+    <ClInclude Include="Renderer\HSL.hpp" />
   </ItemGroup>
 </Project>

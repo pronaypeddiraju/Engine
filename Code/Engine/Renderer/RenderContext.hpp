@@ -3,7 +3,6 @@
 #include "Engine/Renderer/Rgba.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Math/Vertex_PCU.hpp"
-#include "Engine/Renderer/SpriteAnimDefenition.hpp"
 #include "Engine/Renderer/Sampler.hpp"
 #include "Engine/Renderer/RendererTypes.hpp"
 #include <vector>
