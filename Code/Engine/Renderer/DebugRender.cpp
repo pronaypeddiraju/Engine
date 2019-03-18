@@ -41,6 +41,33 @@ void DebugRender::Shutdown()
 	m_debug3DCam = nullptr;
 }
 
+void DebugRender::Update( float deltaTime )
+{
+}
+
+void DebugRender::DebugRenderToScreen() const
+{
+	//Use this method to render to screen camera
+	std::map<int, DebugRenderObjectT>::iterator mapIterator;
+	for(mapIterator; mapIterator != debugRenderObjects.end(); mapIterator++)
+	{
+		eDebugRenderObject objectType = mapIterator->second.renderObject;
+		switch(objectType)
+		{
+		case DEBUG_RENDER_POINT:
+			break;
+		default:
+			GUARANTEE_OR_DIE(true, "The debug object is not yet defined in DebugRenderToScreen");
+			break;
+		}
+	}
+}
+
+void DebugRender::DebugRenderToCamera() const
+{
+	//Use this method to render to the world camera
+}
+
 Camera& DebugRender::Get2DCamera()
 {
 	return *m_debug2DCam;
@@ -78,7 +105,6 @@ void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT const &options, Vec2 p
 	}
 
 	m_renderContext->DrawVertexArray(pointVerts);
-
 }
 
 //Inplementation to debug render a line using 2D debug camera

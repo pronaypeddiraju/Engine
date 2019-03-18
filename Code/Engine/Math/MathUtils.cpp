@@ -101,9 +101,13 @@ bool DoDiscsOverlap( const Vec2& centreA, float radiusA, const Vec2& centreB, fl
 	float discDistance = GetDistance2D(centreA, centreB);
 	float sumRadii = radiusA + radiusB;
 	if(discDistance < sumRadii)
+	{
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }
 
 //Function to check if spheres overlap
@@ -112,9 +116,13 @@ bool DoSpheresOverlap( const Vec3 & centreA, float radiusA, const Vec3 & centreB
 	float discDistance = GetDistance3D(centreA, centreB);
 	float sumRadii = radiusA + radiusB;
 	if(discDistance < sumRadii)
-		return true;
+	{
+		return true;	
+	}
 	else
-		return false;
+	{
+		return false;	
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -127,7 +135,9 @@ bool IsPointInDisc2D( const Vec2& point, const Vec2& centre, float radius )
 	float distToVector = distVector.GetLength();
 
 	if(distToVector * distToVector < radius * radius)
-		return true;
+	{
+		return true;	
+	}
 	else
 	{
 		return false;

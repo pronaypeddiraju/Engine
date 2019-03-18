@@ -3,6 +3,7 @@
 #include "Engine/Math/Matrix44.hpp"
 #include "Engine/Math/Vec4.hpp"
 #include "Engine/Renderer/Rgba.hpp"
+#include <map>
 
 struct AABB2;
 struct AABB3;
@@ -38,6 +39,29 @@ enum eDebugRenderMode
 								// darken or thin the line during behind render to differentiate from it being in front; 
 }; 
 
+enum eDebugRenderObject
+{
+	DEBUG_RENDER_POINT,
+	DEBUG_RENDER_POINT3D,
+
+	DEBUG_RENDER_LINE,
+	DEBUG_RENDER_LINE3D,
+
+	DEBUG_RENDER_QUAD,
+	DEBUG_RENDER_TEX_QUAD,
+	DEBUG_RENDER_WIRE_QUAD,
+
+	DEBUG_RENDER_SPHERE,
+	DEBUG_RENDER_WIRE_SPHERE,	//This has to be an icoSphere
+
+	DEBUG_RENDER_BOX,
+	DEBUG_RENDER_WIRE_BOX,
+
+	DEBUG_RENDER_ARROW,
+	DEBUG_RENDER_ARROW3D,
+	
+	DEBUG_RENDER_BASIS,
+};
 
 //------------------------------------------------------------------------
 // struct to contain options for rendering something.  Contains parameters common to most 
@@ -61,6 +85,13 @@ struct DebugRenderOptionsT
 	Matrix44 modelTransform       = Matrix44::IDENTITY; // local transform to do to the object; 
 };
 
+struct DebugRenderObjectT
+{
+	DebugRenderOptionsT renderOptions;
+	eDebugRenderObject renderObject;
+	float timeRemaining = 0.f;
+};
+
 class DebugRender
 {
 public:
@@ -71,7 +102,11 @@ public:
 	void					Shutdown();
 	void					BeginFrame();
 	void					Update(float deltaTime);
-	void					Render() const;
+	
+	void					DebugRenderToScreen() const;		//This renders to the screen camera
+	void					DebugRenderToCamera() const;		//This renders in the world camera
+
+	void					SetupRenderOptions();
 
 	Camera&					Get2DCamera();
 
@@ -97,7 +132,7 @@ public:
 												AABB2 const &quad, 
 												float lineWidth = DEFAULT_LINE_WIDTH ); 
 
-	// to get a ring, you can jus tuse a innerRadius line-thickness smaller than radius; 
+	// to get a ring, you can just use a innerRadius line-thickness smaller than radius; 
 	void				DebugRenderDisc2D( DebugRenderOptionsT const &options, 
 											Vec2 center, 
 											float radius, 
@@ -162,6 +197,9 @@ private:
 	Camera*				m_debug3DCam = nullptr;
 	Camera*				m_debug2DCam = nullptr;
 	bool				m_canRender = true;
+
+	//Store all debug objects with their render options and other data
+	std::map<int, DebugRenderObjectT>	debugRenderObjects;
 };
 
 /*
