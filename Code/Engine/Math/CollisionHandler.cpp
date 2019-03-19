@@ -4,7 +4,6 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Manifold.hpp"
 
-//------------------------------------------------------------------------------------------------------------------------------
 CollisionCheck2DCallback COLLISION_LOOKUP_TABLE[COLLIDER2D_COUNT][COLLIDER2D_COUNT] = {
 	/*******| aabb2 | disc  | point | capsl | line  | obb2  */
 	/*aabb2*/ { CheckAABB2ByAABB2, CheckAABB2ByDisc, nullptr,           nullptr, nullptr, nullptr },
@@ -22,14 +21,14 @@ bool GetCollisionInfo( Collision2D* out, Collider2D* a, Collider2D* b )
 {
 	uint aType = a->GetType(); 
 	uint bType = b->GetType(); 
-	
+
 	if(aType >= COLLIDER2D_COUNT && bType >= COLLIDER2D_COUNT)
 	{
 		ERROR_AND_DIE("The Collider type was not part of the COLLISION_LOOKUP_TABLE");
 	}
 
 	CollisionCheck2DCallback callBack = COLLISION_LOOKUP_TABLE[aType][bType]; 
-	
+
 	if (callBack == nullptr) 
 	{
 		return false; // no known collision; 
@@ -46,17 +45,32 @@ bool GetManifold( Manifold2D *out, AABB2Collider const &boxA, AABB2Collider cons
 	Vec2 min = boxA.GetWorldShape().m_maxBounds.Min(boxB.GetWorldShape().m_maxBounds);
 	Vec2 max = boxA.GetWorldShape().m_minBounds.Max(boxB.GetWorldShape().m_minBounds);
 
+	//AABB2 collisionBox = AABB2(max, min);
+
 	if(max < min)
 	{
 		GenerateManifoldBoxToBox(out, min, max);
+
+		AABB2 boxAShape = boxA.GetWorldShape();
+		AABB2 boxBShape = boxB.GetWorldShape();
+
 		if(out->m_normal.y == 0.f)
-		{
-			//pushing out on x
-			if(boxA.GetWorldShape().m_center.x < boxB.GetWorldShape().m_center.x)
+		{	
+			if(((boxAShape.m_maxBounds + boxAShape.m_minBounds)/2).x < ((boxBShape.m_maxBounds + boxBShape.m_minBounds)/2).x)
 			{
+				//pushing out on x
 				out->m_normal *= -1;
 			}
 		}
+		else if(out->m_normal.x == 0.f)
+		{
+			if(((boxAShape.m_maxBounds + boxAShape.m_minBounds)/2).y < ((boxBShape.m_maxBounds + boxBShape.m_minBounds)/2).y)
+			{
+				//pushing out on y
+				out->m_normal *= -1;
+			}
+		}
+
 		return true;
 	}
 	else 
@@ -68,17 +82,33 @@ bool GetManifold( Manifold2D *out, AABB2Collider const &boxA, AABB2Collider cons
 bool GetManifold( Manifold2D *out, AABB2Collider const &box, Disc2DCollider const &disc )
 {
 	Vec2 discCentre = disc.GetWorldShape().GetCentre();
-
 	AABB2 boxShape = box.GetWorldShape();
 	Vec2 closestPoint = GetClosestPointOnAABB2( discCentre, boxShape );
+	Vec2 boxCenter = boxShape.GetBoxCenter() + boxShape.m_minBounds;
 
 	float distanceSquared = GetDistanceSquared2D(discCentre, closestPoint);
 	float radius = disc.GetWorldShape().GetRadius();
+	//float distanceBwCenters = GetDistanceSquared2D(discCentre, boxCenter);
+
+	float distance = 0;
+
+	//Check is box inside disc
+	if(closestPoint == discCentre)
+	{
+		//box is inside disc
+		distance = GetDistance2D(discCentre, boxCenter);
+		Vec2 normal = boxCenter - discCentre;
+		normal.Normalize();
+
+		out->m_normal = normal;
+		out->m_penetration = distance;
+		return true;
+	}
 
 	if(distanceSquared < radius * radius)
 	{
 		//out here
-		float distance = GetDistance2D(discCentre, closestPoint);
+		distance = GetDistance2D(discCentre, closestPoint);
 		Vec2 normal = closestPoint - discCentre;
 		normal.Normalize();
 
@@ -111,6 +141,7 @@ bool GetManifold( Manifold2D *out, Disc2DCollider const &disc, AABB2Collider con
 	{
 		//out here
 		float distance = GetDistance2D(discCentre, closestPoint);
+
 		Vec2 normal = discCentre - closestPoint;
 		normal.Normalize();
 
@@ -225,15 +256,13 @@ void GenerateManifoldBoxToBox(Manifold2D* manifold, Vec2 const &min, Vec2 const 
 	if(minValue == boxWidth)
 	{
 		//normal is along X
-		normal = Vec2(min.x, 0.f) - Vec2(max.x, 0.f);
+		normal = Vec2(1.f, 0.f);
 	}
 	else
 	{
 		//Normal is along Y
-		normal = Vec2(0.f, min.y) - Vec2(0.f, max.y);
+		normal = Vec2(0.f, 1.f);
 	}
-
-	normal.Normalize();
 
 	manifold->m_normal = normal;
 	manifold->m_penetration = minValue;
@@ -261,7 +290,7 @@ bool CheckAABB2ByAABB2(Collision2D* out, Collider2D* a, Collider2D* b)
 		out->m_Obj = nullptr;
 		out->m_otherObj = nullptr;
 	}
-	
+
 	return result;
 }
 

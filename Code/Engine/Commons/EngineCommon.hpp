@@ -44,7 +44,10 @@ const unsigned short SPACE_KEY = 32;
 const unsigned short DEL_KEY = 46;
 const unsigned short BACK_SPACE = 8;
 const unsigned short ENTER_KEY = 13;
-const unsigned short N_KEY = 'N';
+const unsigned short KEY_LESSER = 188;
+const unsigned short KEY_GREATER = 190;
+const unsigned short M_KEY = 77;
+const unsigned short N_KEY = 78;
 const unsigned short T_KEY = 'T';
 const unsigned short P_KEY = 'P';
 const unsigned short W_KEY = 87;
@@ -60,6 +63,7 @@ const unsigned short F6_KEY = 117;
 const unsigned short F7_KEY = 118;
 const unsigned short F8_KEY = 119;
 const unsigned short TILDY_KEY = 192;
+const unsigned short TAB_KEY = 9;
 
 //------------------------------------------------------------------------------------------------------------------------------
 constexpr char SHADER_PATH[] = "Data/Shaders/"; 
