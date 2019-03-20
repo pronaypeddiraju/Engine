@@ -3,6 +3,7 @@
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/OBB2.hpp"
 
 CPUMesh::CPUMesh()
 {
@@ -32,6 +33,37 @@ void CPUMeshAddQuad( CPUMesh *out, AABB2 quad)
 
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
 	out->AddVertex( quad.GetBottomRight() ); 
+
+	out->AddIndexedTriangle( 0, 2, 1 ); 
+	out->AddIndexedTriangle( 2, 3, 1 ); 
+}
+
+void CPUMeshAddBox2D( CPUMesh *out, OBB2 const &obb, Rgba const &color )
+{
+	out->Clear();
+
+	out->SetColor( color ); 
+	// 0 --- 1
+	// |   / |
+	// | /   |
+	// 2 --- 3
+
+	Vec2 corner = obb.GetTopLeft();
+
+	out->SetUV( Vec2(0.0f, 0.0f) ); 
+	out->AddVertex(Vec3(corner.x, corner.y, 0.f)); 
+
+	corner = obb.GetTopRight();
+	out->SetUV( Vec2(1.0f, 0.0f) ); 
+	out->AddVertex(Vec3(corner.x, corner.y, 0.f)); 
+
+	corner = obb.GetBottomLeft();
+	out->SetUV( Vec2(0.0f, 1.0f) ); 
+	out->AddVertex(Vec3(corner.x, corner.y, 0.f)); 
+
+	corner = obb.GetBottomRight();
+	out->SetUV( Vec2(1.0f, 1.0f) ); 
+	out->AddVertex(Vec3(corner.x, corner.y, 0.f)); 
 
 	out->AddIndexedTriangle( 0, 2, 1 ); 
 	out->AddIndexedTriangle( 2, 3, 1 ); 

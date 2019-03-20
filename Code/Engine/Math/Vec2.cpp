@@ -149,6 +149,15 @@ const Vec2 Vec2::MakeFromPolarRadians( const float polarRadians, float r)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+const Vec2 Vec2::ClampVector( Vec2& toClamp, const Vec2& minBound, const Vec2& maxBound )
+{
+	toClamp.x = Clamp(toClamp.x, minBound.x, maxBound.x);
+	toClamp.y = Clamp(toClamp.y, minBound.y, maxBound.y);
+
+	return toClamp;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec2::ClampLength( float maxLength )
 {
 	float r = sqrtf(x*x + y*y);

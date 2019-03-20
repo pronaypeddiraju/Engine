@@ -11,6 +11,8 @@ typedef unsigned int uint;
 class Collider2D;
 class AABB2Collider;
 class Disc2DCollider;
+class OBB2;
+class Capsule2D;
 struct AABB2;
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -36,6 +38,11 @@ bool				GetManifold( Manifold2D *out, AABB2Collider const &obj0, AABB2Collider c
 bool				GetManifold( Manifold2D *out, AABB2Collider const &obj0, Disc2DCollider const &obj1 ); 
 bool				GetManifold( Manifold2D *out, Disc2DCollider const &obj0, Disc2DCollider const &obj1 );
 bool				GetManifold( Manifold2D *out, Disc2DCollider const &disc, AABB2Collider const &box );
+
+bool				GetManifold( Manifold2D *out, OBB2 const &a, OBB2 const &b, float radius );
+bool				GetManifold( Manifold2D *out, OBB2 const &a, OBB2 const &b );
+bool				GetManifold( Manifold2D *out, Capsule2D const &a, Capsule2D const &b );
+bool				GetManifold( Manifold2D *out, OBB2 const &a, Capsule2D const &b );
 
 bool				IsDiscInBox( Manifold2D* out, const Vec2 &discCentre, const AABB2& boxShape, float radius );
 //Manifold Helpers

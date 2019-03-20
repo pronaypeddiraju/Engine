@@ -208,6 +208,12 @@
     <ClCompile Include="Renderer\DebugRender.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Math\OBB2.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Plane2D.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -412,5 +418,7 @@
     <ClInclude Include="Renderer\DepthStencilTargetView.hpp" />
     <ClInclude Include="Renderer\DebugRender.hpp" />
     <ClInclude Include="Renderer\HSL.hpp" />
+    <ClInclude Include="Math\OBB2.hpp" />
+    <ClInclude Include="Math\Plane2D.hpp" />
   </ItemGroup>
 </Project>

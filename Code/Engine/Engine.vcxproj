@@ -206,7 +206,9 @@
     <ClCompile Include="Math\MathUtils.cpp" />
     <ClCompile Include="Math\Matrix44.cpp" />
     <ClCompile Include="Math\Noise\SmoothNoise.cpp" />
+    <ClCompile Include="Math\OBB2.cpp" />
     <ClCompile Include="Math\PhysicsSystem.cpp" />
+    <ClCompile Include="Math\Plane2D.cpp" />
     <ClCompile Include="Math\RandomNumberGenerator.cpp" />
     <ClCompile Include="Math\Rigidbody2D.cpp" />
     <ClCompile Include="Math\RigidBodyBucket.cpp" />
@@ -277,6 +279,8 @@
     <ClInclude Include="Math\Matrix44.hpp" />
     <ClInclude Include="Math\Noise\RawNoise.hpp" />
     <ClInclude Include="Math\Noise\SmoothNoise.hpp" />
+    <ClInclude Include="Math\OBB2.hpp" />
+    <ClInclude Include="Math\Plane2D.hpp" />
     <ClInclude Include="Math\Projection.hpp" />
     <ClInclude Include="Math\PhysicsSystem.hpp" />
     <ClInclude Include="Math\RandomNumberGenerator.hpp" />

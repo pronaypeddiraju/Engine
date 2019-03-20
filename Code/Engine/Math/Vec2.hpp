@@ -40,6 +40,7 @@ public:
 	static const Vec2	MakeFromPolarRadians(const float polarRadians, float r = 1.0f);
 
 	//Mutator methods
+	const Vec2			ClampVector(Vec2& toClamp, const Vec2& minBound, const Vec2& maxBound);
 	void				ClampLength(float maxLength);
 	void				SetLength(float setLength);
 	void				SetAngleDegrees(float setAngleDeg);

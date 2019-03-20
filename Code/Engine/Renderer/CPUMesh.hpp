@@ -5,12 +5,14 @@
 #include "Engine/Renderer/Rgba.hpp"
 #include <vector>
 
+//------------------------------------------------------------------------------------------------------------------------------
 struct AABB2;
 struct AABB3;
+class OBB2;
 
 typedef unsigned int uint;
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // VertexMaster is a super-set of all vertex parameters we
 // will want our CPUMesh to know about; 
 // (Historically I would call CPUMesh a MeshBuilder, as it is used 
@@ -28,8 +30,7 @@ struct VertexMaster
 	// skin indices         // Summer
 }; 
 
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 class CPUMesh              // A04
 {
 public:
@@ -52,6 +53,7 @@ public:
 	// adds two triangles (bl, tr, tl) and (bl, br, tr)
 	void AddIndexedQuad( uint topLeft, uint topRight, uint bottomLeft, uint bottomRight );    // A04
 
+
 																							  // Helpers
 	uint GetVertexCount() const;                 // A04
 	uint GetIndexCount() const;                  // A04
@@ -68,14 +70,14 @@ public:
 };
 
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // I prefer keeping my construction functions as C functions
 // as I like to pick and choose the ones I want instead of having them
 // all live in CPUMesh.hpp
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void			CPUMeshAddQuad( CPUMesh *out, AABB2 quad); 
 
-void			CPUMeshAddCube( CPUMesh *out, AABB3 box, bool clearMesh = true );                                                          // A04
-void			CPUMeshAddUVSphere( CPUMesh *out, Vec3 center, float radius, uint wedges = 32, uint slices = 16 );  // A04
-
+void			CPUMeshAddCube( CPUMesh *out, AABB3 box, bool clearMesh = true );                                                           // A04
+void			CPUMeshAddUVSphere( CPUMesh *out, Vec3 center, float radius, uint wedges = 32, uint slices = 16 );							// A04
+void			CPUMeshAddBox2D( CPUMesh *out, OBB2 const &obb, Rgba const &color );
 
