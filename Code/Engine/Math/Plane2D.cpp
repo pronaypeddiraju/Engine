@@ -17,7 +17,7 @@ Plane2D::Plane2D( Vec2 normal, float distanceToOrigin )
 float Plane2D::GetDistance( Vec2 point ) const
 {
 	float distance = GetDotProduct(point, m_normal);
-	distance += m_distance;
+	distance -= m_distance;
 	return distance;
 }
 
@@ -25,9 +25,9 @@ STATIC Plane2D Plane2D::AtPosition( Vec2 pos, Vec2 normal )
 {
 	Plane2D p; 
 	p.m_normal = normal; 
-	p.m_distance = -GetDotProduct( pos, normal );    // C4
+	//p.m_distance = -GetDotProduct( pos, normal );    // C4
 	
-	// p.m_distance = Dot( pos, normal );  // Squirrel
+	p.m_distance = GetDotProduct( pos, normal );  // Squirrel
 
 	return p;
 }

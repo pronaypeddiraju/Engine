@@ -181,10 +181,20 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 	float bestDistToA = 100000; 
 	Vec2 bestPointToA;
 	
+	float bestDistToB = 100000; 
+	Vec2 bestPointToB;
+	/*
 	float smallestDistance = -100000;
 	Plane2D planeToPushOutOf;
+	*/
 
 	Plane2D bestThisPlane;
+	Plane2D bestOtherPlane;
+
+	Vec2 worstCornerToPlane[4];
+	float worstDistancesToThis[4];
+	Vec2 worstCornerToOtherPlane[4];
+	float worstDistancesToOther[4];
 
 	for(int planeIndex = 0; planeIndex < 4;planeIndex++)
 	{
@@ -202,23 +212,47 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 			float otherFromThis = thisPlane.GetDistance( cornerOfOther ); 
 			float thisFromOther = otherPlane.GetDistance( cornerOfThis ); 
 
+			
 			if(cornerIndex == 0)
 			{
 				bestDistToA = otherFromThis;
 				bestPointToA = cornerOfOther;
 				bestThisPlane = thisPlane;
+
+				worstCornerToPlane[planeIndex] = cornerOfOther;
+				worstDistancesToThis[planeIndex] = otherFromThis;
+
+				bestDistToB = thisFromOther;
+				bestPointToB = cornerOfThis;
+				bestOtherPlane = otherPlane;
+				
+				worstCornerToOtherPlane[planeIndex] = cornerOfThis;
+				worstDistancesToOther[planeIndex] = thisFromOther;
 			}
-			
-			/*
+
 			//Update the feature point
 			if(otherFromThis < bestDistToA)
 			{
 				bestDistToA = otherFromThis;
 				bestPointToA = cornerOfOther;
 				bestThisPlane = thisPlane;
-			}
-			*/
 
+				worstCornerToPlane[planeIndex] = cornerOfOther;
+				worstDistancesToThis[planeIndex] = otherFromThis;
+			}
+
+			//Update the feature point for other plane
+			if(thisFromOther < bestDistToB)
+			{
+				bestDistToB = thisFromOther;
+				bestPointToB = cornerOfThis;
+				bestOtherPlane = otherPlane;
+
+				worstCornerToOtherPlane[planeIndex] = cornerOfThis;
+				worstDistancesToOther[planeIndex] = thisFromOther;
+			}
+
+			/*
 			//Get the largest negative value as distance to push out of
 			if(otherFromThis < 0)
 			{
@@ -228,6 +262,7 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 					planeToPushOutOf = thisPlane;
 				}
 			}
+			*/
 
 			inFrontOfThis += (otherFromThis >= 0.0f) ? 1 : 0; 
 			inFrontOfOther += (thisFromOther >= 0.0f) ? 1 : 0; 
@@ -239,10 +274,46 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 		}
 	}
 
+	float bestCaseThis;
+	float bestCaseOther;
+	int bestCaseIndexThis = 0;
+	int bestCaseIndexOther = 0;
+
+	for(int worstCaseIndex = 0; worstCaseIndex < 4; worstCaseIndex++)
+	{
+		if(worstCaseIndex == 0)
+		{
+			bestCaseThis = worstDistancesToThis[worstCaseIndex];
+			bestCaseOther = worstDistancesToOther[worstCaseIndex];
+		}
+
+		if(worstDistancesToThis[worstCaseIndex] > bestCaseThis)
+		{
+			bestCaseThis = worstDistancesToThis[worstCaseIndex];
+			bestCaseIndexThis = worstCaseIndex;
+		}
+
+		if(worstDistancesToOther[worstCaseIndex] > bestCaseOther)
+		{
+			bestCaseOther = worstDistancesToOther[worstCaseIndex];
+			bestCaseIndexOther = worstCaseIndex;
+		}
+	}
+
+	//Check which of the 2 are larger (smaller -ve number)
+	if(bestCaseOther > bestCaseThis)
+	{
+		out->m_penetration = bestCaseOther * -1.f;
+		out->m_normal = planesOfOther[bestCaseIndexOther].m_normal;
+	}
+	else
+	{
+		out->m_penetration = bestCaseThis * -1.f;
+		out->m_normal = planesOfThis[bestCaseIndexThis].m_normal * -1.f;
+	}
+
 	//We have reached this point. There's an intersection for sure
 	//out here
-	out->m_normal = planeToPushOutOf.m_normal * -1.f;
-	out->m_penetration = smallestDistance * -1.f;
 
 	return true; 
 }
