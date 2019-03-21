@@ -185,12 +185,14 @@ void PhysicsSystem::RunStep( float deltaTime )
 void PhysicsSystem::MoveAllDynamicObjects(float deltaTime)
 {
 	int numObjects = static_cast<int>(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION].size());
+
 	for (int objectIndex = 0; objectIndex < numObjects; objectIndex++)
 	{
 		if(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][objectIndex] != nullptr)
 		{
 			m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][objectIndex]->Move(deltaTime);
 		}
+
 	}
 }
 

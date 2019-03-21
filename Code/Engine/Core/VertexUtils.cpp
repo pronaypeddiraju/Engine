@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/Capsule2D.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/Vec2.hpp"
@@ -146,6 +147,19 @@ void AddVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& box, co
 	vertexArray.push_back(Vertex_PCU(boxBottomLeft, color, uvAtMins));
 	vertexArray.push_back(Vertex_PCU(boxBottomRight, color, Vec2(uvAtMaxs.x, uvAtMins.y)));
 	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
+}
+
+void AddVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArray, const Capsule2D& capsule, const Rgba& color )
+{
+	AddVertsForDisc2D(vertexArray, capsule.m_start, capsule.m_radius, color);
+
+	if(capsule.m_start != capsule.m_end)
+	{
+		OBB2 box = OBB2(capsule.GetCenter(), Vec2(capsule.m_radius * 2, capsule.m_radius * 2), (capsule.m_start - capsule.m_end).GetAngleDegrees());
+		AddVertsForOBB2D(vertexArray, box, color);
+
+		AddVertsForDisc2D(vertexArray, capsule.m_end, capsule.m_radius, color);
+	}
 }
 
 void AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba& color, float thickness )

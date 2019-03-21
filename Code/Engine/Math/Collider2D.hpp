@@ -2,6 +2,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 //Engine Systems
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/Capsule2D.hpp"
 #include "Engine/Math/Disc2D.hpp"
 #include "Engine/Math/OBB2.hpp"
 
@@ -73,4 +74,24 @@ public:
 
 public:
 	OBB2						m_localShape;
+};
+
+class CapsuleCollider2D: public Collider2D
+{
+public:
+	explicit CapsuleCollider2D ( Vec2 start, Vec2 end, float radius );
+	~CapsuleCollider2D();
+
+	OBB2						GetLocalShape() const;
+	OBB2						GetWorldShape() const;
+
+	const Capsule2D&			GetReferenceShape() const;
+
+	float						GetCapsuleRadius() const;
+
+public:
+	Capsule2D					m_referenceCapsule;
+
+	OBB2						m_localShape;
+	float						m_radius;
 };

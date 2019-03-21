@@ -14,6 +14,9 @@ Capsule2D::Capsule2D( Vec2 pos )
 {
 	m_start = pos;
 	m_end = pos;
+
+	m_radius = 0.f;
+	m_rotationDegrees = 0.f;
 }
 
 Capsule2D::Capsule2D( Vec2 center, float radius )
@@ -21,6 +24,8 @@ Capsule2D::Capsule2D( Vec2 center, float radius )
 	m_start = center;
 	m_end = center;
 	m_radius = radius;
+
+	m_rotationDegrees = 0.f;
 }
 
 Capsule2D::Capsule2D( Vec2 p0, Vec2 p1, float radius )
@@ -28,6 +33,8 @@ Capsule2D::Capsule2D( Vec2 p0, Vec2 p1, float radius )
 	m_start = p0;
 	m_end = p1;
 	m_radius = radius;
+
+	m_rotationDegrees = Vec2(m_start - m_end).GetAngleDegrees();
 }
 
 Capsule2D::~Capsule2D()
@@ -69,6 +76,15 @@ Vec2 Capsule2D::GetClosestPoint( Vec2 worldPoint )
 {
 	Vec2 closestPoint = GetClosestPointOnCapsule2D(worldPoint, m_start, m_end, m_radius);
 	return closestPoint;
+}
+
+Vec2 Capsule2D::GetCenter() const
+{
+	Vec2 disp = m_start - m_end;
+	Vec2 norm = disp.GetNormalized();
+	float distance = disp.GetLength();
+
+	return m_end + (norm * distance * 0.5f);
 }
 
 AABB2 Capsule2D::GetBoundingAABB() const

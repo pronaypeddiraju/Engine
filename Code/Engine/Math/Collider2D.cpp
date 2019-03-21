@@ -90,3 +90,40 @@ OBB2 BoxCollider2D::GetWorldShape() const
 	box.Translate(m_rigidbody->GetPosition());
 	return box;
 }
+
+CapsuleCollider2D::CapsuleCollider2D( Vec2 start, Vec2 end, float radius )
+{
+	m_referenceCapsule = Capsule2D(start, end, radius);
+	
+	Vec2 disp = start - end;
+	float dist = disp.GetLength();
+
+	m_localShape = OBB2( Vec2::ZERO, Vec2(0.f, dist * 0.5f), radius);
+}
+
+CapsuleCollider2D::~CapsuleCollider2D()
+{
+
+}
+
+OBB2 CapsuleCollider2D::GetLocalShape() const
+{
+	return m_localShape;
+}
+
+OBB2 CapsuleCollider2D::GetWorldShape() const
+{
+	OBB2 box = GetLocalShape();
+	box.Translate(m_rigidbody->GetPosition());
+	return box;
+}
+
+const Capsule2D& CapsuleCollider2D::GetReferenceShape() const
+{
+	return m_referenceCapsule;
+}
+
+float CapsuleCollider2D::GetCapsuleRadius() const
+{
+	return m_radius;
+}

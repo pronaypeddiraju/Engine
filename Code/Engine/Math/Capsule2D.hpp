@@ -28,15 +28,17 @@ public:
 	// Collision Utility
 	bool		Contains( Vec2 worldPoint ); 
 	Vec2		GetClosestPoint( Vec2 worldPoint ); 
+	Vec2		GetCenter() const;
 
 	// Useful if you want to use AABB2 as a "broad phase" & "mid phase" check
 	// like checking if something fell outside the world
 	AABB2		GetBoundingAABB() const; 
 
 public:
-	Vec2 m_start         = Vec2::ZERO;
-	Vec2 m_end           = Vec2::ZERO; 
-	float m_radius       = 0.0f; 
+	Vec2 m_start					= Vec2::ZERO;
+	Vec2 m_end						= Vec2::ZERO; 
+	float m_radius					= 0.0f; 
 	// Note: defaults basically make a "point" at 0; 
+	float m_rotationDegrees			= 0.0f;
 };
 

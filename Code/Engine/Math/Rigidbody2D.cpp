@@ -56,7 +56,6 @@ void Rigidbody2D::Move( float deltaTime )
 	//Apply the acceleration
 	m_velocity += acc * deltaTime;
 	m_transform.m_position += m_velocity * deltaTime;
-
 }
 
 void Rigidbody2D::DebugRender( RenderContext* renderContext, const Rgba& color ) const
@@ -88,6 +87,13 @@ void Rigidbody2D::DebugRender( RenderContext* renderContext, const Rgba& color )
 		BoxCollider2D* collider = reinterpret_cast<BoxCollider2D*>(m_collider);
 
 		AddVertsForBoundingBox(verts, collider->GetWorldShape(), color, 0.5f);
+	}
+	break;
+	case COLLIDER_CAPSULE:
+	{
+		CapsuleCollider2D* collider = reinterpret_cast<CapsuleCollider2D*>(m_collider);
+
+		AddVertsForCapsule2D(verts, collider->GetReferenceShape(), color);
 	}
 	break;
 	case NUM_COLLIDER_TYPES:

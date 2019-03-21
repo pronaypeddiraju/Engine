@@ -209,6 +209,7 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 				bestThisPlane = thisPlane;
 			}
 			
+			/*
 			//Update the feature point
 			if(otherFromThis < bestDistToA)
 			{
@@ -216,6 +217,7 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 				bestPointToA = cornerOfOther;
 				bestThisPlane = thisPlane;
 			}
+			*/
 
 			//Get the largest negative value as distance to push out of
 			if(otherFromThis < 0)
