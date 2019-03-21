@@ -69,3 +69,24 @@ Disc2D Disc2DCollider::GetWorldShape() const
 	return disc;
 }
 
+BoxCollider2D::BoxCollider2D( Vec2 center, Vec2 size /*= Vec2::ZERO*/, float rotationDegrees /*= 0.0f */ )
+{
+	m_localShape = OBB2(center, size, rotationDegrees);
+}
+
+BoxCollider2D::~BoxCollider2D()
+{
+
+}
+
+OBB2 BoxCollider2D::GetLocalShape() const
+{
+	return m_localShape;
+}
+
+OBB2 BoxCollider2D::GetWorldShape() const
+{
+	OBB2 box = GetLocalShape();
+	box.Translate(m_rigidbody->GetPosition());
+	return box;
+}

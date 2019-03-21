@@ -11,6 +11,7 @@ typedef unsigned int uint;
 class Collider2D;
 class AABB2Collider;
 class Disc2DCollider;
+class BoxCollider2D;
 class OBB2;
 class Capsule2D;
 struct AABB2;
@@ -27,10 +28,11 @@ typedef std::function<bool(Collision2D* out, Collider2D* a, Collider2D* b)> Coll
 // 2D arrays are [Y][X] remember
 extern CollisionCheck2DCallback COLLISION_LOOKUP_TABLE[][COLLIDER2D_COUNT];
 
-bool				CheckAABB2ByAABB2(Collision2D* out, Collider2D* a, Collider2D* b);
-bool				CheckAABB2ByDisc(Collision2D* out, Collider2D* a, Collider2D* b);
-bool				CheckDiscByDisc(Collision2D* out, Collider2D* a, Collider2D* b);
-bool				CheckDiscByAABB2(Collision2D* out, Collider2D* a, Collider2D* b);
+bool				CheckAABB2ByAABB2(Collision2D* out, Collider2D* a, Collider2D* b );
+bool				CheckAABB2ByDisc(Collision2D* out, Collider2D* a, Collider2D* b );
+bool				CheckDiscByDisc(Collision2D* out, Collider2D* a, Collider2D* b );
+bool				CheckDiscByAABB2(Collision2D* out, Collider2D* a, Collider2D* b );
+bool				CheckOBB2ByOBB2(Collision2D* out, Collider2D* a, Collider2D* b);
 bool				GetCollisionInfo( Collision2D *out, Collider2D * a, Collider2D *b );
 
 //Manifold Generation
@@ -39,11 +41,17 @@ bool				GetManifold( Manifold2D *out, AABB2Collider const &obj0, Disc2DCollider 
 bool				GetManifold( Manifold2D *out, Disc2DCollider const &obj0, Disc2DCollider const &obj1 );
 bool				GetManifold( Manifold2D *out, Disc2DCollider const &disc, AABB2Collider const &box );
 
-bool				GetManifold( Manifold2D *out, OBB2 const &a, OBB2 const &b, float radius );
-bool				GetManifold( Manifold2D *out, OBB2 const &a, OBB2 const &b );
+
+//OBB to OBB and Pillbox to Pillbox collisions
+bool				GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &b );
+bool				GetManifold( Manifold2D *out, BoxCollider2D const &a, float aRadius, BoxCollider2D const &b, float bRadius );
+
+//Capsules and OBBs Collision Manifolds
 bool				GetManifold( Manifold2D *out, Capsule2D const &a, Capsule2D const &b );
 bool				GetManifold( Manifold2D *out, OBB2 const &a, Capsule2D const &b );
+bool				GetManifold( Manifold2D *out, Capsule2D const &a, OBB2 const &b );
 
 bool				IsDiscInBox( Manifold2D* out, const Vec2 &discCentre, const AABB2& boxShape, float radius );
+
 //Manifold Helpers
 void				GenerateManifoldBoxToBox( Manifold2D* manifold, Vec2 const &min, Vec2 const &max );

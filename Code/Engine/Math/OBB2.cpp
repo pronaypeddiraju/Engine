@@ -2,6 +2,7 @@
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Plane2D.hpp"
+#include "Engine/Math/Segment2D.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 OBB2::OBB2()
@@ -92,6 +93,14 @@ void OBB2::GetCorners( Vec2* out ) const
 	out[1] = GetTopRight();
 	out[2] = GetBottomRight();
 	out[3] = GetBottomLeft();
+}
+
+void OBB2::GetSides( Segment2D* out ) const
+{
+	out[0] = Segment2D(GetTopLeft(), GetTopRight());
+	out[1] = Segment2D(GetTopRight(), GetBottomRight());
+	out[2] = Segment2D(GetBottomRight(), GetBottomLeft());
+	out[3] = Segment2D(GetBottomLeft(), GetTopLeft());
 }
 
 bool OBB2::Contains( Vec2 worldPoint ) const

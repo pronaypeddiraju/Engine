@@ -5,6 +5,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 class Plane2D;
+class Segment2D;
 
 //------------------------------------------------------------------------------------------------------------------------------
 class OBB2
@@ -42,6 +43,7 @@ public:
 
 	void GetPlanes(Plane2D* out) const;
 	void GetCorners(Vec2* out) const;
+	void GetSides(Segment2D* out) const;
 
 	bool Contains( Vec2 worldPoint ) const;
 	Vec2 GetClosestPoint( Vec2 worldPoint ) const;

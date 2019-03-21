@@ -17,7 +17,7 @@ Plane2D::Plane2D( Vec2 normal, float distanceToOrigin )
 float Plane2D::GetDistance( Vec2 point ) const
 {
 	float distance = GetDotProduct(point, m_normal);
-	distance -= m_distance;
+	distance += m_distance;
 	return distance;
 }
 

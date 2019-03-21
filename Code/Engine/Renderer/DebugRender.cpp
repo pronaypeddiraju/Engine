@@ -43,6 +43,7 @@ void DebugRender::Shutdown()
 
 void DebugRender::Update( float deltaTime )
 {
+	UNUSED(deltaTime);
 }
 
 void DebugRender::DebugRenderToScreen() const

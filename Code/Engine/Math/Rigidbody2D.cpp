@@ -83,6 +83,13 @@ void Rigidbody2D::DebugRender( RenderContext* renderContext, const Rgba& color )
 		AddVertsForRing2D(verts, collider->GetWorldShape().GetCentre(), collider->GetWorldShape().GetRadius(), 0.5f, color);
 	}
 	break;
+	case COLLIDER_BOX:
+	{
+		BoxCollider2D* collider = reinterpret_cast<BoxCollider2D*>(m_collider);
+
+		AddVertsForBoundingBox(verts, collider->GetWorldShape(), color, 0.5f);
+	}
+	break;
 	case NUM_COLLIDER_TYPES:
 	break;
 	default:

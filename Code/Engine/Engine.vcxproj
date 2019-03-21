@@ -196,6 +196,7 @@
     <ClCompile Include="Input\XboxController.cpp" />
     <ClCompile Include="Math\AABB2.cpp" />
     <ClCompile Include="Math\AABB3.cpp" />
+    <ClCompile Include="Math\Capsule2D.cpp" />
     <ClCompile Include="Math\Collider2D.cpp" />
     <ClCompile Include="Math\CollisionHandler.cpp" />
     <ClCompile Include="Math\Disc2D.cpp" />
@@ -212,6 +213,7 @@
     <ClCompile Include="Math\RandomNumberGenerator.cpp" />
     <ClCompile Include="Math\Rigidbody2D.cpp" />
     <ClCompile Include="Math\RigidBodyBucket.cpp" />
+    <ClCompile Include="Math\Segment2D.cpp" />
     <ClCompile Include="Math\Transform2.cpp" />
     <ClCompile Include="Math\Vec2.cpp" />
     <ClCompile Include="Math\Vec3.cpp" />
@@ -268,6 +270,7 @@
     <ClInclude Include="Input\XboxController.hpp" />
     <ClInclude Include="Math\AABB2.hpp" />
     <ClInclude Include="Math\AABB3.hpp" />
+    <ClInclude Include="Math\Capsule2D.hpp" />
     <ClInclude Include="Math\Collider2D.hpp" />
     <ClInclude Include="Math\CollisionHandler.hpp" />
     <ClInclude Include="Math\Disc2D.hpp" />
@@ -286,6 +289,7 @@
     <ClInclude Include="Math\RandomNumberGenerator.hpp" />
     <ClInclude Include="Math\Rigidbody2D.hpp" />
     <ClInclude Include="Math\RigidBodyBucket.hpp" />
+    <ClInclude Include="Math\Segment2D.hpp" />
     <ClInclude Include="Math\Transform2.hpp" />
     <ClInclude Include="Math\Vec2.hpp" />
     <ClInclude Include="Math\Vec3.hpp" />

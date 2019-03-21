@@ -2,6 +2,7 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vertex_PCU.hpp"
 #include "Engine/Renderer/Rgba.hpp"
@@ -126,6 +127,27 @@ void AddVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, 
 	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
 }
 
+void AddVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& box, const Rgba& color, const Vec2& uvAtMins /*= Vec2(0.f,1.f)*/, const Vec2& uvAtMaxs /*= Vec2(1.f,0.f) */ )
+{
+	Vec2 position2D;
+	position2D = box.GetBottomLeft();
+	Vec3 boxBottomLeft = Vec3(position2D.x, position2D.y, 0.f);
+	position2D = box.GetBottomRight();
+	Vec3 boxBottomRight = Vec3(position2D.x, position2D.y, 0.f);
+	position2D = box.GetTopLeft();
+	Vec3 boxTopLeft =  Vec3(position2D.x, position2D.y, 0.f);
+	position2D = box.GetTopRight();
+	Vec3 boxTopRight = Vec3(position2D.x, position2D.y, 0.f);
+
+	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
+	vertexArray.push_back(Vertex_PCU(boxTopLeft, color, Vec2(uvAtMins.x, uvAtMaxs.y)));
+	vertexArray.push_back(Vertex_PCU(boxBottomLeft, color, uvAtMins));
+
+	vertexArray.push_back(Vertex_PCU(boxBottomLeft, color, uvAtMins));
+	vertexArray.push_back(Vertex_PCU(boxBottomRight, color, Vec2(uvAtMaxs.x, uvAtMins.y)));
+	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
+}
+
 void AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba& color, float thickness )
 {
 	//Left Line
@@ -136,6 +158,18 @@ void AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const AABB2& 
 	AddVertsForLine2D(vertexArray, box.m_maxBounds, Vec2(box.m_maxBounds.x, box.m_minBounds.y), thickness, color);
 	//Bottom Line
 	AddVertsForLine2D(vertexArray, Vec2(box.m_maxBounds.x, box.m_minBounds.y), box.m_minBounds, thickness, color);
+}
+
+void AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const OBB2& box, const Rgba& color, float thickness )
+{
+	//Left Line
+	AddVertsForLine2D(vertexArray, box.GetBottomLeft(), box.GetTopLeft(), thickness, color);
+	//Top line
+	AddVertsForLine2D(vertexArray, box.GetTopLeft(), box.GetTopRight(), thickness, color);
+	//Right line
+	AddVertsForLine2D(vertexArray, box.GetTopRight(), box.GetBottomRight(), thickness, color);
+	//Bottom Line
+	AddVertsForLine2D(vertexArray, box.GetBottomRight(), box.GetBottomLeft(), thickness, color);
 }
 
 //Move a vertex
