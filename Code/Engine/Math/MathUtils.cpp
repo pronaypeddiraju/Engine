@@ -250,22 +250,12 @@ bool DoesDiscOverlapLine2D( const Vec2& discCenter, float discRadius, const Vec2
 //------------------------------------------------------------------------------------------------------------------------------
 Vec2 GetClosestPointOnLine2D( const Vec2& referencePos, const Vec2& pointOnLine, const Vec2& anotherPointOnLine )
 {
-	Vec2 dispToPoint1 = referencePos - pointOnLine;
-	Vec2 dispToPoint2 = referencePos - anotherPointOnLine;
-	Vec2 dispBetweenPoints = pointOnLine - anotherPointOnLine;
+	Vec2 dispToStartPoint = referencePos - pointOnLine;
+	Vec2 dispBetweenPoints = anotherPointOnLine - pointOnLine;
 	Vec2 projection = Vec2::ZERO;
 	Vec2 closestPoint = Vec2::ZERO;
 
-	if(dispToPoint1.GetLengthSquared() < dispToPoint2.GetLengthSquared())
-	{
-		//pointOnLine is closest point
-		projection = GetProjectedVector(dispToPoint1, dispBetweenPoints);
-	}
-	else
-	{
-		//anotherPointOnLine is closest point
-		projection = GetProjectedVector(dispToPoint2, dispBetweenPoints);
-	}
+	projection = GetProjectedVector(dispToStartPoint, dispBetweenPoints);
 
 	closestPoint = pointOnLine + projection;
 
@@ -286,14 +276,14 @@ Vec2 GetClosestPointOnLineSegment2D( const Vec2& referencePos, const Vec2& lineS
 		//We are in Voronoi region 1, point is before line segment start
 		return lineStart;
 	}
-	else if(GetDotProduct(lineSegment, vectorToEndPoint))
+	else if(GetDotProduct(lineSegment, vectorToEndPoint) > 0)
 	{
 		//We are in Voronoi region 2, point is after line segment start
 		return lineEnd;
 	}
 	else
 	{
-		Vec2 closestPoint = GetClosestPointOnLine2D(referencePos, vectorToStartPoint, vectorToEndPoint);
+		Vec2 closestPoint = GetClosestPointOnLine2D(referencePos, lineStart, lineEnd);
 		return closestPoint;
 	}
 }

@@ -149,16 +149,18 @@ void AddVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& box, co
 	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
 }
 
-void AddVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArray, const Capsule2D& capsule, const Rgba& color )
+void AddVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& capsuleBox, float radius, const Rgba& color )
 {
-	AddVertsForDisc2D(vertexArray, capsule.m_start, capsule.m_radius, color);
+	AddVertsForDisc2D(vertexArray, capsuleBox.GetTopLeft(), radius, color);
 
-	if(capsule.m_start != capsule.m_end)
+	if(capsuleBox.GetTopLeft() != capsuleBox.GetBottomLeft())
 	{
-		OBB2 box = OBB2(capsule.GetCenter(), Vec2(capsule.m_radius * 2, capsule.m_radius * 2), (capsule.m_start - capsule.m_end).GetAngleDegrees());
+		Vec2 Disp = capsuleBox.GetTopLeft() - capsuleBox.GetBottomLeft();
+		float height = Disp.GetLength();
+		OBB2 box = OBB2(capsuleBox.GetCenter(), Vec2(radius * 2.f, height), Disp.GetAngleDegrees() - 90.f);
 		AddVertsForOBB2D(vertexArray, box, color);
 
-		AddVertsForDisc2D(vertexArray, capsule.m_end, capsule.m_radius, color);
+		AddVertsForDisc2D(vertexArray, capsuleBox.GetBottomLeft(), radius, color);
 	}
 }
 

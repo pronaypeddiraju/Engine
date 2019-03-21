@@ -8,12 +8,12 @@
 
 CollisionCheck2DCallback COLLISION_LOOKUP_TABLE[COLLIDER2D_COUNT][COLLIDER2D_COUNT] = {
 	/*******| aabb2 | disc  | capsl | obb2 | line  | point  */
-	/*aabb2*/ { CheckAABB2ByAABB2, CheckAABB2ByDisc, nullptr,           nullptr,			nullptr, nullptr },
-	/*disc */ { CheckDiscByAABB2,  CheckDiscByDisc,  nullptr,           nullptr,			nullptr, nullptr },
-	/*capsl*/ { nullptr,           nullptr,          nullptr,           nullptr,			nullptr, nullptr },
-	/*obb2*/  { nullptr,           nullptr,          nullptr,           CheckOBB2ByOBB2,	nullptr, nullptr },
-	/*line*/  { nullptr,           nullptr,          nullptr,           nullptr,			nullptr, nullptr },
-	/*point*/ { nullptr,           nullptr,          nullptr,           nullptr,			nullptr, nullptr },
+	/*aabb2*/ { CheckAABB2ByAABB2, CheckAABB2ByDisc, nullptr,				nullptr,			nullptr, nullptr },
+	/*disc */ { CheckDiscByAABB2,  CheckDiscByDisc,  nullptr,				nullptr,			nullptr, nullptr },
+	/*capsl*/ { nullptr,           nullptr,          CheckCapsuleByCapsule, CheckCapsuleByOBB2,	nullptr, nullptr },
+	/*obb2*/  { nullptr,           nullptr,          CheckOBB2ByCapsule,	CheckOBB2ByOBB2,	nullptr, nullptr },
+	/*line*/  { nullptr,           nullptr,          nullptr,				nullptr,			nullptr, nullptr },
+	/*point*/ { nullptr,           nullptr,          nullptr,				nullptr,			nullptr, nullptr },
 }; 
 
 //------------------------------------------------------------------------
@@ -157,6 +157,164 @@ bool GetManifold( Manifold2D *out, Disc2DCollider const &disc, AABB2Collider con
 	}
 }
 
+bool GetManifold( Manifold2D *out, OBB2 const &boxA, OBB2 const &boxB)
+{
+	Plane2D planesOfThis[4];    // p0
+	Plane2D planesOfOther[4];   // p1
+
+	Vec2 cornersOfThis[4];     // c0
+	Vec2 cornersOfOther[4];    // c1
+
+	boxA.GetPlanes( planesOfThis ); 
+	boxA.GetCorners( cornersOfThis ); 
+
+	boxB.GetPlanes( planesOfOther ); 
+	boxB.GetCorners( cornersOfOther ); 
+
+	int inFrontOfThis = 0;
+	int inFrontOfOther = 0;
+
+	//Data for the manifold generation
+	float bestDistToA = 100000; 
+	Vec2 bestPointToA;
+
+	float bestDistToB = 100000; 
+	Vec2 bestPointToB;
+	/*
+	float smallestDistance = -100000;
+	Plane2D planeToPushOutOf;
+	*/
+
+	Plane2D bestThisPlane;
+	Plane2D bestOtherPlane;
+
+	Vec2 worstCornerToPlane[4];
+	float worstDistancesToThis[4];
+	Vec2 worstCornerToOtherPlane[4];
+	float worstDistancesToOther[4];
+
+	for(int planeIndex = 0; planeIndex < 4;planeIndex++)
+	{
+		Plane2D const &thisPlane = planesOfThis[planeIndex];
+		Plane2D const &otherPlane = planesOfOther[planeIndex];
+
+		inFrontOfThis = 0;
+		inFrontOfOther = 0;
+
+		for(int cornerIndex = 0; cornerIndex < 4; cornerIndex++)
+		{
+			Vec2 const &cornerOfThis = cornersOfThis[cornerIndex]; 
+			Vec2 const &cornerOfOther = cornersOfOther[cornerIndex];
+
+			float otherFromThis = thisPlane.GetDistance( cornerOfOther ); 
+			float thisFromOther = otherPlane.GetDistance( cornerOfThis ); 
+
+
+			if(cornerIndex == 0)
+			{
+				bestDistToA = otherFromThis;
+				bestPointToA = cornerOfOther;
+				bestThisPlane = thisPlane;
+
+				worstCornerToPlane[planeIndex] = cornerOfOther;
+				worstDistancesToThis[planeIndex] = otherFromThis;
+
+				bestDistToB = thisFromOther;
+				bestPointToB = cornerOfThis;
+				bestOtherPlane = otherPlane;
+
+				worstCornerToOtherPlane[planeIndex] = cornerOfThis;
+				worstDistancesToOther[planeIndex] = thisFromOther;
+			}
+
+			//Update the feature point
+			if(otherFromThis < bestDistToA)
+			{
+				bestDistToA = otherFromThis;
+				bestPointToA = cornerOfOther;
+				bestThisPlane = thisPlane;
+
+				worstCornerToPlane[planeIndex] = cornerOfOther;
+				worstDistancesToThis[planeIndex] = otherFromThis;
+			}
+
+			//Update the feature point for other plane
+			if(thisFromOther < bestDistToB)
+			{
+				bestDistToB = thisFromOther;
+				bestPointToB = cornerOfThis;
+				bestOtherPlane = otherPlane;
+
+				worstCornerToOtherPlane[planeIndex] = cornerOfThis;
+				worstDistancesToOther[planeIndex] = thisFromOther;
+			}
+
+			/*
+			//Get the largest negative value as distance to push out of
+			if(otherFromThis < 0)
+			{
+			if(otherFromThis > smallestDistance)
+			{
+			smallestDistance = otherFromThis;
+			planeToPushOutOf = thisPlane;
+			}
+			}
+			*/
+
+			inFrontOfThis += (otherFromThis >= 0.0f) ? 1 : 0; 
+			inFrontOfOther += (thisFromOther >= 0.0f) ? 1 : 0; 
+		}
+
+		//We are not intersecting if there are exactly 4 in front of either plane. Early out bro
+		if ((inFrontOfThis == 4) || (inFrontOfOther == 4)) {
+			return false;
+		}
+	}
+
+	float bestCaseThis = 0.f;
+	float bestCaseOther = 0.f;
+	int bestCaseIndexThis = 0;
+	int bestCaseIndexOther = 0;
+
+	for(int worstCaseIndex = 0; worstCaseIndex < 4; worstCaseIndex++)
+	{
+		if(worstCaseIndex == 0)
+		{
+			bestCaseThis = worstDistancesToThis[worstCaseIndex];
+			bestCaseOther = worstDistancesToOther[worstCaseIndex];
+		}
+
+		if(worstDistancesToThis[worstCaseIndex] > bestCaseThis)
+		{
+			bestCaseThis = worstDistancesToThis[worstCaseIndex];
+			bestCaseIndexThis = worstCaseIndex;
+		}
+
+		if(worstDistancesToOther[worstCaseIndex] > bestCaseOther)
+		{
+			bestCaseOther = worstDistancesToOther[worstCaseIndex];
+			bestCaseIndexOther = worstCaseIndex;
+		}
+	}
+
+	//Check which of the 2 are larger (smaller -ve number)
+	if(bestCaseOther > bestCaseThis)
+	{
+		out->m_penetration = bestCaseOther * -1.f;
+		out->m_normal = planesOfOther[bestCaseIndexOther].m_normal;
+	}
+	else
+	{
+		out->m_penetration = bestCaseThis * -1.f;
+		out->m_normal = planesOfThis[bestCaseIndexThis].m_normal * -1.f;
+	}
+
+	//We have reached this point. There's an intersection for sure
+	//out here
+
+	return true; 
+}
+
 bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &b )
 {
 	OBB2 boxA = a.GetWorldShape();
@@ -274,8 +432,8 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 		}
 	}
 
-	float bestCaseThis;
-	float bestCaseOther;
+	float bestCaseThis = 0.f;
+	float bestCaseOther = 0.f;
 	int bestCaseIndexThis = 0;
 	int bestCaseIndexOther = 0;
 
@@ -392,6 +550,104 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, float aRadius, BoxCol
 		out->m_penetration = aRadius + bRadius - distance;
 		return true;
 	}
+}
+
+bool GetManifold( Manifold2D *out, CapsuleCollider2D const &a, CapsuleCollider2D const &b )
+{
+	//Call the GetManifold with 2 BoxColliders and radius
+	return GetManifold(out, a.GetWorldShape(), a.GetCapsuleRadius(), b.GetWorldShape(), b.GetCapsuleRadius());
+}
+
+bool GetManifold( Manifold2D *out, OBB2 const &a, float aRadius, OBB2 const &b, float bRadius )
+{
+	if (GetManifold( out, a, b )) 
+	{
+		out->m_penetration += (aRadius + bRadius); 
+		return true;
+	}
+
+	Segment2D sidesA[4];
+	a.GetSides(sidesA); 
+	Segment2D sidesB[4];
+	b.GetSides(sidesB); 
+
+	Vec2 cornersA[4];
+	a.GetCorners(cornersA); 
+	Vec2 cornersB[4];
+	b.GetCorners(cornersB); 
+
+	float bestMatch = 10000000; 
+	// float bestMatchToB = 10000000; 
+
+	Vec2 bestA;
+	Vec2 bestB;
+
+	for(int sideIndex = 0; sideIndex < 4; sideIndex++)
+	{
+		Segment2D const &sideA = sidesA[sideIndex];
+		Segment2D const &sideB = sidesB[sideIndex];
+
+		for(int cornerIndex = 0; cornerIndex < 4; cornerIndex++)
+		{
+			Vec2 const &cornerA = cornersA[cornerIndex];
+			Vec2 const &cornerB = cornersB[cornerIndex];
+
+			Vec2 closestA = sideA.GetClosestPoint(cornerB); 
+			Vec2 closestB = sideB.GetClosestPoint(cornerA); 
+
+			// distances are...
+			// closestA to cornerB
+			// closestB to cornerA
+			float lengthSquared = (closestA - cornerB).GetLengthSquared() ;
+			if (lengthSquared < bestMatch) {
+				bestA = closestA; 
+				bestB = cornerB; 
+				bestMatch = lengthSquared;
+			}
+
+			lengthSquared = (closestB - cornerA).GetLengthSquared() ;
+			if (lengthSquared < bestMatch) {
+				bestA = cornerA; 
+				bestB = closestB; 
+				bestMatch = lengthSquared; 
+			}
+		}
+	}
+
+
+	// two closets points are bestA, bestB; 
+	// normal is directoin between them;
+	// penetration is sum of radius - distance; 
+
+	float distance = GetDistance2D(bestA, bestB);
+	if(distance > (aRadius + bRadius))
+	{
+		return false;
+	}
+	else
+	{
+		Vec2 disp = bestB - bestA;
+		if(disp.GetLengthSquared() < 0.000001)
+		{
+			out->m_normal = Vec2(0.f, 1.f);
+		}
+		else
+		{
+			out->m_normal = disp.GetNormalized() * -1.f;
+		}
+		out->m_penetration = (aRadius + bRadius) - distance;
+		return true;
+	}
+}
+
+bool GetManifold( Manifold2D *out, BoxCollider2D const &a, CapsuleCollider2D const &b )
+{
+	return GetManifold(out, a.GetWorldShape(), 0.f, b.GetWorldShape(), b.GetCapsuleRadius());
+}
+
+bool GetManifold( Manifold2D *out, CapsuleCollider2D const &a, BoxCollider2D const &b )
+{
+	return GetManifold(out, a.GetWorldShape(), a.GetCapsuleRadius(), b.GetWorldShape(), 0.f);
 }
 
 bool IsDiscInBox(Manifold2D* out, const Vec2 &discCentre, const AABB2& boxShape, float radius)
@@ -615,6 +871,81 @@ bool CheckOBB2ByOBB2( Collision2D* out, Collider2D* a, Collider2D* b )
 
 	Manifold2D manifold;
 	bool result = GetManifold(&manifold, *boxA, *boxB);
+
+	if(result)
+	{
+		//out here
+		out->m_Obj = a;
+		out->m_otherObj = b;
+		out->m_manifold = manifold;
+		return true;
+	}
+	else
+	{
+		out->m_Obj = nullptr;
+		out->m_otherObj = nullptr;
+		return false;
+	}
+}
+
+bool CheckCapsuleByCapsule( Collision2D * out, Collider2D * a, Collider2D * b )
+{
+	//Capsule vs Capsule
+	CapsuleCollider2D* capA = reinterpret_cast<CapsuleCollider2D*>(a);
+	CapsuleCollider2D* capB = reinterpret_cast<CapsuleCollider2D*>(b);
+
+	Manifold2D manifold;
+	bool result = GetManifold(&manifold, *capA, *capB);
+
+	if(result)
+	{
+		//out here
+		out->m_Obj = a;
+		out->m_otherObj = b;
+		out->m_manifold = manifold;
+		return true;
+	}
+	else
+	{
+		out->m_Obj = nullptr;
+		out->m_otherObj = nullptr;
+		return false;
+	}
+}
+
+bool CheckCapsuleByOBB2( Collision2D* out, Collider2D* a, Collider2D* b )
+{
+	//Capsule vs OBB2
+	CapsuleCollider2D* capA = reinterpret_cast<CapsuleCollider2D*>(a);
+	BoxCollider2D* boxB = reinterpret_cast<BoxCollider2D*>(b);
+
+	Manifold2D manifold;
+	bool result = GetManifold(&manifold, *capA, *boxB);
+
+	if(result)
+	{
+		//out here
+		out->m_Obj = a;
+		out->m_otherObj = b;
+		out->m_manifold = manifold;
+		return true;
+	}
+	else
+	{
+		out->m_Obj = nullptr;
+		out->m_otherObj = nullptr;
+		return false;
+	}
+}
+
+bool CheckOBB2ByCapsule( Collision2D* out, Collider2D* a, Collider2D* b )
+{
+	//OBB2 vs Capsule
+	BoxCollider2D* boxA = reinterpret_cast<BoxCollider2D*>(a);
+	CapsuleCollider2D* capB = reinterpret_cast<CapsuleCollider2D*>(b);
+
+	Manifold2D manifold;
+	bool result = GetManifold(&manifold, *boxA, *capB);
 
 	if(result)
 	{

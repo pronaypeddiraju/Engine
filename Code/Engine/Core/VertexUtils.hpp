@@ -19,7 +19,7 @@ void			AddVertsForLine2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& star
 void			AddVertsForRing2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, float thickness, const Rgba& color, int numSides = 64 );
 void			AddVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba& color, const Vec2& uvAtMins = Vec2(0.f,1.f), const Vec2& uvAtMaxs = Vec2(1.f,0.f) );
 void			AddVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& box, const Rgba& color, const Vec2& uvAtMins = Vec2(0.f,1.f), const Vec2& uvAtMaxs = Vec2(1.f,0.f) );
-void			AddVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArray, const Capsule2D& capsule, const Rgba& color);
+void			AddVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& capsule, float radius, const Rgba& color);
 
 void			AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba& color, float thickness);
 void			AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const OBB2& box, const Rgba& color, float thickness);

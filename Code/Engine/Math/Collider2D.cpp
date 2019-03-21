@@ -98,7 +98,10 @@ CapsuleCollider2D::CapsuleCollider2D( Vec2 start, Vec2 end, float radius )
 	Vec2 disp = start - end;
 	float dist = disp.GetLength();
 
-	m_localShape = OBB2( Vec2::ZERO, Vec2(0.f, dist * 0.5f), radius);
+	float rotationDegrees = disp.GetAngleDegrees();
+
+	m_localShape = OBB2( Vec2::ZERO, Vec2(0.f , dist), rotationDegrees - 90.f);
+	m_radius = radius;
 }
 
 CapsuleCollider2D::~CapsuleCollider2D()
