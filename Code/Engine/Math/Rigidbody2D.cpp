@@ -60,6 +60,11 @@ void Rigidbody2D::Move( float deltaTime )
 
 void Rigidbody2D::DebugRender( RenderContext* renderContext, const Rgba& color ) const
 {
+	if(this == nullptr)
+	{
+		return;
+	}
+
 	eColliderType2D type = m_collider->GetType();
 
 	std::vector<Vertex_PCU> verts;

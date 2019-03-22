@@ -38,6 +38,8 @@ void Camera::Translate2D( const Vec2& translation2D )
 {
 	m_orthoBottomLeft += translation2D;
 	m_orthoTopRight += translation2D;
+
+	SetOrthoView(m_orthoBottomLeft, m_orthoTopRight);
 }
 
 void Camera::SetPerspectiveProjection( float FieldOfView, float nearZ, float farZ, float aspectRatio)
