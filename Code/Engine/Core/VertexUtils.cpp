@@ -157,11 +157,31 @@ void AddVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& cap
 	{
 		Vec2 Disp = capsuleBox.GetTopLeft() - capsuleBox.GetBottomLeft();
 		float height = Disp.GetLength();
-		OBB2 box = OBB2(capsuleBox.GetCenter(), Vec2(radius * 2.f, height), Disp.GetAngleDegrees() + 90.f);
+		OBB2 box = OBB2(capsuleBox.GetCenter(), Vec2(radius * 2.f, height), Disp.GetAngleDegrees() - 90.f);
 		AddVertsForOBB2D(vertexArray, box, color);
 
 		AddVertsForDisc2D(vertexArray, capsuleBox.GetBottomLeft(), radius, color);
 	}
+}
+
+void AddVertsForWireCapsule2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& capsuleBox, float radius, const Rgba& color, float thickness )
+{
+	AddVertsForRing2D(vertexArray, capsuleBox.GetTopLeft(), radius, thickness, color);
+
+	if(capsuleBox.GetTopLeft() != capsuleBox.GetBottomLeft())
+	{
+		Vec2 Disp = capsuleBox.GetTopLeft() - capsuleBox.GetBottomLeft();
+		float height = Disp.GetLength();
+		OBB2 box = OBB2(capsuleBox.GetCenter(), Vec2(radius * 2.f, height), Disp.GetAngleDegrees() - 90.f);
+
+		//Left Line
+		AddVertsForLine2D(vertexArray, box.GetBottomLeft(), box.GetTopLeft(), thickness, color);
+		//Right line
+		AddVertsForLine2D(vertexArray, box.GetTopRight(), box.GetBottomRight(), thickness, color);
+
+		AddVertsForRing2D(vertexArray, capsuleBox.GetBottomLeft(), radius, thickness, color);
+	}
+
 }
 
 void AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba& color, float thickness )
