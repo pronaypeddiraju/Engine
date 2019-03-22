@@ -157,7 +157,7 @@ void AddVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& cap
 	{
 		Vec2 Disp = capsuleBox.GetTopLeft() - capsuleBox.GetBottomLeft();
 		float height = Disp.GetLength();
-		OBB2 box = OBB2(capsuleBox.GetCenter(), Vec2(radius * 2.f, height), Disp.GetAngleDegrees() - 90.f);
+		OBB2 box = OBB2(capsuleBox.GetCenter(), Vec2(radius * 2.f, height), Disp.GetAngleDegrees() + 90.f);
 		AddVertsForOBB2D(vertexArray, box, color);
 
 		AddVertsForDisc2D(vertexArray, capsuleBox.GetBottomLeft(), radius, color);

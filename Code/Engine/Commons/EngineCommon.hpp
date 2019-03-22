@@ -54,6 +54,7 @@ const unsigned short W_KEY = 87;
 const unsigned short A_KEY = 65;
 const unsigned short S_KEY = 83;
 const unsigned short D_KEY = 68;
+const unsigned short G_KEY = 71;
 const unsigned short F1_KEY = 112;
 const unsigned short F2_KEY = 113;
 const unsigned short F3_KEY = 114;

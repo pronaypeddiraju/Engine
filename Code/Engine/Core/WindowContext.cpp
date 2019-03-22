@@ -150,6 +150,8 @@ void WindowContext::Create( std::string const &title, float clientAspect, float 
 	RECT windowRect = clientRect;
 	AdjustWindowRectEx( &windowRect, windowStyleFlags, FALSE, windowStyleExFlags );
 
+	m_clientRectSize = IntVec2(windowRect.right - windowRect.left, windowRect.bottom - windowRect.top);
+
 	WCHAR windowTitle[ 1024 ];
 	MultiByteToWideChar( GetACP(), 0, title.c_str(), -1, windowTitle, sizeof( windowTitle ) / sizeof( windowTitle[ 0 ] ) );
 	HWND hwnd = CreateWindowEx(
@@ -261,6 +263,12 @@ void WindowContext::SetClientMousePosition( IntVec2 &clientPos )
 IntVec2 WindowContext::GetClientMouseRelativeMovement()
 {
 	return m_currentMousePosition - m_lastFrameMousePosition; 
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const IntVec2& WindowContext::GetClientBounds()
+{
+	return m_clientRectSize;
 }
 
 //-----------------------------------------------------------------------------------------------

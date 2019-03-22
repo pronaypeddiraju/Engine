@@ -30,6 +30,7 @@ public:
 	void				SetClientMousePosition( IntVec2 &clientPos ); 
 
 	IntVec2				GetClientMouseRelativeMovement(); 
+	const IntVec2&		GetClientBounds();
 
 	void				LockMouse(); 
 	void				UnlockMouse(); 
@@ -52,5 +53,7 @@ public:
 	IntVec2				m_lastFrameMousePosition; 
 	IntVec2				m_currentMousePosition; 
 	int					m_lockCount            = 0; 
+
+	IntVec2				m_clientRectSize = IntVec2::ZERO;
 };
 
