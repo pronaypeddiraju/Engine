@@ -11,11 +11,11 @@ CPUMesh::CPUMesh()
 }
 
 //------------------------------------------------------------------------
-void CPUMeshAddQuad( CPUMesh *out, AABB2 quad)
+void CPUMeshAddQuad( CPUMesh *out, AABB2 quad, const Rgba& color)
 {
 	out->Clear(); 
 
-	out->SetColor( Rgba::WHITE ); 
+	out->SetColor( color ); 
 	// out->SetNormal( vec3::BACK ); 
 
 	// 0 --- 1

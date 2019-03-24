@@ -139,6 +139,9 @@ void DebugRender::DebugRenderToScreen() const
 		case DEBUG_RENDER_POINT:		{	DrawPoint2D( renderObject);		}	break;
 		case DEBUG_RENDER_LINE:			{	DrawLine2D(renderObject);		}	break;
 		case DEBUG_RENDER_QUAD:			{	DrawQuad2D(renderObject);		}	break;
+		case DEBUG_RENDER_DISC:			{	DrawDisc2D(renderObject);		}	break;
+		case DEBUG_RENDER_RING:			{	DrawRing2D(renderObject);		}	break;
+		case DEBUG_RENDER_WIRE_QUAD:	{	DrawWireQuad2D(renderObject);	}	break;
 		default:						{	ERROR_AND_DIE("The debug object is not yet defined in DebugRenderToScreen");	}	break;
 		}
 
@@ -162,6 +165,7 @@ void DebugRender::DebugRenderToCamera() const
 		switch(renderObject->objectProperties->m_renderObjectType)
 		{
 		case DEBUG_RENDER_POINT3D:		{	DrawPoint3D(renderObject);		}	break;
+		case DEBUG_RENDER_LINE3D:		{	DrawLine3D(renderObject);		}	break;
 		default:						{	GUARANTEE_OR_DIE(true, "The debug object is not yet defined in DebugRenderToCamera");	}	break;
 		}
 	}
@@ -261,13 +265,13 @@ void DebugRender::DrawQuad2D( const DebugRenderOptionsT* renderObject ) const
 {
 	Setup2DCamera();
 
-	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
-
 	Quad2DProperties* objectProperties = reinterpret_cast<Quad2DProperties*>(renderObject->objectProperties);
 	if(objectProperties->m_renderObjectType != DEBUG_RENDER_QUAD)
 	{
 		ERROR_AND_DIE("Object recieved in DebugRender was not a Quad. Check inputs");
 	}
+
+	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture);
 
 	std::vector<Vertex_PCU> boxVerts;
 	AddVertsForAABB2D(boxVerts, objectProperties->m_quad, renderObject->objectProperties->m_currentColor);
@@ -287,6 +291,105 @@ void DebugRender::DrawQuad2D( const DebugRenderOptionsT* renderObject ) const
 	}
 
 	m_renderContext->DrawVertexArray(boxVerts);
+}
+
+void DebugRender::DrawWireQuad2D( const DebugRenderOptionsT* renderObject ) const
+{
+	Setup2DCamera();
+
+	Quad2DProperties* objectProperties = reinterpret_cast<Quad2DProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_WIRE_QUAD)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a Wire Quad. Check inputs");
+	}
+
+	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture);
+
+	std::vector<Vertex_PCU> boxVerts;
+	AddVertsForBoundingBox(boxVerts, objectProperties->m_quad, objectProperties->m_currentColor, objectProperties->m_thickness);
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
+	m_renderContext->DrawVertexArray(boxVerts);
+}
+
+void DebugRender::DrawDisc2D( const DebugRenderOptionsT* renderObject ) const
+{
+	Setup2DCamera();
+
+	Disc2DProperties* objectProperties = reinterpret_cast<Disc2DProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_DISC)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a Disc. Check inputs");
+	}
+
+	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
+
+	std::vector<Vertex_PCU> ringVerts;
+	//AddVertsForAABB2D(boxVerts, objectProperties->m_quad, renderObject->objectProperties->m_currentColor);
+	AddVertsForDisc2D(ringVerts, objectProperties->m_disc.GetCentre(), objectProperties->m_disc.GetRadius(), objectProperties->m_currentColor);
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
+	m_renderContext->DrawVertexArray(ringVerts);
+}
+
+
+void DebugRender::DrawRing2D( const DebugRenderOptionsT* renderObject ) const
+{
+	Setup2DCamera();
+
+	Disc2DProperties* objectProperties = reinterpret_cast<Disc2DProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_RING)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a Ring. Check inputs");
+	}
+
+	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
+
+	std::vector<Vertex_PCU> ringVerts;
+	//AddVertsForAABB2D(boxVerts, objectProperties->m_quad, renderObject->objectProperties->m_currentColor);
+	AddVertsForRing2D(ringVerts, objectProperties->m_disc.GetCentre(), objectProperties->m_disc.GetRadius(), objectProperties->m_thickness, objectProperties->m_currentColor);
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
+	m_renderContext->DrawVertexArray(ringVerts);
 }
 
 void DebugRender::DrawPoint3D( const DebugRenderOptionsT* renderObject ) const
@@ -329,6 +432,46 @@ void DebugRender::DrawPoint3D( const DebugRenderOptionsT* renderObject ) const
 
 }
 
+void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
+{
+	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
+
+	Line3DProperties* objectProperties = reinterpret_cast<Line3DProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_LINE3D)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a 3D Point. Check inputs");
+	}
+
+	std::vector<Vertex_PCU> pointVerts;
+	Vec2 boxMins = Vec2((objectProperties->m_startPos.x - objectProperties->m_lineWidth * 0.5f), (objectProperties->m_startPos.y - objectProperties->m_lineWidth * 0.5f));
+	Vec2 boxMaxs = Vec2((objectProperties->m_endPos.x + objectProperties->m_lineWidth * 0.5f), (objectProperties->m_endPos.y + objectProperties->m_lineWidth * 0.5f));
+	AABB2 pointBox = AABB2(boxMins, boxMaxs);
+
+
+	SetObjectMatrixForPosition(objectProperties->m_center);
+	AddVertsForAABB2D(pointVerts, pointBox, objectProperties->m_currentColor);
+	//AddVertsForLine3D(pointVerts, objectProperties->m_startPos, objectProperties->m_endPos, objectProperties->m_lineWidth, objectProperties->m_currentColor);
+
+	//Setup the textures on the render context
+	m_renderContext->BindTextureViewWithSampler(0U, nullptr); 
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
+	m_renderContext->DrawVertexArray(pointVerts);
+}
+
 void DebugRender::SetObjectMatrixForPosition( Vec3 position ) const
 {
 	m_debug3DCam->UpdateUniformBuffer(m_renderContext);
@@ -359,9 +502,16 @@ void DebugRender::DebugRenderLine2D(DebugRenderOptionsT options, Vec2 start, Vec
 
 }
 
-void DebugRender::DebugRenderQuad2D( DebugRenderOptionsT options, AABB2 const & quad, float duration )
+void DebugRender::DebugRenderQuad2D( DebugRenderOptionsT options, AABB2 const & quad, float duration, TextureView* texture )
 {
-	options.objectProperties = new Quad2DProperties(DEBUG_RENDER_QUAD, quad, duration);
+	options.objectProperties = new Quad2DProperties(DEBUG_RENDER_QUAD, quad, duration, DEFAULT_WIRE_WIDTH_2D, texture);
+
+	screenRenderObjects.push_back(options);
+}
+
+void DebugRender::DebugRenderWireQuad2D( DebugRenderOptionsT options, AABB2 const &quad, float duration /*= 0.f*/, float thickness /*= DEFAULT_WIRE_WIDTH_2D */ )
+{
+	options.objectProperties = new Quad2DProperties(DEBUG_RENDER_WIRE_QUAD, quad, duration, thickness);
 
 	screenRenderObjects.push_back(options);
 }
@@ -385,6 +535,20 @@ IntVec2 DebugRender::ConvertWorldToScreenPoint( Vec3 worldPoint)
 	return IntVec2(winX, winY);
 }
 
+void DebugRender::DebugRenderDisc2D( DebugRenderOptionsT options, Disc2D const &disc, float duration /*= 0.f*/)
+{
+	options.objectProperties = new Disc2DProperties(DEBUG_RENDER_DISC, disc, 0.f, duration);
+
+	screenRenderObjects.push_back(options);
+}
+
+void DebugRender::DebugRenderRing2D( DebugRenderOptionsT options, Disc2D const &disc, float duration /*= 0.f*/, float thickness /*= DEFAULT_DISC_THICKNESS */ )
+{
+	options.objectProperties = new Disc2DProperties(DEBUG_RENDER_RING, disc, thickness, duration);
+
+	screenRenderObjects.push_back(options);
+}
+
 void DebugRender::DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration, float size, TextureView* texture )
 {
 	options.objectProperties = new Point3DProperties(DEBUG_RENDER_POINT3D, position, size, duration, texture);
@@ -392,3 +556,9 @@ void DebugRender::DebugRenderPoint( DebugRenderOptionsT options, const Vec3& pos
 	worldRenderObjects.push_back(options);
 }
  
+void DebugRender::DebugRenderLine( DebugRenderOptionsT options, Vec3 start, Vec3 end, float duration, float lineWidth /*= DEFAULT_LINE_WIDTH */ )
+{
+	options.objectProperties = new Line3DProperties(*m_renderContext, DEBUG_RENDER_LINE3D, start, end, duration, lineWidth);
+
+	worldRenderObjects.push_back(options);
+}

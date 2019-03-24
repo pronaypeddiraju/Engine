@@ -11,6 +11,7 @@ struct AABB2;
 struct AABB3;
 struct Camera;
 struct IntVec2;
+class Disc2D;
 
 class TextureView;
 class RenderContext;
@@ -81,33 +82,29 @@ public:
 	//------------------------------------------------------------------------
 	void				DebugRenderPoint2D( DebugRenderOptionsT options, Vec2 position, float duration = 0.f, float size = DEFAULT_POINT_SIZE );
 	void				DebugRenderLine2D( DebugRenderOptionsT options, Vec2 start, Vec2 end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH );
-	void				DebugRenderQuad2D( DebugRenderOptionsT options, AABB2 const &quad, float duration = 0.f); 
-	
-	void				DebugRenderTexturedQuad2D( DebugRenderOptionsT const &options, AABB2 const &quad, TextureView *view ); 
-	void				DebugRenderWireQuad2D( DebugRenderOptionsT const &options, AABB2 const &quad, float lineWidth = DEFAULT_LINE_WIDTH ); 
+	void				DebugRenderQuad2D( DebugRenderOptionsT options, AABB2 const &quad, float duration = 0.f, TextureView *view = nullptr); 
+	void				DebugRenderWireQuad2D( DebugRenderOptionsT options, AABB2 const &quad, float duration = 0.f, float thickness = DEFAULT_WIRE_WIDTH_2D ); 
+	void				DebugRenderDisc2D( DebugRenderOptionsT options, Disc2D const &disc, float duration = 0.f); 
+	void				DebugRenderRing2D( DebugRenderOptionsT options, Disc2D const &disc, float duration = 0.f, float thickness = DEFAULT_DISC_THICKNESS ); 
 
-	// to get a ring, you can just use a innerRadius line-thickness smaller than radius; 
-	void				DebugRenderDisc2D( DebugRenderOptionsT const &options, Vec2 center, float radius, float innerRadius = 0.0f ); 
-	
 	//------------------------------------------------------------------------
 	// 3D Rendering (will always default to WORLD)
 	//------------------------------------------------------------------------
 	void				DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration = 0.f, float size = DEFAULT_POINT_SIZE_3D, TextureView* texture = nullptr );
-
-	void				DebugRenderLine( DebugRenderOptionsT const &options, Vec3 start, Vec3 end, float lineWidth = DEFAULT_LINE_WIDTH );
-	void				DebugRenderArrow3D( DebugRenderOptionsT const &options, Vec3 start, Vec3 end, float base_thickness, float head_thickness ); 
-	void				DebugRenderSphere( DebugRenderOptionsT const &options, Vec3 center, float radius ); 
-	void				DebugRenderBox( DebugRenderOptionsT const &options, AABB3 box ); 
+	void				DebugRenderLine( DebugRenderOptionsT options, Vec3 start, Vec3 end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH );
+	void				DebugRenderArrow3D( DebugRenderOptionsT options, Vec3 start, Vec3 end, float base_thickness, float head_thickness ); 
+	void				DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, float radius ); 
+	void				DebugRenderBox( DebugRenderOptionsT options, AABB3 box ); 
 
 	// EXTRA (helps to be able to set raster fill mode to "wire")
 	// Also, better to use an ICOSphere if available, but UV sphere is fine; 
-	void				DebugRenderWireSphere( DebugRenderOptionsT const &options, Vec3 center, float radius ); 
+	void				DebugRenderWireSphere( DebugRenderOptionsT options, Vec3 center, float radius ); 
 
 	// EXTRA (helps to be able to set raster fill mode to "wire")
-	void				DebugRenderWireBox( DebugRenderOptionsT const &options, AABB3 box ); 
+	void				DebugRenderWireBox( DebugRenderOptionsT options, AABB3 box ); 
 
 	// EXTRA (requires being able to render a cone/cylinder)
-	void				DebugRenderArrow( DebugRenderOptionsT const &options, Vec3 start, Vec3 end, float lineWidth = DEFAULT_LINE_WIDTH ); 
+	void				DebugRenderArrow( DebugRenderOptionsT options, Vec3 start, Vec3 end, float lineWidth = DEFAULT_LINE_WIDTH ); 
 
 	// EXTRA - requires Arrow
 	void				DebugRenderBasis( DebugRenderOptionsT const &options, Matrix44 const &basis, float lineWidth = DEFAULT_LINE_WIDTH ); 
@@ -120,9 +117,13 @@ private:
 	void							DrawPoint2D( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawLine2D( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawQuad2D( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawWireQuad2D(const DebugRenderOptionsT* renderObject ) const;
+	void							DrawDisc2D( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawRing2D( const DebugRenderOptionsT* renderObject ) const;
 
 	//Draw methods 3D
 	void							DrawPoint3D( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawLine3D( const DebugRenderOptionsT* renderObject ) const;
 
 private:
 	RenderContext*		m_renderContext					= nullptr;
