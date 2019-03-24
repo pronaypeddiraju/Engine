@@ -166,7 +166,9 @@ void DebugRender::DebugRenderToCamera() const
 		{
 		case DEBUG_RENDER_POINT3D:		{	DrawPoint3D(renderObject);		}	break;
 		case DEBUG_RENDER_LINE3D:		{	DrawLine3D(renderObject);		}	break;
-		default:						{	GUARANTEE_OR_DIE(true, "The debug object is not yet defined in DebugRenderToCamera");	}	break;
+		case DEBUG_RENDER_SPHERE:		{	DrawSphere(renderObject);		}	break;
+		case DEBUG_RENDER_BOX:			{	DrawBox(renderObject);			}	break;
+		default:						{	ERROR_AND_DIE("The debug object is not yet defined in DebugRenderToCamera");	}	break;
 		}
 	}
 }
@@ -439,18 +441,17 @@ void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
 	Line3DProperties* objectProperties = reinterpret_cast<Line3DProperties*>(renderObject->objectProperties);
 	if(objectProperties->m_renderObjectType != DEBUG_RENDER_LINE3D)
 	{
-		ERROR_AND_DIE("Object recieved in DebugRender was not a 3D Point. Check inputs");
+		ERROR_AND_DIE("Object recieved in DebugRender was not a 3D Line. Check inputs");
 	}
 
-	std::vector<Vertex_PCU> pointVerts;
+	std::vector<Vertex_PCU> lineVerts;
 	Vec2 boxMins = Vec2((objectProperties->m_startPos.x - objectProperties->m_lineWidth * 0.5f), (objectProperties->m_startPos.y - objectProperties->m_lineWidth * 0.5f));
 	Vec2 boxMaxs = Vec2((objectProperties->m_endPos.x + objectProperties->m_lineWidth * 0.5f), (objectProperties->m_endPos.y + objectProperties->m_lineWidth * 0.5f));
-	AABB2 pointBox = AABB2(boxMins, boxMaxs);
+	AABB2 lineBox = AABB2(boxMins, boxMaxs);
 
 
 	SetObjectMatrixForPosition(objectProperties->m_center);
-	AddVertsForAABB2D(pointVerts, pointBox, objectProperties->m_currentColor);
-	//AddVertsForLine3D(pointVerts, objectProperties->m_startPos, objectProperties->m_endPos, objectProperties->m_lineWidth, objectProperties->m_currentColor);
+	AddVertsForAABB2D(lineVerts, lineBox, objectProperties->m_currentColor);
 
 	//Setup the textures on the render context
 	m_renderContext->BindTextureViewWithSampler(0U, nullptr); 
@@ -469,7 +470,77 @@ void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
 	break;
 	}
 
-	m_renderContext->DrawVertexArray(pointVerts);
+	m_renderContext->DrawVertexArray(lineVerts);
+}
+
+void DebugRender::DrawSphere( const DebugRenderOptionsT* renderObject ) const
+{
+	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
+
+	SphereProperties* objectProperties = reinterpret_cast<SphereProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_SPHERE)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a Sphere. Check inputs");
+	}
+
+	//Setup mesh here
+	GPUMesh sphere = GPUMesh( m_renderContext ); 
+	sphere.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
+	SetObjectMatrixForPosition(objectProperties->m_center);
+
+	//Setup the textures on the render context
+	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture); 
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
+	m_renderContext->DrawMesh(&sphere);
+}
+
+void DebugRender::DrawBox( const DebugRenderOptionsT* renderObject ) const
+{
+	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
+
+	BoxProperties* objectProperties = reinterpret_cast<BoxProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_BOX)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a Box. Check inputs");
+	}
+
+	//Setup mesh here
+	GPUMesh box = GPUMesh( m_renderContext ); 
+	box.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
+	SetObjectMatrixForPosition(objectProperties->m_box.m_center);
+
+	//Setup the textures on the render context
+	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture); 
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
+	m_renderContext->DrawMesh(&box);
 }
 
 void DebugRender::SetObjectMatrixForPosition( Vec3 position ) const
@@ -477,16 +548,14 @@ void DebugRender::SetObjectMatrixForPosition( Vec3 position ) const
 	m_debug3DCam->UpdateUniformBuffer(m_renderContext);
 
 	//Setup matrix for position
-	Matrix44 pointTransform = m_debug3DCam->GetModelMatrix();
-	Vec3 euler = m_debug3DCam->GetEuler();
-	Matrix44 objectMatrix = Matrix44::MakeFromEuler(euler);
+	Matrix44 objectMatrix = Matrix44::MakeFromEuler(Vec3(0.f, 0.f, 0.f));
 	Matrix44::SetTranslation3D(position, objectMatrix);
 
 	//Set on Render Context
 	m_renderContext->SetModelMatrix( objectMatrix ); 
 }
 
-void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT options, Vec2 position, float duration, float size /*= DEFAULT_POINT_SIZE */ )
+void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT options, const Vec2& position, float duration, float size /*= DEFAULT_POINT_SIZE */ )
 {
 	options.objectProperties = new Point2DProperties(DEBUG_RENDER_POINT, position, duration, size);
 
@@ -494,7 +563,7 @@ void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT options, Vec2 position
 }
 
 //Inplementation to debug render a line using 2D debug camera
-void DebugRender::DebugRenderLine2D(DebugRenderOptionsT options, Vec2 start, Vec2 end, float duration, float lineWidth)
+void DebugRender::DebugRenderLine2D(DebugRenderOptionsT options, const Vec2& start, const Vec2& end, float duration, float lineWidth)
 {
 	options.objectProperties = new Line2DProperties(DEBUG_RENDER_LINE, start, end, duration, lineWidth);
 
@@ -556,9 +625,23 @@ void DebugRender::DebugRenderPoint( DebugRenderOptionsT options, const Vec3& pos
 	worldRenderObjects.push_back(options);
 }
  
-void DebugRender::DebugRenderLine( DebugRenderOptionsT options, Vec3 start, Vec3 end, float duration, float lineWidth /*= DEFAULT_LINE_WIDTH */ )
+void DebugRender::DebugRenderLine( DebugRenderOptionsT options, const Vec3& start, const Vec3& end, float duration, float lineWidth /*= DEFAULT_LINE_WIDTH */ )
 {
-	options.objectProperties = new Line3DProperties(*m_renderContext, DEBUG_RENDER_LINE3D, start, end, duration, lineWidth);
+	options.objectProperties = new Line3DProperties(DEBUG_RENDER_LINE3D, start, end, duration, lineWidth);
+
+	worldRenderObjects.push_back(options);
+}
+
+void DebugRender::DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
+{
+	options.objectProperties = new SphereProperties(DEBUG_RENDER_SPHERE, center, radius, duration, texture);
+
+	worldRenderObjects.push_back(options);
+}
+
+void DebugRender::DebugRenderBox( DebugRenderOptionsT options, const AABB3& box, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
+{
+	options.objectProperties = new BoxProperties(DEBUG_RENDER_BOX, box, duration, texture);
 
 	worldRenderObjects.push_back(options);
 }

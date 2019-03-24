@@ -33,7 +33,7 @@ AABB2::AABB2( const Vec3& min3D, const Vec3& max3D )
 	m_3Dmin = min3D;
 	m_3Dmax = max3D;
 
-	m_3Dcenter = Vec3(max3D - min3D);
+	//m_3Dcenter = Vec3(max3D - min3D);
 }
 
 const Vec2& AABB2::GetBoxCenter() const

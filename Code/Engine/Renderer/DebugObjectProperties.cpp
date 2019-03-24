@@ -93,7 +93,7 @@ Disc2DProperties::~Disc2DProperties()
 
 }
 
-Line3DProperties::Line3DProperties( RenderContext& renderContext, eDebugRenderObject renderObject, const Vec3& startPos, const Vec3& endPos, float durationSeconds /*= 0.f*/, float lineWidth /*= DEFAULT_LINE_WIDTH*/ )
+Line3DProperties::Line3DProperties( eDebugRenderObject renderObject, const Vec3& startPos, const Vec3& endPos, float durationSeconds /*= 0.f*/, float lineWidth /*= DEFAULT_LINE_WIDTH*/ )
 {
 	//Base properties
 	m_durationSeconds = durationSeconds;
@@ -122,6 +122,49 @@ Line3DProperties::Line3DProperties( RenderContext& renderContext, eDebugRenderOb
 }
 
 Line3DProperties::~Line3DProperties()
+{
+
+}
+
+SphereProperties::SphereProperties( eDebugRenderObject renderObject, const Vec3& center, float radius, float durationSeconds /*= 0.f*/, TextureView* texture /*= nullptr*/ )
+{
+	//Base properties
+	m_durationSeconds = durationSeconds;
+	m_startDuration = m_durationSeconds;
+	m_renderObjectType = renderObject;
+
+	//Sphere properties
+	m_center = center;
+	m_radius = radius;
+	m_texture = texture;
+
+	m_mesh = new CPUMesh();
+	m_mesh->Clear();
+	CPUMeshAddUVSphere( m_mesh, center, radius);  
+}
+
+SphereProperties::~SphereProperties()
+{
+
+}
+
+BoxProperties::BoxProperties( eDebugRenderObject renderObject, const AABB3& box, float durationSeconds /*= 0.f*/, TextureView* texture /*= nullptr*/ )
+{
+	//Base properties
+	m_durationSeconds = durationSeconds;
+	m_startDuration = m_durationSeconds;
+	m_renderObjectType = renderObject;
+
+	//Box properties
+	m_box = box;
+	m_texture = texture;
+
+	m_mesh = new CPUMesh();
+	m_mesh->Clear();
+	CPUMeshAddCube( m_mesh, box);
+}
+
+BoxProperties::~BoxProperties()
 {
 
 }

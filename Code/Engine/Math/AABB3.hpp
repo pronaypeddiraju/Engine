@@ -25,4 +25,5 @@ public:
 	Vec3					m_backBottomLeft	= Vec3::ZERO;
 	Vec3					m_backBottomRight	= Vec3::ZERO;
 
+	Vec3					m_center			= Vec3::ZERO;
 };

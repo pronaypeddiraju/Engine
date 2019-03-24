@@ -80,8 +80,8 @@ public:
 	//------------------------------------------------------------------------
 	// 2D Debug Rendering (defaults to SCREEN)
 	//------------------------------------------------------------------------
-	void				DebugRenderPoint2D( DebugRenderOptionsT options, Vec2 position, float duration = 0.f, float size = DEFAULT_POINT_SIZE );
-	void				DebugRenderLine2D( DebugRenderOptionsT options, Vec2 start, Vec2 end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH );
+	void				DebugRenderPoint2D( DebugRenderOptionsT options, const Vec2& position, float duration = 0.f, float size = DEFAULT_POINT_SIZE );
+	void				DebugRenderLine2D( DebugRenderOptionsT options, const Vec2& start, const Vec2& end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH );
 	void				DebugRenderQuad2D( DebugRenderOptionsT options, AABB2 const &quad, float duration = 0.f, TextureView *view = nullptr); 
 	void				DebugRenderWireQuad2D( DebugRenderOptionsT options, AABB2 const &quad, float duration = 0.f, float thickness = DEFAULT_WIRE_WIDTH_2D ); 
 	void				DebugRenderDisc2D( DebugRenderOptionsT options, Disc2D const &disc, float duration = 0.f); 
@@ -91,10 +91,11 @@ public:
 	// 3D Rendering (will always default to WORLD)
 	//------------------------------------------------------------------------
 	void				DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration = 0.f, float size = DEFAULT_POINT_SIZE_3D, TextureView* texture = nullptr );
-	void				DebugRenderLine( DebugRenderOptionsT options, Vec3 start, Vec3 end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH );
+	void				DebugRenderLine( DebugRenderOptionsT options, const Vec3& start, const Vec3& end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH );
+	void				DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration = 0.f, TextureView* texture = nullptr ); 
+	void				DebugRenderBox( DebugRenderOptionsT options, const AABB3& box, float duration = 0.f, TextureView* texture = nullptr ); 
+	
 	void				DebugRenderArrow3D( DebugRenderOptionsT options, Vec3 start, Vec3 end, float base_thickness, float head_thickness ); 
-	void				DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, float radius ); 
-	void				DebugRenderBox( DebugRenderOptionsT options, AABB3 box ); 
 
 	// EXTRA (helps to be able to set raster fill mode to "wire")
 	// Also, better to use an ICOSphere if available, but UV sphere is fine; 
@@ -124,6 +125,8 @@ private:
 	//Draw methods 3D
 	void							DrawPoint3D( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawLine3D( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawSphere( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawBox( const DebugRenderOptionsT* renderObject ) const;
 
 private:
 	RenderContext*		m_renderContext					= nullptr;

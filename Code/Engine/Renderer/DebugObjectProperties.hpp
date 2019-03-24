@@ -3,6 +3,7 @@
 //Engine Systems
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/Disc2D.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
@@ -111,6 +112,9 @@ public:
 //------------------------------------------------------------------------------------------------------------------------------
 //	3D Render Objects
 //------------------------------------------------------------------------------------------------------------------------------
+
+// Point
+//------------------------------------------------------------------------------------------------------------------------------
 class Point3DProperties : public ObjectProperties
 {
 public:
@@ -123,10 +127,12 @@ public:
 	float m_size						= DEFAULT_POINT_SIZE_3D;
 };
 
+// Line
+//------------------------------------------------------------------------------------------------------------------------------
 class Line3DProperties : public ObjectProperties
 {
 public:
-	explicit Line3DProperties( RenderContext& renderContext, eDebugRenderObject renderObject, const Vec3& startPos, const Vec3& endPos, float durationSeconds = 0.f, float lineWidth = DEFAULT_LINE_WIDTH);
+	explicit Line3DProperties( eDebugRenderObject renderObject, const Vec3& startPos, const Vec3& endPos, float durationSeconds = 0.f, float lineWidth = DEFAULT_LINE_WIDTH);
 	~Line3DProperties();
 
 public:
@@ -137,7 +143,40 @@ public:
 
 	AABB2 m_line;
 
+	/*
 	CPUMesh* m_lineMesh;
 	GPUMesh* m_lineGPUMesh;
 	Matrix44 m_lineTransform; // line's model matrix
+	*/
+};
+
+// Sphere
+//------------------------------------------------------------------------------------------------------------------------------
+class SphereProperties : public ObjectProperties
+{
+public:
+	explicit SphereProperties( eDebugRenderObject renderObject, const Vec3& center, float radius, float durationSeconds = 0.f, TextureView* texture = nullptr);
+	~SphereProperties();
+
+public:
+	Vec3 m_center						= Vec3::ZERO;
+	float m_radius						= 0.f;
+	TextureView* m_texture				= nullptr;
+
+	CPUMesh* m_mesh;
+};
+
+// Box
+//------------------------------------------------------------------------------------------------------------------------------
+class BoxProperties : public ObjectProperties
+{
+public:
+	explicit BoxProperties( eDebugRenderObject renderObject, const AABB3& box, float durationSeconds = 0.f, TextureView* texture = nullptr);
+	~BoxProperties();
+
+public:
+	TextureView* m_texture				= nullptr;
+	AABB3 m_box;
+
+	CPUMesh* m_mesh;
 };
