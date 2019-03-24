@@ -48,6 +48,8 @@ public:
 	float m_durationSeconds         = 0.0f;  // show for a single frame
 	float m_startDuration			= 0.f;
 	Rgba m_currentColor				= Rgba::WHITE;
+
+	CPUMesh* m_mesh;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -125,9 +127,8 @@ public:
 	Vec3 m_position						= Vec3::ZERO;
 	TextureView* m_texture				= nullptr;
 	float m_size						= DEFAULT_POINT_SIZE_3D;
+	
 	AABB2 m_point;
-
-	CPUMesh* m_mesh;
 };
 
 // Line
@@ -145,8 +146,6 @@ public:
 	float m_lineWidth					= DEFAULT_LINE_WIDTH;
 
 	AABB2 m_line;
-
-	CPUMesh* m_mesh;
 };
 
 // Sphere
@@ -161,8 +160,6 @@ public:
 	Vec3 m_center						= Vec3::ZERO;
 	float m_radius						= 0.f;
 	TextureView* m_texture				= nullptr;
-
-	CPUMesh* m_mesh;
 };
 
 // Box
@@ -175,7 +172,6 @@ public:
 
 public:
 	TextureView* m_texture				= nullptr;
+	
 	AABB3 m_box;
-
-	CPUMesh* m_mesh;
 };

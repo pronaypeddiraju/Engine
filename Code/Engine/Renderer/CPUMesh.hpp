@@ -40,8 +40,9 @@ public:
 	void Clear();        // A04; 
 
 	// Modify the stamp;
-	void SetColor( Rgba color );           // A04
-	void SetUV( Vec2 uv );                 // A04
+	void SetColor( const Rgba& color );           // A04
+	void SetUV( const Vec2& uv );                 // A04
+	void SetStampColor( const Rgba& color );
 
 	// Stamp a vertex into the list - return the index; 
 	uint AddVertex( VertexMaster const &m );     // A04
@@ -60,7 +61,6 @@ public:
 
 	inline bool UsesIndexBuffer() const          { return GetIndexCount() > 0; }
 	inline uint GetElementCount() const          { return UsesIndexBuffer() ? GetIndexCount() : GetVertexCount(); }
-
 
 public: 
 	std::vector<VertexMaster>  m_vertices;       // A04

@@ -15,7 +15,7 @@ void CPUMeshAddQuad( CPUMesh *out, AABB2 quad, const Rgba& color)
 {
 	out->Clear(); 
 
-	out->SetColor( color ); 
+	out->SetStampColor( color ); 
 	// out->SetNormal( vec3::BACK ); 
 
 	// 0 --- 1
@@ -42,7 +42,7 @@ void CPUMeshAddBox2D( CPUMesh *out, OBB2 const &obb, Rgba const &color )
 {
 	out->Clear();
 
-	out->SetColor( color ); 
+	out->SetStampColor( color ); 
 	// 0 --- 1
 	// |   / |
 	// | /   |
@@ -101,7 +101,7 @@ void CPUMeshAddCube( CPUMesh *out, AABB3 box, const Rgba& color, bool clearMesh 
 		out->Clear();
 	}
 
-	out->SetColor( color ); 
+	out->SetStampColor( color ); 
 
 	AABB2 boxFace;
 
@@ -211,7 +211,7 @@ void CPUMeshAddCube( CPUMesh *out, AABB3 box, const Rgba& color, bool clearMesh 
 void CPUMeshAddUVSphere( CPUMesh *out, Vec3 center, float radius, const Rgba& color, uint wedges /*= 32*/, uint slices /*= 16 */ )
 {
 	out->Clear();
-	out->SetColor( color ); 
+	out->SetStampColor( color ); 
 
 	int ustep = wedges + 1;
 	int vstep = slices + 1;
@@ -288,12 +288,22 @@ CPUMesh::~CPUMesh()
 	Clear();
 }
 
-void CPUMesh::SetColor( Rgba color )
+void CPUMesh::SetColor( const Rgba& color )
+{
+	int vertexCount = (int)m_vertices.size();
+
+	for(int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++)
+	{
+		m_vertices[vertexIndex].color = color;
+	}
+}
+
+void CPUMesh::SetStampColor( const Rgba& color)
 {
 	m_stamp.color = color;
 }
 
-void CPUMesh::SetUV( Vec2 uv )
+void CPUMesh::SetUV( const Vec2& uv )
 {
 	m_stamp.uv = uv;
 }

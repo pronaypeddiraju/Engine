@@ -99,9 +99,7 @@ void DebugRender::Update( float deltaTime )
 			blendFraction = 1 - blendFraction;
 
 			Rgba::LerpRGB( objectProperties->m_currentColor, worldRenderObjects[objectIndex].beginColor, worldRenderObjects[objectIndex].endColor, blendFraction );
-
-			//Set color om the CPUMesh
-
+			objectProperties->m_mesh->SetColor(objectProperties->m_currentColor);
 		}
 	}
 
