@@ -2,7 +2,11 @@
 #pragma once
 //Engine Systems
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Math/AABB2.hpp"
 #include "Engine/Renderer/Rgba.hpp"
+
+//------------------------------------------------------------------------------------------------------------------------------
+class TextureView;
 
 //------------------------------------------------------------------------------------------------------------------------------
 enum eDebugRenderObject
@@ -42,22 +46,27 @@ public:
 //------------------------------------------------------------------------------------------------------------------------------
 //	2D Render Objects
 //------------------------------------------------------------------------------------------------------------------------------
-class Point2DObjectProperties : public ObjectProperties
+
+// Point
+//------------------------------------------------------------------------------------------------------------------------------
+class Point2DProperties : public ObjectProperties
 {
 public:
-	explicit Point2DObjectProperties(eDebugRenderObject renderObject, const Vec2& screenPosition, float durationSeconds, float size);
-	~Point2DObjectProperties();
+	explicit Point2DProperties(eDebugRenderObject renderObject, const Vec2& screenPosition, float durationSeconds, float size);
+	~Point2DProperties();
 
 public:
 	Vec2 m_screenPosition				= Vec2::ZERO;
 	float m_size						= DEFAULT_POINT_SIZE;
 };
 
-class Line2DObjectProperties : public ObjectProperties
+// Line
+//------------------------------------------------------------------------------------------------------------------------------
+class Line2DProperties : public ObjectProperties
 {
 public:
-	explicit Line2DObjectProperties(eDebugRenderObject renderObject, const Vec2& startPos, const Vec2& endPos, float durationSeconds, float lineWidth);
-	~Line2DObjectProperties();
+	explicit Line2DProperties(eDebugRenderObject renderObject, const Vec2& startPos, const Vec2& endPos, float durationSeconds, float lineWidth);
+	~Line2DProperties();
 
 public:
 	Vec2 m_startPos						= Vec2::ZERO;
@@ -66,14 +75,29 @@ public:
 
 };
 
+// Quad
+//------------------------------------------------------------------------------------------------------------------------------
+class Quad2DProperties : public ObjectProperties
+{
+public:
+	explicit Quad2DProperties( eDebugRenderObject renderObject, const AABB2& quad, float durationSeconds = 0.f );
+	~Quad2DProperties();
+
+public:
+	AABB2	m_quad;
+};
+
 //------------------------------------------------------------------------------------------------------------------------------
 //	3D Render Objects
 //------------------------------------------------------------------------------------------------------------------------------
-class Point3DObjectProperties : public ObjectProperties
+class Point3DProperties : public ObjectProperties
 {
 public:
-	explicit Point3DObjectProperties(eDebugRenderObject renderObject);
-	~Point3DObjectProperties();
+	explicit Point3DProperties(eDebugRenderObject renderObject, const Vec3& position, float size, float durationSeconds = 0.f, TextureView* texture = nullptr);
+	~Point3DProperties();
 
-
+public:
+	Vec3 m_position						= Vec3::ZERO;
+	TextureView* m_texture				= nullptr;
+	float m_size						= DEFAULT_POINT_SIZE_3D;
 };

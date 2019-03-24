@@ -6,8 +6,11 @@
 
 Camera::~Camera()
 {
-	delete m_cameraUBO;
-	m_cameraUBO = nullptr;
+	if(m_cameraUBO != nullptr)
+	{
+		delete m_cameraUBO;
+		m_cameraUBO = nullptr;
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

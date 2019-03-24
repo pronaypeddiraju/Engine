@@ -47,8 +47,9 @@ void DebugRender::Shutdown()
 	delete m_debug2DCam;
 	m_debug2DCam = nullptr;
 
-	delete m_debug3DCam;
-	m_debug3DCam = nullptr;
+	// No need to delete debug3DCam as we get this from Game camera. It is destroyed when Game is shutting down
+	//delete m_debug3DCam;
+	//m_debug3DCam = nullptr;
 }
 
 void DebugRender::BeginFrame()
@@ -135,19 +136,10 @@ void DebugRender::DebugRenderToScreen() const
 		//Render the object for this frame
 		switch(renderObject->objectProperties->m_renderObjectType)
 		{
-		case DEBUG_RENDER_POINT:
-		{
-			DrawPoint2D( renderObject);
-		}
-		break;
-		case DEBUG_RENDER_LINE:
-		{
-			DrawLine2D(renderObject);
-		}
-		break;
-		default:
-			ERROR_AND_DIE("The debug object is not yet defined in DebugRenderToScreen");
-			break;
+		case DEBUG_RENDER_POINT:		{	DrawPoint2D( renderObject);		}	break;
+		case DEBUG_RENDER_LINE:			{	DrawLine2D(renderObject);		}	break;
+		case DEBUG_RENDER_QUAD:			{	DrawQuad2D(renderObject);		}	break;
+		default:						{	ERROR_AND_DIE("The debug object is not yet defined in DebugRenderToScreen");	}	break;
 		}
 
 		//If the duration is 0.f or lower, set the object to nullptr
@@ -159,10 +151,8 @@ void DebugRender::DebugRenderToScreen() const
 	}
 }
 
-void DebugRender::DebugRenderToCamera( Camera* renderCamera ) const
+void DebugRender::DebugRenderToCamera() const
 {
-	UNUSED(renderCamera);
-
 	//Use this method to render to the world camera
 	int vectorSize = static_cast<int>(worldRenderObjects.size());
 
@@ -171,13 +161,8 @@ void DebugRender::DebugRenderToCamera( Camera* renderCamera ) const
 		const DebugRenderOptionsT* renderObject = &worldRenderObjects[objectIndex];
 		switch(renderObject->objectProperties->m_renderObjectType)
 		{
-		case DEBUG_RENDER_POINT3D:
-		//DrawPoint2D(renderContext, renderObject);
-		DrawPoint3D(renderObject);
-		break;
-		default:
-		GUARANTEE_OR_DIE(true, "The debug object is not yet defined in DebugRenderToScreen");
-		break;
+		case DEBUG_RENDER_POINT3D:		{	DrawPoint3D(renderObject);		}	break;
+		default:						{	GUARANTEE_OR_DIE(true, "The debug object is not yet defined in DebugRenderToCamera");	}	break;
 		}
 	}
 }
@@ -189,12 +174,11 @@ Camera& DebugRender::Get2DCamera()
 
 void DebugRender::DrawPoint2D( const DebugRenderOptionsT* renderObject) const
 {
-	m_debug2DCam->SetModelMatrix(Matrix44::IDENTITY);
-	m_debug2DCam->UpdateUniformBuffer(m_renderContext);
+	Setup2DCamera();
 
 	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
 
-	Point2DObjectProperties* objectProperties = reinterpret_cast<Point2DObjectProperties*>(renderObject->objectProperties);
+	Point2DProperties* objectProperties = reinterpret_cast<Point2DProperties*>(renderObject->objectProperties);
 	if(objectProperties->m_renderObjectType != DEBUG_RENDER_POINT)
 	{
 		ERROR_AND_DIE("Object recieved in DebugRender was not a point. Check inputs");
@@ -229,14 +213,24 @@ void DebugRender::DrawPoint2D( const DebugRenderOptionsT* renderObject) const
 
 }
 
-void DebugRender::DrawLine2D( const DebugRenderOptionsT* renderObject ) const
+void DebugRender::Setup2DCamera() const
 {
 	m_debug2DCam->SetModelMatrix(Matrix44::IDENTITY);
 	m_debug2DCam->UpdateUniformBuffer(m_renderContext);
+}
+
+void DebugRender::Setup3DCamera(Camera* const debugCamera)
+{
+	m_debug3DCam = debugCamera;
+}
+
+void DebugRender::DrawLine2D( const DebugRenderOptionsT* renderObject ) const
+{
+	Setup2DCamera();
 
 	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
 
-	Line2DObjectProperties* objectProperties = reinterpret_cast<Line2DObjectProperties*>(renderObject->objectProperties);
+	Line2DProperties* objectProperties = reinterpret_cast<Line2DProperties*>(renderObject->objectProperties);
 	if(objectProperties->m_renderObjectType != DEBUG_RENDER_LINE)
 	{
 		ERROR_AND_DIE("Object recieved in DebugRender was not a Line. Check inputs");
@@ -263,41 +257,22 @@ void DebugRender::DrawLine2D( const DebugRenderOptionsT* renderObject ) const
 	m_renderContext->DrawVertexArray(lineVerts);
 }
 
-void DebugRender::DrawPoint3D( const DebugRenderOptionsT* renderObject ) const
+void DebugRender::DrawQuad2D( const DebugRenderOptionsT* renderObject ) const
 {
-	UNUSED(renderObject);
-	//Create the Debug Render object here
-
-}
-
-void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT options, Vec2 position, float duration, float size /*= DEFAULT_POINT_SIZE */ )
-{
-	options.objectProperties = new Point2DObjectProperties(DEBUG_RENDER_POINT, position, duration, size);
-
-	screenRenderObjects.push_back(options);
-}
-
-//Inplementation to debug render a line using 2D debug camera
-void DebugRender::DebugRenderLine2D(DebugRenderOptionsT options, Vec2 start, Vec2 end, float duration, float lineWidth)
-{
-	options.objectProperties = new Line2DObjectProperties(DEBUG_RENDER_LINE, start, end, duration, lineWidth);
-
-	screenRenderObjects.push_back(options);
-
-}
-
-void DebugRender::DebugRenderQuad2D( DebugRenderOptionsT const & options, AABB2 const & quad )
-{
-	m_debug2DCam->SetModelMatrix(Matrix44::IDENTITY);
-	m_debug2DCam->UpdateUniformBuffer(m_renderContext);
+	Setup2DCamera();
 
 	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
 
-	std::vector<Vertex_PCU> boxVerts;
-	AddVertsForAABB2D(boxVerts, quad, options.beginColor);
+	Quad2DProperties* objectProperties = reinterpret_cast<Quad2DProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_QUAD)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a Quad. Check inputs");
+	}
 
-	//TODO: Implement code to handle duration logic
-	switch (options.mode)
+	std::vector<Vertex_PCU> boxVerts;
+	AddVertsForAABB2D(boxVerts, objectProperties->m_quad, renderObject->objectProperties->m_currentColor);
+
+	switch (renderObject->mode)
 	{
 	case DEBUG_RENDER_USE_DEPTH:
 	m_renderContext->SetDepth(true);
@@ -310,9 +285,85 @@ void DebugRender::DebugRenderQuad2D( DebugRenderOptionsT const & options, AABB2 
 	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
 	break;
 	}
-	
-	m_renderContext->DrawVertexArray(boxVerts);
 
+	m_renderContext->DrawVertexArray(boxVerts);
+}
+
+void DebugRender::DrawPoint3D( const DebugRenderOptionsT* renderObject ) const
+{
+	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
+
+	Point3DProperties* objectProperties = reinterpret_cast<Point3DProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_POINT3D)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a 3D Point. Check inputs");
+	}
+
+	std::vector<Vertex_PCU> pointVerts;
+	Vec2 boxMins = Vec2((objectProperties->m_position.x - objectProperties->m_size * 0.5f), (objectProperties->m_position.y - objectProperties->m_size * 0.5f));
+	Vec2 boxMaxs = Vec2((objectProperties->m_position.x + objectProperties->m_size * 0.5f), (objectProperties->m_position.y + objectProperties->m_size * 0.5f));
+	AABB2 pointBox = AABB2(boxMins, boxMaxs);
+
+
+	SetObjectMatrixForPosition(objectProperties->m_position);
+	AddVertsForAABB2D(pointVerts, pointBox, objectProperties->m_currentColor);
+
+	//Setup the textures on the render context
+	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture); 
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
+	m_renderContext->DrawVertexArray(pointVerts);
+
+}
+
+void DebugRender::SetObjectMatrixForPosition( Vec3 position ) const
+{
+	m_debug3DCam->UpdateUniformBuffer(m_renderContext);
+
+	//Setup matrix for position
+	Matrix44 pointTransform = m_debug3DCam->GetModelMatrix();
+	Vec3 euler = m_debug3DCam->GetEuler();
+	Matrix44 objectMatrix = Matrix44::MakeFromEuler(euler);
+	Matrix44::SetTranslation3D(position, objectMatrix);
+
+	//Set on Render Context
+	m_renderContext->SetModelMatrix( objectMatrix ); 
+}
+
+void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT options, Vec2 position, float duration, float size /*= DEFAULT_POINT_SIZE */ )
+{
+	options.objectProperties = new Point2DProperties(DEBUG_RENDER_POINT, position, duration, size);
+
+	screenRenderObjects.push_back(options);
+}
+
+//Inplementation to debug render a line using 2D debug camera
+void DebugRender::DebugRenderLine2D(DebugRenderOptionsT options, Vec2 start, Vec2 end, float duration, float lineWidth)
+{
+	options.objectProperties = new Line2DProperties(DEBUG_RENDER_LINE, start, end, duration, lineWidth);
+
+	screenRenderObjects.push_back(options);
+
+}
+
+void DebugRender::DebugRenderQuad2D( DebugRenderOptionsT options, AABB2 const & quad, float duration )
+{
+	options.objectProperties = new Quad2DProperties(DEBUG_RENDER_QUAD, quad, duration);
+
+	screenRenderObjects.push_back(options);
 }
 
 // This function is currently useless
@@ -334,67 +385,10 @@ IntVec2 DebugRender::ConvertWorldToScreenPoint( Vec3 worldPoint)
 	return IntVec2(winX, winY);
 }
 
-void DebugRender::DebugRenderPoint( DebugRenderOptionsT const& options, const Vec3& position, const Rgba& color, float size )
+void DebugRender::DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration, float size, TextureView* texture )
 {
-	//Create a quad in 3D space and make it face the camera
+	options.objectProperties = new Point3DProperties(DEBUG_RENDER_POINT3D, position, size, duration, texture);
 
-	//m_debug3DCam
-
-	m_debug3DCam->SetModelMatrix(Matrix44::IDENTITY);
-	m_debug3DCam->UpdateUniformBuffer(m_renderContext);
-
-	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
-
-	std::vector<Vertex_PCU> pointVerts;
-	Vec2 boxMins = Vec2((position.x - size * 0.5f), (position.y - size * 0.5f));
-	Vec2 boxMaxs = Vec2((position.x + size * 0.5f), (position.y + size * 0.5f));
-	AABB2 pointBox = AABB2(boxMins, boxMaxs);
-
-
-
-	AddVertsForAABB2D(pointVerts, pointBox, color);
+	worldRenderObjects.push_back(options);
 }
-
-void DebugRender::DebugRenderPoint( Camera & camera, DebugRenderOptionsT const & options, Vec3 position, TextureView* texture, float size )
-{
-	m_debug3DCam = &camera;
-
-	m_debug3DCam->UpdateUniformBuffer(m_renderContext);
-
-	//Setup the point's model matrix
-	Matrix44 pointTransform = m_debug3DCam->GetModelMatrix();
-	Vec3 euler = camera.GetEuler();
-	Matrix44 objectMatrix = Matrix44::MakeFromEuler(euler);
-	Matrix44::SetTranslation3D(position, objectMatrix);
-
-	//objectMatrix.AppendMatrix(pointTransform);
-	//Setup the matrix and textures on the render context used
-	m_renderContext->BindTextureViewWithSampler(0U, texture); 
-	m_renderContext->SetModelMatrix( objectMatrix ); 
-	
-	//Draw
-	std::vector<Vertex_PCU> pointVerts;
-	Vec2 boxMins = Vec2((-size * 0.5f), (-size * 0.5f));
-	Vec2 boxMaxs = Vec2((size * 0.5f), (size * 0.5f));
-	AABB2 pointBox = AABB2(boxMins, boxMaxs);
-
-	AddVertsForAABB2D(pointVerts, pointBox, Rgba::DARK_GREY);
-
-	//TODO: Implement code to handle duration logic
-	switch (options.mode)
-	{
-	case DEBUG_RENDER_USE_DEPTH:
-	m_renderContext->SetDepth(true);
-	break;
-	case DEBUG_RENDER_ALWAYS:
-	m_renderContext->SetDepth(false);
-	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
-	break;
-	}
-
-	m_renderContext->DrawVertexArray(pointVerts);
-	m_debug3DCam = nullptr;
-}
+ 

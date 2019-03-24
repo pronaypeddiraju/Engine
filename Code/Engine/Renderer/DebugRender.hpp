@@ -68,9 +68,11 @@ public:
 	//void					RenderDebugObjects(RenderContext* renderContext) const;
 
 	void					DebugRenderToScreen() const;		//This renders to the screen camera
-	void					DebugRenderToCamera( Camera* renderCamera ) const;		//This renders in the world camera
+	void					DebugRenderToCamera() const;		//This renders in the world camera
 
-	void					SetupRenderOptions();
+	void					Setup2DCamera() const;
+	void					Setup3DCamera(Camera* const camera);
+	void					SetObjectMatrixForPosition( Vec3 position ) const;
 
 	Camera&					Get2DCamera();
 
@@ -79,8 +81,7 @@ public:
 	//------------------------------------------------------------------------
 	void				DebugRenderPoint2D( DebugRenderOptionsT options, Vec2 position, float duration = 0.f, float size = DEFAULT_POINT_SIZE );
 	void				DebugRenderLine2D( DebugRenderOptionsT options, Vec2 start, Vec2 end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH );
-	
-	void				DebugRenderQuad2D( DebugRenderOptionsT const &options, AABB2 const &quad ); 
+	void				DebugRenderQuad2D( DebugRenderOptionsT options, AABB2 const &quad, float duration = 0.f); 
 	
 	void				DebugRenderTexturedQuad2D( DebugRenderOptionsT const &options, AABB2 const &quad, TextureView *view ); 
 	void				DebugRenderWireQuad2D( DebugRenderOptionsT const &options, AABB2 const &quad, float lineWidth = DEFAULT_LINE_WIDTH ); 
@@ -91,8 +92,7 @@ public:
 	//------------------------------------------------------------------------
 	// 3D Rendering (will always default to WORLD)
 	//------------------------------------------------------------------------
-	void				DebugRenderPoint( DebugRenderOptionsT const &options, const Vec3& position, const Rgba& color = Rgba::MAGENTA, float size = DEFAULT_POINT_SIZE );
-	void				DebugRenderPoint( Camera& camera, DebugRenderOptionsT const &options, Vec3 position, TextureView* texture = nullptr, float size = DEFAULT_POINT_SIZE );
+	void				DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration = 0.f, float size = DEFAULT_POINT_SIZE_3D, TextureView* texture = nullptr );
 
 	void				DebugRenderLine( DebugRenderOptionsT const &options, Vec3 start, Vec3 end, float lineWidth = DEFAULT_LINE_WIDTH );
 	void				DebugRenderArrow3D( DebugRenderOptionsT const &options, Vec3 start, Vec3 end, float base_thickness, float head_thickness ); 
@@ -118,7 +118,8 @@ private:
 
 	//Draw methods 2D
 	void							DrawPoint2D( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawLine2D(	const DebugRenderOptionsT* renderObject ) const;
+	void							DrawLine2D( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawQuad2D( const DebugRenderOptionsT* renderObject ) const;
 
 	//Draw methods 3D
 	void							DrawPoint3D( const DebugRenderOptionsT* renderObject ) const;
