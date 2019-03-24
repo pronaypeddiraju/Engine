@@ -8,6 +8,7 @@ Point2DObjectProperties::Point2DObjectProperties( eDebugRenderObject renderObjec
 {
 	//Base properties
 	m_durationSeconds = durationSeconds;
+	m_startDuration = m_durationSeconds;
 	m_renderObjectType = renderObject;
 
 	//Point properties
@@ -24,6 +25,7 @@ Line2DObjectProperties::Line2DObjectProperties( eDebugRenderObject renderObject,
 {
 	//Base properties
 	m_durationSeconds = durationSeconds;
+	m_startDuration = m_durationSeconds;
 	m_renderObjectType = renderObject;
 
 	//Line properties

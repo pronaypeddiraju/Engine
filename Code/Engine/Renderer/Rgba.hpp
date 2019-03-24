@@ -33,6 +33,9 @@ public:
 	void			SetFromText(const char* asText);
 	void			SetFromBytes( unsigned char redByte, unsigned char greenByte, unsigned char blueByte, unsigned char alphaByte = 255 );
 
+	static void		LerpRGBA( Rgba& currentColor, const Rgba& startColor, const Rgba& endColor, float blendFraction );
+	static void		LerpRGB( Rgba& currentColor, const Rgba& startColor, const Rgba& endColor, float blendFraction );
+
 	bool operator==( const Rgba& compare ) const;				// vec2 == vec2
 	bool operator!=( const Rgba& compare ) const;
 

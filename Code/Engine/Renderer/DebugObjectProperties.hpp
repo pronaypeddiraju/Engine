@@ -2,6 +2,7 @@
 #pragma once
 //Engine Systems
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Renderer/Rgba.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 enum eDebugRenderObject
@@ -34,6 +35,8 @@ class ObjectProperties
 public:
 	eDebugRenderObject m_renderObjectType;
 	float m_durationSeconds         = 0.0f;  // show for a single frame
+	float m_startDuration			= 0.f;
+	Rgba m_currentColor				= Rgba::WHITE;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------

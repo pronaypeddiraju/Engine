@@ -61,8 +61,10 @@ public:
 	void					SetClientDimensions(int height, int width);
 	void					Shutdown();
 	void					BeginFrame();
+	void					EndFrame();
 	void					Update(float deltaTime);
-	
+	void					CleanUpObjects();
+
 	//void					RenderDebugObjects(RenderContext* renderContext) const;
 
 	void					DebugRenderToScreen() const;		//This renders to the screen camera

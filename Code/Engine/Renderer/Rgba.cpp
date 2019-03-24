@@ -1,5 +1,6 @@
 #include "Rgba.hpp"
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include <vector>
 #include <string>
 
@@ -50,6 +51,21 @@ void Rgba::SetFromBytes( unsigned char redByte, unsigned char greenByte, unsigne
 	a = static_cast<float>(alphaByte) / 255.f;
 }
 
+
+void Rgba::LerpRGBA( Rgba& currentColor, const Rgba& startColor, const Rgba& endColor, float blendFraction )
+{
+	currentColor.r = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.r, endColor.r);
+	currentColor.g = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.g, endColor.g);
+	currentColor.b = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.b, endColor.b);
+	currentColor.a = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.a, endColor.a);
+}
+
+void Rgba::LerpRGB( Rgba& currentColor, const Rgba& startColor, const Rgba& endColor, float blendFraction )
+{
+	currentColor.r = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.r, endColor.r);
+	currentColor.g = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.g, endColor.g);
+	currentColor.b = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.b, endColor.b);
+}
 
 bool Rgba::operator!=( const Rgba& compare ) const
 {

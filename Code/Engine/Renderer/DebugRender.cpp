@@ -3,6 +3,7 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Vertex_PCU.hpp"
 #include "Engine/Renderer/Camera.hpp"
@@ -50,9 +51,76 @@ void DebugRender::Shutdown()
 	m_debug3DCam = nullptr;
 }
 
+void DebugRender::BeginFrame()
+{
+
+}
+
+void DebugRender::EndFrame()
+{
+	CleanUpObjects();
+}
+
 void DebugRender::Update( float deltaTime )
 {
-	UNUSED(deltaTime);
+	int vectorSize;
+	float blendFraction;
+
+	vectorSize = static_cast<int>(screenRenderObjects.size());
+
+	for(int objectIndex = 0; objectIndex < vectorSize; objectIndex++)
+	{
+		ObjectProperties* objectProperties = screenRenderObjects[objectIndex].objectProperties;
+		if(objectProperties->m_durationSeconds != 0.f)
+		{
+			//Subtract duration
+			objectProperties->m_durationSeconds -= deltaTime;
+
+			//Setup color value for the current time
+			blendFraction = RangeMapFloat(objectProperties->m_durationSeconds, 0.f, objectProperties->m_startDuration, 0.f, 1.f);
+			blendFraction = 1 - blendFraction;
+
+			Rgba::LerpRGB( objectProperties->m_currentColor, screenRenderObjects[objectIndex].beginColor, screenRenderObjects[objectIndex].endColor, blendFraction );
+		}
+	}
+
+	vectorSize = static_cast<int>(worldRenderObjects.size());
+
+	for(int objectIndex = 0; objectIndex < vectorSize; objectIndex++)
+	{
+		ObjectProperties* objectProperties = worldRenderObjects[objectIndex].objectProperties;
+		if(objectProperties->m_durationSeconds != 0.f)
+		{
+			objectProperties->m_durationSeconds -= deltaTime;
+
+			//Setup color value for the current time
+			blendFraction = RangeMapFloat(objectProperties->m_durationSeconds, 0.f, objectProperties->m_startDuration, 0.f, 1.f);
+			blendFraction = 1 - blendFraction;
+
+			Rgba::LerpRGB( objectProperties->m_currentColor, worldRenderObjects[objectIndex].beginColor, worldRenderObjects[objectIndex].endColor, blendFraction );
+		}
+	}
+
+}
+
+void DebugRender::CleanUpObjects()
+{
+	for(int objectIndex = 0; objectIndex < (int)screenRenderObjects.size(); objectIndex++)
+	{
+		if(screenRenderObjects[objectIndex].objectProperties->m_durationSeconds <= 0.f)
+		{
+			screenRenderObjects.erase(screenRenderObjects.begin() + objectIndex);
+		}
+	}
+
+	for(int objectIndex = 0; objectIndex < (int)worldRenderObjects.size(); objectIndex++)
+	{
+		if(worldRenderObjects[objectIndex].objectProperties->m_durationSeconds <= 0.f)
+		{
+			worldRenderObjects.erase(worldRenderObjects.begin() + objectIndex);
+		}
+	}
+
 }
 
 void DebugRender::DebugRenderToScreen() const
@@ -63,6 +131,8 @@ void DebugRender::DebugRenderToScreen() const
 	for(int objectIndex = 0; objectIndex < vectorSize; objectIndex++)
 	{
 		const DebugRenderOptionsT* renderObject = &screenRenderObjects[objectIndex];
+
+		//Render the object for this frame
 		switch(renderObject->objectProperties->m_renderObjectType)
 		{
 		case DEBUG_RENDER_POINT:
@@ -78,6 +148,13 @@ void DebugRender::DebugRenderToScreen() const
 		default:
 			ERROR_AND_DIE("The debug object is not yet defined in DebugRenderToScreen");
 			break;
+		}
+
+		//If the duration is 0.f or lower, set the object to nullptr
+		if(renderObject->objectProperties->m_durationSeconds <= 0.f)
+		{
+			//Set the object to nullptr
+			renderObject = nullptr;
 		}
 	}
 }
@@ -132,7 +209,7 @@ void DebugRender::DrawPoint2D( const DebugRenderOptionsT* renderObject) const
 
 	AABB2 box = AABB2(minBounds, maxBounds);
 	std::vector<Vertex_PCU> pointVerts;
-	AddVertsForAABB2D(pointVerts, box, renderObject->beginColor );
+	AddVertsForAABB2D(pointVerts, box, objectProperties->m_currentColor );
 
 	switch (renderObject->mode)
 	{
@@ -167,7 +244,7 @@ void DebugRender::DrawLine2D( const DebugRenderOptionsT* renderObject ) const
 
 	//TODO: Implement code to handle duration logic
 	std::vector<Vertex_PCU> lineVerts;
-	AddVertsForLine2D(lineVerts, objectProperties->m_startPos, objectProperties->m_endPos, objectProperties->m_lineWidth, renderObject->beginColor);
+	AddVertsForLine2D(lineVerts, objectProperties->m_startPos, objectProperties->m_endPos, objectProperties->m_lineWidth,  objectProperties->m_currentColor);
 
 	switch (renderObject->mode)
 	{
