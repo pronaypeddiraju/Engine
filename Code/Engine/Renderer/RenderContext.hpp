@@ -136,7 +136,7 @@ private:
 
 private:
 	// Private (internal) data members will go here
-	std::map< std::string, TextureView* >				m_loadedTextures;
+	//std::map< std::string, TextureView* >				m_loadedTextures;
 	std::map< std::string, BitmapFont* >				m_loadedFonts;
 	std::map< std::string, Shader*>						m_loadedShaders;
 

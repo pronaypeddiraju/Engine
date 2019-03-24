@@ -125,6 +125,9 @@ public:
 	Vec3 m_position						= Vec3::ZERO;
 	TextureView* m_texture				= nullptr;
 	float m_size						= DEFAULT_POINT_SIZE_3D;
+	AABB2 m_point;
+
+	CPUMesh* m_mesh;
 };
 
 // Line
@@ -143,11 +146,7 @@ public:
 
 	AABB2 m_line;
 
-	/*
-	CPUMesh* m_lineMesh;
-	GPUMesh* m_lineGPUMesh;
-	Matrix44 m_lineTransform; // line's model matrix
-	*/
+	CPUMesh* m_mesh;
 };
 
 // Sphere

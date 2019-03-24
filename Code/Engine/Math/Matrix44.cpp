@@ -127,6 +127,27 @@ const Vec3 Matrix44::GetKVector()
 	return kVector;
 }
 
+void Matrix44::SetIVector( const Vec3& i )
+{
+	m_values[Ix] = i.x;
+	m_values[Iy] = i.y;
+	m_values[Iz] = i.z;
+}
+
+void Matrix44::SetJVector( const Vec3& j )
+{
+	m_values[Jx] = j.x;
+	m_values[Jy] = j.y;
+	m_values[Jz] = j.z;
+}
+
+void Matrix44::SetKVector( const Vec3& k )
+{
+	m_values[Kx] = k.x;
+	m_values[Ky] = k.y;
+	m_values[Kz] = k.z;
+}
+
 /*
 
 Matrix.Append()
@@ -722,4 +743,19 @@ void Matrix44::InverseMatrix()
 	for (i = 0; i < 16; i++) {
 		m_values[i] = (float)(inverse[i] * det);
 	}
+}
+
+void Matrix44::SetRotationFromMatrix( Matrix44& out, Matrix44& sourceMatrix )
+{
+	out.m_values[Ix] = sourceMatrix.m_values[Ix];
+	out.m_values[Iy] = sourceMatrix.m_values[Iy];
+	out.m_values[Iz] = sourceMatrix.m_values[Iz];
+
+	out.m_values[Jx] = sourceMatrix.m_values[Jx];
+	out.m_values[Jy] = sourceMatrix.m_values[Jy];
+	out.m_values[Jz] = sourceMatrix.m_values[Jz];
+
+	out.m_values[Kx] = sourceMatrix.m_values[Kx];
+	out.m_values[Ky] = sourceMatrix.m_values[Ky];
+	out.m_values[Kz] = sourceMatrix.m_values[Kz];
 }

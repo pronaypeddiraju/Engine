@@ -50,9 +50,14 @@ public:
 	const Vec3			GetJVector();
 	const Vec3			GetKVector();
 
+	void				SetIVector( const Vec3& i );
+	void				SetJVector( const Vec3& j );
+	void				SetKVector( const Vec3& k );
+
 	Matrix44			AppendMatrix( const Matrix44& matrix);
 
 	void				InverseMatrix();
+	void				SetRotationFromMatrix(Matrix44& out, Matrix44& sourceMatrix);
 
 	//Static methods to create required matrix
 	static const Matrix44	MakeZRotationDegrees ( float RotationZ );
@@ -69,6 +74,7 @@ public:
 	static const Matrix44	SetTranslation3D (const Vec3& position, Matrix44& setMatrix);
 	static const Matrix44	TransposeRotationComponents( const Matrix44& sourceMatrix);
 	static const Matrix44	Transpose( const Matrix44& sourceMatrix );
+
 
 	//Operations on Matrix
 	// Mat44 * Vec3

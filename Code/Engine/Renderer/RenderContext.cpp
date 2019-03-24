@@ -121,7 +121,7 @@ void RenderContext::D3D11Cleanup()
 {
 	ID3D11Debug* debugObject = nullptr;
 	HRESULT hr = m_D3DDevice->QueryInterface(__uuidof(ID3D11Debug), (void**)&debugObject);
-	
+
 	DX_SAFE_RELEASE(m_defaultRasterState);
 	DX_SAFE_RELEASE(m_D3DSwapChain);
 	DX_SAFE_RELEASE(m_D3DContext);
@@ -133,6 +133,7 @@ void RenderContext::D3D11Cleanup()
 		//debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 		DX_SAFE_RELEASE(debugObject);
 	}
+
 }
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -205,8 +206,8 @@ void RenderContext::PremakeDefaults()
 	// premake defaults 
 	std::string name = "WHITE.png";
 	
-	TextureView* white  = GetOrCreateTextureViewFromFile(name);
-	m_loadedTextures["WHITE"] = white;
+	GetOrCreateTextureViewFromFile(name);
+	//m_cachedTextureViews["WHITE"] = white;
 	
 }
 
@@ -402,6 +403,20 @@ void RenderContext::Shutdown()
 
 	m_cachedTextureViews.clear();
 
+	//Clear all Fonts
+	std::map< std::string, BitmapFont*>::iterator fontIterator;
+	std::map< std::string, BitmapFont*>::iterator lastFontIterator;
+
+	fontIterator = m_loadedFonts.begin();
+	lastFontIterator = m_loadedFonts.end();
+
+	for(fontIterator; fontIterator != lastFontIterator; fontIterator++)
+	{
+		delete fontIterator->second;
+	}
+
+	m_loadedFonts.clear();
+
 	/*
 	texIterator = m_loadedTextures.begin();
 	lastTexIterator = m_loadedTextures.end();
@@ -459,7 +474,7 @@ void RenderContext::BindTextureView( uint slot, TextureView *view )
 		if(slot == 0)
 		{
 			//Bind to white texture
-			BindTextureView(0U, "WHITE");
+			BindTextureView(0U, "WHITE.png");
 		}
 	}
 
@@ -472,7 +487,7 @@ void RenderContext::BindTextureView( uint slot, TextureView *view )
 void RenderContext::BindTextureView( uint slot, std::string const &name )
 {
 	std::map<std::string, TextureView*>::iterator textureIterator;
-	textureIterator = m_loadedTextures.find(name);
+	textureIterator = m_cachedTextureViews.find(name);
 
 	BindTextureView(slot, textureIterator->second);
 }
@@ -537,7 +552,7 @@ void RenderContext::BindTextureViewWithSampler( uint slot, TextureView *view, eS
 void RenderContext::BindTextureViewWithSampler( uint slot, std::string const &name, eSampleMode mode )
 {
 	std::map<std::string, TextureView*>::iterator texIterator;
-	texIterator = m_loadedTextures.find(name);
+	texIterator = m_cachedTextureViews.find(name);
 
 	BindTextureViewWithSampler(slot, texIterator->second, mode);
 }

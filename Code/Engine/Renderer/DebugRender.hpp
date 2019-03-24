@@ -74,7 +74,8 @@ public:
 	void					Setup2DCamera() const;
 	void					Setup3DCamera(Camera* const camera);
 	void					SetObjectMatrixForPosition( Vec3 position ) const;
-
+	void					SetObjectMatrixForBillBoard( Vec3 position ) const;
+	
 	Camera&					Get2DCamera();
 
 	//------------------------------------------------------------------------

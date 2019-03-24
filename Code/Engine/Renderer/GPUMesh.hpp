@@ -3,10 +3,12 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 class CPUMesh;
 class IndexBuffer;
 struct Vertex_PCU;
 
+//------------------------------------------------------------------------------------------------------------------------------
 class GPUMesh                            // A04
 {
 public:

@@ -69,6 +69,17 @@ Point3DProperties::Point3DProperties( eDebugRenderObject renderObject, const Vec
 	m_texture = texture;
 	m_position = position;
 	m_size = size;
+
+	Vec2 right = Vec2(1.f, 0.f);
+	Vec2 up = Vec2(0.f, 1.f);
+
+	Vec3 mins = Vec3(-m_size * 0.5f, -m_size * 0.5f, 0.f);
+	Vec3 maxs = Vec3(m_size * 0.5f, m_size * 0.5f, 0.f);
+
+	m_point = AABB2(mins, maxs);
+	m_mesh = new CPUMesh();
+	m_mesh->Clear();
+	CPUMeshAddQuad(m_mesh, m_point);
 }
 
 Point3DProperties::~Point3DProperties()
@@ -105,20 +116,23 @@ Line3DProperties::Line3DProperties( eDebugRenderObject renderObject, const Vec3&
 	m_endPos = endPos;
 	m_lineWidth = lineWidth;
 
+	
 	Vec3 disp = m_startPos - m_endPos;
 	float length = disp.GetLength();
 	Vec3 norm = disp.GetNormalized();
-	Vec2 tangentXZ = Vec2(norm.x, norm.y).GetRotated90Degrees();
-	Vec3 tangent = Vec3(tangentXZ.x, 0.f, tangentXZ.y).GetNormalized();
+	//Vec2 tangentXZ = Vec2(norm.x, norm.y).GetRotated90Degrees();
+	//Vec3 tangent = Vec3(tangentXZ.x, 0.f, tangentXZ.y).GetNormalized();
 	Vec3 center = m_endPos + norm * length * 0.5f;
 
-	Vec3 mins = Vec3(m_startPos.x, m_startPos.y - (tangent * lineWidth * 0.5f).y, m_startPos.x);
-	Vec3 maxs = Vec3(m_endPos.x, m_endPos.y + (tangent * lineWidth * 0.5f).y, m_endPos.x);
+	Vec3 mins = Vec3(m_startPos.x, m_startPos.y - (Vec2(0.f, 1.f) * lineWidth * 0.5f).y, m_startPos.x);
+	Vec3 maxs = Vec3(m_endPos.x, m_endPos.y + (Vec2(0.f, 1.f) * lineWidth * 0.5f).y, m_endPos.x);
 
 	m_line = AABB2(mins, maxs);
-
 	m_center = center;
 	
+	m_mesh = new CPUMesh();
+	m_mesh->Clear();
+	CPUMeshAddQuad(m_mesh, m_line);
 }
 
 Line3DProperties::~Line3DProperties()

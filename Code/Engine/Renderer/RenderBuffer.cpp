@@ -184,6 +184,8 @@ RenderBuffer::RenderBuffer( RenderContext *owner )
 RenderBuffer::~RenderBuffer()
 {
 	DX_SAFE_RELEASE(m_handle);
+
+	m_owningRenderContext = nullptr;
 }
 
 size_t RenderBuffer::GetSize() const

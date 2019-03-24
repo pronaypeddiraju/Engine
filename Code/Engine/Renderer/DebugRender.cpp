@@ -99,6 +99,9 @@ void DebugRender::Update( float deltaTime )
 			blendFraction = 1 - blendFraction;
 
 			Rgba::LerpRGB( objectProperties->m_currentColor, worldRenderObjects[objectIndex].beginColor, worldRenderObjects[objectIndex].endColor, blendFraction );
+
+			//Set color om the CPUMesh
+
 		}
 	}
 
@@ -404,54 +407,10 @@ void DebugRender::DrawPoint3D( const DebugRenderOptionsT* renderObject ) const
 		ERROR_AND_DIE("Object recieved in DebugRender was not a 3D Point. Check inputs");
 	}
 
-	std::vector<Vertex_PCU> pointVerts;
-	Vec2 boxMins = Vec2((objectProperties->m_position.x - objectProperties->m_size * 0.5f), (objectProperties->m_position.y - objectProperties->m_size * 0.5f));
-	Vec2 boxMaxs = Vec2((objectProperties->m_position.x + objectProperties->m_size * 0.5f), (objectProperties->m_position.y + objectProperties->m_size * 0.5f));
-	AABB2 pointBox = AABB2(boxMins, boxMaxs);
-
-
-	SetObjectMatrixForPosition(objectProperties->m_position);
-	AddVertsForAABB2D(pointVerts, pointBox, objectProperties->m_currentColor);
-
-	//Setup the textures on the render context
-	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture); 
-
-	switch (renderObject->mode)
-	{
-	case DEBUG_RENDER_USE_DEPTH:
-	m_renderContext->SetDepth(true);
-	break;
-	case DEBUG_RENDER_ALWAYS:
-	m_renderContext->SetDepth(false);
-	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
-	break;
-	}
-
-	m_renderContext->DrawVertexArray(pointVerts);
-
-}
-
-void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
-{
-	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
-
-	Line3DProperties* objectProperties = reinterpret_cast<Line3DProperties*>(renderObject->objectProperties);
-	if(objectProperties->m_renderObjectType != DEBUG_RENDER_LINE3D)
-	{
-		ERROR_AND_DIE("Object recieved in DebugRender was not a 3D Line. Check inputs");
-	}
-
-	std::vector<Vertex_PCU> lineVerts;
-	Vec2 boxMins = Vec2((objectProperties->m_startPos.x - objectProperties->m_lineWidth * 0.5f), (objectProperties->m_startPos.y - objectProperties->m_lineWidth * 0.5f));
-	Vec2 boxMaxs = Vec2((objectProperties->m_endPos.x + objectProperties->m_lineWidth * 0.5f), (objectProperties->m_endPos.y + objectProperties->m_lineWidth * 0.5f));
-	AABB2 lineBox = AABB2(boxMins, boxMaxs);
-
-
-	SetObjectMatrixForPosition(objectProperties->m_center);
-	AddVertsForAABB2D(lineVerts, lineBox, objectProperties->m_currentColor);
+	//Setup mesh here
+	GPUMesh point = GPUMesh( m_renderContext ); 
+	point.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
+	SetObjectMatrixForBillBoard(objectProperties->m_position);
 
 	//Setup the textures on the render context
 	m_renderContext->BindTextureViewWithSampler(0U, nullptr); 
@@ -470,7 +429,58 @@ void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
 	break;
 	}
 
-	m_renderContext->DrawVertexArray(lineVerts);
+	m_renderContext->DrawMesh(&point);
+
+}
+
+void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
+{
+	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
+
+	Line3DProperties* objectProperties = reinterpret_cast<Line3DProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_LINE3D)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a 3D Line. Check inputs");
+	}
+
+	/*
+	std::vector<Vertex_PCU> lineVerts;
+	Vec2 boxMins = Vec2((objectProperties->m_startPos.x - objectProperties->m_lineWidth * 0.5f), (objectProperties->m_startPos.y - objectProperties->m_lineWidth * 0.5f));
+	Vec2 boxMaxs = Vec2((objectProperties->m_endPos.x + objectProperties->m_lineWidth * 0.5f), (objectProperties->m_endPos.y + objectProperties->m_lineWidth * 0.5f));
+	AABB2 lineBox = AABB2(boxMins, boxMaxs);
+
+
+	SetObjectMatrixForPosition(objectProperties->m_center);
+	AddVertsForAABB2D(lineVerts, lineBox, objectProperties->m_currentColor);
+
+	//Setup the textures on the render context
+	m_renderContext->BindTextureViewWithSampler(0U, nullptr); 
+	*/
+
+	//Setup mesh here
+	GPUMesh line = GPUMesh( m_renderContext ); 
+	line.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
+	SetObjectMatrixForPosition(objectProperties->m_center);
+	//SetObjectMatrixForBillBoard(objectProperties->m_center);
+
+	//Setup the textures on the render context
+	m_renderContext->BindTextureViewWithSampler(0U, nullptr); 
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
+	m_renderContext->DrawMesh(&line);
 }
 
 void DebugRender::DrawSphere( const DebugRenderOptionsT* renderObject ) const
@@ -545,14 +555,23 @@ void DebugRender::DrawBox( const DebugRenderOptionsT* renderObject ) const
 
 void DebugRender::SetObjectMatrixForPosition( Vec3 position ) const
 {
-	m_debug3DCam->UpdateUniformBuffer(m_renderContext);
-
 	//Setup matrix for position
-	Matrix44 objectMatrix = Matrix44::MakeFromEuler(Vec3(0.f, 0.f, 0.f));
+	Matrix44 objectMatrix = Matrix44::MakeFromEuler(Vec3::ZERO);
 	Matrix44::SetTranslation3D(position, objectMatrix);
 
 	//Set on Render Context
 	m_renderContext->SetModelMatrix( objectMatrix ); 
+}
+
+void DebugRender::SetObjectMatrixForBillBoard( Vec3 position ) const
+{
+	Matrix44 cameraModel = m_debug3DCam->GetModelMatrix();
+	Matrix44 objectModel = Matrix44::IDENTITY;
+	objectModel.SetRotationFromMatrix(objectModel, cameraModel);
+
+	objectModel = Matrix44::SetTranslation3D(position, objectModel);
+
+	m_renderContext->SetModelMatrix(objectModel);	
 }
 
 void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT options, const Vec2& position, float duration, float size /*= DEFAULT_POINT_SIZE */ )

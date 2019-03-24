@@ -58,22 +58,22 @@ void AABB2::SetFromText( const char* asText )
 
 Vec3 AABB2::GetTopLeft() const
 {
-	return Vec3(m_3Dmin.x, m_3Dmax.y, 0.f);
+	return Vec3(m_3Dmin.x, m_3Dmax.y, m_3Dmin.z);
 }
 
 Vec3 AABB2::GetTopRight() const
 {
-	return Vec3(m_3Dmax.x, m_3Dmax.y, 0.f);
+	return Vec3(m_3Dmax.x, m_3Dmax.y, m_3Dmax.z);
 }
 
 Vec3 AABB2::GetBottomLeft() const
 {
-	return Vec3(m_3Dmin.x, m_3Dmin.y, 0.f);
+	return Vec3(m_3Dmin.x, m_3Dmin.y, m_3Dmin.z);
 }
 
 Vec3 AABB2::GetBottomRight() const
 {
-	return Vec3(m_3Dmax.x, m_3Dmin.y, 0.f);
+	return Vec3(m_3Dmax.x, m_3Dmin.y, m_3Dmax.z);
 }
 
 void AABB2::AlignWithinBox( const AABB2& box, const Vec2& alignment )

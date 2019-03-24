@@ -75,9 +75,8 @@ public:
 // as I like to pick and choose the ones I want instead of having them
 // all live in CPUMesh.hpp
 //------------------------------------------------------------------------------------------------------------------------------
-void			CPUMeshAddQuad( CPUMesh *out, AABB2 quad, const Rgba& color); 
-
-void			CPUMeshAddCube( CPUMesh *out, AABB3 box, bool clearMesh = true );                                                           // A04
-void			CPUMeshAddUVSphere( CPUMesh *out, Vec3 center, float radius, uint wedges = 32, uint slices = 16 );							// A04
-void			CPUMeshAddBox2D( CPUMesh *out, OBB2 const &obb, Rgba const &color );
+void			CPUMeshAddQuad( CPUMesh *out, AABB2 quad, const Rgba& color = Rgba::WHITE); 
+void			CPUMeshAddCube( CPUMesh *out, AABB3 box, const Rgba& color = Rgba::WHITE, bool clearMesh = true );                                                           // A04
+void			CPUMeshAddUVSphere( CPUMesh *out, Vec3 center, float radius, const Rgba& color = Rgba::WHITE, uint wedges = 32, uint slices = 16 );							// A04
+void			CPUMeshAddBox2D( CPUMesh *out, OBB2 const &obb, Rgba const &color = Rgba::WHITE);
 
