@@ -1,9 +1,11 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include "Engine/Math/Matrix44.hpp"
+#include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec4.hpp"
+#include "Engine/Renderer/DebugObjectProperties.hpp"
 #include "Engine/Renderer/Rgba.hpp"
-#include <map>
+#include <vector>
 
 struct AABB2;
 struct AABB3;
@@ -14,16 +16,6 @@ class TextureView;
 class RenderContext;
 
 // System to render debugging data for specified objects in the system.
-// This class works similar to any other Engine System. Requires a Startup call to initiate
-// Requires a Draw call (Render) to render elements in the scene
-// Requires a shutdown call to shut the system at the end.
-
-//------------------------------------------------------------------------
-#define DEFAULT_POINT_SIZE       (4.0f)
-#define DEFAULT_LINE_WIDTH       (1.0f)
-#define DEFAULT_HEIGHT			 ( 720.f )
-#define DEFAULT_ASPECT			 ( 1.77f )
-
 //------------------------------------------------------------------------
 enum eDebugRenderSpace 
 {
@@ -33,48 +25,20 @@ enum eDebugRenderSpace
 
 enum eDebugRenderMode
 {
-	DEBUG_RENDER_USE_DEPTH,    // default mode - will use depth buffer and write;
+	DEBUG_RENDER_USE_DEPTH,    
 	DEBUG_RENDER_ALWAYS,       // always draw, does not write to depth
 	DEBUG_RENDER_XRAY,         // render behind (greater, no write), then in front (lequal, write)
-								// darken or thin the line during behind render to differentiate from it being in front; 
+							   // darken or thin the line during behind render to differentiate from it being in front; 
 }; 
 
-enum eDebugRenderObject
-{
-	DEBUG_RENDER_POINT,
-	DEBUG_RENDER_POINT3D,
-
-	DEBUG_RENDER_LINE,
-	DEBUG_RENDER_LINE3D,
-
-	DEBUG_RENDER_QUAD,
-	DEBUG_RENDER_TEX_QUAD,
-	DEBUG_RENDER_WIRE_QUAD,
-
-	DEBUG_RENDER_SPHERE,
-	DEBUG_RENDER_WIRE_SPHERE,	//This has to be an icoSphere
-
-	DEBUG_RENDER_BOX,
-	DEBUG_RENDER_WIRE_BOX,
-
-	DEBUG_RENDER_ARROW,
-	DEBUG_RENDER_ARROW3D,
-	
-	DEBUG_RENDER_BASIS,
-};
-
 //------------------------------------------------------------------------
-// struct to contain options for rendering something.  Contains parameters common to most 
-// debug draw calls. 
 struct DebugRenderOptionsT
 {
 	eDebugRenderSpace space       = DEBUG_RENDER_SCREEN; 
 	eDebugRenderMode mode         = DEBUG_RENDER_USE_DEPTH; 
 
-	float durationSeconds         = 0.0f;  // show for a single frame
-
-	Rgba beginColor               = Rgba::WHITE; // color when this object first exist; 
-	Rgba endColor                 = Rgba::WHITE; // color when this object is about to be destroyed
+	Rgba beginColor               = Rgba::WHITE; 
+	Rgba endColor                 = Rgba::WHITE; 
 
 	// 2D common - these are where I will treat the "origin" 
 	// of the screen for drawing - defaulting to bottom-left corner; 
@@ -83,13 +47,8 @@ struct DebugRenderOptionsT
 
 	// 3D (WORLD space) common (ignored for SCREEN & CAMERA)
 	Matrix44 modelTransform       = Matrix44::IDENTITY; // local transform to do to the object; 
-};
-
-struct DebugRenderObjectT
-{
-	DebugRenderOptionsT renderOptions;
-	eDebugRenderObject renderObject;
-	float timeRemaining = 0.f;
+	
+	ObjectProperties* objectProperties = nullptr; 
 };
 
 class DebugRender
@@ -99,12 +58,15 @@ public:
 	~DebugRender();
 
 	void					Startup(RenderContext* renderContext);
+	void					SetClientDimensions(int height, int width);
 	void					Shutdown();
 	void					BeginFrame();
 	void					Update(float deltaTime);
 	
+	//void					RenderDebugObjects(RenderContext* renderContext) const;
+
 	void					DebugRenderToScreen() const;		//This renders to the screen camera
-	void					DebugRenderToCamera() const;		//This renders in the world camera
+	void					DebugRenderToCamera( Camera* renderCamera ) const;		//This renders in the world camera
 
 	void					SetupRenderOptions();
 
@@ -113,93 +75,63 @@ public:
 	//------------------------------------------------------------------------
 	// 2D Debug Rendering (defaults to SCREEN)
 	//------------------------------------------------------------------------
-	void				DebugRenderPoint2D( DebugRenderOptionsT const &options, 
-											 Vec2 position, 
-											 float size = DEFAULT_POINT_SIZE );
-
-	void				DebugRenderLine2D( DebugRenderOptionsT const &options, 
-											Vec2 start, Vec2 end, 
-											float lineWidth = DEFAULT_LINE_WIDTH );
-
-	void				DebugRenderQuad2D( DebugRenderOptionsT const &options, 
-											AABB2 const &quad ); 
-
-	void				DebugRenderTexturedQuad2D( DebugRenderOptionsT const &options, 
-													AABB2 const &quad, 
-													TextureView *view ); 
-
-	void				DebugRenderWireQuad2D( DebugRenderOptionsT const &options, 
-												AABB2 const &quad, 
-												float lineWidth = DEFAULT_LINE_WIDTH ); 
+	void				DebugRenderPoint2D( DebugRenderOptionsT options, Vec2 position, float duration = 0.f, float size = DEFAULT_POINT_SIZE );
+	void				DebugRenderLine2D( DebugRenderOptionsT options, Vec2 start, Vec2 end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH );
+	
+	void				DebugRenderQuad2D( DebugRenderOptionsT const &options, AABB2 const &quad ); 
+	
+	void				DebugRenderTexturedQuad2D( DebugRenderOptionsT const &options, AABB2 const &quad, TextureView *view ); 
+	void				DebugRenderWireQuad2D( DebugRenderOptionsT const &options, AABB2 const &quad, float lineWidth = DEFAULT_LINE_WIDTH ); 
 
 	// to get a ring, you can just use a innerRadius line-thickness smaller than radius; 
-	void				DebugRenderDisc2D( DebugRenderOptionsT const &options, 
-											Vec2 center, 
-											float radius, 
-											float innerRadius = 0.0f ); 
+	void				DebugRenderDisc2D( DebugRenderOptionsT const &options, Vec2 center, float radius, float innerRadius = 0.0f ); 
 	
 	//------------------------------------------------------------------------
 	// 3D Rendering (will always default to WORLD)
 	//------------------------------------------------------------------------
-	void				DebugRenderPoint( DebugRenderOptionsT const &options, 
-											Vec3 position, 
-											float size = DEFAULT_POINT_SIZE );
+	void				DebugRenderPoint( DebugRenderOptionsT const &options, const Vec3& position, const Rgba& color = Rgba::MAGENTA, float size = DEFAULT_POINT_SIZE );
+	void				DebugRenderPoint( Camera& camera, DebugRenderOptionsT const &options, Vec3 position, TextureView* texture = nullptr, float size = DEFAULT_POINT_SIZE );
 
-	void				DebugRenderPoint( Camera& camera, DebugRenderOptionsT const &options,
-											Vec3 position,
-											TextureView* texture = nullptr,
-											float size = DEFAULT_POINT_SIZE );
-
-	void				DebugRenderLine( DebugRenderOptionsT const &options, 
-											Vec3 start, Vec3 end, 
-											float lineWidth = DEFAULT_LINE_WIDTH );
-
-	void				DebugRenderArrow3D( DebugRenderOptionsT const &options, 
-											Vec3 start, Vec3 end, 
-											float base_thickness, 
-											float head_thickness ); 
-
-	void				DebugRenderSphere( DebugRenderOptionsT const &options, 
-										   Vec3 center, 
-										   float radius ); 
-
-	void				DebugRenderBox( DebugRenderOptionsT const &options, 
-										AABB3 box ); 
+	void				DebugRenderLine( DebugRenderOptionsT const &options, Vec3 start, Vec3 end, float lineWidth = DEFAULT_LINE_WIDTH );
+	void				DebugRenderArrow3D( DebugRenderOptionsT const &options, Vec3 start, Vec3 end, float base_thickness, float head_thickness ); 
+	void				DebugRenderSphere( DebugRenderOptionsT const &options, Vec3 center, float radius ); 
+	void				DebugRenderBox( DebugRenderOptionsT const &options, AABB3 box ); 
 
 	// EXTRA (helps to be able to set raster fill mode to "wire")
 	// Also, better to use an ICOSphere if available, but UV sphere is fine; 
-	void				DebugRenderWireSphere( DebugRenderOptionsT const &options,
-											   Vec3 center, 
-											   float radius ); 
+	void				DebugRenderWireSphere( DebugRenderOptionsT const &options, Vec3 center, float radius ); 
 
 	// EXTRA (helps to be able to set raster fill mode to "wire")
-	void				DebugRenderWireBox( DebugRenderOptionsT const &options, 
-											AABB3 box ); 
+	void				DebugRenderWireBox( DebugRenderOptionsT const &options, AABB3 box ); 
 
 	// EXTRA (requires being able to render a cone/cylinder)
-	void				DebugRenderArrow( DebugRenderOptionsT const &options, 
-										  Vec3 start, Vec3 end, 
-										  float lineWidth = DEFAULT_LINE_WIDTH ); 
+	void				DebugRenderArrow( DebugRenderOptionsT const &options, Vec3 start, Vec3 end, float lineWidth = DEFAULT_LINE_WIDTH ); 
 
 	// EXTRA - requires Arrow
-	void				DebugRenderBasis( DebugRenderOptionsT const &options, 
-										  Matrix44 const &basis, 
-										  float lineWidth = DEFAULT_LINE_WIDTH ); 
+	void				DebugRenderBasis( DebugRenderOptionsT const &options, Matrix44 const &basis, float lineWidth = DEFAULT_LINE_WIDTH ); 
 
 private:
-	IntVec2				ConvertWorldToScreenPoint(Vec3 worldPoint);
-	Vec3				ConvertScreenToWorldPoint(Vec3 screenPoint);
+	IntVec2							ConvertWorldToScreenPoint(Vec3 worldPoint);
+	Vec3							ConvertScreenToWorldPoint(Vec3 screenPoint);
+
+	//Draw methods 2D
+	void							DrawPoint2D( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawLine2D(	const DebugRenderOptionsT* renderObject ) const;
+
+	//Draw methods 3D
+	void							DrawPoint3D( const DebugRenderOptionsT* renderObject ) const;
 
 private:
-	RenderContext*		m_renderContext = nullptr;
-	int					m_clientWidth;
-	int					m_clientHeight;
-	Camera*				m_debug3DCam = nullptr;
-	Camera*				m_debug2DCam = nullptr;
-	bool				m_canRender = true;
+	RenderContext*		m_renderContext					= nullptr;
+	int					m_clientWidth					= 0;
+	int					m_clientHeight					= 0;
+	Camera*				m_debug3DCam					= nullptr;
+	Camera*				m_debug2DCam					= nullptr;
+	bool				m_canRender						= true;
 
 	//Store all debug objects with their render options and other data
-	std::map<int, DebugRenderObjectT>	debugRenderObjects;
+	std::vector<DebugRenderOptionsT>	worldRenderObjects;
+	std::vector<DebugRenderOptionsT>	screenRenderObjects;
 };
 
 /*

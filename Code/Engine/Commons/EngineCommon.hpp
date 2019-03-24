@@ -7,6 +7,13 @@
 #pragma warning( error: 4172) // Returning address of local variable or temporary variable
 #pragma warning( error: 4172) //Not all control paths return a value
 
+//------------------------------------------------------------------------------------------------------------------------------
+//	DEBUG RENDER DEFAULTS
+//------------------------------------------------------------------------------------------------------------------------------
+#define DEFAULT_POINT_SIZE       (10.0f)
+#define DEFAULT_LINE_WIDTH       (10.0f)
+
+//------------------------------------------------------------------------------------------------------------------------------
 #define UNUSED(x) (void)(x);
 #define KEY_UP 72
 #define KEY_LEFT 75

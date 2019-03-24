@@ -25,12 +25,21 @@ DebugRender::~DebugRender()
 void DebugRender::Startup( RenderContext* renderContext )
 {
 	m_renderContext = renderContext;
+}
+
+
+void DebugRender::SetClientDimensions( int height, int width )
+{
+	m_clientHeight = height;
+	m_clientWidth = width;
+
 
 	//Add logic here to setup a default screen space camera which set to 720p or something
 	m_debug2DCam = new Camera();
-	m_debug2DCam->SetOrthoView(Vec2(DEFAULT_HEIGHT * -0.5f * DEFAULT_ASPECT, DEFAULT_HEIGHT * -0.5f), Vec2(DEFAULT_HEIGHT * 0.5f * DEFAULT_ASPECT, DEFAULT_HEIGHT * 0.5f));
+	float halfHeight = height * 0.5f;
+	float halfWidth = width * 0.5f;
+	m_debug2DCam->SetOrthoView(Vec2(-halfWidth, -halfHeight), Vec2(halfWidth, halfHeight));	
 }
-
 
 void DebugRender::Shutdown()
 {
@@ -49,24 +58,51 @@ void DebugRender::Update( float deltaTime )
 void DebugRender::DebugRenderToScreen() const
 {
 	//Use this method to render to screen camera
-	std::map<int, DebugRenderObjectT>::iterator mapIterator;
-	for(mapIterator; mapIterator != debugRenderObjects.end(); mapIterator++)
+	int vectorSize = static_cast<int>(screenRenderObjects.size());
+
+	for(int objectIndex = 0; objectIndex < vectorSize; objectIndex++)
 	{
-		eDebugRenderObject objectType = mapIterator->second.renderObject;
-		switch(objectType)
+		const DebugRenderOptionsT* renderObject = &screenRenderObjects[objectIndex];
+		switch(renderObject->objectProperties->m_renderObjectType)
 		{
 		case DEBUG_RENDER_POINT:
-			break;
+		{
+			DrawPoint2D( renderObject);
+		}
+		break;
+		case DEBUG_RENDER_LINE:
+		{
+			DrawLine2D(renderObject);
+		}
+		break;
 		default:
-			GUARANTEE_OR_DIE(true, "The debug object is not yet defined in DebugRenderToScreen");
+			ERROR_AND_DIE("The debug object is not yet defined in DebugRenderToScreen");
 			break;
 		}
 	}
 }
 
-void DebugRender::DebugRenderToCamera() const
+void DebugRender::DebugRenderToCamera( Camera* renderCamera ) const
 {
+	UNUSED(renderCamera);
+
 	//Use this method to render to the world camera
+	int vectorSize = static_cast<int>(worldRenderObjects.size());
+
+	for(int objectIndex = 0; objectIndex < vectorSize; objectIndex++)
+	{
+		const DebugRenderOptionsT* renderObject = &worldRenderObjects[objectIndex];
+		switch(renderObject->objectProperties->m_renderObjectType)
+		{
+		case DEBUG_RENDER_POINT3D:
+		//DrawPoint2D(renderContext, renderObject);
+		DrawPoint3D(renderObject);
+		break;
+		default:
+		GUARANTEE_OR_DIE(true, "The debug object is not yet defined in DebugRenderToScreen");
+		break;
+		}
+	}
 }
 
 Camera& DebugRender::Get2DCamera()
@@ -74,24 +110,31 @@ Camera& DebugRender::Get2DCamera()
 	return *m_debug2DCam;
 }
 
-void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT const &options, Vec2 position, float size /*= DEFAULT_POINT_SIZE */ )
+void DebugRender::DrawPoint2D( const DebugRenderOptionsT* renderObject) const
 {
 	m_debug2DCam->SetModelMatrix(Matrix44::IDENTITY);
 	m_debug2DCam->UpdateUniformBuffer(m_renderContext);
 
 	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
 
+	Point2DObjectProperties* objectProperties = reinterpret_cast<Point2DObjectProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_POINT)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a point. Check inputs");
+	}
+
 	//TODO: Implement code to handle duration logic
-	Vec2 minBounds = Vec2(size * -0.5f, size * -0.5f);
-	Vec2 maxBounds = Vec2(size * 0.5f, size * 0.5f);
-	minBounds += position;
-	maxBounds += position;
+	Vec2 minBounds = Vec2(objectProperties->m_size * -0.5f, objectProperties->m_size * -0.5f);
+	Vec2 maxBounds = Vec2(objectProperties->m_size * 0.5f, objectProperties->m_size * 0.5f);
+
+	minBounds += objectProperties->m_screenPosition;
+	maxBounds += objectProperties->m_screenPosition;
 
 	AABB2 box = AABB2(minBounds, maxBounds);
 	std::vector<Vertex_PCU> pointVerts;
-	AddVertsForAABB2D(pointVerts, box, options.beginColor );
+	AddVertsForAABB2D(pointVerts, box, renderObject->beginColor );
 
-	switch (options.mode)
+	switch (renderObject->mode)
 	{
 	case DEBUG_RENDER_USE_DEPTH:
 	m_renderContext->SetDepth(true);
@@ -106,21 +149,27 @@ void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT const &options, Vec2 p
 	}
 
 	m_renderContext->DrawVertexArray(pointVerts);
+
 }
 
-//Inplementation to debug render a line using 2D debug camera
-void DebugRender::DebugRenderLine2D(DebugRenderOptionsT const& options, Vec2 start, Vec2 end, float lineWidth)
+void DebugRender::DrawLine2D( const DebugRenderOptionsT* renderObject ) const
 {
 	m_debug2DCam->SetModelMatrix(Matrix44::IDENTITY);
 	m_debug2DCam->UpdateUniformBuffer(m_renderContext);
 
 	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
 
+	Line2DObjectProperties* objectProperties = reinterpret_cast<Line2DObjectProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_LINE)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a Line. Check inputs");
+	}
+
 	//TODO: Implement code to handle duration logic
 	std::vector<Vertex_PCU> lineVerts;
-	AddVertsForLine2D(lineVerts, start, end, lineWidth, options.beginColor);
+	AddVertsForLine2D(lineVerts, objectProperties->m_startPos, objectProperties->m_endPos, objectProperties->m_lineWidth, renderObject->beginColor);
 
-	switch (options.mode)
+	switch (renderObject->mode)
 	{
 	case DEBUG_RENDER_USE_DEPTH:
 	m_renderContext->SetDepth(true);
@@ -135,6 +184,28 @@ void DebugRender::DebugRenderLine2D(DebugRenderOptionsT const& options, Vec2 sta
 	}
 
 	m_renderContext->DrawVertexArray(lineVerts);
+}
+
+void DebugRender::DrawPoint3D( const DebugRenderOptionsT* renderObject ) const
+{
+	UNUSED(renderObject);
+	//Create the Debug Render object here
+
+}
+
+void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT options, Vec2 position, float duration, float size /*= DEFAULT_POINT_SIZE */ )
+{
+	options.objectProperties = new Point2DObjectProperties(DEBUG_RENDER_POINT, position, duration, size);
+
+	screenRenderObjects.push_back(options);
+}
+
+//Inplementation to debug render a line using 2D debug camera
+void DebugRender::DebugRenderLine2D(DebugRenderOptionsT options, Vec2 start, Vec2 end, float duration, float lineWidth)
+{
+	options.objectProperties = new Line2DObjectProperties(DEBUG_RENDER_LINE, start, end, duration, lineWidth);
+
+	screenRenderObjects.push_back(options);
 
 }
 
@@ -186,7 +257,7 @@ IntVec2 DebugRender::ConvertWorldToScreenPoint( Vec3 worldPoint)
 	return IntVec2(winX, winY);
 }
 
-void DebugRender::DebugRenderPoint( DebugRenderOptionsT const & options, Vec3 position, float size )
+void DebugRender::DebugRenderPoint( DebugRenderOptionsT const& options, const Vec3& position, const Rgba& color, float size )
 {
 	//Create a quad in 3D space and make it face the camera
 
@@ -204,7 +275,7 @@ void DebugRender::DebugRenderPoint( DebugRenderOptionsT const & options, Vec3 po
 
 
 
-	AddVertsForAABB2D(pointVerts, pointBox, Rgba::DARK_GREY);
+	AddVertsForAABB2D(pointVerts, pointBox, color);
 }
 
 void DebugRender::DebugRenderPoint( Camera & camera, DebugRenderOptionsT const & options, Vec3 position, TextureView* texture, float size )
