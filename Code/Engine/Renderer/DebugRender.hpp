@@ -89,6 +89,7 @@ public:
 	void				DebugRenderWireQuad2D( DebugRenderOptionsT options, AABB2 const &quad, float duration = 0.f, float thickness = DEFAULT_WIRE_WIDTH_2D ); 
 	void				DebugRenderDisc2D( DebugRenderOptionsT options, Disc2D const &disc, float duration = 0.f); 
 	void				DebugRenderRing2D( DebugRenderOptionsT options, Disc2D const &disc, float duration = 0.f, float thickness = DEFAULT_DISC_THICKNESS ); 
+	void				DebugRenderText2D( DebugRenderOptionsT options, const Vec2& startPosition, const Vec2& endPosition, char const *format, float fontHeight = DEFAULT_TEXT_HEIGHT, float duration = 0.f, ... );
 	void				DebugRenderArrow2D( DebugRenderOptionsT options, Vec3 start, Vec3 end, float lineWidth = DEFAULT_LINE_WIDTH ); 
 
 	//------------------------------------------------------------------------
@@ -116,7 +117,7 @@ public:
 	//------------------------------------------------------------------------
 	// Rendering Text (works in any mode)
 	//------------------------------------------------------------------------
-	void				DebugRenderTextv( DebugRenderOptionsT options, const Vec3& position, const Vec2& pivot, char const *format, float fontHeight = DEFAULT_TEXT_HEIGHT_3D, float duration = 0.f, ... );
+	void				DebugRenderText3D( DebugRenderOptionsT options, const Vec3& position, const Vec2& pivot, char const *format, float fontHeight = DEFAULT_TEXT_HEIGHT_3D, float duration = 0.f, bool isBillboarded = false, ... );
 
 	/*
 	//------------------------------------------------------------------------
@@ -140,6 +141,7 @@ private:
 	void							DrawWireQuad2D	( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawDisc2D		( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawRing2D		( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawText2D		( const DebugRenderOptionsT* renderObject ) const;
 
 	//Draw methods 3D
 	void							DrawPoint3D		( const DebugRenderOptionsT* renderObject ) const;

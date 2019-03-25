@@ -39,6 +39,7 @@ enum eDebugRenderObject
 
 	DEBUG_RENDER_BASIS,
 
+	DEBUG_RENDER_TEXT,
 	DEBUG_RENDER_TEXT3D,
 };
 
@@ -63,7 +64,8 @@ public:
 class Point2DProperties : public ObjectProperties
 {
 public:
-	explicit Point2DProperties(eDebugRenderObject renderObject, const Vec2& screenPosition, float durationSeconds, float size);
+	explicit Point2DProperties(eDebugRenderObject renderObject, const Vec2& screenPosition, 
+							   float durationSeconds = 0.f, float size = DEFAULT_POINT_SIZE);
 	~Point2DProperties();
 
 public:
@@ -76,7 +78,8 @@ public:
 class Line2DProperties : public ObjectProperties
 {
 public:
-	explicit Line2DProperties(eDebugRenderObject renderObject, const Vec2& startPos, const Vec2& endPos, float durationSeconds, float lineWidth);
+	explicit Line2DProperties(eDebugRenderObject renderObject, const Vec2& startPos, const Vec2& endPos, 
+							  float durationSeconds = 0.f, float lineWidth = DEFAULT_LINE_WIDTH);
 	~Line2DProperties();
 
 public:
@@ -91,7 +94,8 @@ public:
 class Quad2DProperties : public ObjectProperties
 {
 public:
-	explicit Quad2DProperties( eDebugRenderObject renderObject, const AABB2& quad, float durationSeconds = 0.f, float thickness = DEFAULT_WIRE_WIDTH_2D, TextureView* texture = nullptr );
+	explicit Quad2DProperties( eDebugRenderObject renderObject, const AABB2& quad, 
+							   float durationSeconds = 0.f, float thickness = DEFAULT_WIRE_WIDTH_2D, TextureView* texture = nullptr );
 	~Quad2DProperties();
 
 public:
@@ -105,7 +109,8 @@ public:
 class Disc2DProperties : public ObjectProperties
 {
 public:
-	explicit Disc2DProperties( eDebugRenderObject renderObject, const Disc2D& disc, float thickness, float durationSeconds = 0.f);
+	explicit Disc2DProperties( eDebugRenderObject renderObject, const Disc2D& disc, float thickness, 
+							   float durationSeconds = 0.f);
 	~Disc2DProperties();
 
 public:
@@ -122,7 +127,8 @@ public:
 class Point3DProperties : public ObjectProperties
 {
 public:
-	explicit Point3DProperties( eDebugRenderObject renderObject, const Vec3& position, float size, float durationSeconds = 0.f, TextureView* texture = nullptr);
+	explicit Point3DProperties( eDebugRenderObject renderObject, const Vec3& position, float size = DEFAULT_POINT_SIZE_3D, 
+								float durationSeconds = 0.f, TextureView* texture = nullptr);
 	~Point3DProperties();
 
 public:
@@ -138,7 +144,8 @@ public:
 class Line3DProperties : public ObjectProperties
 {
 public:
-	explicit Line3DProperties( eDebugRenderObject renderObject, const Vec3& startPos, const Vec3& endPos, float durationSeconds = 0.f, float lineWidth = DEFAULT_LINE_WIDTH);
+	explicit Line3DProperties( eDebugRenderObject renderObject, const Vec3& startPos, const Vec3& endPos, 
+							   float durationSeconds = 0.f, float lineWidth = DEFAULT_LINE_WIDTH);
 	~Line3DProperties();
 
 public:
@@ -155,7 +162,8 @@ public:
 class Quad3DProperties : public ObjectProperties
 {
 public:
-	explicit Quad3DProperties( eDebugRenderObject renderObject, const AABB2& quad, const Vec3& position, float durationSeconds = 0.f, TextureView* texture = nullptr, bool billBoarded = true );
+	explicit Quad3DProperties( eDebugRenderObject renderObject, const AABB2& quad, const Vec3& position, 
+							   float durationSeconds = 0.f, TextureView* texture = nullptr, bool billBoarded = true );
 	~Quad3DProperties();
 
 public:
@@ -171,7 +179,8 @@ public:
 class SphereProperties : public ObjectProperties
 {
 public:
-	explicit SphereProperties( eDebugRenderObject renderObject, const Vec3& center, float radius, float durationSeconds = 0.f, TextureView* texture = nullptr);
+	explicit SphereProperties( eDebugRenderObject renderObject, const Vec3& center, float radius, 
+							   float durationSeconds = 0.f, TextureView* texture = nullptr);
 	~SphereProperties();
 
 public:
@@ -185,7 +194,8 @@ public:
 class BoxProperties : public ObjectProperties
 {
 public:
-	explicit BoxProperties( eDebugRenderObject renderObject, const AABB3& box, const Vec3& position, float durationSeconds = 0.f, TextureView* texture = nullptr);
+	explicit BoxProperties( eDebugRenderObject renderObject, const AABB3& box, const Vec3& position, 
+							float durationSeconds = 0.f, TextureView* texture = nullptr);
 	~BoxProperties();
 
 public:
@@ -201,13 +211,22 @@ public:
 class TextProperties : public ObjectProperties
 {
 public:
-	explicit TextProperties( eDebugRenderObject renderObject, const Vec3& position, const Vec2& pivot, const std::string& text, float fontHeight, float durationSeconds = 0.f);
+	explicit TextProperties( eDebugRenderObject renderObject, const Vec3& position, const Vec2& pivot, const std::string& text, 
+							 float fontHeight, float durationSeconds = 0.f, bool isBillboarded = true);
+	explicit TextProperties( eDebugRenderObject renderObject, const Vec2& startPosition, const Vec2& endPosition, const std::string& text,
+							 float fontHeight, float durationSeconds = 0.f);
 	~TextProperties();
 
 public:
+	//For 3D
 	Vec3 m_position							= Vec3::ZERO;
 	Vec2 m_pivot							= Vec2::ZERO;
-	float m_fontHeight						= DEFAULT_TEXT_HEIGHT_3D;
+	bool m_isBillboarded					= true;
 
+	//For 2D
+	Vec2 m_startPosition					= Vec2::ZERO;
+	Vec2 m_endPosition						= Vec2::ZERO;
+
+	float m_fontHeight						= DEFAULT_TEXT_HEIGHT_3D;
 	std::string	m_string;
 };

@@ -11,10 +11,12 @@
 //	DEBUG RENDER DEFAULTS
 //------------------------------------------------------------------------------------------------------------------------------
 // 2D Values
-#define DEFAULT_POINT_SIZE       (10.0f)
-#define DEFAULT_LINE_WIDTH       (1.0f)
-#define DEFAULT_WIRE_WIDTH_2D	 (1.f)
 #define DEFAULT_DISC_THICKNESS	 (5.0f)
+#define DEFAULT_LINE_WIDTH       (1.0f)
+#define DEFAULT_POINT_SIZE       (10.0f)
+#define DEFAULT_TEXT_HEIGHT		 (100.0f)
+#define DEFAULT_WIRE_WIDTH_2D	 (1.f)
+
 // 3D Values
 #define DEFAULT_POINT_SIZE_3D    (1.0f)
 #define DEFAULT_LINE_WIDTH_3D	 (0.1f)

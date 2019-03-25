@@ -155,6 +155,7 @@ void DebugRender::DebugRenderToScreen() const
 		case DEBUG_RENDER_DISC:			{	DrawDisc2D(renderObject);		}	break;
 		case DEBUG_RENDER_RING:			{	DrawRing2D(renderObject);		}	break;
 		case DEBUG_RENDER_WIRE_QUAD:	{	DrawWireQuad2D(renderObject);	}	break;
+		case DEBUG_RENDER_TEXT:			{	DrawText2D(renderObject);		}	break;
 		default:						{	ERROR_AND_DIE("The debug object is not yet defined in DebugRenderToScreen");	}	break;
 		}
 
@@ -409,6 +410,40 @@ void DebugRender::DrawRing2D( const DebugRenderOptionsT* renderObject ) const
 	}
 
 	m_renderContext->DrawVertexArray(ringVerts);
+}
+
+void DebugRender::DrawText2D( const DebugRenderOptionsT* renderObject ) const
+{
+	Setup2DCamera();
+
+	TextProperties* objectProperties = reinterpret_cast<TextProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_TEXT)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not text. Check inputs");
+	}
+
+	m_renderContext->BindTextureViewWithSampler(0U, m_debugFont->GetTexture());
+
+	std::vector<Vertex_PCU> textVerts;
+
+	AABB2 textBox = AABB2(objectProperties->m_startPosition - Vec2(0.f, objectProperties->m_fontHeight * 0.5f), objectProperties->m_endPosition + Vec2(0.f, objectProperties->m_fontHeight * 0.f));
+	m_debugFont->AddVertsForTextInBox2D(textVerts, textBox, objectProperties->m_fontHeight, objectProperties->m_string, objectProperties->m_currentColor);
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
+	m_renderContext->DrawVertexArray(textVerts);
 }
 
 void DebugRender::DrawPoint3D( const DebugRenderOptionsT* renderObject ) const
@@ -694,8 +729,14 @@ void DebugRender::DrawText3D( const DebugRenderOptionsT* renderObject ) const
 	AABB2 lineBox = AABB2(mins, maxs);
 	m_debugFont->AddVertsForTextInBox3D(textVerts, lineBox, maxs.y - mins.y, objectProperties->m_string, objectProperties->m_currentColor);
 
-	//SetObjectMatrixForPosition(objectProperties->m_position);
-	SetObjectMatrixForBillBoard(objectProperties->m_position);
+	if(objectProperties->m_isBillboarded)
+	{
+		SetObjectMatrixForBillBoard(objectProperties->m_position);
+	}
+	else
+	{
+		SetObjectMatrixForPosition(objectProperties->m_position);
+	}
 
 	//Setup the textures on the render context
 	m_renderContext->BindTextureViewWithSampler(0U, m_debugFont->GetTexture()); 
@@ -802,6 +843,23 @@ void DebugRender::DebugRenderRing2D( DebugRenderOptionsT options, Disc2D const &
 	screenRenderObjects.push_back(options);
 }
 
+void DebugRender::DebugRenderText2D( DebugRenderOptionsT options, const Vec2& startPosition, const Vec2& endPosition, char const *format, float fontHeight /*= DEFAULT_TEXT_HEIGHT*/, float duration /*= 0.f*/, ... )
+{
+	char buffer[1024]; 
+
+	va_list args;
+	va_start( args, format ); 
+	vsprintf_s( buffer, 1024, format, args ); 
+	va_end( args ); 
+
+	buffer[ 1024 - 1 ] = '\0'; // In case vsnprintf overran (doesn't auto-terminate)
+	std::string text = std::string( buffer);
+
+	options.objectProperties = new TextProperties(DEBUG_RENDER_TEXT, startPosition, endPosition, text, fontHeight, duration);
+
+	screenRenderObjects.push_back(options);
+}
+
 void DebugRender::DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration, float size, TextureView* texture )
 {
 	options.objectProperties = new Point3DProperties(DEBUG_RENDER_POINT3D, position, size, duration, texture);
@@ -851,7 +909,7 @@ void DebugRender::DebugRenderWireBox( DebugRenderOptionsT options, const AABB3& 
 	worldRenderObjects.push_back(options);
 }
 
-void DebugRender::DebugRenderTextv( DebugRenderOptionsT options, const Vec3& position, const Vec2& pivot, char const *format, float fontHeight, float duration, ... )
+void DebugRender::DebugRenderText3D( DebugRenderOptionsT options, const Vec3& position, const Vec2& pivot, char const *format, float fontHeight, float duration, bool isBillboarded, ... )
 {
 	char buffer[1024]; 
 
@@ -863,7 +921,7 @@ void DebugRender::DebugRenderTextv( DebugRenderOptionsT options, const Vec3& pos
 	buffer[ 1024 - 1 ] = '\0'; // In case vsnprintf overran (doesn't auto-terminate)
 	std::string text = std::string( buffer);
 
-	options.objectProperties = new TextProperties(DEBUG_RENDER_TEXT3D, position, pivot, text, fontHeight, duration);
+	options.objectProperties = new TextProperties(DEBUG_RENDER_TEXT3D, position, pivot, text, fontHeight, duration, isBillboarded);
 
 	worldRenderObjects.push_back(options);
 }
