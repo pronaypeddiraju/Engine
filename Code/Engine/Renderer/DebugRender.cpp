@@ -6,6 +6,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Vertex_PCU.hpp"
+#include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include <cmath>
@@ -40,6 +41,11 @@ void DebugRender::SetClientDimensions( int height, int width )
 	float halfHeight = height * 0.5f;
 	float halfWidth = width * 0.5f;
 	m_debug2DCam->SetOrthoView(Vec2(-halfWidth, -halfHeight), Vec2(halfWidth, halfHeight));	
+}
+
+void DebugRender::SetDebugFont( BitmapFont* font )
+{
+	m_debugFont = font;
 }
 
 void DebugRender::Shutdown()
@@ -99,6 +105,12 @@ void DebugRender::Update( float deltaTime )
 			blendFraction = 1 - blendFraction;
 
 			Rgba::LerpRGB( objectProperties->m_currentColor, worldRenderObjects[objectIndex].beginColor, worldRenderObjects[objectIndex].endColor, blendFraction );
+			
+			if(objectProperties->m_renderObjectType == DEBUG_RENDER_TEXT3D)
+			{
+				continue;
+			}
+
 			objectProperties->m_mesh->SetColor(objectProperties->m_currentColor);
 		}
 	}
@@ -172,6 +184,7 @@ void DebugRender::DebugRenderToCamera() const
 		case DEBUG_RENDER_QUAD3D:		{	DrawQuad3D(renderObject);		}	break;
 		case DEBUG_RENDER_WIRE_SPHERE:	{	DrawWireSphere(renderObject);	}	break;
 		case DEBUG_RENDER_WIRE_BOX:		{	DrawWireBox(renderObject);		}	break;
+		case DEBUG_RENDER_TEXT3D:		{	DrawText3D(renderObject);		}	break;
 		default:						{	ERROR_AND_DIE("The debug object is not yet defined in DebugRenderToCamera");	}	break;
 		}
 	}
@@ -660,6 +673,51 @@ void DebugRender::DrawWireBox( const DebugRenderOptionsT* renderObject ) const
 	m_renderContext->CreateAndSetDefaultRasterState();
 }
 
+void DebugRender::DrawText3D( const DebugRenderOptionsT* renderObject ) const
+{
+	TextProperties* objectProperties = reinterpret_cast<TextProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_TEXT3D)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not 3D Text. Check inputs");
+	}
+
+	std::vector<Vertex_PCU> textVerts;
+
+	int numChars = (int)objectProperties->m_string.size();
+
+	Vec3 mins = objectProperties->m_position;
+	Vec3 maxs = objectProperties->m_position;
+	
+	mins -= Vec3(objectProperties->m_pivot.x * (float)numChars * objectProperties->m_fontHeight, objectProperties->m_fontHeight * objectProperties->m_pivot.y * 0.5f, 0.f);
+	maxs += Vec3(objectProperties->m_pivot.x * (float)numChars * objectProperties->m_fontHeight, objectProperties->m_fontHeight * objectProperties->m_pivot.y * 0.5f, 0.f);
+
+	AABB2 lineBox = AABB2(mins, maxs);
+	m_debugFont->AddVertsForTextInBox3D(textVerts, lineBox, maxs.y - mins.y, objectProperties->m_string, objectProperties->m_currentColor);
+
+	//SetObjectMatrixForPosition(objectProperties->m_position);
+	SetObjectMatrixForBillBoard(objectProperties->m_position);
+
+	//Setup the textures on the render context
+	m_renderContext->BindTextureViewWithSampler(0U, m_debugFont->GetTexture()); 
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
+	m_renderContext->DrawVertexArray(textVerts);
+
+}
+
 void DebugRender::SetObjectMatrixForPosition( Vec3 position ) const
 {
 	//Setup matrix for position
@@ -791,5 +849,21 @@ void DebugRender::DebugRenderWireBox( DebugRenderOptionsT options, const AABB3& 
 	options.objectProperties = new BoxProperties(DEBUG_RENDER_WIRE_BOX, box, position, duration, texture);
 
 	worldRenderObjects.push_back(options);
+}
 
+void DebugRender::DebugRenderTextv( DebugRenderOptionsT options, const Vec3& position, const Vec2& pivot, char const *format, float fontHeight, float duration, ... )
+{
+	char buffer[1024]; 
+
+	va_list args;
+	va_start( args, format ); 
+	vsprintf_s( buffer, 1024, format, args ); 
+	va_end( args ); 
+
+	buffer[ 1024 - 1 ] = '\0'; // In case vsnprintf overran (doesn't auto-terminate)
+	std::string text = std::string( buffer);
+
+	options.objectProperties = new TextProperties(DEBUG_RENDER_TEXT3D, position, pivot, text, fontHeight, duration);
+
+	worldRenderObjects.push_back(options);
 }

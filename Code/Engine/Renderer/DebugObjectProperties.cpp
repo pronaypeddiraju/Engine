@@ -223,4 +223,27 @@ Quad3DProperties::~Quad3DProperties()
 {
 	delete m_texture;
 	m_texture = nullptr;
+
+	delete m_mesh;
+	m_mesh = nullptr;
+}
+
+TextProperties::TextProperties( eDebugRenderObject renderObject, const Vec3& position, const Vec2& pivot, const std::string& text, float fontHeight, float durationSeconds /*= 0.f*/ )
+{
+	//Base properties
+	m_durationSeconds = durationSeconds;
+	m_startDuration = m_durationSeconds;
+	m_renderObjectType = renderObject;
+
+	//Text properties
+	m_position = position;
+	m_pivot = pivot.GetNormalized();
+	m_string = text;
+	m_fontHeight = fontHeight;
+}
+
+TextProperties::~TextProperties()
+{
+	delete m_mesh;
+	m_mesh = nullptr;
 }

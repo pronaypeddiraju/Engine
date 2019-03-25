@@ -11,8 +11,9 @@ struct AABB2;
 struct AABB3;
 struct Camera;
 struct IntVec2;
-class Disc2D;
 
+class BitmapFont;
+class Disc2D;
 class TextureView;
 class RenderContext;
 
@@ -60,6 +61,7 @@ public:
 
 	void					Startup(RenderContext* renderContext);
 	void					SetClientDimensions(int height, int width);
+	void					SetDebugFont( BitmapFont* font);
 	void					Shutdown();
 	void					BeginFrame();
 	void					EndFrame();
@@ -87,6 +89,7 @@ public:
 	void				DebugRenderWireQuad2D( DebugRenderOptionsT options, AABB2 const &quad, float duration = 0.f, float thickness = DEFAULT_WIRE_WIDTH_2D ); 
 	void				DebugRenderDisc2D( DebugRenderOptionsT options, Disc2D const &disc, float duration = 0.f); 
 	void				DebugRenderRing2D( DebugRenderOptionsT options, Disc2D const &disc, float duration = 0.f, float thickness = DEFAULT_DISC_THICKNESS ); 
+	void				DebugRenderArrow2D( DebugRenderOptionsT options, Vec3 start, Vec3 end, float lineWidth = DEFAULT_LINE_WIDTH ); 
 
 	//------------------------------------------------------------------------
 	// 3D Rendering (will always default to WORLD)
@@ -104,14 +107,27 @@ public:
 	void				DebugRenderWireBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr ); 
 
 
-	void				DebugRenderArrow3D( DebugRenderOptionsT options, Vec3 start, Vec3 end, float base_thickness, float head_thickness ); 
-	// EXTRA (helps to be able to set raster fill mode to "wire")
-
 	// EXTRA (requires being able to render a cone/cylinder)
-	void				DebugRenderArrow( DebugRenderOptionsT options, Vec3 start, Vec3 end, float lineWidth = DEFAULT_LINE_WIDTH ); 
+	void				DebugRenderArrow( DebugRenderOptionsT options, Vec3 start, Vec3 end, float base_thickness, float head_thickness ); 
 
 	// EXTRA - requires Arrow
-	void				DebugRenderBasis( DebugRenderOptionsT const &options, Matrix44 const &basis, float lineWidth = DEFAULT_LINE_WIDTH ); 
+	void				DebugRenderBasis( DebugRenderOptionsT options, Matrix44 const &basis, float lineWidth = DEFAULT_LINE_WIDTH ); 
+
+	//------------------------------------------------------------------------
+	// Rendering Text (works in any mode)
+	//------------------------------------------------------------------------
+	void				DebugRenderTextv( DebugRenderOptionsT options, const Vec3& position, const Vec2& pivot, char const *format, float fontHeight = DEFAULT_TEXT_HEIGHT_3D, float duration = 0.f, ... );
+
+	/*
+	//------------------------------------------------------------------------
+	// Logs (shows up on screen temporily in a list)
+	// ALWAYS assumes screen space; 
+	//------------------------------------------------------------------------
+	void DebugRenderLogv( DebugRenderOptionsT const &options, 
+	char const *format, va_list args ); 
+	void DebugRenderLogf( DebugRenderOptionsT const &options, 
+	char const *format); 
+	*/
 
 private:
 	IntVec2							ConvertWorldToScreenPoint(Vec3 worldPoint);
@@ -133,6 +149,7 @@ private:
 	void							DrawWireSphere	( const DebugRenderOptionsT* renderObject )	const;
 	void							DrawBox			( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawWireBox		( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawText3D		( const DebugRenderOptionsT* renderObject ) const;
 
 private:
 	RenderContext*		m_renderContext					= nullptr;
@@ -141,27 +158,10 @@ private:
 	Camera*				m_debug3DCam					= nullptr;
 	Camera*				m_debug2DCam					= nullptr;
 	bool				m_canRender						= true;
+	
+	BitmapFont*			m_debugFont						= nullptr;
 
 	//Store all debug objects with their render options and other data
 	std::vector<DebugRenderOptionsT>	worldRenderObjects;
 	std::vector<DebugRenderOptionsT>	screenRenderObjects;
 };
-
-/*
-//------------------------------------------------------------------------
-// Rendering Text (works in any mode)
-//------------------------------------------------------------------------
-void DebugRenderTextv( DebugRenderOptionsT const &options, 
-	Vec2 pivot, char const *format, va_list args );
-void DebugRenderTextf( DebugRenderOptionsT const &options, 
-	Vec2 pivot, char const *format, ... ); 
-
-//------------------------------------------------------------------------
-// Logs (shows up on screen temporily in a list)
-// ALWAYS assumes screen space; 
-//------------------------------------------------------------------------
-void DebugRenderLogv( DebugRenderOptionsT const &options, 
-	char const *format, va_list args ); 
-void DebugRenderLogf( DebugRenderOptionsT const &options, 
-	char const *format); 
-*/

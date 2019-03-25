@@ -11,7 +11,7 @@ CPUMesh::CPUMesh()
 }
 
 //------------------------------------------------------------------------
-void CPUMeshAddQuad( CPUMesh *out, AABB2 quad, const Rgba& color)
+void CPUMeshAddQuad( CPUMesh *out, const AABB2& quad, const Rgba& color)
 {
 	out->Clear(); 
 
@@ -38,7 +38,7 @@ void CPUMeshAddQuad( CPUMesh *out, AABB2 quad, const Rgba& color)
 	out->AddIndexedTriangle( 2, 3, 1 ); 
 }
 
-void CPUMeshAddBox2D( CPUMesh *out, OBB2 const &obb, Rgba const &color )
+void CPUMeshAddBox2D( CPUMesh *out, const OBB2& obb, Rgba const &color )
 {
 	out->Clear();
 
@@ -69,7 +69,7 @@ void CPUMeshAddBox2D( CPUMesh *out, OBB2 const &obb, Rgba const &color )
 	out->AddIndexedTriangle( 2, 3, 1 ); 
 }
 
-void CPUMeshAddBoxFace(CPUMesh *out, AABB2 quad)
+void CPUMeshAddBoxFace(CPUMesh *out, const AABB2& quad)
 {
 	out->SetColor( Rgba::WHITE ); 
 	// out->SetNormal( vec3::BACK ); 
@@ -94,7 +94,7 @@ void CPUMeshAddBoxFace(CPUMesh *out, AABB2 quad)
 	out->AddIndexedTriangle( 2, 3, 1 ); 
 }
 
-void CPUMeshAddCube( CPUMesh *out, AABB3 box, const Rgba& color, bool clearMesh )
+void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool clearMesh )
 {
 	if(clearMesh)
 	{
@@ -208,7 +208,7 @@ void CPUMeshAddCube( CPUMesh *out, AABB3 box, const Rgba& color, bool clearMesh 
 	out->AddIndexedTriangle( 22, 23, 21 );
 }
 
-void CPUMeshAddUVSphere( CPUMesh *out, Vec3 center, float radius, const Rgba& color, uint wedges /*= 32*/, uint slices /*= 16 */ )
+void CPUMeshAddUVSphere( CPUMesh *out, const Vec3& center, float radius, const Rgba& color, uint wedges /*= 32*/, uint slices /*= 16 */ )
 {
 	out->Clear();
 	out->SetStampColor( color ); 

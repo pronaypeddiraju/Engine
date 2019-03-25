@@ -26,11 +26,18 @@ public:
 	void						AddVertsForText2D( std::vector<Vertex_PCU>& textVerts, const Vec2& textStartPosition, float cellHeight, std::string printText,
 								const Rgba &tintColor = Rgba::WHITE, float cellAspect = 1.f, int maxGlyphsToDraw = 999999999);
 
+	void						AddVertsForText3D( std::vector<Vertex_PCU>& textVerts, const Vec3& textStartPosition, float cellHeight, std::string printText,
+								const Rgba &tintColor = Rgba::WHITE, float cellAspect = 1.f, int maxGlyphsToDraw = 999999999);
+
 	void						AddVertsForTextInBox2D( std::vector<Vertex_PCU>& textVerts, const AABB2& box, float cellHeight,
 								const std::string& printText, const Rgba& tintColor = Rgba::WHITE, float cellAspect = 1.f,
 								const Vec2& alignment = Vec2::ALIGN_CENTERED, TextBoxMode mode = TEXT_BOX_MODE_SHRINK, int maxGlyphsToDraw = 999999999 );
 
-	
+	void						AddVertsForTextInBox3D( std::vector<Vertex_PCU>& textVerts, const AABB2& box, float cellHeight,
+								const std::string& printText, const Rgba& tintColor = Rgba::WHITE, float cellAspect = 1.f,
+								const Vec2& alignment = Vec2::ALIGN_CENTERED, TextBoxMode mode = TEXT_BOX_MODE_SHRINK, int maxGlyphsToDraw = 999999999 );								
+
+	float						GetNewCellAspect3D( const AABB2& box, float cellHeight, float cellAspect, const std::string& printText );
 	float						GetNewCellAspect( const AABB2& box, float cellHeight, float cellAspect, const std::string& printText );
 	TextureView*				GetTexture();
 private:

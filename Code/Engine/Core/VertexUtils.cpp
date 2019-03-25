@@ -128,6 +128,22 @@ void AddVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, 
 	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
 }
 
+void AddVertsForAABB3D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba& color, const Vec2& uvAtMins /*= Vec2(0.f,1.f)*/, const Vec2& uvAtMaxs /*= Vec2(1.f,0.f) */ )
+{
+	Vec3 boxBottomLeft = Vec3(box.m_3Dmin.x, box.m_3Dmin.y, box.m_3Dmin.z);
+	Vec3 boxBottomRight = Vec3(box.m_3Dmax.x, box.m_3Dmin.y, box.m_3Dmax.z);
+	Vec3 boxTopLeft = Vec3(box.m_3Dmin.x, box.m_3Dmax.y, box.m_3Dmin.z);
+	Vec3 boxTopRight = Vec3(box.m_3Dmax.x, box.m_3Dmax.y, box.m_3Dmax.z);
+
+	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
+	vertexArray.push_back(Vertex_PCU(boxTopLeft, color, Vec2(uvAtMins.x, uvAtMaxs.y)));
+	vertexArray.push_back(Vertex_PCU(boxBottomLeft, color, uvAtMins));
+
+	vertexArray.push_back(Vertex_PCU(boxBottomLeft, color, uvAtMins));
+	vertexArray.push_back(Vertex_PCU(boxBottomRight, color, Vec2(uvAtMaxs.x, uvAtMins.y)));
+	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
+}
+
 void AddVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& box, const Rgba& color, const Vec2& uvAtMins /*= Vec2(0.f,1.f)*/, const Vec2& uvAtMaxs /*= Vec2(1.f,0.f) */ )
 {
 	Vec2 position2D;

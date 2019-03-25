@@ -38,6 +38,8 @@ enum eDebugRenderObject
 	DEBUG_RENDER_ARROW3D,
 
 	DEBUG_RENDER_BASIS,
+
+	DEBUG_RENDER_TEXT3D,
 };
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -191,4 +193,21 @@ public:
 	TextureView* m_texture				= nullptr;
 
 	AABB3 m_box;
+};
+
+//------------------------------------------------------------------------------------------------------------------------------
+// Text Render Objects
+//------------------------------------------------------------------------------------------------------------------------------
+class TextProperties : public ObjectProperties
+{
+public:
+	explicit TextProperties( eDebugRenderObject renderObject, const Vec3& position, const Vec2& pivot, const std::string& text, float fontHeight, float durationSeconds = 0.f);
+	~TextProperties();
+
+public:
+	Vec3 m_position							= Vec3::ZERO;
+	Vec2 m_pivot							= Vec2::ZERO;
+	float m_fontHeight						= DEFAULT_TEXT_HEIGHT_3D;
+
+	std::string	m_string;
 };
