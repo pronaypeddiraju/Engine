@@ -22,8 +22,8 @@ enum eDebugRenderObject
 	DEBUG_RENDER_LINE3D,
 
 	DEBUG_RENDER_QUAD,
-	DEBUG_RENDER_TEX_QUAD,
 	DEBUG_RENDER_WIRE_QUAD,
+	DEBUG_RENDER_QUAD3D,
 
 	DEBUG_RENDER_DISC,
 	DEBUG_RENDER_RING,
@@ -148,6 +148,21 @@ public:
 	AABB2 m_line;
 };
 
+// Quad
+//------------------------------------------------------------------------------------------------------------------------------
+class Quad3DProperties : public ObjectProperties
+{
+public:
+	explicit Quad3DProperties( eDebugRenderObject renderObject, const AABB2& quad, const Vec3& position, float durationSeconds = 0.f, TextureView* texture = nullptr );
+	~Quad3DProperties();
+
+public:
+	Vec3 m_position						= Vec3::ZERO;
+	TextureView* m_texture				= nullptr;
+
+	AABB2 m_quad;
+};
+
 // Sphere
 //------------------------------------------------------------------------------------------------------------------------------
 class SphereProperties : public ObjectProperties
@@ -167,11 +182,12 @@ public:
 class BoxProperties : public ObjectProperties
 {
 public:
-	explicit BoxProperties( eDebugRenderObject renderObject, const AABB3& box, float durationSeconds = 0.f, TextureView* texture = nullptr);
+	explicit BoxProperties( eDebugRenderObject renderObject, const AABB3& box, const Vec3& position, float durationSeconds = 0.f, TextureView* texture = nullptr);
 	~BoxProperties();
 
 public:
+	Vec3 m_position						= Vec3::ZERO;
 	TextureView* m_texture				= nullptr;
-	
+
 	AABB3 m_box;
 };

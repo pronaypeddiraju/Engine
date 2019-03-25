@@ -94,8 +94,9 @@ public:
 	void				DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration = 0.f, float size = DEFAULT_POINT_SIZE_3D, TextureView* texture = nullptr );
 	void				DebugRenderLine( DebugRenderOptionsT options, const Vec3& start, const Vec3& end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH );
 	void				DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration = 0.f, TextureView* texture = nullptr ); 
-	void				DebugRenderBox( DebugRenderOptionsT options, const AABB3& box, float duration = 0.f, TextureView* texture = nullptr ); 
-	
+	void				DebugRenderBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr ); 
+	void				DebugRenderQuad( DebugRenderOptionsT options, const AABB2& quad, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr);
+
 	void				DebugRenderArrow3D( DebugRenderOptionsT options, Vec3 start, Vec3 end, float base_thickness, float head_thickness ); 
 
 	// EXTRA (helps to be able to set raster fill mode to "wire")
@@ -125,6 +126,7 @@ private:
 
 	//Draw methods 3D
 	void							DrawPoint3D( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawQuad3D( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawLine3D( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawSphere( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawBox( const DebugRenderOptionsT* renderObject ) const;

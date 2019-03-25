@@ -12,6 +12,8 @@ public:
 	~AABB3();
 	explicit AABB3(const Vec3& minBounds,const Vec3& maxBounds);
 
+	const static AABB3 UNIT_CUBE;
+
 public:
 	//Front face
 	Vec3					m_frontTopLeft		= Vec3::ZERO;

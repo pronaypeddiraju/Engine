@@ -169,6 +169,7 @@ void DebugRender::DebugRenderToCamera() const
 		case DEBUG_RENDER_LINE3D:		{	DrawLine3D(renderObject);		}	break;
 		case DEBUG_RENDER_SPHERE:		{	DrawSphere(renderObject);		}	break;
 		case DEBUG_RENDER_BOX:			{	DrawBox(renderObject);			}	break;
+		case DEBUG_RENDER_QUAD3D:		{	DrawQuad3D(renderObject);		}	break;
 		default:						{	ERROR_AND_DIE("The debug object is not yet defined in DebugRenderToCamera");	}	break;
 		}
 	}
@@ -411,7 +412,7 @@ void DebugRender::DrawPoint3D( const DebugRenderOptionsT* renderObject ) const
 	SetObjectMatrixForBillBoard(objectProperties->m_position);
 
 	//Setup the textures on the render context
-	m_renderContext->BindTextureViewWithSampler(0U, nullptr); 
+	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture); 
 
 	switch (renderObject->mode)
 	{
@@ -429,6 +430,41 @@ void DebugRender::DrawPoint3D( const DebugRenderOptionsT* renderObject ) const
 
 	m_renderContext->DrawMesh(&point);
 
+}
+
+void DebugRender::DrawQuad3D( const DebugRenderOptionsT* renderObject ) const
+{
+	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
+
+	Quad3DProperties* objectProperties = reinterpret_cast<Quad3DProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_QUAD3D)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a 3D Quad. Check inputs");
+	}
+
+	//Setup mesh here
+	GPUMesh quad = GPUMesh( m_renderContext ); 
+	quad.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
+	SetObjectMatrixForBillBoard(objectProperties->m_position);
+
+	//Setup the textures on the render context
+	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture); 
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
+	m_renderContext->DrawMesh(&quad);
 }
 
 void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
@@ -529,7 +565,7 @@ void DebugRender::DrawBox( const DebugRenderOptionsT* renderObject ) const
 	//Setup mesh here
 	GPUMesh box = GPUMesh( m_renderContext ); 
 	box.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
-	SetObjectMatrixForPosition(objectProperties->m_box.m_center);
+	SetObjectMatrixForPosition(objectProperties->m_position);
 
 	//Setup the textures on the render context
 	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture); 
@@ -656,9 +692,16 @@ void DebugRender::DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, f
 	worldRenderObjects.push_back(options);
 }
 
-void DebugRender::DebugRenderBox( DebugRenderOptionsT options, const AABB3& box, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
+void DebugRender::DebugRenderBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
 {
-	options.objectProperties = new BoxProperties(DEBUG_RENDER_BOX, box, duration, texture);
+	options.objectProperties = new BoxProperties(DEBUG_RENDER_BOX, box, position, duration, texture);
+
+	worldRenderObjects.push_back(options);
+}
+
+void DebugRender::DebugRenderQuad( DebugRenderOptionsT options, const AABB2& quad, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr*/ )
+{
+	options.objectProperties = new Quad3DProperties(DEBUG_RENDER_QUAD3D, quad, position, duration, texture);
 
 	worldRenderObjects.push_back(options);
 }
