@@ -53,7 +53,9 @@ public:
 
 	ColorTargetView*			GetFrameColorTarget();
 	DepthStencilTargetView*		GetFrameDepthStencilTarget(); 
-	
+	void						SetRasterStateWireFrame();
+	void						CreateAndSetDefaultRasterState();
+
 	void						EndFrame();
 
 	void						BeginCamera( Camera& camera );
@@ -132,7 +134,6 @@ private:
 	// Private (internal) member functions will go here
 	BitmapFont*					CreateBitmapFontFromFile(const std::string& bitmapName);
 	Shader*						CreateShaderFromFile(const std::string& fileName);
-	void						CreateAndSetDefaultRasterState();
 
 private:
 	// Private (internal) data members will go here
@@ -144,7 +145,7 @@ private:
 	ID3D11DeviceContext									*m_D3DContext = nullptr;
 	IDXGISwapChain										*m_D3DSwapChain = nullptr;
 	ID3D11RasterizerState								*m_defaultRasterState = nullptr; 
-
+	
 	//For now make a global render target view
 	//Wait no! we shouldn't be fucking with this
 	//ID3D11RenderTargetView							*m_renderTargetView = nullptr;

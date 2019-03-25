@@ -170,6 +170,8 @@ void DebugRender::DebugRenderToCamera() const
 		case DEBUG_RENDER_SPHERE:		{	DrawSphere(renderObject);		}	break;
 		case DEBUG_RENDER_BOX:			{	DrawBox(renderObject);			}	break;
 		case DEBUG_RENDER_QUAD3D:		{	DrawQuad3D(renderObject);		}	break;
+		case DEBUG_RENDER_WIRE_SPHERE:	{	DrawWireSphere(renderObject);	}	break;
+		case DEBUG_RENDER_WIRE_BOX:		{	DrawWireBox(renderObject);		}	break;
 		default:						{	ERROR_AND_DIE("The debug object is not yet defined in DebugRenderToCamera");	}	break;
 		}
 	}
@@ -445,7 +447,14 @@ void DebugRender::DrawQuad3D( const DebugRenderOptionsT* renderObject ) const
 	//Setup mesh here
 	GPUMesh quad = GPUMesh( m_renderContext ); 
 	quad.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
-	SetObjectMatrixForBillBoard(objectProperties->m_position);
+	if(objectProperties->m_billBoarded)
+	{
+		SetObjectMatrixForBillBoard(objectProperties->m_position);
+	}
+	else
+	{
+		SetObjectMatrixForPosition(objectProperties->m_position);
+	}
 
 	//Setup the textures on the render context
 	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture); 
@@ -469,8 +478,6 @@ void DebugRender::DrawQuad3D( const DebugRenderOptionsT* renderObject ) const
 
 void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
 {
-	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
-
 	Line3DProperties* objectProperties = reinterpret_cast<Line3DProperties*>(renderObject->objectProperties);
 	if(objectProperties->m_renderObjectType != DEBUG_RENDER_LINE3D)
 	{
@@ -519,8 +526,6 @@ void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
 
 void DebugRender::DrawSphere( const DebugRenderOptionsT* renderObject ) const
 {
-	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
-
 	SphereProperties* objectProperties = reinterpret_cast<SphereProperties*>(renderObject->objectProperties);
 	if(objectProperties->m_renderObjectType != DEBUG_RENDER_SPHERE)
 	{
@@ -552,10 +557,43 @@ void DebugRender::DrawSphere( const DebugRenderOptionsT* renderObject ) const
 	m_renderContext->DrawMesh(&sphere);
 }
 
+void DebugRender::DrawWireSphere( const DebugRenderOptionsT* renderObject ) const
+{
+	SphereProperties* objectProperties = reinterpret_cast<SphereProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_WIRE_SPHERE)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a Sphere. Check inputs");
+	}
+
+	//Setup mesh here
+	GPUMesh sphere = GPUMesh( m_renderContext ); 
+	sphere.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
+	SetObjectMatrixForPosition(objectProperties->m_center);
+
+	//Setup the textures on the render context
+	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture); 
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
+	m_renderContext->SetRasterStateWireFrame();
+	m_renderContext->DrawMesh(&sphere);
+	m_renderContext->CreateAndSetDefaultRasterState();
+}
+
 void DebugRender::DrawBox( const DebugRenderOptionsT* renderObject ) const
 {
-	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
-
 	BoxProperties* objectProperties = reinterpret_cast<BoxProperties*>(renderObject->objectProperties);
 	if(objectProperties->m_renderObjectType != DEBUG_RENDER_BOX)
 	{
@@ -585,6 +623,41 @@ void DebugRender::DrawBox( const DebugRenderOptionsT* renderObject ) const
 	}
 
 	m_renderContext->DrawMesh(&box);
+}
+
+void DebugRender::DrawWireBox( const DebugRenderOptionsT* renderObject ) const
+{
+	BoxProperties* objectProperties = reinterpret_cast<BoxProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_WIRE_BOX)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a Box. Check inputs");
+	}
+
+	//Setup mesh here
+	GPUMesh box = GPUMesh( m_renderContext ); 
+	box.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
+	SetObjectMatrixForPosition(objectProperties->m_position);
+
+	//Setup the textures on the render context
+	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture); 
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	case DEBUG_RENDER_XRAY:
+	//Make 2 draw calls here
+	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	break;
+	}
+
+	m_renderContext->SetRasterStateWireFrame();
+	m_renderContext->DrawMesh(&box);
+	m_renderContext->CreateAndSetDefaultRasterState();
 }
 
 void DebugRender::SetObjectMatrixForPosition( Vec3 position ) const
@@ -699,9 +772,24 @@ void DebugRender::DebugRenderBox( DebugRenderOptionsT options, const AABB3& box,
 	worldRenderObjects.push_back(options);
 }
 
-void DebugRender::DebugRenderQuad( DebugRenderOptionsT options, const AABB2& quad, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr*/ )
+void DebugRender::DebugRenderQuad( DebugRenderOptionsT options, const AABB2& quad, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr*/, bool billBoarded /* = true */ )
 {
-	options.objectProperties = new Quad3DProperties(DEBUG_RENDER_QUAD3D, quad, position, duration, texture);
+	options.objectProperties = new Quad3DProperties(DEBUG_RENDER_QUAD3D, quad, position, duration, texture, billBoarded);
 
 	worldRenderObjects.push_back(options);
+}
+
+void DebugRender::DebugRenderWireSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
+{
+	options.objectProperties = new SphereProperties(DEBUG_RENDER_WIRE_SPHERE, center, radius, duration, texture);
+
+	worldRenderObjects.push_back(options);
+}
+
+void DebugRender::DebugRenderWireBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
+{
+	options.objectProperties = new BoxProperties(DEBUG_RENDER_WIRE_BOX, box, position, duration, texture);
+
+	worldRenderObjects.push_back(options);
+
 }

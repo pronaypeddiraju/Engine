@@ -153,12 +153,13 @@ public:
 class Quad3DProperties : public ObjectProperties
 {
 public:
-	explicit Quad3DProperties( eDebugRenderObject renderObject, const AABB2& quad, const Vec3& position, float durationSeconds = 0.f, TextureView* texture = nullptr );
+	explicit Quad3DProperties( eDebugRenderObject renderObject, const AABB2& quad, const Vec3& position, float durationSeconds = 0.f, TextureView* texture = nullptr, bool billBoarded = true );
 	~Quad3DProperties();
 
 public:
 	Vec3 m_position						= Vec3::ZERO;
 	TextureView* m_texture				= nullptr;
+	bool m_billBoarded					= true;
 
 	AABB2 m_quad;
 };

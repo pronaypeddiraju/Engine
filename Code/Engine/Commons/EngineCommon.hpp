@@ -17,6 +17,7 @@
 #define DEFAULT_DISC_THICKNESS	 (5.0f)
 // 3D Values
 #define DEFAULT_POINT_SIZE_3D    (1.0f)
+#define DEFAULT_LINE_WIDTH_3D	 (0.1f)
 
 
 //------------------------------------------------------------------------------------------------------------------------------

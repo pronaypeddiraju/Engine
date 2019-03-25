@@ -92,19 +92,20 @@ public:
 	// 3D Rendering (will always default to WORLD)
 	//------------------------------------------------------------------------
 	void				DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration = 0.f, float size = DEFAULT_POINT_SIZE_3D, TextureView* texture = nullptr );
-	void				DebugRenderLine( DebugRenderOptionsT options, const Vec3& start, const Vec3& end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH );
+	void				DebugRenderLine( DebugRenderOptionsT options, const Vec3& start, const Vec3& end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH_3D );
 	void				DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration = 0.f, TextureView* texture = nullptr ); 
 	void				DebugRenderBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr ); 
-	void				DebugRenderQuad( DebugRenderOptionsT options, const AABB2& quad, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr);
-
-	void				DebugRenderArrow3D( DebugRenderOptionsT options, Vec3 start, Vec3 end, float base_thickness, float head_thickness ); 
+	void				DebugRenderQuad( DebugRenderOptionsT options, const AABB2& quad, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr, bool billBoarded = true);
+	
 
 	// EXTRA (helps to be able to set raster fill mode to "wire")
 	// Also, better to use an ICOSphere if available, but UV sphere is fine; 
-	void				DebugRenderWireSphere( DebugRenderOptionsT options, Vec3 center, float radius ); 
+	void				DebugRenderWireSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration = 0.f, TextureView* texture = nullptr ); 
+	void				DebugRenderWireBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr ); 
 
+
+	void				DebugRenderArrow3D( DebugRenderOptionsT options, Vec3 start, Vec3 end, float base_thickness, float head_thickness ); 
 	// EXTRA (helps to be able to set raster fill mode to "wire")
-	void				DebugRenderWireBox( DebugRenderOptionsT options, AABB3 box ); 
 
 	// EXTRA (requires being able to render a cone/cylinder)
 	void				DebugRenderArrow( DebugRenderOptionsT options, Vec3 start, Vec3 end, float lineWidth = DEFAULT_LINE_WIDTH ); 
@@ -117,19 +118,21 @@ private:
 	Vec3							ConvertScreenToWorldPoint(Vec3 screenPoint);
 
 	//Draw methods 2D
-	void							DrawPoint2D( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawLine2D( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawQuad2D( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawWireQuad2D(const DebugRenderOptionsT* renderObject ) const;
-	void							DrawDisc2D( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawRing2D( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawPoint2D		( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawLine2D		( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawQuad2D		( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawWireQuad2D	( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawDisc2D		( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawRing2D		( const DebugRenderOptionsT* renderObject ) const;
 
 	//Draw methods 3D
-	void							DrawPoint3D( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawQuad3D( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawLine3D( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawSphere( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawBox( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawPoint3D		( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawQuad3D		( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawLine3D		( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawSphere		( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawWireSphere	( const DebugRenderOptionsT* renderObject )	const;
+	void							DrawBox			( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawWireBox		( const DebugRenderOptionsT* renderObject ) const;
 
 private:
 	RenderContext*		m_renderContext					= nullptr;
