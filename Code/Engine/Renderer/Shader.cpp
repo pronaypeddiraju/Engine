@@ -464,19 +464,14 @@ void Shader::SetBlendDataFromString()
 
 eBlendOperation Shader::SetOpFromString(const std::string& blendOp)
 {
-	if(blendOp == "add")
-	{
-		return BLEND_OP_ADD;
-	}
-	else if(blendOp == "max")
-	{
-		return BLEND_OP_MAX;
-	}
+	if(blendOp == "add")			{		return BLEND_OP_ADD;		}
+	else if(blendOp == "max")		{		return BLEND_OP_MAX;		}
+	else if(blendOp == "lequal")	{		return BLEND_OP_LEQUAL;		}
+	else if(blendOp == "greater")	{		return BLEND_OP_GREATER;	}
 	else
 	{
 		// Add an assert here; 
-		GUARANTEE_RECOVERABLE(false, "Blend operation not yet handled");
-		return BLEND_OP_DEFAULT;
+		ERROR_AND_DIE("Blend operation not yet handled");
 	}
 }
 

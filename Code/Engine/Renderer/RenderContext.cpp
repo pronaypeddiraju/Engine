@@ -583,10 +583,16 @@ void RenderContext::BindTextureViewWithSampler( uint slot, std::string const &na
 
 void RenderContext::BindModelMatrix( Matrix44 const &model ) 
 {
-	ModelBufferT buffer; 
-	buffer.ModelMatrix = model; 
+	m_cpuModelBuffer.ModelMatrix = model; 
 
-	m_modelBuffer->CopyCPUToGPU( &buffer, sizeof(buffer) ); 
+	m_modelBuffer->CopyCPUToGPU( &m_cpuModelBuffer, sizeof(m_cpuModelBuffer) ); 
+}
+
+void RenderContext::SetGlobalTint( const Rgba& color )
+{
+	m_cpuModelBuffer.TintColor = color;
+
+	m_modelBuffer->CopyCPUToGPU( &m_cpuModelBuffer, sizeof(m_cpuModelBuffer) ); 
 }
 
 void RenderContext::SetModelMatrix( Matrix44 const &modelMatrix )

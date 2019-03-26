@@ -56,6 +56,7 @@ public:
 	void						SetRasterStateWireFrame();
 	void						CreateAndSetDefaultRasterState();
 
+
 	void						EndFrame();
 
 	void						BeginCamera( Camera& camera );
@@ -73,6 +74,7 @@ public:
 	void						SetBlendMode(eBlendMode blendMode);
 	void						SetDepth(bool write);
 	
+
 	//void						BindTexture(Texture* texture);
 	void						BindTextureView( uint slot, TextureView *view ); 
 	void						BindSampler( uint slot, Sampler *sampler ); 
@@ -95,6 +97,7 @@ public:
 	void						BindModelMatrix( Matrix44 const &model );
 
 	// Be able to set a model matrix (updates the uniform buffer; 
+	void						SetGlobalTint(const Rgba& color);
 	void						SetModelMatrix( Matrix44 const &modelMatrix );            // A04
 	inline const Matrix44&		GetProjectionMatrix()	{return m_currentCamera->m_projection;}
 	inline const Matrix44&		GetViewMatrix() {return m_currentCamera->m_view;}
@@ -178,6 +181,7 @@ public:
 	unsigned int										m_frameCount = 0;
 
 	GPUMesh*											m_immediateMesh = nullptr;   //A04
+	ModelBufferT										m_cpuModelBuffer;
 };
 
 

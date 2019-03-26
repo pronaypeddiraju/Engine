@@ -162,6 +162,11 @@ private:
 	bool				m_canRender						= true;
 	
 	BitmapFont*			m_debugFont						= nullptr;
+	Shader*				m_xrayShader					= nullptr;
+	Shader*				m_defaultShader					= nullptr;
+	std::string			m_defaultShaderPath				= "default_unlit.xml";
+	std::string			m_xmlShaderPath					= "default_unlit_xray.xml";
+
 
 	//Store all debug objects with their render options and other data
 	std::vector<DebugRenderOptionsT>	worldRenderObjects;

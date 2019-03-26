@@ -9,6 +9,7 @@
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/Shader.hpp"
 #include <cmath>
 #include <vector>
 
@@ -27,6 +28,13 @@ DebugRender::~DebugRender()
 void DebugRender::Startup( RenderContext* renderContext )
 {
 	m_renderContext = renderContext;
+
+	//Get the Shader
+	m_xrayShader = m_renderContext->CreateOrGetShaderFromFile(m_xmlShaderPath);
+	m_xrayShader->SetDepth(eCompareOp::COMPARE_LEQUAL, true);
+
+	m_defaultShader = m_renderContext->CreateOrGetShaderFromFile(m_defaultShaderPath);
+	m_defaultShader->SetDepth(eCompareOp::COMPARE_LEQUAL, true);
 }
 
 
@@ -227,10 +235,6 @@ void DebugRender::DrawPoint2D( const DebugRenderOptionsT* renderObject) const
 	case DEBUG_RENDER_ALWAYS:
 	m_renderContext->SetDepth(false);
 	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
-	break;
 	}
 
 	m_renderContext->DrawVertexArray(pointVerts);
@@ -272,10 +276,6 @@ void DebugRender::DrawLine2D( const DebugRenderOptionsT* renderObject ) const
 	case DEBUG_RENDER_ALWAYS:
 	m_renderContext->SetDepth(false);
 	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
-	break;
 	}
 
 	m_renderContext->DrawVertexArray(lineVerts);
@@ -303,10 +303,6 @@ void DebugRender::DrawQuad2D( const DebugRenderOptionsT* renderObject ) const
 	break;
 	case DEBUG_RENDER_ALWAYS:
 	m_renderContext->SetDepth(false);
-	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
 	break;
 	}
 
@@ -336,10 +332,6 @@ void DebugRender::DrawWireQuad2D( const DebugRenderOptionsT* renderObject ) cons
 	case DEBUG_RENDER_ALWAYS:
 	m_renderContext->SetDepth(false);
 	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
-	break;
 	}
 
 	m_renderContext->DrawVertexArray(boxVerts);
@@ -368,10 +360,6 @@ void DebugRender::DrawDisc2D( const DebugRenderOptionsT* renderObject ) const
 	break;
 	case DEBUG_RENDER_ALWAYS:
 	m_renderContext->SetDepth(false);
-	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
 	break;
 	}
 
@@ -403,10 +391,6 @@ void DebugRender::DrawRing2D( const DebugRenderOptionsT* renderObject ) const
 	case DEBUG_RENDER_ALWAYS:
 	m_renderContext->SetDepth(false);
 	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
-	break;
 	}
 
 	m_renderContext->DrawVertexArray(ringVerts);
@@ -437,10 +421,6 @@ void DebugRender::DrawText2D( const DebugRenderOptionsT* renderObject ) const
 	case DEBUG_RENDER_ALWAYS:
 	m_renderContext->SetDepth(false);
 	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
-	break;
 	}
 
 	m_renderContext->DrawVertexArray(textVerts);
@@ -468,18 +448,28 @@ void DebugRender::DrawPoint3D( const DebugRenderOptionsT* renderObject ) const
 	{
 	case DEBUG_RENDER_USE_DEPTH:
 	m_renderContext->SetDepth(true);
+	m_renderContext->DrawMesh(&point);
 	break;
 	case DEBUG_RENDER_ALWAYS:
 	m_renderContext->SetDepth(false);
+	m_renderContext->DrawMesh(&point);
 	break;
 	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	{
+		//Make 2 draw calls here
+		//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+		m_renderContext->SetGlobalTint(Rgba::DARK_GREY);
+		m_xrayShader->SetDepth(eCompareOp::COMPARE_GREATER, false);
+		m_renderContext->BindShader(m_xrayShader);
+		m_renderContext->DrawMesh(&point);
+		m_defaultShader->SetDepth(eCompareOp::COMPARE_LEQUAL, true);
+		m_renderContext->BindShader(m_defaultShader);
+		m_renderContext->DrawMesh(&point);
+
+		//m_renderContext->DrawMesh(&point);
+	}
 	break;
 	}
-
-	m_renderContext->DrawMesh(&point);
-
 }
 
 void DebugRender::DrawQuad3D( const DebugRenderOptionsT* renderObject ) const

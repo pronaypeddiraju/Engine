@@ -2,6 +2,7 @@
 #pragma once
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/Matrix44.hpp"
+#include "Engine/Renderer/Rgba.hpp"
 
 // As the engine designer, we're going to make the decision to 
 // just reserve certain slot indices for specific constant buffers
@@ -57,6 +58,7 @@ struct CameraBufferT
 struct ModelBufferT
 {
 	Matrix44 ModelMatrix;
+	Rgba TintColor = Rgba::WHITE;
 };
 
 // I start at slot 1 out of habit.  I reserve slot 0 for what I call the "SYTEM" buffer, which
@@ -131,6 +133,8 @@ enum eBlendOperation
 {
 	BLEND_OP_ADD,
 	BLEND_OP_MAX,
+	BLEND_OP_LEQUAL,
+	BLEND_OP_GREATER,
 
 	BLEND_OP_DEFAULT = BLEND_OP_ADD
 };
