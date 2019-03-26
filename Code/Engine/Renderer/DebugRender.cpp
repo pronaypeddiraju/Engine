@@ -441,35 +441,34 @@ void DebugRender::DrawPoint3D( const DebugRenderOptionsT* renderObject ) const
 	point.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
 	SetObjectMatrixForBillBoard(objectProperties->m_position);
 
+
 	//Setup the textures on the render context
 	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture); 
 
 	switch (renderObject->mode)
 	{
-	case DEBUG_RENDER_USE_DEPTH:
-	m_renderContext->SetDepth(true);
-	m_renderContext->DrawMesh(&point);
-	break;
-	case DEBUG_RENDER_ALWAYS:
-	m_renderContext->SetDepth(false);
-	m_renderContext->DrawMesh(&point);
-	break;
-	case DEBUG_RENDER_XRAY:
-	{
-		//Make 2 draw calls here
-		//One with compare op lequals and one with compare op greater than (edit alpha on that one)
-		m_renderContext->SetGlobalTint(Rgba::DARK_GREY);
-		m_xrayShader->SetDepth(eCompareOp::COMPARE_GREATER, false);
-		m_renderContext->BindShader(m_xrayShader);
+		case DEBUG_RENDER_USE_DEPTH:
+		m_renderContext->SetDepth(true);
 		m_renderContext->DrawMesh(&point);
-		m_defaultShader->SetDepth(eCompareOp::COMPARE_LEQUAL, true);
-		m_renderContext->BindShader(m_defaultShader);
+		break;
+		case DEBUG_RENDER_ALWAYS:
+		m_renderContext->SetDepth(false);
 		m_renderContext->DrawMesh(&point);
+		break;
+		case DEBUG_RENDER_XRAY:
+		{
+			//Make 2 draw calls here
+			//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+			m_renderContext->SetGlobalTint(Rgba::DARK_GREY);
+			m_xrayShader->SetDepth(eCompareOp::COMPARE_GREATER, false);
+			m_renderContext->BindShader(m_xrayShader);
+			m_renderContext->DrawMesh(&point);
+			m_renderContext->BindShader(m_defaultShader);
+			m_renderContext->DrawMesh(&point);
+		}
+		break;
+	}
 
-		//m_renderContext->DrawMesh(&point);
-	}
-	break;
-	}
 }
 
 void DebugRender::DrawQuad3D( const DebugRenderOptionsT* renderObject ) const
@@ -499,19 +498,27 @@ void DebugRender::DrawQuad3D( const DebugRenderOptionsT* renderObject ) const
 
 	switch (renderObject->mode)
 	{
-	case DEBUG_RENDER_USE_DEPTH:
-	m_renderContext->SetDepth(true);
-	break;
-	case DEBUG_RENDER_ALWAYS:
-	m_renderContext->SetDepth(false);
-	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
-	break;
+		case DEBUG_RENDER_USE_DEPTH:
+		m_renderContext->SetDepth(true);
+		m_renderContext->DrawMesh(&quad);
+		break;
+		case DEBUG_RENDER_ALWAYS:
+		m_renderContext->SetDepth(false);
+		m_renderContext->DrawMesh(&quad);
+		break;
+		case DEBUG_RENDER_XRAY:
+		{
+			//Make 2 draw calls here
+			//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+			m_renderContext->SetGlobalTint(Rgba::DARK_GREY);
+			m_xrayShader->SetDepth(eCompareOp::COMPARE_GREATER, false);
+			m_renderContext->BindShader(m_xrayShader);
+			m_renderContext->DrawMesh(&quad);
+			m_renderContext->BindShader(m_defaultShader);
+			m_renderContext->DrawMesh(&quad);
+		}
+		break;
 	}
-
-	m_renderContext->DrawMesh(&quad);
 }
 
 void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
@@ -521,20 +528,6 @@ void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
 	{
 		ERROR_AND_DIE("Object recieved in DebugRender was not a 3D Line. Check inputs");
 	}
-
-	/*
-	std::vector<Vertex_PCU> lineVerts;
-	Vec2 boxMins = Vec2((objectProperties->m_startPos.x - objectProperties->m_lineWidth * 0.5f), (objectProperties->m_startPos.y - objectProperties->m_lineWidth * 0.5f));
-	Vec2 boxMaxs = Vec2((objectProperties->m_endPos.x + objectProperties->m_lineWidth * 0.5f), (objectProperties->m_endPos.y + objectProperties->m_lineWidth * 0.5f));
-	AABB2 lineBox = AABB2(boxMins, boxMaxs);
-
-
-	SetObjectMatrixForPosition(objectProperties->m_center);
-	AddVertsForAABB2D(lineVerts, lineBox, objectProperties->m_currentColor);
-
-	//Setup the textures on the render context
-	m_renderContext->BindTextureViewWithSampler(0U, nullptr); 
-	*/
 
 	//Setup mesh here
 	GPUMesh line = GPUMesh( m_renderContext ); 
@@ -547,19 +540,27 @@ void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
 
 	switch (renderObject->mode)
 	{
-	case DEBUG_RENDER_USE_DEPTH:
-	m_renderContext->SetDepth(true);
-	break;
-	case DEBUG_RENDER_ALWAYS:
-	m_renderContext->SetDepth(false);
-	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
-	break;
+		case DEBUG_RENDER_USE_DEPTH:
+		m_renderContext->SetDepth(true);
+		m_renderContext->DrawMesh(&line);
+		break;
+		case DEBUG_RENDER_ALWAYS:
+		m_renderContext->SetDepth(false);
+		m_renderContext->DrawMesh(&line);
+		break;
+		case DEBUG_RENDER_XRAY:
+		{
+			//Make 2 draw calls here
+			//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+			m_renderContext->SetGlobalTint(Rgba::DARK_GREY);
+			m_xrayShader->SetDepth(eCompareOp::COMPARE_GREATER, false);
+			m_renderContext->BindShader(m_xrayShader);
+			m_renderContext->DrawMesh(&line);
+			m_renderContext->BindShader(m_defaultShader);
+			m_renderContext->DrawMesh(&line);
+		}
+		break;
 	}
-
-	m_renderContext->DrawMesh(&line);
 }
 
 void DebugRender::DrawSphere( const DebugRenderOptionsT* renderObject ) const
@@ -580,19 +581,27 @@ void DebugRender::DrawSphere( const DebugRenderOptionsT* renderObject ) const
 
 	switch (renderObject->mode)
 	{
-	case DEBUG_RENDER_USE_DEPTH:
-	m_renderContext->SetDepth(true);
-	break;
-	case DEBUG_RENDER_ALWAYS:
-	m_renderContext->SetDepth(false);
-	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
-	break;
+		case DEBUG_RENDER_USE_DEPTH:
+		m_renderContext->SetDepth(true);
+		m_renderContext->DrawMesh(&sphere);
+		break;
+		case DEBUG_RENDER_ALWAYS:
+		m_renderContext->SetDepth(false);
+		m_renderContext->DrawMesh(&sphere);
+		break;
+		case DEBUG_RENDER_XRAY:
+		{
+			//Make 2 draw calls here
+			//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+			m_renderContext->SetGlobalTint(Rgba::DARK_GREY);
+			m_xrayShader->SetDepth(eCompareOp::COMPARE_GREATER, false);
+			m_renderContext->BindShader(m_xrayShader);
+			m_renderContext->DrawMesh(&sphere);
+			m_renderContext->BindShader(m_defaultShader);
+			m_renderContext->DrawMesh(&sphere);
+		}
+		break;
 	}
-
-	m_renderContext->DrawMesh(&sphere);
 }
 
 void DebugRender::DrawWireSphere( const DebugRenderOptionsT* renderObject ) const
@@ -611,22 +620,30 @@ void DebugRender::DrawWireSphere( const DebugRenderOptionsT* renderObject ) cons
 	//Setup the textures on the render context
 	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture); 
 
+	m_renderContext->SetRasterStateWireFrame();
 	switch (renderObject->mode)
 	{
-	case DEBUG_RENDER_USE_DEPTH:
-	m_renderContext->SetDepth(true);
-	break;
-	case DEBUG_RENDER_ALWAYS:
-	m_renderContext->SetDepth(false);
-	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
-	break;
+		case DEBUG_RENDER_USE_DEPTH:
+		m_renderContext->SetDepth(true);
+		m_renderContext->DrawMesh(&sphere);
+		break;
+		case DEBUG_RENDER_ALWAYS:
+		m_renderContext->SetDepth(false);
+		m_renderContext->DrawMesh(&sphere);
+		break;
+		case DEBUG_RENDER_XRAY:
+		{
+			//Make 2 draw calls here
+			//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+			m_renderContext->SetGlobalTint(Rgba::DARK_GREY);
+			m_xrayShader->SetDepth(eCompareOp::COMPARE_GREATER, false);
+			m_renderContext->BindShader(m_xrayShader);
+			m_renderContext->DrawMesh(&sphere);
+			m_renderContext->BindShader(m_defaultShader);
+			m_renderContext->DrawMesh(&sphere);
+		}
+		break;
 	}
-
-	m_renderContext->SetRasterStateWireFrame();
-	m_renderContext->DrawMesh(&sphere);
 	m_renderContext->CreateAndSetDefaultRasterState();
 }
 
@@ -648,19 +665,27 @@ void DebugRender::DrawBox( const DebugRenderOptionsT* renderObject ) const
 
 	switch (renderObject->mode)
 	{
-	case DEBUG_RENDER_USE_DEPTH:
-	m_renderContext->SetDepth(true);
-	break;
-	case DEBUG_RENDER_ALWAYS:
-	m_renderContext->SetDepth(false);
-	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+		case DEBUG_RENDER_USE_DEPTH:
+		m_renderContext->SetDepth(true);
+		m_renderContext->DrawMesh(&box);
+		break;
+		case DEBUG_RENDER_ALWAYS:
+		m_renderContext->SetDepth(false);
+		m_renderContext->DrawMesh(&box);
+		break;
+		case DEBUG_RENDER_XRAY:
+		{
+			//Make 2 draw calls here
+			//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+			m_renderContext->SetGlobalTint(Rgba::DARK_GREY);
+			m_xrayShader->SetDepth(eCompareOp::COMPARE_GREATER, false);
+			m_renderContext->BindShader(m_xrayShader);
+			m_renderContext->DrawMesh(&box);
+			m_renderContext->BindShader(m_defaultShader);
+			m_renderContext->DrawMesh(&box);
+		}
 	break;
 	}
-
-	m_renderContext->DrawMesh(&box);
 }
 
 void DebugRender::DrawWireBox( const DebugRenderOptionsT* renderObject ) const
@@ -679,22 +704,30 @@ void DebugRender::DrawWireBox( const DebugRenderOptionsT* renderObject ) const
 	//Setup the textures on the render context
 	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture); 
 
+	m_renderContext->SetRasterStateWireFrame();
 	switch (renderObject->mode)
 	{
-	case DEBUG_RENDER_USE_DEPTH:
-	m_renderContext->SetDepth(true);
-	break;
-	case DEBUG_RENDER_ALWAYS:
-	m_renderContext->SetDepth(false);
-	break;
-	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
-	break;
+		case DEBUG_RENDER_USE_DEPTH:
+		m_renderContext->SetDepth(true);
+		m_renderContext->DrawMesh(&box);
+		break;
+		case DEBUG_RENDER_ALWAYS:
+		m_renderContext->SetDepth(false);
+		m_renderContext->DrawMesh(&box);
+		break;
+		case DEBUG_RENDER_XRAY:
+		{
+			//Make 2 draw calls here
+			//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+			m_renderContext->SetGlobalTint(Rgba::DARK_GREY);
+			m_xrayShader->SetDepth(eCompareOp::COMPARE_GREATER, false);
+			m_renderContext->BindShader(m_xrayShader);
+			m_renderContext->DrawMesh(&box);
+			m_renderContext->BindShader(m_defaultShader);
+			m_renderContext->DrawMesh(&box);
+		}
+		break;
 	}
-
-	m_renderContext->SetRasterStateWireFrame();
-	m_renderContext->DrawMesh(&box);
 	m_renderContext->CreateAndSetDefaultRasterState();
 }
 
@@ -735,17 +768,21 @@ void DebugRender::DrawText3D( const DebugRenderOptionsT* renderObject ) const
 	{
 	case DEBUG_RENDER_USE_DEPTH:
 	m_renderContext->SetDepth(true);
+	m_renderContext->DrawVertexArray(textVerts);
 	break;
 	case DEBUG_RENDER_ALWAYS:
 	m_renderContext->SetDepth(false);
+	m_renderContext->DrawVertexArray(textVerts);
 	break;
 	case DEBUG_RENDER_XRAY:
-	//Make 2 draw calls here
-	//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+	m_renderContext->SetGlobalTint(Rgba::DARK_GREY);
+	m_xrayShader->SetDepth(eCompareOp::COMPARE_GREATER, false);
+	m_renderContext->BindShader(m_xrayShader);
+	m_renderContext->DrawVertexArray(textVerts);
+	m_renderContext->BindShader(m_defaultShader);
+	m_renderContext->DrawVertexArray(textVerts);
 	break;
 	}
-
-	m_renderContext->DrawVertexArray(textVerts);
 
 }
 
