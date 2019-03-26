@@ -22,6 +22,8 @@
 #define DEFAULT_LINE_WIDTH_3D	 (0.1f)
 #define DEFAULT_TEXT_HEIGHT_3D	 (0.1f)
 
+// Log Values
+#define DEFAULT_LOG_TEXT_HEIGHT  (15.f)
 
 //------------------------------------------------------------------------------------------------------------------------------
 #define UNUSED(x) (void)(x);

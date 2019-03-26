@@ -99,6 +99,8 @@ public:
 	void				DebugRenderText2D( DebugRenderOptionsT options, const Vec2& startPosition, const Vec2& endPosition, char const *format, float fontHeight = DEFAULT_TEXT_HEIGHT, float duration = 0.f, ... );
 	void				DebugRenderArrow2D( DebugRenderOptionsT options, Vec3 start, Vec3 end, float lineWidth = DEFAULT_LINE_WIDTH ); 
 
+	void				DebugAddToLog( DebugRenderOptionsT options, char const* format, const Rgba& color = Rgba::ORANGE, float duration = 0.f, ...);
+
 	//------------------------------------------------------------------------
 	// 3D Rendering (will always default to WORLD)
 	//------------------------------------------------------------------------
@@ -141,7 +143,10 @@ private:
 	IntVec2							ConvertWorldToScreenPoint(Vec3 worldPoint);
 	Vec3							ConvertScreenToWorldPoint(Vec3 screenPoint);
 
-	//Draw methods 2D
+	
+	void							DebugRenderToLog() const;				//This renders all the debug logs to the screen
+	
+																	//Draw methods 2D
 	void							DrawPoint2D		( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawLine2D		( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawQuad2D		( const DebugRenderOptionsT* renderObject ) const;
@@ -165,6 +170,12 @@ private:
 	void							DestroyAllWorldObjects();
 
 private:
+	const static Rgba						DEBUG_INFO;
+	const static Rgba						DEBUG_ECHO;
+	const static Rgba						DEBUG_BG_COLOR;
+
+	const float								m_logFontHeight = DEFAULT_LOG_TEXT_HEIGHT;
+
 	RenderContext*		m_renderContext					= nullptr;
 	int					m_clientWidth					= 0;
 	int					m_clientHeight					= 0;
@@ -182,6 +193,8 @@ private:
 	static DebugRender*	s_debugRender;
 
 	//Store all debug objects with their render options and other data
-	std::vector<DebugRenderOptionsT>	worldRenderObjects;
-	std::vector<DebugRenderOptionsT>	screenRenderObjects;
+	std::vector<DebugRenderOptionsT>	m_worldRenderObjects;
+	std::vector<DebugRenderOptionsT>	m_screenRenderObjects;
+
+	std::vector<DebugRenderOptionsT>	m_printLogObjects;
 };

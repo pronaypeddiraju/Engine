@@ -20,7 +20,6 @@ public:
 
 	void				PopulateFromXmlElementAttributes( const XMLElement& element );
 	void				SetValue( const std::string& keyName, const std::string& newValue );
-	void				AddValue( const std::string& keyName, const std::string& value);
 
 	bool				GetValue( const std::string& keyName, bool defaultValue ) const;
 	int					GetValue( const std::string& keyName, int defaultValue ) const;

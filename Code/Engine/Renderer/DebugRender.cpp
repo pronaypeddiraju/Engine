@@ -19,6 +19,10 @@ DebugRender* g_debugRenderer = nullptr;
 
 DebugRender* DebugRender::s_debugRender = nullptr;
 
+const STATIC Rgba DebugRender::DEBUG_INFO			=	Rgba::WHITE;
+const STATIC Rgba DebugRender::DEBUG_ECHO			=	Rgba::YELLOW;
+const STATIC Rgba DebugRender::DEBUG_BG_COLOR		=	Rgba(0.0f, 0.0f, 0.0f, 0.75f);
+
 DebugRender::DebugRender()
 {
 
@@ -103,11 +107,12 @@ void DebugRender::Update( float deltaTime )
 	int vectorSize;
 	float blendFraction;
 
-	vectorSize = static_cast<int>(screenRenderObjects.size());
+	//Screen objects
+	vectorSize = static_cast<int>(m_screenRenderObjects.size());
 
 	for(int objectIndex = 0; objectIndex < vectorSize; objectIndex++)
 	{
-		ObjectProperties* objectProperties = screenRenderObjects[objectIndex].objectProperties;
+		ObjectProperties* objectProperties = m_screenRenderObjects[objectIndex].objectProperties;
 		if(objectProperties->m_durationSeconds != 0.f)
 		{
 			//Subtract duration
@@ -117,15 +122,16 @@ void DebugRender::Update( float deltaTime )
 			blendFraction = RangeMapFloat(objectProperties->m_durationSeconds, 0.f, objectProperties->m_startDuration, 0.f, 1.f);
 			blendFraction = 1 - blendFraction;
 
-			Rgba::LerpRGB( objectProperties->m_currentColor, screenRenderObjects[objectIndex].beginColor, screenRenderObjects[objectIndex].endColor, blendFraction );
+			Rgba::LerpRGB( objectProperties->m_currentColor, m_screenRenderObjects[objectIndex].beginColor, m_screenRenderObjects[objectIndex].endColor, blendFraction );
 		}
 	}
 
-	vectorSize = static_cast<int>(worldRenderObjects.size());
+	//World Objects
+	vectorSize = static_cast<int>(m_worldRenderObjects.size());
 
 	for(int objectIndex = 0; objectIndex < vectorSize; objectIndex++)
 	{
-		ObjectProperties* objectProperties = worldRenderObjects[objectIndex].objectProperties;
+		ObjectProperties* objectProperties = m_worldRenderObjects[objectIndex].objectProperties;
 		if(objectProperties->m_durationSeconds != 0.f)
 		{
 			objectProperties->m_durationSeconds -= deltaTime;
@@ -134,7 +140,7 @@ void DebugRender::Update( float deltaTime )
 			blendFraction = RangeMapFloat(objectProperties->m_durationSeconds, 0.f, objectProperties->m_startDuration, 0.f, 1.f);
 			blendFraction = 1 - blendFraction;
 
-			Rgba::LerpRGB( objectProperties->m_currentColor, worldRenderObjects[objectIndex].beginColor, worldRenderObjects[objectIndex].endColor, blendFraction );
+			Rgba::LerpRGB( objectProperties->m_currentColor, m_worldRenderObjects[objectIndex].beginColor, m_worldRenderObjects[objectIndex].endColor, blendFraction );
 			
 			if(objectProperties->m_renderObjectType == DEBUG_RENDER_TEXT3D)
 			{
@@ -145,41 +151,71 @@ void DebugRender::Update( float deltaTime )
 		}
 	}
 
+	//Log Objects
+	vectorSize = static_cast<int>(m_printLogObjects.size());
+
+	for(int objectIndex = 0; objectIndex < vectorSize; objectIndex++)
+	{
+		ObjectProperties* objectProperties = m_printLogObjects[objectIndex].objectProperties;
+		if(objectProperties->m_durationSeconds != 0.f)
+		{
+			//Subtract duration
+			objectProperties->m_durationSeconds -= deltaTime;
+
+			//Setup color value for the current time
+			blendFraction = RangeMapFloat(objectProperties->m_durationSeconds, 0.f, objectProperties->m_startDuration, 0.f, 1.f);
+			blendFraction = 1 - blendFraction;
+
+			Rgba::LerpRGB( objectProperties->m_currentColor, m_printLogObjects[objectIndex].beginColor, m_printLogObjects[objectIndex].endColor, blendFraction );
+		}
+	}
+
 }
 
 void DebugRender::CleanUpObjects()
 {
-	for(int objectIndex = 0; objectIndex < (int)screenRenderObjects.size(); objectIndex++)
+	//Screen 
+	for(int objectIndex = 0; objectIndex < (int)m_screenRenderObjects.size(); objectIndex++)
 	{
-		if(screenRenderObjects[objectIndex].objectProperties->m_durationSeconds <= 0.f)
+		if(m_screenRenderObjects[objectIndex].objectProperties->m_durationSeconds <= 0.f)
 		{
-			screenRenderObjects.erase(screenRenderObjects.begin() + objectIndex);
+			m_screenRenderObjects.erase(m_screenRenderObjects.begin() + objectIndex);
 		}
 	}
 
-	for(int objectIndex = 0; objectIndex < (int)worldRenderObjects.size(); objectIndex++)
+	//World
+	for(int objectIndex = 0; objectIndex < (int)m_worldRenderObjects.size(); objectIndex++)
 	{
-		if(worldRenderObjects[objectIndex].objectProperties->m_durationSeconds <= 0.f)
+		if(m_worldRenderObjects[objectIndex].objectProperties->m_durationSeconds <= 0.f)
 		{
-			worldRenderObjects.erase(worldRenderObjects.begin() + objectIndex);
+			m_worldRenderObjects.erase(m_worldRenderObjects.begin() + objectIndex);
 		}
 	}
 
+	//Log
+	for(int objectIndex = 0; objectIndex < (int)m_printLogObjects.size(); objectIndex++)
+	{
+		if(m_printLogObjects[objectIndex].objectProperties->m_durationSeconds <= 0.f)
+		{
+			m_printLogObjects.erase(m_printLogObjects.begin() + objectIndex);
+		}
+	}
 }
 
 void DebugRender::DebugRenderToScreen() const
 {
 	if(!m_canRender)
 	{
+		DebugRenderToLog();
 		return;
 	}
 
 	//Use this method to render to screen camera
-	int vectorSize = static_cast<int>(screenRenderObjects.size());
+	int vectorSize = static_cast<int>(m_screenRenderObjects.size());
 
 	for(int objectIndex = 0; objectIndex < vectorSize; objectIndex++)
 	{
-		const DebugRenderOptionsT* renderObject = &screenRenderObjects[objectIndex];
+		const DebugRenderOptionsT* renderObject = &m_screenRenderObjects[objectIndex];
 
 		//Render the object for this frame
 		switch(renderObject->objectProperties->m_renderObjectType)
@@ -201,6 +237,8 @@ void DebugRender::DebugRenderToScreen() const
 			renderObject = nullptr;
 		}
 	}
+
+	DebugRenderToLog();
 }
 
 void DebugRender::DebugRenderToCamera() const
@@ -211,11 +249,11 @@ void DebugRender::DebugRenderToCamera() const
 	}
 
 	//Use this method to render to the world camera
-	int vectorSize = static_cast<int>(worldRenderObjects.size());
+	int vectorSize = static_cast<int>(m_worldRenderObjects.size());
 
 	for(int objectIndex = 0; objectIndex < vectorSize; objectIndex++)
 	{
-		const DebugRenderOptionsT* renderObject = &worldRenderObjects[objectIndex];
+		const DebugRenderOptionsT* renderObject = &m_worldRenderObjects[objectIndex];
 		switch(renderObject->objectProperties->m_renderObjectType)
 		{
 		case DEBUG_RENDER_POINT3D:		{	DrawPoint3D(renderObject);		}	break;
@@ -229,6 +267,84 @@ void DebugRender::DebugRenderToCamera() const
 		default:						{	ERROR_AND_DIE("The debug object is not yet defined in DebugRenderToCamera");	}	break;
 		}
 	}
+}
+
+void DebugRender::DebugRenderToLog() const
+{
+	Setup2DCamera();
+
+	m_renderContext->BindTextureViewWithSampler(0U, m_debugFont->GetTexture());
+
+	//Draw a black box over the entire screen
+	AABB2 blackBox = AABB2(m_debug2DCam->GetOrthoBottomLeft(), m_debug2DCam->GetOrthoTopRight());
+	std::vector<Vertex_PCU> boxVerts;
+	AddVertsForAABB2D(boxVerts, blackBox, DEBUG_BG_COLOR);
+
+	//Set the text based on Camera size
+	Vec2 leftBot = m_debug2DCam->GetOrthoBottomLeft();
+	Vec2 rightTop = m_debug2DCam->GetOrthoTopRight();
+
+	float screenHeight = rightTop.y - leftBot.y;
+	//float screenWidth = rightTop.x - leftBot.x;
+
+	int numLines = static_cast<int>(screenHeight / m_logFontHeight);
+	int numStrings = static_cast<int>(m_printLogObjects.size());
+
+	Vec2 boxBottomLeft = leftBot + Vec2(m_logFontHeight, (numLines) * m_logFontHeight);
+	Vec2 boxTopRight = boxBottomLeft;
+
+	//Get the last string in the map and work your way back
+	std::vector<DebugRenderOptionsT>::const_iterator vecIterator = m_printLogObjects.end();
+
+	std::vector<Vertex_PCU> textVerts;
+
+	//Setup your loop end condition
+	int endCondition = 0;
+	if(numLines < numStrings)
+	{
+		endCondition = numLines;
+	}
+	else
+	{
+		endCondition = numStrings;
+	}
+
+	for(int lineIndex = 0; lineIndex < endCondition; lineIndex++)
+	{
+		LogProperties* objectProperties = reinterpret_cast<LogProperties*>(m_printLogObjects[lineIndex].objectProperties);
+		if(objectProperties->m_renderObjectType != DEBUG_RENDER_LOG)
+		{
+			ERROR_AND_DIE("Object recieved in DebugRender was not log text. Check inputs");
+		}
+
+		//Decrement the iterator
+		vecIterator--;
+
+		//Get length of string
+		std::string printString = "[ Start Time:" + Stringf("%01f", objectProperties->m_startDuration) 
+								+ " Time Left:" + std::to_string(objectProperties->m_durationSeconds) + " ] " 
+								+ objectProperties->m_string;
+		int numChars = static_cast<int>(printString.length());
+
+		//Create the required box
+		float glyphWidth = m_logFontHeight * m_debugFont->GetGlyphAspect(0);
+
+		//Change the boxBottomLeft based on line height
+		boxBottomLeft.y -= m_logFontHeight;
+		boxTopRight = boxBottomLeft;
+
+		boxTopRight = boxTopRight + Vec2(numChars * glyphWidth , m_logFontHeight);
+		
+		AABB2 printBox = AABB2(boxBottomLeft, boxTopRight);
+
+		//Print the text
+		m_debugFont->AddVertsForTextInBox2D(textVerts, printBox, m_logFontHeight, printString, objectProperties->m_currentColor, m_debugFont->GetGlyphAspect(0), Vec2::ALIGN_LEFT_CENTERED);
+
+		//Add a padding if desired
+		//boxBottomLeft.y += CONSOLE_LINE_SPACE;
+	}
+
+	m_renderContext->DrawVertexArray(textVerts);
 }
 
 Camera& DebugRender::Get2DCamera()
@@ -820,12 +936,12 @@ void DebugRender::DrawText3D( const DebugRenderOptionsT* renderObject ) const
 
 void DebugRender::DestroyAllScreenObjects()
 {
-	screenRenderObjects.clear();
+	m_screenRenderObjects.clear();
 }
 
 void DebugRender::DestroyAllWorldObjects()
 {
-	worldRenderObjects.clear();
+	m_worldRenderObjects.clear();
 }
 
 void DebugRender::SetObjectMatrixForPosition( Vec3 position ) const
@@ -853,7 +969,7 @@ void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT options, const Vec2& p
 {
 	options.objectProperties = new Point2DProperties(DEBUG_RENDER_POINT, position, duration, size);
 
-	screenRenderObjects.push_back(options);
+	m_screenRenderObjects.push_back(options);
 }
 
 //Inplementation to debug render a line using 2D debug camera
@@ -861,7 +977,7 @@ void DebugRender::DebugRenderLine2D(DebugRenderOptionsT options, const Vec2& sta
 {
 	options.objectProperties = new Line2DProperties(DEBUG_RENDER_LINE, start, end, duration, lineWidth);
 
-	screenRenderObjects.push_back(options);
+	m_screenRenderObjects.push_back(options);
 
 }
 
@@ -869,14 +985,14 @@ void DebugRender::DebugRenderQuad2D( DebugRenderOptionsT options, AABB2 const & 
 {
 	options.objectProperties = new Quad2DProperties(DEBUG_RENDER_QUAD, quad, duration, DEFAULT_WIRE_WIDTH_2D, texture);
 
-	screenRenderObjects.push_back(options);
+	m_screenRenderObjects.push_back(options);
 }
 
 void DebugRender::DebugRenderWireQuad2D( DebugRenderOptionsT options, AABB2 const &quad, float duration /*= 0.f*/, float thickness /*= DEFAULT_WIRE_WIDTH_2D */ )
 {
 	options.objectProperties = new Quad2DProperties(DEBUG_RENDER_WIRE_QUAD, quad, duration, thickness);
 
-	screenRenderObjects.push_back(options);
+	m_screenRenderObjects.push_back(options);
 }
 
 // This function is currently useless
@@ -902,14 +1018,14 @@ void DebugRender::DebugRenderDisc2D( DebugRenderOptionsT options, Disc2D const &
 {
 	options.objectProperties = new Disc2DProperties(DEBUG_RENDER_DISC, disc, 0.f, duration);
 
-	screenRenderObjects.push_back(options);
+	m_screenRenderObjects.push_back(options);
 }
 
 void DebugRender::DebugRenderRing2D( DebugRenderOptionsT options, Disc2D const &disc, float duration /*= 0.f*/, float thickness /*= DEFAULT_DISC_THICKNESS */ )
 {
 	options.objectProperties = new Disc2DProperties(DEBUG_RENDER_RING, disc, thickness, duration);
 
-	screenRenderObjects.push_back(options);
+	m_screenRenderObjects.push_back(options);
 }
 
 void DebugRender::DebugRenderText2D( DebugRenderOptionsT options, const Vec2& startPosition, const Vec2& endPosition, char const *format, float fontHeight /*= DEFAULT_TEXT_HEIGHT*/, float duration /*= 0.f*/, ... )
@@ -926,56 +1042,73 @@ void DebugRender::DebugRenderText2D( DebugRenderOptionsT options, const Vec2& st
 
 	options.objectProperties = new TextProperties(DEBUG_RENDER_TEXT, startPosition, endPosition, text, fontHeight, duration);
 
-	screenRenderObjects.push_back(options);
+	m_screenRenderObjects.push_back(options);
+}
+
+void DebugRender::DebugAddToLog( DebugRenderOptionsT options, char const* format, const Rgba& color, float duration, ... )
+{
+	char buffer[1024]; 
+
+	va_list args;
+	va_start( args, format ); 
+	vsprintf_s( buffer, 1024, format, args ); 
+	va_end( args ); 
+
+	buffer[ 1024 - 1 ] = '\0'; // In case vsnprintf overran (doesn't auto-terminate)
+	std::string text = std::string( buffer);
+
+	options.objectProperties = new LogProperties(DEBUG_RENDER_LOG, color, text, duration);
+
+	m_printLogObjects.push_back(options);
 }
 
 void DebugRender::DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration, float size, TextureView* texture )
 {
 	options.objectProperties = new Point3DProperties(DEBUG_RENDER_POINT3D, position, size, duration, texture);
 
-	worldRenderObjects.push_back(options);
+	m_worldRenderObjects.push_back(options);
 }
  
 void DebugRender::DebugRenderLine( DebugRenderOptionsT options, const Vec3& start, const Vec3& end, float duration, float lineWidth /*= DEFAULT_LINE_WIDTH */ )
 {
 	options.objectProperties = new Line3DProperties(DEBUG_RENDER_LINE3D, start, end, duration, lineWidth);
 
-	worldRenderObjects.push_back(options);
+	m_worldRenderObjects.push_back(options);
 }
 
 void DebugRender::DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
 {
 	options.objectProperties = new SphereProperties(DEBUG_RENDER_SPHERE, center, radius, duration, texture);
 
-	worldRenderObjects.push_back(options);
+	m_worldRenderObjects.push_back(options);
 }
 
 void DebugRender::DebugRenderBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
 {
 	options.objectProperties = new BoxProperties(DEBUG_RENDER_BOX, box, position, duration, texture);
 
-	worldRenderObjects.push_back(options);
+	m_worldRenderObjects.push_back(options);
 }
 
 void DebugRender::DebugRenderQuad( DebugRenderOptionsT options, const AABB2& quad, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr*/, bool billBoarded /* = true */ )
 {
 	options.objectProperties = new Quad3DProperties(DEBUG_RENDER_QUAD3D, quad, position, duration, texture, billBoarded);
 
-	worldRenderObjects.push_back(options);
+	m_worldRenderObjects.push_back(options);
 }
 
 void DebugRender::DebugRenderWireSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
 {
 	options.objectProperties = new SphereProperties(DEBUG_RENDER_WIRE_SPHERE, center, radius, duration, texture);
 
-	worldRenderObjects.push_back(options);
+	m_worldRenderObjects.push_back(options);
 }
 
 void DebugRender::DebugRenderWireBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
 {
 	options.objectProperties = new BoxProperties(DEBUG_RENDER_WIRE_BOX, box, position, duration, texture);
 
-	worldRenderObjects.push_back(options);
+	m_worldRenderObjects.push_back(options);
 }
 
 void DebugRender::DebugRenderText3D( DebugRenderOptionsT options, const Vec3& position, const Vec2& pivot, char const *format, float fontHeight, float duration, bool isBillboarded, ... )
@@ -992,7 +1125,7 @@ void DebugRender::DebugRenderText3D( DebugRenderOptionsT options, const Vec3& po
 
 	options.objectProperties = new TextProperties(DEBUG_RENDER_TEXT3D, position, pivot, text, fontHeight, duration, isBillboarded);
 
-	worldRenderObjects.push_back(options);
+	m_worldRenderObjects.push_back(options);
 }
 
 STATIC bool DebugRender::DisableDebugRender(EventArgs& args)

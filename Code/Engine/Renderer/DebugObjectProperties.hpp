@@ -41,6 +41,8 @@ enum eDebugRenderObject
 
 	DEBUG_RENDER_TEXT,
 	DEBUG_RENDER_TEXT3D,
+
+	DEBUG_RENDER_LOG
 };
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -229,4 +231,19 @@ public:
 
 	float m_fontHeight						= DEFAULT_TEXT_HEIGHT_3D;
 	std::string	m_string;
+};
+
+//------------------------------------------------------------------------------------------------------------------------------
+// Text Log Entry
+//------------------------------------------------------------------------------------------------------------------------------
+class LogProperties : public ObjectProperties
+{
+public:
+	explicit LogProperties(eDebugRenderObject renderObject, const Rgba& printColor, const std::string& printString, float durationSeconds = 0.f);
+	~LogProperties();
+
+public:
+	Rgba m_printColor						= Rgba::WHITE;
+
+	std::string m_string;
 };

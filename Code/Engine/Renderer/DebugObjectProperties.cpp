@@ -262,3 +262,19 @@ TextProperties::~TextProperties()
 	delete m_mesh;
 	m_mesh = nullptr;
 }
+
+LogProperties::LogProperties( eDebugRenderObject renderObject, const Rgba& printColor, const std::string& printString, float durationSeconds /*= 0.f*/ )
+{
+	m_renderObjectType = renderObject;
+	m_durationSeconds = durationSeconds;
+	m_startDuration = durationSeconds;
+	m_printColor = printColor;
+
+	m_string = printString;
+
+}
+
+LogProperties::~LogProperties()
+{
+
+}
