@@ -1,5 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Renderer/DebugRender.hpp"
+#include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/EventSystems.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/IntVec2.hpp"
@@ -15,6 +17,8 @@
 
 DebugRender* g_debugRenderer = nullptr;
 
+DebugRender* DebugRender::s_debugRender = nullptr;
+
 DebugRender::DebugRender()
 {
 
@@ -29,12 +33,28 @@ void DebugRender::Startup( RenderContext* renderContext )
 {
 	m_renderContext = renderContext;
 
+	if(s_debugRender == nullptr)
+	{
+		s_debugRender = this;
+	}
+	else
+	{
+		ERROR_AND_DIE("The static pointer to Debug Render was not null pointer");
+	}
+
 	//Get the Shader
 	m_xrayShader = m_renderContext->CreateOrGetShaderFromFile(m_xmlShaderPath);
 	m_xrayShader->SetDepth(eCompareOp::COMPARE_LEQUAL, true);
 
 	m_defaultShader = m_renderContext->CreateOrGetShaderFromFile(m_defaultShaderPath);
 	m_defaultShader->SetDepth(eCompareOp::COMPARE_LEQUAL, true);
+
+	g_eventSystem->SubscribeEventCallBackFn("DisableDebug", DisableDebugRender);
+	g_eventSystem->SubscribeEventCallBackFn("EnableDebug", EnableDebugRender);
+	g_eventSystem->SubscribeEventCallBackFn("ClearAllDebug", ClearAllLiveObjects);
+	g_eventSystem->SubscribeEventCallBackFn("ClearDebugScreen", ClearAllLiveScreenObjects);
+	g_eventSystem->SubscribeEventCallBackFn("ClearDebugWorld", ClearAllLiveWorldObjects);
+	
 }
 
 
@@ -60,6 +80,8 @@ void DebugRender::Shutdown()
 {
 	delete m_debug2DCam;
 	m_debug2DCam = nullptr;
+
+	s_debugRender = nullptr;
 
 	// No need to delete debug3DCam as we get this from Game camera. It is destroyed when Game is shutting down
 	//delete m_debug3DCam;
@@ -147,6 +169,11 @@ void DebugRender::CleanUpObjects()
 
 void DebugRender::DebugRenderToScreen() const
 {
+	if(!m_canRender)
+	{
+		return;
+	}
+
 	//Use this method to render to screen camera
 	int vectorSize = static_cast<int>(screenRenderObjects.size());
 
@@ -178,6 +205,11 @@ void DebugRender::DebugRenderToScreen() const
 
 void DebugRender::DebugRenderToCamera() const
 {
+	if(!m_canRender)
+	{
+		return;
+	}
+
 	//Use this method to render to the world camera
 	int vectorSize = static_cast<int>(worldRenderObjects.size());
 
@@ -786,6 +818,16 @@ void DebugRender::DrawText3D( const DebugRenderOptionsT* renderObject ) const
 
 }
 
+void DebugRender::DestroyAllScreenObjects()
+{
+	screenRenderObjects.clear();
+}
+
+void DebugRender::DestroyAllWorldObjects()
+{
+	worldRenderObjects.clear();
+}
+
 void DebugRender::SetObjectMatrixForPosition( Vec3 position ) const
 {
 	//Setup matrix for position
@@ -951,4 +993,50 @@ void DebugRender::DebugRenderText3D( DebugRenderOptionsT options, const Vec3& po
 	options.objectProperties = new TextProperties(DEBUG_RENDER_TEXT3D, position, pivot, text, fontHeight, duration, isBillboarded);
 
 	worldRenderObjects.push_back(options);
+}
+
+STATIC bool DebugRender::DisableDebugRender(EventArgs& args)
+{
+	UNUSED(args);
+	s_debugRender->m_canRender = false;
+	g_devConsole->PrintString(Rgba::YELLOW, "Disabling all debug objects");
+	return true;
+}
+
+STATIC bool DebugRender::EnableDebugRender( EventArgs& args )
+{
+	UNUSED(args);
+	s_debugRender->m_canRender = true;
+	g_devConsole->PrintString(Rgba::YELLOW, "Enabling all debug objects");
+	return true;
+}
+
+STATIC bool DebugRender::ClearAllLiveObjects( EventArgs& args )
+{
+	UNUSED(args);
+	g_devConsole->PrintString(Rgba::YELLOW, "Destroying all Screen Objects");
+	s_debugRender->DestroyAllScreenObjects();
+	g_devConsole->PrintString(Rgba::GREEN, "Screen Objects Destroyed");
+	g_devConsole->PrintString(Rgba::YELLOW, "Destroying all World Objects");
+	s_debugRender->DestroyAllWorldObjects();
+	g_devConsole->PrintString(Rgba::GREEN, "World Objects Destroyed");
+	return true;
+}
+
+STATIC bool DebugRender::ClearAllLiveScreenObjects( EventArgs& args )
+{
+	UNUSED(args);
+	g_devConsole->PrintString(Rgba::YELLOW, "Destroying all Screen Objects");
+	s_debugRender->DestroyAllScreenObjects();
+	g_devConsole->PrintString(Rgba::GREEN, "Screen Objects Destroyed");
+	return true;
+}
+
+STATIC bool DebugRender::ClearAllLiveWorldObjects( EventArgs& args )
+{
+	UNUSED(args);
+	g_devConsole->PrintString(Rgba::YELLOW, "Destroying all World Objects");
+	s_debugRender->DestroyAllWorldObjects();
+	g_devConsole->PrintString(Rgba::GREEN, "World Objects Destroyed");
+	return true;
 }

@@ -59,6 +59,13 @@ public:
 	DebugRender();
 	~DebugRender();
 
+	//Events for Event system and dev console
+	static bool				DisableDebugRender( EventArgs& args );
+	static bool				EnableDebugRender( EventArgs& args );
+	static bool				ClearAllLiveObjects( EventArgs& args );
+	static bool				ClearAllLiveScreenObjects( EventArgs& args );
+	static bool				ClearAllLiveWorldObjects( EventArgs& args );
+
 	void					Startup(RenderContext* renderContext);
 	void					SetClientDimensions(int height, int width);
 	void					SetDebugFont( BitmapFont* font);
@@ -153,6 +160,10 @@ private:
 	void							DrawWireBox		( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawText3D		( const DebugRenderOptionsT* renderObject ) const;
 
+	//Destroy objects functions
+	void							DestroyAllScreenObjects();
+	void							DestroyAllWorldObjects();
+
 private:
 	RenderContext*		m_renderContext					= nullptr;
 	int					m_clientWidth					= 0;
@@ -167,6 +178,8 @@ private:
 	std::string			m_defaultShaderPath				= "default_unlit.xml";
 	std::string			m_xmlShaderPath					= "default_unlit_xray.xml";
 
+	//Keep a reference to the DebugRender instance for use with event systems
+	static DebugRender*	s_debugRender;
 
 	//Store all debug objects with their render options and other data
 	std::vector<DebugRenderOptionsT>	worldRenderObjects;
