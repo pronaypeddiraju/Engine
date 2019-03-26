@@ -227,6 +227,7 @@ void DebugRender::DebugRenderToScreen() const
 		case DEBUG_RENDER_RING:			{	DrawRing2D(renderObject);		}	break;
 		case DEBUG_RENDER_WIRE_QUAD:	{	DrawWireQuad2D(renderObject);	}	break;
 		case DEBUG_RENDER_TEXT:			{	DrawText2D(renderObject);		}	break;
+		case DEBUG_RENDER_ARROW:		{	DrawArrow2D(renderObject);		}	break;
 		default:						{	ERROR_AND_DIE("The debug object is not yet defined in DebugRenderToScreen");	}	break;
 		}
 
@@ -542,6 +543,51 @@ void DebugRender::DrawRing2D( const DebugRenderOptionsT* renderObject ) const
 	}
 
 	m_renderContext->DrawVertexArray(ringVerts);
+}
+
+void DebugRender::DrawArrow2D( const DebugRenderOptionsT* renderObject ) const
+{
+	Setup2DCamera();
+
+	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
+
+	Arrow2DProperties* objectProperties = reinterpret_cast<Arrow2DProperties*>(renderObject->objectProperties);
+	if(objectProperties->m_renderObjectType != DEBUG_RENDER_ARROW)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not an Arrow. Check inputs");
+	}
+
+	//TODO: Implement code to handle duration logic
+	std::vector<Vertex_PCU> arrowVerts;
+	
+	Vec2 lineStart = objectProperties->m_startPos;
+	Vec2 lineEnd = objectProperties->m_lineEnd;
+
+	AddVertsForLine2D(arrowVerts, lineStart, lineEnd, objectProperties->m_lineWidth,  objectProperties->m_currentColor);
+
+	Vec3 arrowTip3D = Vec3(objectProperties->m_arrowTip);
+	Vec2 lineTangent = objectProperties->m_lineNorm.GetRotated90Degrees();
+	Vec2 arrowLeft = lineEnd + (lineTangent * objectProperties->m_lineWidth * 2.f);
+	Vec2 arrowRight = lineEnd - (lineTangent * objectProperties->m_lineWidth * 2.f);
+
+	Vec3 arrowLeft3D = Vec3(arrowLeft);
+	Vec3 arrowRight3D = Vec3(arrowRight);
+
+	arrowVerts.push_back(Vertex_PCU(arrowRight3D, objectProperties->m_currentColor, Vec2::ZERO));
+	arrowVerts.push_back(Vertex_PCU(arrowTip3D, objectProperties->m_currentColor, Vec2::ZERO));
+	arrowVerts.push_back(Vertex_PCU(arrowLeft3D, objectProperties->m_currentColor, Vec2::ZERO));
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+	m_renderContext->SetDepth(true);
+	break;
+	case DEBUG_RENDER_ALWAYS:
+	m_renderContext->SetDepth(false);
+	break;
+	}
+
+	m_renderContext->DrawVertexArray(arrowVerts);
 }
 
 void DebugRender::DrawText2D( const DebugRenderOptionsT* renderObject ) const
@@ -1041,6 +1087,13 @@ void DebugRender::DebugRenderText2D( DebugRenderOptionsT options, const Vec2& st
 	std::string text = std::string( buffer);
 
 	options.objectProperties = new TextProperties(DEBUG_RENDER_TEXT, startPosition, endPosition, text, fontHeight, duration);
+
+	m_screenRenderObjects.push_back(options);
+}
+
+void DebugRender::DebugRenderArrow2D( DebugRenderOptionsT options, const Vec2& start, const Vec2& end, float duration /*= 0.f*/, float lineWidth /*= DEFAULT_LINE_WIDTH */ )
+{
+	options.objectProperties = new Arrow2DProperties(DEBUG_RENDER_ARROW, start, end, duration, lineWidth);
 
 	m_screenRenderObjects.push_back(options);
 }

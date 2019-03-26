@@ -1,6 +1,7 @@
 #include "Rgba.hpp"
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Vec3.hpp"
 #include <vector>
 #include <string>
 
@@ -65,6 +66,78 @@ void Rgba::LerpRGB( Rgba& currentColor, const Rgba& startColor, const Rgba& endC
 	currentColor.r = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.r, endColor.r);
 	currentColor.g = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.g, endColor.g);
 	currentColor.b = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.b, endColor.b);
+}
+
+Vec3 Rgba::GetHSLFromRGBA( Rgba& currentColor, const Rgba& bg )
+{
+	Vec3 m_rgb = SetRGBAToRGB(currentColor, bg);
+	SetHSLFromRGB(m_rgb);
+	return m_HSLColor;
+}
+
+Vec3 Rgba::SetRGBAToRGB(const Rgba& color, const Rgba& bg)
+{
+	float alpha = color.a;
+
+	return Vec3(
+		(1 - alpha) * bg.r + alpha * color.r,
+		(1 - alpha) * bg.g + alpha * color.g,
+		(1 - alpha) * bg.b + alpha * color.b
+	);
+}
+
+void Rgba::SetHSLFromRGB( Vec3 rgb )
+{
+	//float rb = (rgb.R / 255.0f);
+	//float gb = (rgb.G / 255.0f);
+	//float bb = (rgb.B / 255.0f);
+
+	float r = rgb.x;
+	float g = rgb.y;
+	float b = rgb.z;
+
+	float H;
+	float S;
+	float L;
+
+	float min = GetLowerValue(GetHigherValue(r, g), b);
+	float max = GetHigherValue(GetHigherValue(r, g), b);
+	float delta = max - min;
+
+	L = (max + min) / 2;
+
+	if (delta == 0)
+	{
+		H = 0.f;
+		S = 0.0f;
+	}
+	else
+	{
+		S = (L <= 0.5) ? (delta / (max + min)) : (delta / (2 - max - min));
+		float hue;
+
+		if (r == max)
+		{
+			hue = ((g - b) / 6) / delta;
+		}
+		else if (g == max)
+		{
+			hue = (1.0f / 3) + ((b - r) / 6) / delta;
+		}
+		else
+		{
+			hue = (2.0f / 3) + ((r - g) / 6) / delta;
+		}
+
+		if (hue < 0)
+			hue += 1;
+		if (hue > 1)
+			hue -= 1;
+
+		H = (int)(hue * 360);
+	}
+
+	m_HSLColor = Vec3(H,S,L);
 }
 
 bool Rgba::operator!=( const Rgba& compare ) const

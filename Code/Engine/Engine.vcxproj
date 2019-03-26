@@ -227,6 +227,7 @@
     <ClCompile Include="Renderer\DebugRender.cpp" />
     <ClCompile Include="Renderer\DepthStencilTargetView.cpp" />
     <ClCompile Include="Renderer\GPUMesh.cpp" />
+    <ClCompile Include="Renderer\HSL.cpp" />
     <ClCompile Include="Renderer\IndexBuffer.cpp" />
     <ClCompile Include="Renderer\RenderBuffer.cpp" />
     <ClCompile Include="Renderer\RenderContext.cpp" />

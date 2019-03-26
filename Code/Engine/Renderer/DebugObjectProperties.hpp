@@ -91,6 +91,26 @@ public:
 
 };
 
+// Arrow
+//------------------------------------------------------------------------------------------------------------------------------
+class Arrow2DProperties : public ObjectProperties
+{
+public:
+	explicit Arrow2DProperties(eDebugRenderObject renderObject, const Vec2& start, const Vec2& end,
+							   float durationSeconds = 0.f, float lineWidth = DEFAULT_LINE_WIDTH);
+	~Arrow2DProperties();
+
+public:
+	Vec2 m_startPos						= Vec2::ZERO;
+	Vec2 m_endPos						= Vec2::ZERO;
+	float m_lineWidth					= DEFAULT_LINE_WIDTH;
+
+	Vec2 m_lineEnd						= Vec2::ZERO;
+	Vec2 m_arrowTip						= Vec2::ZERO;
+	Vec2 m_lineNorm						= Vec2::ZERO;
+
+};
+
 // Quad
 //------------------------------------------------------------------------------------------------------------------------------
 class Quad2DProperties : public ObjectProperties

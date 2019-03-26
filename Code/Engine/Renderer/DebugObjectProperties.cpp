@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Renderer/DebugObjectProperties.hpp"
 #include "Engine/Renderer/TextureView.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 //	2D Object Properties
@@ -275,6 +276,32 @@ LogProperties::LogProperties( eDebugRenderObject renderObject, const Rgba& print
 }
 
 LogProperties::~LogProperties()
+{
+
+}
+
+Arrow2DProperties::Arrow2DProperties( eDebugRenderObject renderObject, const Vec2& start, const Vec2& end, float durationSeconds /*= 0.f*/, float lineWidth /*= DEFAULT_LINE_WIDTH*/ )
+{
+	//Base properties
+	m_durationSeconds = durationSeconds;
+	m_startDuration = m_durationSeconds;
+	m_renderObjectType = renderObject;
+
+	float distance = GetDistance2D(start, end);
+	m_lineNorm = end - start;
+	m_lineNorm.Normalize();
+
+	m_lineEnd = start + distance * 0.75f * m_lineNorm;
+
+	m_arrowTip = end;
+
+	//Line properties
+	m_startPos = start;
+	m_endPos = end;
+	m_lineWidth = lineWidth;
+}
+
+Arrow2DProperties::~Arrow2DProperties()
 {
 
 }

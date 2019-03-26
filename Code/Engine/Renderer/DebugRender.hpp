@@ -87,9 +87,9 @@ public:
 	
 	Camera&					Get2DCamera();
 
-	//------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------------------------
 	// 2D Debug Rendering (defaults to SCREEN)
-	//------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------------------------
 	void				DebugRenderPoint2D( DebugRenderOptionsT options, const Vec2& position, float duration = 0.f, float size = DEFAULT_POINT_SIZE );
 	void				DebugRenderLine2D( DebugRenderOptionsT options, const Vec2& start, const Vec2& end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH );
 	void				DebugRenderQuad2D( DebugRenderOptionsT options, AABB2 const &quad, float duration = 0.f, TextureView *view = nullptr); 
@@ -97,13 +97,17 @@ public:
 	void				DebugRenderDisc2D( DebugRenderOptionsT options, Disc2D const &disc, float duration = 0.f); 
 	void				DebugRenderRing2D( DebugRenderOptionsT options, Disc2D const &disc, float duration = 0.f, float thickness = DEFAULT_DISC_THICKNESS ); 
 	void				DebugRenderText2D( DebugRenderOptionsT options, const Vec2& startPosition, const Vec2& endPosition, char const *format, float fontHeight = DEFAULT_TEXT_HEIGHT, float duration = 0.f, ... );
-	void				DebugRenderArrow2D( DebugRenderOptionsT options, Vec3 start, Vec3 end, float lineWidth = DEFAULT_LINE_WIDTH ); 
+	
+	void				DebugRenderArrow2D( DebugRenderOptionsT options, const Vec2& start, const Vec2& end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH ); 
 
+	//------------------------------------------------------------------------------------------------------------------------------
+	// Text Logs
+	//------------------------------------------------------------------------------------------------------------------------------
 	void				DebugAddToLog( DebugRenderOptionsT options, char const* format, const Rgba& color = Rgba::ORANGE, float duration = 0.f, ...);
 
-	//------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------------------------
 	// 3D Rendering (will always default to WORLD)
-	//------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------------------------
 	void				DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration = 0.f, float size = DEFAULT_POINT_SIZE_3D, TextureView* texture = nullptr );
 	void				DebugRenderLine( DebugRenderOptionsT options, const Vec3& start, const Vec3& end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH_3D );
 	void				DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration = 0.f, TextureView* texture = nullptr ); 
@@ -123,21 +127,10 @@ public:
 	// EXTRA - requires Arrow
 	void				DebugRenderBasis( DebugRenderOptionsT options, Matrix44 const &basis, float lineWidth = DEFAULT_LINE_WIDTH ); 
 
-	//------------------------------------------------------------------------
-	// Rendering Text (works in any mode)
-	//------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------------------------
+	// Rendering 3D Text
+	//------------------------------------------------------------------------------------------------------------------------------
 	void				DebugRenderText3D( DebugRenderOptionsT options, const Vec3& position, const Vec2& pivot, char const *format, float fontHeight = DEFAULT_TEXT_HEIGHT_3D, float duration = 0.f, bool isBillboarded = false, ... );
-
-	/*
-	//------------------------------------------------------------------------
-	// Logs (shows up on screen temporily in a list)
-	// ALWAYS assumes screen space; 
-	//------------------------------------------------------------------------
-	void DebugRenderLogv( DebugRenderOptionsT const &options, 
-	char const *format, va_list args ); 
-	void DebugRenderLogf( DebugRenderOptionsT const &options, 
-	char const *format); 
-	*/
 
 private:
 	IntVec2							ConvertWorldToScreenPoint(Vec3 worldPoint);
@@ -153,6 +146,7 @@ private:
 	void							DrawWireQuad2D	( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawDisc2D		( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawRing2D		( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawArrow2D		( const DebugRenderOptionsT* renderObject ) const;
 	void							DrawText2D		( const DebugRenderOptionsT* renderObject ) const;
 
 	//Draw methods 3D

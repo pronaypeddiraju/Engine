@@ -1,5 +1,8 @@
 #pragma once
 
+//------------------------------------------------------------------------------------------------------------------------------
+struct Vec2;
+
 //-----------------------------------------------------------------------------------------------
 struct Vec3
 {
@@ -8,6 +11,7 @@ public:
 	~Vec3() {}																// destructor: do nothing (for speed)
 	Vec3() {}																// default constructor: do nothing (for speed)
 	Vec3( const Vec3& copyFrom );											// copy constructor (from another vec3)
+	Vec3( const Vec2& copyFrom );
 	explicit Vec3( float initialX, float initialY, float initialZ );		// explicit constructor (from x, y, z)
 	explicit Vec3(const char* asText);
 
