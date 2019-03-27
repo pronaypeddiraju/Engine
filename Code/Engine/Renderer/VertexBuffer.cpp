@@ -19,10 +19,10 @@ VertexBuffer::~VertexBuffer()
 
 // Similar to UBO - since we are assuming if they are using this method 
 // it is dynamic, and we only need to remake if the size changes; 
-bool VertexBuffer::CopyCPUToGPU( Vertex_PCU const *vertices, uint const count )
+bool VertexBuffer::CopyCPUToGPU( void const *vertices, uint const count, uint const stride )
 {
 	// how many bytes do we need
-	size_t sizeNeeded = count * sizeof(Vertex_PCU); 
+	size_t sizeNeeded = count * stride; 
 
 	// if we don't have enough room, or this is a static
 	// buffer, recreate (Create should release the old buffer)
@@ -30,7 +30,7 @@ bool VertexBuffer::CopyCPUToGPU( Vertex_PCU const *vertices, uint const count )
 	{
 		bool result = CreateBuffer( vertices, 
 			sizeNeeded,        // total size needed for buffer?
-			sizeof(Vertex_PCU), // stride - size from one vertex to another
+			stride, // stride - size from one vertex to another
 			RENDER_BUFFER_USAGE_VERTEX_STREAM_BIT, 
 			GPU_MEMORY_USAGE_DYNAMIC ); // probably want dynamic if we're using copy
 
@@ -60,10 +60,14 @@ bool VertexBuffer::CopyCPUToGPU( Vertex_PCU const *vertices, uint const count )
 	return false;
 }
 
+
+
 //Creating a static buffer because we could store a static mesh in which case the vertices dont 
 //change and can be saved as a static buffer
 bool VertexBuffer::CreateStaticFor( Vertex_PCU const *vertices, uint const count )
 {
+	GUARANTEE_RECOVERABLE(true, "Use CreateStaticForBuffer Instead");
+
 	// how many bytes do we need
 	size_t sizeNeeded = count * sizeof(Vertex_PCU); 
 
@@ -71,6 +75,30 @@ bool VertexBuffer::CreateStaticFor( Vertex_PCU const *vertices, uint const count
 	bool result = CreateBuffer( vertices, 
 		sizeNeeded,        // total size needed for buffer?
 		sizeof(Vertex_PCU), // stride - size from one vertex to another
+		RENDER_BUFFER_USAGE_VERTEX_STREAM_BIT, 
+		GPU_MEMORY_USAGE_STATIC ); // probably want dynamic if we're using copy
+
+	if (result) 
+	{
+		m_vertexCount = count; 
+		return true; 
+	} 
+	else 
+	{
+		m_vertexCount = 0U; 
+		return false; 
+	}
+}
+
+bool VertexBuffer::CreateStaticForBuffer( void const *vertices, uint stride,  uint const count)
+{
+	// how many bytes do we need
+	size_t sizeNeeded = count * stride; 
+
+	// just always create for static a new static buffer; 
+	bool result = CreateBuffer( vertices, 
+		sizeNeeded,        // total size needed for buffer?
+		stride, // stride - size from one vertex to another
 		RENDER_BUFFER_USAGE_VERTEX_STREAM_BIT, 
 		GPU_MEMORY_USAGE_STATIC ); // probably want dynamic if we're using copy
 

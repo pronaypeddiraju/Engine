@@ -865,7 +865,7 @@ void RenderContext::DrawVertexArray( Vertex_PCU const *vertices, uint count )
 	}
 
 	// copy to a vertex buffer
-	m_immediateVBO->CopyCPUToGPU( vertices, count);
+	m_immediateVBO->CopyCPUToGPU( vertices, count, sizeof(Vertex_PCU));
 
 	// bind that vertex buffer
 	BindVertexStream( m_immediateVBO ); 

@@ -632,7 +632,7 @@ void DebugRender::DrawPoint3D( const DebugRenderOptionsT* renderObject ) const
 
 	//Setup mesh here
 	GPUMesh point = GPUMesh( m_renderContext ); 
-	point.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
+	point.CreateFromCPUMesh<Vertex_PCU>( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
 	SetObjectMatrixForBillBoard(objectProperties->m_position);
 
 
@@ -677,7 +677,7 @@ void DebugRender::DrawQuad3D( const DebugRenderOptionsT* renderObject ) const
 
 	//Setup mesh here
 	GPUMesh quad = GPUMesh( m_renderContext ); 
-	quad.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
+	quad.CreateFromCPUMesh<Vertex_PCU>( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
 	if(objectProperties->m_billBoarded)
 	{
 		SetObjectMatrixForBillBoard(objectProperties->m_position);
@@ -725,7 +725,7 @@ void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
 
 	//Setup mesh here
 	GPUMesh line = GPUMesh( m_renderContext ); 
-	line.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
+	line.CreateFromCPUMesh<Vertex_PCU>( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
 	SetObjectMatrixForPosition(objectProperties->m_center);
 	//SetObjectMatrixForBillBoard(objectProperties->m_center);
 
@@ -767,7 +767,7 @@ void DebugRender::DrawSphere( const DebugRenderOptionsT* renderObject ) const
 
 	//Setup mesh here
 	GPUMesh sphere = GPUMesh( m_renderContext ); 
-	sphere.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
+	sphere.CreateFromCPUMesh<Vertex_PCU>( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
 	SetObjectMatrixForPosition(objectProperties->m_center);
 
 	//Setup the textures on the render context
@@ -808,7 +808,7 @@ void DebugRender::DrawWireSphere( const DebugRenderOptionsT* renderObject ) cons
 
 	//Setup mesh here
 	GPUMesh sphere = GPUMesh( m_renderContext ); 
-	sphere.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
+	sphere.CreateFromCPUMesh<Vertex_PCU>( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
 	SetObjectMatrixForPosition(objectProperties->m_center);
 
 	//Setup the textures on the render context
@@ -851,7 +851,7 @@ void DebugRender::DrawBox( const DebugRenderOptionsT* renderObject ) const
 
 	//Setup mesh here
 	GPUMesh box = GPUMesh( m_renderContext ); 
-	box.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
+	box.CreateFromCPUMesh<Vertex_PCU>( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
 	SetObjectMatrixForPosition(objectProperties->m_position);
 
 	//Setup the textures on the render context
@@ -892,7 +892,7 @@ void DebugRender::DrawWireBox( const DebugRenderOptionsT* renderObject ) const
 
 	//Setup mesh here
 	GPUMesh box = GPUMesh( m_renderContext ); 
-	box.CreateFromCPUMesh( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
+	box.CreateFromCPUMesh<Vertex_PCU>( objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC );
 	SetObjectMatrixForPosition(objectProperties->m_position);
 
 	//Setup the textures on the render context

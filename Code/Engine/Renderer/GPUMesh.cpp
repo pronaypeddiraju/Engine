@@ -1,8 +1,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
-#include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Commons/ErrorWarningAssert.hpp"
-#include "Engine/Renderer/IndexBuffer.hpp"
-#include "Engine/Renderer/CPUMesh.hpp"
+#include "Engine/Renderer/GPUMesh.hpp"
 
 GPUMesh::GPUMesh( RenderContext *renderContext )
 {
@@ -31,9 +29,12 @@ void GPUMesh::SetDrawCall( bool useIndexBuffer, uint elemCount )
 	m_useIndexBuffer = useIndexBuffer; 
 }
 
-void GPUMesh::CreateFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem /*= GPU_MEMORY_USAGE_STATIC */ )
+/*
+void GPUMesh::CreateFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem /*= GPU_MEMORY_USAGE_STATIC  )
 {
+	/*
 	// updated in A05 - NOT FINAL
+	// This is now going to take a buffer layout and use that to generate the GPU Mesh
 
 	if(mem != GPU_MEMORY_USAGE_STATIC)
 	{
@@ -50,9 +51,9 @@ void GPUMesh::CreateFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem /*= GP
 		Vertex_PCU pcu; 
 
 		// copy from master;
-		pcu.m_position = mesh->m_vertices[vIdx].position; 
-		pcu.m_color = mesh->m_vertices[vIdx].color; 
-		pcu.m_uvTexCoords = mesh->m_vertices[vIdx].uv; 
+		pcu.m_position = mesh->m_vertices[vIdx].m_position; 
+		pcu.m_color = mesh->m_vertices[vIdx].m_color; 
+		pcu.m_uvTexCoords = mesh->m_vertices[vIdx].m_uv; 
 
 		pcuVertices.push_back(pcu); 
 	}
@@ -61,9 +62,45 @@ void GPUMesh::CreateFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem /*= GP
 	m_indexBuffer->CreateStaticFor( &mesh->m_indices[0], mesh->GetIndexCount() ); 
 
 	SetDrawCall( mesh->UsesIndexBuffer(), mesh->GetElementCount() ); 
+
+	//New Implementation A06
+	const BufferLayout* layout = mesh->GetLayout();
+	if(layout == nullptr)
+	{
+		ERROR_AND_DIE("The buffer layout recieved from the CPU Mesh was nullptr!");
+	}
+
+	//We actually have a buffer layout with valid data
+
+	// 1. Need to allocate a buffer to copy into that matches our layout; 
+	size_t sizeNeeded = layout->GetStride() * layout->GetAttributeCount();
+	void* buffer = malloc(sizeNeeded);
+
+	// 2. Copy into that buffer
+	layout->m_copyFromMaster(buffer, mesh->GetVertices(), mesh->GetVertexCount());
+
+	// 3. Update or create using this buffer
+	if(mem != GPU_MEMORY_USAGE_STATIC)
+	{
+		ERROR_RECOVERABLE("Creating STATIC mesh from CPU but GPU mem type is not static");
+	}
+
+	m_vertexBuffer->CreateStaticFor( mesh->GetVertices(), m_layout->m_stride);
+
+	
+
+
+
+	// 4. Save off the layout - needed to create input layouts later; 
+	m_layout = layout; 
+
+	// don't forget to free memory allocated!!!
+	free( buffer ); 
+
 }
 
-void GPUMesh::CopyFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem /*= GPU_MEMORY_USAGE_DYNAMIC */ )
+
+void GPUMesh::CopyFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem )
 {
 	if(mem != GPU_MEMORY_USAGE_DYNAMIC)
 	{
@@ -80,9 +117,9 @@ void GPUMesh::CopyFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem /*= GPU_
 		Vertex_PCU pcu; 
 
 		// copy from master;
-		pcu.m_position = mesh->m_vertices[vIdx].position; 
-		pcu.m_color = mesh->m_vertices[vIdx].color; 
-		pcu.m_uvTexCoords = mesh->m_vertices[vIdx].uv; 
+		pcu.m_position = mesh->m_vertices[vIdx].m_position; 
+		pcu.m_color = mesh->m_vertices[vIdx].m_color; 
+		pcu.m_uvTexCoords = mesh->m_vertices[vIdx].m_uv; 
 
 		pcuVertices.push_back(pcu); 
 	}
@@ -92,3 +129,4 @@ void GPUMesh::CopyFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem /*= GPU_
 
 	SetDrawCall( mesh->UsesIndexBuffer(), mesh->GetElementCount() ); 
 }
+*/

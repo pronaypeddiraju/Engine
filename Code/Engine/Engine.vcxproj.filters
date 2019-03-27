@@ -226,6 +226,12 @@
     <ClCompile Include="Renderer\HSL.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Math\Vertex_Lit.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\BufferLayout.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -435,5 +441,8 @@
     <ClInclude Include="Math\Capsule2D.hpp" />
     <ClInclude Include="Math\Segment2D.hpp" />
     <ClInclude Include="Renderer\DebugObjectProperties.hpp" />
+    <ClInclude Include="Math\Vertex_Lit.hpp" />
+    <ClInclude Include="Renderer\BufferLayout.hpp" />
+    <ClInclude Include="Math\VertexMaster.hpp" />
   </ItemGroup>
 </Project>

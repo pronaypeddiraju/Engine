@@ -328,6 +328,16 @@ bool Shader::CreateInputLayoutForVertexPCU()
 	return SUCCEEDED(hr); 
 }
 
+bool Shader::CreateInputLayoutForBufferLayout()
+{
+	if(m_inputLayout != nullptr)
+	{
+		return true;
+	}
+
+
+}
+
 STATIC char const* Shader::GetEntryForStage( eShaderStage stage ) 
 {
 	switch (stage) {

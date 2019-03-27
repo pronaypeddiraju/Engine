@@ -278,9 +278,9 @@ void CPUMesh::Clear()
 	m_vertices.clear();
 	m_indices.clear();
 
-	m_stamp.position = Vec3::ZERO;
-	m_stamp.color = Rgba::WHITE;
-	m_stamp.uv = Vec2::ZERO;
+	m_stamp.m_position = Vec3::ZERO;
+	m_stamp.m_color = Rgba::WHITE;
+	m_stamp.m_uv = Vec2::ZERO;
 }
 
 CPUMesh::~CPUMesh()
@@ -294,18 +294,18 @@ void CPUMesh::SetColor( const Rgba& color )
 
 	for(int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++)
 	{
-		m_vertices[vertexIndex].color = color;
+		m_vertices[vertexIndex].m_color = color;
 	}
 }
 
 void CPUMesh::SetStampColor( const Rgba& color)
 {
-	m_stamp.color = color;
+	m_stamp.m_color = color;
 }
 
 void CPUMesh::SetUV( const Vec2& uv )
 {
-	m_stamp.uv = uv;
+	m_stamp.m_uv = uv;
 }
 
 uint CPUMesh::AddVertex( VertexMaster const &m )
@@ -321,7 +321,7 @@ uint CPUMesh::AddVertex( VertexMaster const &m )
 uint CPUMesh::AddVertex( Vec3 const &pos )
 {
 	VertexMaster m = m_stamp;
-	m.position = pos;
+	m.m_position = pos;
 
 	m_vertices.push_back(m);
 
@@ -335,4 +335,24 @@ void CPUMesh::AddIndexedQuad( uint topLeft, uint topRight, uint bottomLeft, uint
 {
 	AddIndexedTriangle(bottomLeft, topRight, topLeft);
 	AddIndexedTriangle(bottomLeft, bottomRight, topRight);
+}
+
+void CPUMesh::SetLayout( const BufferLayout* layout )
+{
+	m_layout = layout;
+}
+
+BufferLayout const* CPUMesh::GetLayout() const
+{
+	return m_layout;
+}
+
+VertexMaster const* CPUMesh::GetVertices() const
+{
+	return &m_vertices[0];
+}
+
+uint const* CPUMesh::GetIndices() const
+{
+	return &m_indices[0];
 }

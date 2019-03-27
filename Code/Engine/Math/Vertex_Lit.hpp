@@ -11,22 +11,18 @@ struct BufferAttributeT;
 typedef unsigned int uint;
 
 //------------------------------------------------------------------------------------------------------------------------------
-struct Vertex_PCU
+struct Vertex_Lit
 {
+public:
+	Vec3 m_position;
+	Vec3 m_normal; 
+	Rgba m_color; 
+	Vec2 m_uv; 
 
 public:
-
-	Vec3 m_position = Vec3::ZERO;
-	Vec2 m_uvTexCoords = Vec2::ZERO;
-	Rgba m_color = Rgba::WHITE;
-
-public:
-
-	explicit Vertex_PCU(const VertexMaster& master);
-	Vertex_PCU() {};
-	~Vertex_PCU() {};
-	explicit Vertex_PCU(const Vec3& position, const Rgba& color, const Vec2& uvTexCoords);
+	explicit Vertex_Lit(const VertexMaster& master);
+	~Vertex_Lit() {}
 
 	static BufferAttributeT LAYOUT[]; 
-	static void CopyFromMaster( void *buffer, VertexMaster const *src, uint count );
+	static void CopyFromMaster( void *buffer, VertexMaster const *src, uint count ); 
 };

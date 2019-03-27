@@ -17,12 +17,14 @@ public:
 	VertexBuffer(RenderContext *owner );
 	~VertexBuffer();
 
-	bool CopyCPUToGPU( Vertex_PCU const *vertices, uint const count ); 
+	bool CopyCPUToGPU( void const *vertices, uint const count, uint const stride ); 
 
 	//For when we need a static vertex buffer (ex: static meshes)
 	bool CreateStaticFor( Vertex_PCU const *vertices, uint const count );
-
-	inline uint GetVertexCount() {return m_vertexCount;}
+	
+	//Vertex agnostic
+	bool CreateStaticForBuffer( void const *vertices, uint stride, uint const count );
+	inline uint GetVertexCount() { return m_vertexCount; }
 
 public:
 	uint m_vertexCount = 0;                   // how many vertices are stored currently; 

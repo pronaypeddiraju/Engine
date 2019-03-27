@@ -61,7 +61,11 @@ public:
 	eBlendFactor			SetFactorFromString( const std::string& blendFactor );
 	void					ReadFromPass( XMLElement& passEntry );
 	
+	// Create Input layouts based on what type of buffer we are passing
 	bool					CreateInputLayoutForVertexPCU(); 
+	bool					CreateInputLayoutForBufferLayout();
+
+
 	// Depth stencil state now also needs to be generated; 
 	bool					UpdateBlendStateIfDirty(RenderContext *renderContext); 
 	bool					UpdateDepthStateIfDirty(RenderContext *renderContext);
