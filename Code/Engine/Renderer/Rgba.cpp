@@ -68,6 +68,7 @@ void Rgba::LerpRGB( Rgba& currentColor, const Rgba& startColor, const Rgba& endC
 	currentColor.b = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.b, endColor.b);
 }
 
+/*
 Vec3 Rgba::GetHSLFromRGBA( Rgba& currentColor, const Rgba& bg )
 {
 	Vec3 m_rgb = SetRGBAToRGB(currentColor, bg);
@@ -139,6 +140,7 @@ void Rgba::SetHSLFromRGB( Vec3 rgb )
 
 	m_HSLColor = Vec3(H,S,L);
 }
+*/
 
 bool Rgba::operator!=( const Rgba& compare ) const
 {

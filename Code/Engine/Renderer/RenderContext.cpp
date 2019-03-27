@@ -130,7 +130,7 @@ void RenderContext::D3D11Cleanup()
 	if(SUCCEEDED(hr))
 	{
 		//Uncomment when debugging
-		debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		//debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 		DX_SAFE_RELEASE(debugObject);
 	}
 

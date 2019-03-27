@@ -1103,7 +1103,7 @@ void DebugRender::DebugAddToLog( DebugRenderOptionsT options, char const* format
 	char buffer[1024]; 
 
 	va_list args;
-	va_start( args, format ); 
+	va_start( args, duration ); 
 	vsprintf_s( buffer, 1024, format, args ); 
 	va_end( args ); 
 
@@ -1169,7 +1169,7 @@ void DebugRender::DebugRenderText3D( DebugRenderOptionsT options, const Vec3& po
 	char buffer[1024]; 
 
 	va_list args;
-	va_start( args, format ); 
+	va_start( args, isBillboarded ); 
 	vsprintf_s( buffer, 1024, format, args ); 
 	va_end( args ); 
 

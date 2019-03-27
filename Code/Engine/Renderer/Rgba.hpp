@@ -39,15 +39,15 @@ public:
 	static void		LerpRGBA( Rgba& currentColor, const Rgba& startColor, const Rgba& endColor, float blendFraction );
 	static void		LerpRGB( Rgba& currentColor, const Rgba& startColor, const Rgba& endColor, float blendFraction );
 
-	Vec3 GetHSLFromRGBA( Rgba& currentColor, const Rgba& bg);
+	//Vec3 GetHSLFromRGBA( Rgba& currentColor, const Rgba& bg);
 
 	bool operator==( const Rgba& compare ) const;				// vec2 == vec2
 	bool operator!=( const Rgba& compare ) const;
 
 private:
 	//private methods
-	Vec3			SetRGBAToRGB( const Rgba& color, const Rgba& bg );
-	void			SetHSLFromRGB( Vec3 rgb );
+	//Vec3			SetRGBAToRGB( const Rgba& color, const Rgba& bg );
+	//void			SetHSLFromRGB( Vec3 rgb );
 
-	Vec3			m_HSLColor;
+	//Vec3			m_HSLColor;
 };

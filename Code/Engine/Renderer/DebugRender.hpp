@@ -130,7 +130,7 @@ public:
 	//------------------------------------------------------------------------------------------------------------------------------
 	// Rendering 3D Text
 	//------------------------------------------------------------------------------------------------------------------------------
-	void				DebugRenderText3D( DebugRenderOptionsT options, const Vec3& position, const Vec2& pivot, char const *format, float fontHeight = DEFAULT_TEXT_HEIGHT_3D, float duration = 0.f, bool isBillboarded = false, ... );
+	void				DebugRenderText3D( DebugRenderOptionsT options, const Vec3& position, const Vec2& pivot, char const *format, float fontHeight = DEFAULT_TEXT_HEIGHT_3D, float duration = 0.f, bool isBillboarded = true, ... );
 
 private:
 	IntVec2							ConvertWorldToScreenPoint(Vec3 worldPoint);
