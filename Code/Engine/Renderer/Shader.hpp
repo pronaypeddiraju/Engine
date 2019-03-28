@@ -43,6 +43,7 @@ public:
 	STATIC D3D11_BLEND_OP			DXUsageFromBlendOp( eBlendOperation const usage );
 	STATIC D3D11_BLEND				DXUsageFromBlendFactor( eBlendFactor const usage );
 	STATIC D3D11_COMPARISON_FUNC	DXGetCompareFunction( eCompareOp const usage );
+	STATIC DXGI_FORMAT				GetDXDataFormat( eDataFormat const format);
 	Shader();
 	~Shader();
 	
@@ -63,7 +64,7 @@ public:
 	
 	// Create Input layouts based on what type of buffer we are passing
 	bool					CreateInputLayoutForVertexPCU(); 
-	bool					CreateInputLayoutForBufferLayout();
+	bool					CreateInputLayout(const BufferLayout* layout);
 
 
 	// Depth stencil state now also needs to be generated; 
@@ -110,6 +111,8 @@ public:
 	std::string		m_blendOpAlphaString = "";
 	std::string		m_blendSrcAlphaString = "";
 	std::string		m_blendDstAlphaString = "";
+
+	BufferLayout const *m_bufferLayout = nullptr;
 
 	ID3D11InputLayout*			m_inputLayout = nullptr; 
 	ID3D11BlendState*			m_blendState = nullptr; 

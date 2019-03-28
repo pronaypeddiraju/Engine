@@ -1,6 +1,7 @@
-#include "Engine/Renderer/Shader.hpp"
+#include "Engine/Renderer/BufferLayout.hpp"
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/Shader.hpp"
 #include "Engine/Math/Vertex_PCU.hpp"
 #include "Engine/Core/FileUtils.hpp"
 
@@ -143,6 +144,22 @@ STATIC D3D11_COMPARISON_FUNC Shader::DXGetCompareFunction( eCompareOp const usag
 		GUARANTEE_RECOVERABLE(false, "Setting D3D11 Depth op to Always"); 
 		return D3D11_COMPARISON_LESS_EQUAL;
 	}
+	}
+}
+
+STATIC DXGI_FORMAT Shader::GetDXDataFormat( eDataFormat const format )
+{
+	switch( format )
+	{
+	case DF_RGBA32:					return DXGI_FORMAT_R32G32B32A32_FLOAT;
+	case DF_VEC2:					return DXGI_FORMAT_R32G32_FLOAT;
+	case DF_VEC3:					return DXGI_FORMAT_R32G32B32_FLOAT;
+	case DF_NULL:					ERROR_AND_DIE("The format recieved was null");
+	default:
+	{
+		ERROR_AND_DIE("DXDataFormat undefined!"); 
+	}
+	break;
 	}
 }
 
@@ -328,13 +345,49 @@ bool Shader::CreateInputLayoutForVertexPCU()
 	return SUCCEEDED(hr); 
 }
 
-bool Shader::CreateInputLayoutForBufferLayout()
+bool Shader::CreateInputLayout(const BufferLayout* layout)
 {
-	if(m_inputLayout != nullptr)
+	if(layout == m_bufferLayout)
 	{
 		return true;
 	}
 
+	//Free old inputLayout
+	DX_SAFE_RELEASE( m_inputLayout ); 
+
+	D3D11_INPUT_ELEMENT_DESC *inputDescription = new D3D11_INPUT_ELEMENT_DESC[layout->GetAttributeCount()];
+	//D3D11_INPUT_ELEMENT_DESC inputDescription[3];
+
+	memset( inputDescription, 0, sizeof(inputDescription) ); 
+
+	int count = (int)layout->GetAttributeCount();
+	for(int attrIdx = 0; attrIdx < count; attrIdx++)
+	{
+		// Map Position
+		inputDescription[attrIdx].SemanticName = layout->m_attributes[attrIdx].m_name.c_str();             // __semantic__ name we gave this input -> float3 pos : POSITION; 
+		inputDescription[attrIdx].SemanticIndex = 0;                     // Semantics that share a name (or are large) are spread over multiple indices (matrix4x4s are four floats for instance)
+		inputDescription[attrIdx].Format = Shader::GetDXDataFormat(layout->m_attributes[attrIdx].m_type);// DXGI_FORMAT_R32G32B32_FLOAT;  // Type this data is (float3/vec3 - so 3 floats)
+		inputDescription[attrIdx].InputSlot = 0U;                        // Input Pipe this comes from (ignored unless doing instanced rendering)
+		inputDescription[attrIdx].AlignedByteOffset = (UINT) layout->m_attributes[attrIdx].m_memberOffset;   // memory offset this data starts (where is position relative to the vertex, 0 in this case)
+		inputDescription[attrIdx].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;   // What is this data for (per vertex data is the only one we'll be dealing with in this class)
+		inputDescription[attrIdx].InstanceDataStepRate = 0U;             // If this were instance data - how often do we step it (0 for vertex data)
+
+	}
+
+	ID3D10Blob* vs_byteCode = m_vertexStage.m_byteCode; 
+
+	ID3D11Device* device = m_vertexStage.m_owningRenderContext->m_D3DDevice;
+
+	// Final create the layout
+	HRESULT hr = device->CreateInputLayout( inputDescription, 
+		(UINT) count,
+		vs_byteCode->GetBufferPointer(), 
+		vs_byteCode->GetBufferSize(), 
+		&m_inputLayout );   
+	
+	delete[] inputDescription;
+
+	return SUCCEEDED(hr); 
 
 }
 

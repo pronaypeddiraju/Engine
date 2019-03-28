@@ -650,41 +650,20 @@ void RenderContext::Draw( uint vertexCount, uint byteOffset )
 	// TODO: When different vertex types come on-line, look at the current bound
 	//       input streams (VertexBuffer) for the layout
 	
-	bool result =  m_currentShader->CreateInputLayoutForVertexPCU(); 
-	
 	// TODO: m_currentShader->CreateInputLayoutFor( VertexPCU::LAYOUT ); 
 
-	//A02 Implementation
-	if (result) 
-	{
-		m_D3DContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		m_D3DContext->IASetInputLayout( m_currentShader->m_inputLayout );
-		m_D3DContext->Draw( vertexCount, byteOffset ); 
-	} 
-	else 
-	{
-		// error/warning
-		ERROR_AND_DIE("Could not create input layout!");
-	}
+	m_D3DContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_D3DContext->IASetInputLayout( m_currentShader->m_inputLayout );
+	m_D3DContext->Draw( vertexCount, byteOffset ); 	
+
 }
 
 void RenderContext::DrawIndexed( uint indexCount)
 {
-	bool result =  m_currentShader->CreateInputLayoutForVertexPCU(); 
+	//bool result =  m_currentShader->CreateInputLayoutForVertexPCU(); 
 
-	// TODO: m_currentShader->CreateInputLayoutFor( VertexPCU::LAYOUT ); 
-
-	//A02 Implementation
-	if (result) 
-	{
-		m_D3DContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		m_D3DContext->IASetInputLayout( m_currentShader->m_inputLayout );
-	} 
-	else 
-	{
-		// error/warning
-		ERROR_AND_DIE("Could not create input layout!");
-	}
+	m_D3DContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_D3DContext->IASetInputLayout( m_currentShader->m_inputLayout );
 
 	// Draw
 	m_D3DContext->DrawIndexed( indexCount, 
@@ -710,7 +689,7 @@ void RenderContext::ClearDepthStencilTarget( float depth /*= 1.0f*/, uint8_t ste
 void RenderContext::BindVertexStream( VertexBuffer *vbo )
 {
 	// Bind the input stream; 
-	uint stride = sizeof(Vertex_PCU);
+	uint stride = (uint)vbo->m_elementSize;
 	uint offset = 0U;
 	m_D3DContext->IASetVertexBuffers( 0,    // Start slot index
 		1,                            // Number of buffers we're binding
@@ -869,8 +848,15 @@ void RenderContext::DrawVertexArray( Vertex_PCU const *vertices, uint count )
 
 	// bind that vertex buffer
 	BindVertexStream( m_immediateVBO ); 
-
-	Draw( count ); 
+	bool result = m_currentShader->CreateInputLayout(Vertex_PCU::layout);
+	if(result)
+	{
+		Draw( count ); 
+	}
+	else
+	{
+		ERROR_AND_DIE("Could not create Shader Input Layout for Vertex_PCU");
+	}
 	
 	//To Do implementation:
 	/*
@@ -883,16 +869,25 @@ void RenderContext::DrawVertexArray( Vertex_PCU const *vertices, uint count )
 
 void RenderContext::DrawMesh( GPUMesh *mesh )
 {
+
 	BindVertexStream( mesh->m_vertexBuffer ); 
 	BindIndexStream( mesh->m_indexBuffer ); 
+	bool result = m_currentShader->CreateInputLayout(mesh->m_layout);
 
-	if (mesh->UsesIndexBuffer()) 
+	if(result)
 	{
-		DrawIndexed( mesh->GetElementCount()); 
-	} 
-	else 
+		if (mesh->UsesIndexBuffer()) 
+		{
+			DrawIndexed( mesh->GetElementCount()); 
+		} 
+		else 
+		{
+			Draw( mesh->GetVertexCount() ); 
+		}
+	}
+	else
 	{
-		Draw( mesh->GetVertexCount() ); 
+		ERROR_AND_DIE("Could not create input layout!");
 	}
 }
 

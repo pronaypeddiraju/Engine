@@ -7,6 +7,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 struct VertexMaster;
 struct BufferAttributeT;
+class BufferLayout;
 
 typedef unsigned int uint;
 
@@ -17,8 +18,8 @@ struct Vertex_PCU
 public:
 
 	Vec3 m_position = Vec3::ZERO;
-	Vec2 m_uvTexCoords = Vec2::ZERO;
 	Rgba m_color = Rgba::WHITE;
+	Vec2 m_uvTexCoords = Vec2::ZERO;
 
 public:
 
@@ -29,4 +30,5 @@ public:
 
 	static BufferAttributeT LAYOUT[]; 
 	static void CopyFromMaster( void *buffer, VertexMaster const *src, uint count );
+	static const BufferLayout* layout;
 };

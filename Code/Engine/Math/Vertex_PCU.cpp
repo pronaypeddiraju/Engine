@@ -22,10 +22,11 @@ Vertex_PCU::Vertex_PCU( const VertexMaster& master )
 STATIC BufferAttributeT Vertex_PCU::LAYOUT[] = {
 	BufferAttributeT( "POSITION",  DF_VEC3,      offsetof(Vertex_PCU, m_position) ), 
 	BufferAttributeT( "COLOR",     DF_RGBA32,    offsetof(Vertex_PCU, m_color) ), 
-	BufferAttributeT( "UV",        DF_VEC2,      offsetof(Vertex_PCU, m_uvTexCoords) ), 
+	BufferAttributeT( "TEXCOORD",        DF_VEC2,      offsetof(Vertex_PCU, m_uvTexCoords) ), 
 	BufferAttributeT() // end		
 };
 
+STATIC const BufferLayout* Vertex_PCU::layout = BufferLayout::For<Vertex_PCU>();
 
 STATIC void Vertex_PCU::CopyFromMaster( void *buffer, VertexMaster const *src, uint count )
 {

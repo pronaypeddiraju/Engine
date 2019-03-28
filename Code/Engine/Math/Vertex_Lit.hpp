@@ -7,6 +7,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 struct VertexMaster;
 struct BufferAttributeT;
+class BufferLayout;
 
 typedef unsigned int uint;
 
@@ -24,5 +25,6 @@ public:
 	~Vertex_Lit() {}
 
 	static BufferAttributeT LAYOUT[]; 
+	static const BufferLayout* layout;
 	static void CopyFromMaster( void *buffer, VertexMaster const *src, uint count ); 
 };

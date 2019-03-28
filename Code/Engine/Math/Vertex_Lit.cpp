@@ -15,9 +15,11 @@ STATIC BufferAttributeT Vertex_Lit::LAYOUT[] = {
 	BufferAttributeT( "POSITION",  DF_VEC3,      offsetof(Vertex_Lit, m_position) ), 
 	BufferAttributeT( "NORMAL",    DF_VEC3,      offsetof(Vertex_Lit, m_normal) ), 
 	BufferAttributeT( "COLOR",     DF_RGBA32,    offsetof(Vertex_Lit, m_color) ), 
-	BufferAttributeT( "UV",        DF_VEC2,      offsetof(Vertex_Lit, m_uv) ), 
+	BufferAttributeT( "TEXCOORD",        DF_VEC2,      offsetof(Vertex_Lit, m_uv) ), 
 	BufferAttributeT() // end		
 };
+
+const BufferLayout* Vertex_Lit::layout = BufferLayout::For<Vertex_Lit>();
 
 STATIC void Vertex_Lit::CopyFromMaster( void *buffer, VertexMaster const *src, uint count )
 {
