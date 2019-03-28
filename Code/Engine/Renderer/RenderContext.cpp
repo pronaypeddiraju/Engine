@@ -199,6 +199,8 @@ void RenderContext::Startup()
 
 	m_modelBuffer = new UniformBuffer( this ); 
 	m_modelBuffer->CopyCPUToGPU( &buffer, sizeof(buffer) ); 
+
+	m_cpuLightBuffer = LightBufferT();
 }
 
 void RenderContext::PremakeDefaults()

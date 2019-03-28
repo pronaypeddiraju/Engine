@@ -130,7 +130,6 @@ const Vec3 Matrix44::GetKVector()
 const Vec3 Matrix44::GetTVector()
 {
 	Vec3 tVector = Vec3(m_values[Tx], m_values[Ty], m_values[Tz]);
-	tVector = tVector.GetNormalized();
 
 	return tVector;
 }
