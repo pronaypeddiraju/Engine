@@ -304,6 +304,18 @@ void RenderContext::UpdateLightBuffer()
 	}
 }
 
+void RenderContext::EnableDirectionalLight()
+{
+	m_cpuLightBuffer.lights[0].color.a = 1.f;
+	m_lightBufferDirty = true;
+}
+
+void RenderContext::DisableDirectionalLight()
+{
+	m_cpuLightBuffer.lights[0].color.a = 0.f;
+	m_lightBufferDirty = true;
+}
+
 void RenderContext::CreateAndSetDefaultRasterState()
 {
 	DX_SAFE_RELEASE(m_defaultRasterState);
@@ -497,6 +509,7 @@ void RenderContext::EnableLight( uint slot, LightT const &info )
 void RenderContext::DisableLight( uint slot )
 {
 	m_cpuLightBuffer.lights[slot] = LightT();
+	m_cpuLightBuffer.ambient.a = 0.f;
 	m_lightBufferDirty = true;
 }
 

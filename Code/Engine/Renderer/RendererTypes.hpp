@@ -195,7 +195,7 @@ struct LightT
 	float isDirection			= 0.0f; // 0 means use as a point light 
 
 	Vec3 diffuseAttenuation		= Vec3( 1.0f, 0.0f, 0.0f );  // no attenuation
-	float pad10					= 0.f;; 
+	float pad10					= 0.f;
 
 	Vec3 specularAttenuation	= Vec3( 1.0f, 0.0f, 0.0f ); // no attenuation
 	float pad20					= 0.f; 

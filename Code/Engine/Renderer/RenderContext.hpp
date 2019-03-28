@@ -70,6 +70,9 @@ public:
 	void						DisableLight( uint slot );                           
 	void						UpdateLightBuffer();
 
+	void						EnableDirectionalLight();
+	void						DisableDirectionalLight();
+
 	//Get resources
 	//Texture*					CreateOrGetTextureFromFile(const char* imageFilePath);
 	TextureView*				GetOrCreateTextureViewFromFile( std::string const &filename, bool isFont = false); 

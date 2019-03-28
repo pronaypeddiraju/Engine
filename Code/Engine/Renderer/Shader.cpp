@@ -171,9 +171,6 @@ Shader::Shader()
 
 Shader::~Shader()
 {
-	delete m_bufferLayout;
-	m_bufferLayout = nullptr;
-
 	DX_SAFE_RELEASE(m_inputLayout);
 	DX_SAFE_RELEASE(m_blendState);
 	DX_SAFE_RELEASE(m_depthStencilState);
