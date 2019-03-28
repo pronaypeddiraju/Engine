@@ -170,6 +170,9 @@ Shader::Shader()
 
 Shader::~Shader()
 {
+	delete m_bufferLayout;
+	m_bufferLayout = nullptr;
+
 	DX_SAFE_RELEASE(m_inputLayout);
 	DX_SAFE_RELEASE(m_blendState);
 	DX_SAFE_RELEASE(m_depthStencilState);
@@ -386,6 +389,8 @@ bool Shader::CreateInputLayout(const BufferLayout* layout)
 		&m_inputLayout );   
 	
 	delete[] inputDescription;
+
+	m_bufferLayout = layout;
 
 	return SUCCEEDED(hr); 
 

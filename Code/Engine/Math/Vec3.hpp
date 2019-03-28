@@ -18,6 +18,12 @@ public:
 	//Static Vectors
 	const static Vec3	ZERO;
 	const static Vec3	ONE;
+	const static Vec3	FRONT;
+	const static Vec3	BACK;
+	const static Vec3	LEFT;
+	const static Vec3	RIGHT;
+	const static Vec3	UP;
+	const static Vec3	DOWN;
 
 	//Access Methods
 	float				GetLength() const;

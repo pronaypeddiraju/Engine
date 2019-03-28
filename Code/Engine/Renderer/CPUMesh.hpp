@@ -26,6 +26,7 @@ public:
 	// Modify the stamp;
 	void SetColor( const Rgba& color );           // A04
 	void SetUV( const Vec2& uv );                 // A04
+	void SetNormal( const Vec3& norm);
 	void SetStampColor( const Rgba& color );
 
 	void SetLayout( const BufferLayout* layout ); // A06

@@ -16,7 +16,7 @@ void CPUMeshAddQuad( CPUMesh *out, const AABB2& quad, const Rgba& color)
 	out->Clear(); 
 
 	out->SetStampColor( color ); 
-	// out->SetNormal( vec3::BACK ); 
+	out->SetNormal( Vec3::BACK ); 
 
 	// 0 --- 1
 	// |   / |
@@ -102,6 +102,7 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	}
 
 	out->SetStampColor( color ); 
+	out->SetNormal( Vec3::BACK );
 
 	AABB2 boxFace;
 
@@ -127,6 +128,9 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	// |   / |
 	// | /   |
 	// 6 --- 7
+
+	out->SetNormal( Vec3::FRONT );
+
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
 	out->AddVertex( box.m_backTopLeft); 
 	out->SetUV( Vec2(1.0f, 0.0f) ); 
@@ -144,6 +148,9 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	// |   / |
 	// | /   |
 	// 10 --- 11
+
+	out->SetNormal( Vec3::UP );
+
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
 	out->AddVertex( box.m_backTopRight); 
 	out->SetUV( Vec2(1.0f, 0.0f) ); 
@@ -161,6 +168,9 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	// |   / |
 	// | /   |
 	// 14 --- 15
+
+	out->SetNormal( Vec3::DOWN );
+
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
 	out->AddVertex( box.m_frontBottomLeft); 
 	out->SetUV( Vec2(1.0f, 0.0f) ); 
@@ -178,6 +188,9 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	// |   / |
 	// | /   |
 	// 18 --- 19
+
+	out->SetNormal( Vec3::LEFT );
+
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
 	out->AddVertex( box.m_backTopRight); 
 	out->SetUV( Vec2(1.0f, 0.0f) ); 
@@ -195,6 +208,9 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	// |   / |
 	// | /   |
 	// 22 --- 23
+
+	out->SetNormal( Vec3::RIGHT );
+
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
 	out->AddVertex( box.m_frontTopRight); 
 	out->SetUV( Vec2(1.0f, 0.0f) ); 
@@ -230,7 +246,13 @@ void CPUMeshAddUVSphere( CPUMesh *out, const Vec3& center, float radius, const R
 			float u = static_cast<float>(uIndex) / static_cast<float>(wedges);
 			theta = u * 360.f;
 			Vec3 position = GetSphericalToCartesian(radius, theta, phi) + center;
+
+			//Get the normal to the vertex
+			Vec3 norm = position - center;
+			norm = norm.GetNormalized();
+
 			out->SetUV(Vec2(u,v));
+			out->SetNormal(norm);
 			out->AddVertex(position);
 		}
 	}
@@ -355,4 +377,9 @@ VertexMaster const* CPUMesh::GetVertices() const
 uint const* CPUMesh::GetIndices() const
 {
 	return &m_indices[0];
+}
+
+void CPUMesh::SetNormal( const Vec3& norm )
+{
+	m_stamp.m_normal = norm;
 }
