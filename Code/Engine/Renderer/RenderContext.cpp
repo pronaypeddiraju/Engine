@@ -283,6 +283,25 @@ Shader* RenderContext::CreateShaderFromFile(const std::string& fileName)
 	return shader;
 }
 
+void RenderContext::UpdateLightBuffer()
+{
+	if (m_gpuLightBuffer == nullptr) 
+	{
+		m_gpuLightBuffer = new UniformBuffer( this ); 
+	}
+
+	// TODO: This method is called during BeginCamera - so we know our outputs
+	// are final - so if you have enough data to figure out an aspect correct
+	// projection, you can do it here;  For now, we'll keep with the SD1
+	// version that just sets a fixed ortho; 
+
+	if (m_lightBufferDirty) 
+	{
+		m_lightBufferDirty = false; 
+		m_gpuLightBuffer->CopyCPUToGPU( &m_cpuLightBuffer, sizeof(m_cpuLightBuffer)); 
+	}
+}
+
 void RenderContext::CreateAndSetDefaultRasterState()
 {
 	DX_SAFE_RELEASE(m_defaultRasterState);
@@ -378,6 +397,9 @@ void RenderContext::Shutdown()
 	delete m_immediateUBO;
 	m_immediateUBO = nullptr;
 
+	delete m_gpuLightBuffer;
+	m_gpuLightBuffer = nullptr;
+
 	delete m_FrameBuffer_ColorTargetView;
 	m_FrameBuffer_ColorTargetView = nullptr;
 
@@ -455,6 +477,25 @@ void RenderContext::Shutdown()
 
 	D3D11Cleanup();
 
+}
+
+void RenderContext::SetAmbientLight( Rgba const &color, float intensity )
+{
+	m_cpuLightBuffer.ambient = color;
+	m_cpuLightBuffer.ambient.a = intensity;
+	m_lightBufferDirty = true;
+}
+
+void RenderContext::EnableLight( uint slot, LightT const &info )
+{
+	m_cpuLightBuffer.lights[slot] = info;
+	m_lightBufferDirty = true;
+}
+
+void RenderContext::DisableLight( uint slot )
+{
+	m_cpuLightBuffer.lights[slot] = LightT();
+	m_lightBufferDirty = true;
 }
 
 void RenderContext::BindShader( Shader* shader )
@@ -867,12 +908,24 @@ void RenderContext::DrawVertexArray( Vertex_PCU const *vertices, uint count )
 	*/
 }
 
-void RenderContext::DrawMesh( GPUMesh *mesh )
+bool RenderContext::PreDraw( GPUMesh *mesh)
 {
+	//Bind the uniforms
+	UpdateLightBuffer();
+	BindUniformBuffer(UNIFORM_SLOT_LIGHT, m_gpuLightBuffer);
 
+	//Bind vertex and index streams
 	BindVertexStream( mesh->m_vertexBuffer ); 
 	BindIndexStream( mesh->m_indexBuffer ); 
+
+	//Creat the input layout based on the mesh's layout
 	bool result = m_currentShader->CreateInputLayout(mesh->m_layout);
+	return result;
+}
+
+void RenderContext::DrawMesh( GPUMesh *mesh )
+{
+	bool result = PreDraw(mesh);
 
 	if(result)
 	{

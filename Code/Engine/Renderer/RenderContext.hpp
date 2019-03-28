@@ -64,6 +64,12 @@ public:
 
 	void						Shutdown();
 
+	//Lighting
+	void						SetAmbientLight( Rgba const &color, float intensity ); 
+	void						EnableLight( uint slot, LightT const &info );         
+	void						DisableLight( uint slot );                           
+	void						UpdateLightBuffer();
+
 	//Get resources
 	//Texture*					CreateOrGetTextureFromFile(const char* imageFilePath);
 	TextureView*				GetOrCreateTextureViewFromFile( std::string const &filename, bool isFont = false); 
@@ -114,6 +120,8 @@ public:
 	void						UpdateFrameBuffer();
 	void						BindUniformBuffer( uint slot, UniformBuffer *ubo ); 
 
+	bool						PreDraw( GPUMesh *mesh );
+	
 	void						Draw(uint vertexCount, uint byteOffset = 0U);
 	void						DrawIndexed( uint indexCount);                                 // A04
 
@@ -170,6 +178,14 @@ public:
 	Texture2D*											m_defaultDepthTexture = nullptr;
 	DepthStencilTargetView*								m_defaultDepthStencilView = nullptr; // A04
 	UniformBuffer*										m_modelBuffer = nullptr;                      // A04
+
+	// A06 - constant buffer storing lights; 
+	UniformBuffer*										m_gpuLightBuffer = nullptr;
+	// A06 - CPU copy of light data
+	LightBufferT										m_cpuLightBuffer;                   
+	// A06 - need to update the light buffer before a draw
+	bool												m_lightBufferDirty = true;                           
+	uint												m_lightSlot = 0U;
 
 	// There are a small set of sampler state that
 	// we can get by with just reusing everywhere, 

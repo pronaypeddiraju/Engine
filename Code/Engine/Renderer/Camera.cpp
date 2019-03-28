@@ -96,6 +96,7 @@ void Camera::UpdateUniformBuffer( RenderContext* renderContext )
 	CameraBufferT cpuData;
 	cpuData.ViewMatrix = m_view; 
 	cpuData.ProjectionMatrix = m_projection; 
+	cpuData.CameraPosition = m_cameraModel.GetTVector();
 
 	// copy the cpu to the gpu (will create or update the buffer)
 	m_cameraUBO->CopyCPUToGPU( &cpuData, sizeof(cpuData) ); 

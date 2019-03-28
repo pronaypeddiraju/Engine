@@ -2,7 +2,12 @@
 #pragma once
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/Matrix44.hpp"
+#include "Engine/Math/Vec3.hpp"
+#include "Engine/Math/Vec4.hpp"
 #include "Engine/Renderer/Rgba.hpp"
+
+//------------------------------------------------------------------------------------------------------------------------------
+#define MAX_LIGHTS      (8)
 
 // As the engine designer, we're going to make the decision to 
 // just reserve certain slot indices for specific constant buffers
@@ -10,9 +15,10 @@
 // really only use the CAMERA
 enum eCoreUniformSlot 
 {
-	UNIFORM_SLOT_FRAME         = 1,
-	UNIFORM_SLOT_CAMERA        = 2, 
-	UNIFORM_SLOT_MODEL_MATRIX  = 3,
+	UNIFORM_SLOT_FRAME			= 1,
+	UNIFORM_SLOT_CAMERA			= 2, 
+	UNIFORM_SLOT_MODEL_MATRIX	= 3,
+	UNIFORM_SLOT_LIGHT			= 4,
 }; 
 
 // A constant buffer can address up 64KB,
@@ -48,7 +54,9 @@ struct FrameBufferT
 struct CameraBufferT 
 {
 	Matrix44 ViewMatrix; 
-	Matrix44 ProjectionMatrix; 
+	Matrix44 ProjectionMatrix;
+	Vec3 CameraPosition;
+	float pad;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -175,3 +183,32 @@ enum eDataFormat
 };
 
 //------------------------------------------------------------------------------------------------------------------------------
+// used by light buffer (A06)
+struct LightT 
+{
+	Rgba color					= Rgba::BLACK; // a is intensity; 
+
+	Vec3 position				= Vec3::ZERO;                   // light position
+	float pad00;                     // keep a 16-byte alignment for D3D11
+
+	Vec3 direction				= Vec3( 0.f, 0.f, 1.f);                  // direction of light
+	float isDirection			= 0.0f; // 0 means use as a point light 
+
+	Vec3 diffuseAttenuation		= Vec3( 1.0f, 0.0f, 0.0f );  // no attenuation
+	float pad10; 
+
+	Vec3 specularAttenuation	= Vec3( 1.0f, 0.0f, 0.0f ); // no attenuation
+	float pad20; 
+}; 
+
+//------------------------------------------------------------------------------------------------------------------------------
+// slot 4, lights (A06)
+struct LightBufferT
+{
+	Rgba ambient; // a is intensity
+	float specFactor; 
+	float specPower; 
+	Vec2 pad; 
+
+	LightT lights[MAX_LIGHTS]; 
+}; 

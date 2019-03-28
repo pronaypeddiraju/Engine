@@ -52,6 +52,7 @@ STATIC ID3D10Blob* CompileHLSLToShaderBlob( char const *opt_filename,  // option
 	*/
 
 	DWORD compile_flags = 0U;
+#define DEBUG_SHADERS
 #if defined(DEBUG_SHADERS)
 	compile_flags |= D3DCOMPILE_DEBUG;
 	compile_flags |= D3DCOMPILE_SKIP_OPTIMIZATION;

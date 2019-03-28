@@ -49,10 +49,12 @@ public:
 	const Vec3			GetIVector();
 	const Vec3			GetJVector();
 	const Vec3			GetKVector();
+	const Vec3			GetTVector();		
 
 	void				SetIVector( const Vec3& i );
 	void				SetJVector( const Vec3& j );
 	void				SetKVector( const Vec3& k );
+	void				SetTVector( const Vec3& t );
 
 	Matrix44			AppendMatrix( const Matrix44& matrix);
 

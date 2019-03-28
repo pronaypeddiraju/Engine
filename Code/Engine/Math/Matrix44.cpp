@@ -127,6 +127,14 @@ const Vec3 Matrix44::GetKVector()
 	return kVector;
 }
 
+const Vec3 Matrix44::GetTVector()
+{
+	Vec3 tVector = Vec3(m_values[Tx], m_values[Ty], m_values[Tz]);
+	tVector = tVector.GetNormalized();
+
+	return tVector;
+}
+
 void Matrix44::SetIVector( const Vec3& i )
 {
 	m_values[Ix] = i.x;
@@ -146,6 +154,13 @@ void Matrix44::SetKVector( const Vec3& k )
 	m_values[Kx] = k.x;
 	m_values[Ky] = k.y;
 	m_values[Kz] = k.z;
+}
+
+void Matrix44::SetTVector( const Vec3& t )
+{
+	m_values[Tx] = t.x;
+	m_values[Ty] = t.y;
+	m_values[Tz] = t.z;
 }
 
 /*
