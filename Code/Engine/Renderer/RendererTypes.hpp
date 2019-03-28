@@ -206,8 +206,8 @@ struct LightT
 struct LightBufferT
 {
 	Rgba ambient; // a is intensity
-	float specFactor; 
-	float specPower; 
+	float specFactor = 1.f; 
+	float specPower = 64.f; 
 	Vec2 pad; 
 
 	LightT lights[MAX_LIGHTS]; 
