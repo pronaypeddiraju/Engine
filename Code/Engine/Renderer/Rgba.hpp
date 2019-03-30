@@ -43,6 +43,7 @@ public:
 
 	bool operator==( const Rgba& compare ) const;				// vec2 == vec2
 	bool operator!=( const Rgba& compare ) const;
+	Rgba operator*( float multiplier) const;
 
 private:
 	//private methods

@@ -68,6 +68,12 @@ void Rgba::LerpRGB( Rgba& currentColor, const Rgba& startColor, const Rgba& endC
 	currentColor.b = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.b, endColor.b);
 }
 
+Rgba Rgba::operator*( float multiplier ) const
+{
+	Rgba color = Rgba(r * multiplier, g * multiplier, b * multiplier, a * multiplier);
+	return color;
+}
+
 /*
 Vec3 Rgba::GetHSLFromRGBA( Rgba& currentColor, const Rgba& bg )
 {
