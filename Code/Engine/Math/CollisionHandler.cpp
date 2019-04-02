@@ -5,6 +5,7 @@
 #include "Engine/Math/Manifold.hpp"
 #include "Engine/Math/Plane2D.hpp"
 #include "Engine/Math/Segment2D.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 
 CollisionCheck2DCallback COLLISION_LOOKUP_TABLE[COLLIDER2D_COUNT][COLLIDER2D_COUNT] = {
 	/*******| aabb2 | disc  | capsl | obb2 | line  | point  */
@@ -300,17 +301,18 @@ bool GetManifold( Manifold2D *out, OBB2 const &boxA, OBB2 const &boxB)
 	//Check which of the 2 are larger (smaller -ve number)
 	if(bestCaseOther > bestCaseThis)
 	{
+		//We have the contact point now
 		out->m_penetration = bestCaseOther * -1.f;
+		
 		out->m_normal = planesOfOther[bestCaseIndexOther].m_normal;
 	}
 	else
 	{
+		//We have the contact point now
 		out->m_penetration = bestCaseThis * -1.f;
+
 		out->m_normal = planesOfThis[bestCaseIndexThis].m_normal * -1.f;
 	}
-
-	//We have reached this point. There's an intersection for sure
-	//out here
 
 	return true; 
 }
@@ -323,14 +325,19 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 	Plane2D planesOfThis[4];    // p0
 	Plane2D planesOfOther[4];   // p1
 
+	Segment2D segmentsOfThis[4];
+	Segment2D segmentsOfOther[4];
+
 	Vec2 cornersOfThis[4];     // c0
 	Vec2 cornersOfOther[4];    // c1
 
 	boxA.GetPlanes( planesOfThis ); 
 	boxA.GetCorners( cornersOfThis ); 
+	boxA.GetSides (segmentsOfThis );
 
 	boxB.GetPlanes( planesOfOther ); 
 	boxB.GetCorners( cornersOfOther ); 
+	boxB.GetSides( segmentsOfOther );
 
 	int inFrontOfThis = 0;
 	int inFrontOfOther = 0;
@@ -348,6 +355,9 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 
 	Plane2D bestThisPlane;
 	Plane2D bestOtherPlane;
+
+	Segment2D bestSegmentThis;
+	Segment2D bestSegmentOther;
 
 	Vec2 worstCornerToPlane[4];
 	float worstDistancesToThis[4];
@@ -377,6 +387,9 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 				bestPointToA = cornerOfOther;
 				bestThisPlane = thisPlane;
 
+				bestSegmentThis = segmentsOfThis[planeIndex];
+				bestSegmentOther = segmentsOfOther[planeIndex];
+
 				worstCornerToPlane[planeIndex] = cornerOfOther;
 				worstDistancesToThis[planeIndex] = otherFromThis;
 
@@ -394,6 +407,7 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 				bestDistToA = otherFromThis;
 				bestPointToA = cornerOfOther;
 				bestThisPlane = thisPlane;
+				bestSegmentThis = segmentsOfThis[planeIndex];
 
 				worstCornerToPlane[planeIndex] = cornerOfOther;
 				worstDistancesToThis[planeIndex] = otherFromThis;
@@ -405,22 +419,11 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 				bestDistToB = thisFromOther;
 				bestPointToB = cornerOfThis;
 				bestOtherPlane = otherPlane;
+				bestSegmentOther = segmentsOfOther[planeIndex];
 
 				worstCornerToOtherPlane[planeIndex] = cornerOfThis;
 				worstDistancesToOther[planeIndex] = thisFromOther;
 			}
-
-			/*
-			//Get the largest negative value as distance to push out of
-			if(otherFromThis < 0)
-			{
-				if(otherFromThis > smallestDistance)
-				{
-					smallestDistance = otherFromThis;
-					planeToPushOutOf = thisPlane;
-				}
-			}
-			*/
 
 			inFrontOfThis += (otherFromThis >= 0.0f) ? 1 : 0; 
 			inFrontOfOther += (thisFromOther >= 0.0f) ? 1 : 0; 
@@ -437,41 +440,62 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 	int bestCaseIndexThis = 0;
 	int bestCaseIndexOther = 0;
 
+	Vec2 bestContactThis;
+	Vec2 bestContactOther;
+
 	for(int worstCaseIndex = 0; worstCaseIndex < 4; worstCaseIndex++)
 	{
 		if(worstCaseIndex == 0)
 		{
 			bestCaseThis = worstDistancesToThis[worstCaseIndex];
 			bestCaseOther = worstDistancesToOther[worstCaseIndex];
+
+			bestContactThis = worstCornerToPlane[worstCaseIndex];
+			bestContactOther = worstCornerToOtherPlane[worstCaseIndex];
 		}
 
 		if(worstDistancesToThis[worstCaseIndex] > bestCaseThis)
 		{
 			bestCaseThis = worstDistancesToThis[worstCaseIndex];
+			bestContactThis = worstCornerToPlane[worstCaseIndex];
 			bestCaseIndexThis = worstCaseIndex;
 		}
 
 		if(worstDistancesToOther[worstCaseIndex] > bestCaseOther)
 		{
 			bestCaseOther = worstDistancesToOther[worstCaseIndex];
+			bestContactOther = worstCornerToOtherPlane[worstCaseIndex];
 			bestCaseIndexOther = worstCaseIndex;
 		}
+
 	}
 
 	//Check which of the 2 are larger (smaller -ve number)
 	if(bestCaseOther > bestCaseThis)
 	{
 		out->m_penetration = bestCaseOther * -1.f;
+		
+		//DEBUG
+		DebugRenderOptionsT options;
+		options.relativeCoordinates = true;
+		options.space = DEBUG_RENDER_SCREEN;
+		options.beginColor = Rgba::GREEN;
+		g_debugRenderer->DebugRenderPoint2D(options, bestContactOther, 3.f);
+
 		out->m_normal = planesOfOther[bestCaseIndexOther].m_normal;
 	}
 	else
 	{
 		out->m_penetration = bestCaseThis * -1.f;
+
+		//DEBUG
+		DebugRenderOptionsT options;
+		options.relativeCoordinates = true;
+		options.space = DEBUG_RENDER_SCREEN;
+		g_debugRenderer->DebugRenderPoint2D(options, bestContactThis, 1.f);
+
 		out->m_normal = planesOfThis[bestCaseIndexThis].m_normal * -1.f;
 	}
-
-	//We have reached this point. There's an intersection for sure
-	//out here
 
 	return true; 
 }

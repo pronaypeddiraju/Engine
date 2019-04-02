@@ -1011,9 +1011,31 @@ void DebugRender::SetObjectMatrixForBillBoard( Vec3 position ) const
 	m_renderContext->SetModelMatrix(objectModel);	
 }
 
+void DebugRender::SetWorldSize2D( const Vec2& worldMin, const Vec2& worldMax )
+{
+	m_worldMin2D = worldMin;
+	m_worldMax2D = worldMax;
+}
+
+Vec2 DebugRender::GetRelativePosInWorld2D( const Vec2& positionInWorld )
+{
+	Vec2 correctedPos;
+	correctedPos.x = RangeMapFloat(positionInWorld.x, m_worldMin2D.x, m_worldMax2D.x, m_debug2DCam->GetOrthoBottomLeft().x, m_debug2DCam->GetOrthoTopRight().x);
+	correctedPos.y = RangeMapFloat(positionInWorld.y, m_worldMin2D.y, m_worldMax2D.y, m_debug2DCam->GetOrthoBottomLeft().y, m_debug2DCam->GetOrthoTopRight().y);
+	return correctedPos;
+}
+
 void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT options, const Vec2& position, float duration, float size /*= DEFAULT_POINT_SIZE */ )
 {
-	options.objectProperties = new Point2DProperties(DEBUG_RENDER_POINT, position, duration, size);
+	if(options.relativeCoordinates)
+	{
+		Vec2 newPosition = GetRelativePosInWorld2D(position);
+		options.objectProperties = new Point2DProperties(DEBUG_RENDER_POINT, newPosition, duration, size);
+	}
+	else
+	{
+		options.objectProperties = new Point2DProperties(DEBUG_RENDER_POINT, position, duration, size);
+	}
 
 	m_screenRenderObjects.push_back(options);
 }

@@ -40,7 +40,7 @@ struct DebugRenderOptionsT
 	eDebugRenderMode mode         = DEBUG_RENDER_USE_DEPTH; 
 
 	Rgba beginColor               = Rgba::WHITE; 
-	Rgba endColor                 = Rgba::WHITE; 
+	Rgba endColor                 = Rgba::RED; 
 
 	// 2D common - these are where I will treat the "origin" 
 	// of the screen for drawing - defaulting to bottom-left corner; 
@@ -50,6 +50,8 @@ struct DebugRenderOptionsT
 	// 3D (WORLD space) common (ignored for SCREEN & CAMERA)
 	Matrix44 modelTransform       = Matrix44::IDENTITY; // local transform to do to the object; 
 	
+	bool relativeCoordinates = false;
+
 	ObjectProperties* objectProperties = nullptr; 
 };
 
@@ -85,6 +87,9 @@ public:
 	void					SetObjectMatrixForPosition( Vec3 position ) const;
 	void					SetObjectMatrixForBillBoard( Vec3 position ) const;
 	
+	void					SetWorldSize2D(const Vec2& worldMin, const Vec2& worldMax);
+	Vec2					GetRelativePosInWorld2D(const Vec2& positionInWorld);
+
 	Camera&					Get2DCamera();
 
 	//------------------------------------------------------------------------------------------------------------------------------
@@ -177,6 +182,10 @@ private:
 	Camera*				m_debug2DCam					= nullptr;
 	bool				m_canRender						= true;
 	
+	//2D world size
+	Vec2				m_worldMin2D					= Vec2::ZERO;
+	Vec2				m_worldMax2D					= Vec2::ZERO;
+
 	BitmapFont*			m_debugFont						= nullptr;
 	Shader*				m_xrayShader					= nullptr;
 	Shader*				m_defaultShader					= nullptr;
