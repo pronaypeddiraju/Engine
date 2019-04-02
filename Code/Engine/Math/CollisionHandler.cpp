@@ -686,6 +686,13 @@ bool GetManifold( Manifold2D *out, OBB2 const &a, float aRadius, OBB2 const &b, 
 			out->m_normal = disp.GetNormalized() * -1.f;
 		}
 		out->m_penetration = (aRadius + bRadius) - distance;
+
+		DebugRenderOptionsT options;
+		options.relativeCoordinates = true;
+		options.space = DEBUG_RENDER_SCREEN;
+		options.beginColor = Rgba::GREEN;
+		g_debugRenderer->DebugRenderPoint2D(options, bestA + aRadius * -1.f * out->m_normal, 1.f);
+
 		return true;
 	}
 }
