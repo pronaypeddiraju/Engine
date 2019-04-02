@@ -7,4 +7,5 @@ struct Manifold2D
 {
 	Vec2	m_normal = Vec2::ZERO;
 	float	m_penetration = 0.f;
+	Vec2	m_contact = Vec2::ZERO;
 };

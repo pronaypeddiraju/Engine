@@ -47,7 +47,7 @@ public:
 	Vec2									GetPosition() const;
 	eSimulationType							GetSimulationType();
 
-public :
+public:
 	PhysicsSystem*							m_system = nullptr; 			// system this rigidbody belongs to; 
 	void*									m_object = nullptr; 			// user (game) pointer for external use
 	Transform2*								m_object_transform = nullptr;	// what does this rigidbody affect
@@ -60,6 +60,8 @@ public :
 	Collider2D*								m_collider = nullptr;						// my shape; (could eventually be made a set)
 	bool									m_isTrigger = false;
 	PhysicsMaterialT						m_material;
+
+	float									m_momentOfInertia = 0.f;
 
 private:
 	eSimulationType							m_simulationType = TYPE_UNKOWN;

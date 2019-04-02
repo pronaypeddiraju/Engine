@@ -137,3 +137,4 @@ eSimulationType Rigidbody2D::GetSimulationType()
 	return m_simulationType;
 }
 
+

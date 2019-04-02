@@ -25,6 +25,9 @@ enum eColliderType2D
 class Collider2D
 {
 public:
+
+	virtual void				SetMomentForObject() = 0;
+
 	bool						IsTouching(Collision2D* collision, Collider2D* otherCollider);
 	eColliderType2D				GetType();
 	void						SetCollision(bool inCollision);
@@ -32,6 +35,8 @@ public:
 public:
 	Rigidbody2D*				m_rigidbody = nullptr;
 	eColliderType2D				m_colliderType = COLLIDER_UNKOWN;
+
+	float						m_momentOfInertia = 0.f;
 
 	bool						m_inCollision = false;
 };
@@ -41,6 +46,8 @@ class AABB2Collider: public Collider2D
 public:
 	explicit AABB2Collider(const Vec2& minBounds, const Vec2& maxBounds);
 	~AABB2Collider();
+
+	virtual void				SetMomentForObject();
 
 	AABB2						GetLocalShape() const;		//Shape relative to rigidbody
 	AABB2						GetWorldShape() const;		//Shape in world
@@ -56,6 +63,8 @@ public:
 	explicit Disc2DCollider(const Vec2& centre, float radius);
 	~Disc2DCollider();
 
+	virtual void				SetMomentForObject();
+
 	Disc2D						GetLocalShape() const;
 	Disc2D						GetWorldShape() const;
 
@@ -69,6 +78,8 @@ public:
 	explicit BoxCollider2D( Vec2 center, Vec2 size = Vec2::ZERO, float rotationDegrees = 0.0f );
 	~BoxCollider2D();
 
+	virtual void				SetMomentForObject();
+
 	OBB2						GetLocalShape() const;
 	OBB2						GetWorldShape() const;
 
@@ -81,6 +92,8 @@ class CapsuleCollider2D: public Collider2D
 public:
 	explicit CapsuleCollider2D ( Vec2 start, Vec2 end, float radius );
 	~CapsuleCollider2D();
+
+	virtual void				SetMomentForObject();
 
 	OBB2						GetLocalShape() const;
 	OBB2						GetWorldShape() const;

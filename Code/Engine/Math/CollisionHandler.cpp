@@ -499,19 +499,21 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 	if(bestCaseOther > bestCaseThis)
 	{
 		out->m_penetration = bestCaseOther * -1.f;
+		out->m_normal = planesOfOther[bestCaseIndexOther].m_normal;
+		out->m_contact = bestContactOther;
 
 		//DEBUG
 		DebugRenderOptionsT options;
 		options.relativeCoordinates = true;
 		options.space = DEBUG_RENDER_SCREEN;
 		options.beginColor = Rgba::GREEN;
-		g_debugRenderer->DebugRenderPoint2D(options, bestContactOther, 3.f);
-
-		out->m_normal = planesOfOther[bestCaseIndexOther].m_normal;
+		g_debugRenderer->DebugRenderPoint2D(options, bestContactOther, 1.f);
 	}
 	else
 	{
 		out->m_penetration = bestCaseThis * -1.f;
+		out->m_normal = planesOfThis[bestCaseIndexThis].m_normal * -1.f;
+		out->m_contact = bestContactThis;
 
 		//DEBUG
 		DebugRenderOptionsT options;
@@ -519,8 +521,6 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 		options.space = DEBUG_RENDER_SCREEN;
 		options.beginColor = Rgba::BLUE;
 		g_debugRenderer->DebugRenderPoint2D(options, bestContactThis, 1.f);
-
-		out->m_normal = planesOfThis[bestCaseIndexThis].m_normal * -1.f;
 	}
 
 	return true; 
@@ -686,12 +686,13 @@ bool GetManifold( Manifold2D *out, OBB2 const &a, float aRadius, OBB2 const &b, 
 			out->m_normal = disp.GetNormalized() * -1.f;
 		}
 		out->m_penetration = (aRadius + bRadius) - distance;
+		out->m_contact = bestA + aRadius * -1.f * out->m_normal;
 
 		DebugRenderOptionsT options;
 		options.relativeCoordinates = true;
 		options.space = DEBUG_RENDER_SCREEN;
 		options.beginColor = Rgba::GREEN;
-		g_debugRenderer->DebugRenderPoint2D(options, bestA + aRadius * -1.f * out->m_normal, 1.f);
+		g_debugRenderer->DebugRenderPoint2D(options, out->m_contact, 1.f);
 
 		return true;
 	}
