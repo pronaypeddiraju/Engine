@@ -1115,7 +1115,16 @@ void DebugRender::DebugRenderText2D( DebugRenderOptionsT options, const Vec2& st
 
 void DebugRender::DebugRenderArrow2D( DebugRenderOptionsT options, const Vec2& start, const Vec2& end, float duration /*= 0.f*/, float lineWidth /*= DEFAULT_LINE_WIDTH */ )
 {
-	options.objectProperties = new Arrow2DProperties(DEBUG_RENDER_ARROW, start, end, duration, lineWidth);
+	if(options.relativeCoordinates)
+	{
+		Vec2 newStart = GetRelativePosInWorld2D(start);
+		Vec2 newEnd = GetRelativePosInWorld2D(end);
+		options.objectProperties = new Arrow2DProperties(DEBUG_RENDER_ARROW, newStart, newEnd, duration, lineWidth);
+	}
+	else
+	{
+		options.objectProperties = new Arrow2DProperties(DEBUG_RENDER_ARROW, start, end, duration, lineWidth);
+	}
 
 	m_screenRenderObjects.push_back(options);
 }

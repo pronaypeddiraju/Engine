@@ -470,11 +470,36 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 
 	}
 
+	/*
+	//Case where the edges are colliding perfectly (Well almost perfectly)
+	float diff = (bestCaseOther - bestCaseThis);
+	if( diff < 0.00001f )
+	{
+		out->m_penetration = bestCaseOther  * -1.f;
+
+		//DEBUG
+		DebugRenderOptionsT options;
+		options.relativeCoordinates = true;
+		options.space = DEBUG_RENDER_SCREEN;
+		options.beginColor = Rgba::GREEN;
+		g_debugRenderer->DebugRenderPoint2D(options, bestContactOther, 3.f);
+
+		out->m_normal = planesOfOther[bestCaseIndexOther].m_normal;
+		Vec2 tangent = out->m_normal.GetRotated90Degrees();
+
+		//	TO-DO:
+		// Get the mid point for the side that has collided
+		// Set that as the contact point
+
+		return true; 
+	}
+	*/
+	
 	//Check which of the 2 are larger (smaller -ve number)
 	if(bestCaseOther > bestCaseThis)
 	{
 		out->m_penetration = bestCaseOther * -1.f;
-		
+
 		//DEBUG
 		DebugRenderOptionsT options;
 		options.relativeCoordinates = true;
@@ -492,6 +517,7 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 		DebugRenderOptionsT options;
 		options.relativeCoordinates = true;
 		options.space = DEBUG_RENDER_SCREEN;
+		options.beginColor = Rgba::BLUE;
 		g_debugRenderer->DebugRenderPoint2D(options, bestContactThis, 1.f);
 
 		out->m_normal = planesOfThis[bestCaseIndexThis].m_normal * -1.f;
