@@ -27,6 +27,7 @@ class Collider2D
 public:
 
 	virtual void				SetMomentForObject() = 0;
+	virtual bool				Contains(Vec2 worldPoint) = 0;
 
 	bool						IsTouching(Collision2D* collision, Collider2D* otherCollider);
 	eColliderType2D				GetType();
@@ -46,6 +47,7 @@ public:
 	~AABB2Collider();
 
 	virtual void				SetMomentForObject();
+	virtual bool				Contains(Vec2 worldPoint);
 
 	AABB2						GetLocalShape() const;		//Shape relative to rigidbody
 	AABB2						GetWorldShape() const;		//Shape in world
@@ -62,6 +64,7 @@ public:
 	~Disc2DCollider();
 
 	virtual void				SetMomentForObject();
+	virtual bool				Contains(Vec2 worldPoint);
 
 	Disc2D						GetLocalShape() const;
 	Disc2D						GetWorldShape() const;
@@ -77,6 +80,7 @@ public:
 	~BoxCollider2D();
 
 	virtual void				SetMomentForObject();
+	virtual bool				Contains(Vec2 worldPoint);
 
 	OBB2						GetLocalShape() const;
 	OBB2						GetWorldShape() const;
@@ -92,6 +96,7 @@ public:
 	~CapsuleCollider2D();
 
 	virtual void				SetMomentForObject();
+	virtual bool				Contains(Vec2 worldPoint);
 
 	OBB2						GetLocalShape() const;
 	OBB2						GetWorldShape() const;

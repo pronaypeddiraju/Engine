@@ -36,6 +36,12 @@ void AABB2Collider::SetMomentForObject()
 	GUARANTEE_OR_DIE(true, "There is no implementation for handling the Moment of Inertia for a AABB2");
 }
 
+bool AABB2Collider::Contains( Vec2 worldPoint )
+{
+	UNUSED(worldPoint);
+	return false;
+}
+
 AABB2 AABB2Collider::GetLocalShape() const
 {
 	return m_localShape;
@@ -68,6 +74,12 @@ void Disc2DCollider::SetMomentForObject()
 	GUARANTEE_OR_DIE(true, "There is no implementation for handling the Moment of Inertia for a Disc");
 }
 
+bool Disc2DCollider::Contains( Vec2 worldPoint )
+{
+	UNUSED(worldPoint);
+	return false;
+}
+
 Disc2D Disc2DCollider::GetLocalShape() const
 {
 	return m_localShape;
@@ -97,6 +109,12 @@ void BoxCollider2D::SetMomentForObject()
 
 	//0.08333333333 = 1/12 which is what we will need for the Moment of inertia of a box. I avoid the / operation like this 
 	m_rigidbody->m_momentOfInertia = m_rigidbody->m_mass * (1.f/12.f * (width * width + height * height));
+}
+
+bool BoxCollider2D::Contains( Vec2 worldPoint )
+{
+	OBB2 worldShape = GetWorldShape();
+	return worldShape.Contains(worldPoint);
 }
 
 OBB2 BoxCollider2D::GetLocalShape() const
@@ -154,6 +172,12 @@ void CapsuleCollider2D::SetMomentForObject()
 	m_rigidbody->m_momentOfInertia += 0.5f * m_rigidbody->m_mass * ratioDisc * m_radius * m_radius;
 	//Point component
 	m_rigidbody->m_momentOfInertia += offset * offset * m_rigidbody->m_mass * ratioDisc;
+}
+
+bool CapsuleCollider2D::Contains( Vec2 worldPoint )
+{
+	OBB2 worldShape = GetWorldShape();
+	return IsPointInCapsule2D(worldPoint, worldShape.GetBottomLeft(), worldShape.GetTopRight(), m_radius);
 }
 
 OBB2 CapsuleCollider2D::GetLocalShape() const

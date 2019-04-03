@@ -503,11 +503,11 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 		out->m_contact = bestContactOther;
 
 		//DEBUG
-		DebugRenderOptionsT options;
-		options.relativeCoordinates = true;
-		options.space = DEBUG_RENDER_SCREEN;
-		options.beginColor = Rgba::GREEN;
-		g_debugRenderer->DebugRenderPoint2D(options, bestContactOther, 1.f);
+// 		DebugRenderOptionsT options;
+// 		options.relativeCoordinates = true;
+// 		options.space = DEBUG_RENDER_SCREEN;
+// 		options.beginColor = Rgba::GREEN;
+// 		g_debugRenderer->DebugRenderPoint2D(options, bestContactOther, 1.f);
 	}
 	else
 	{
@@ -516,11 +516,11 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 		out->m_contact = bestContactThis;
 
 		//DEBUG
-		DebugRenderOptionsT options;
-		options.relativeCoordinates = true;
-		options.space = DEBUG_RENDER_SCREEN;
-		options.beginColor = Rgba::BLUE;
-		g_debugRenderer->DebugRenderPoint2D(options, bestContactThis, 1.f);
+// 		DebugRenderOptionsT options;
+// 		options.relativeCoordinates = true;
+// 		options.space = DEBUG_RENDER_SCREEN;
+// 		options.beginColor = Rgba::BLUE;
+// 		g_debugRenderer->DebugRenderPoint2D(options, bestContactThis, 1.f);
 	}
 
 	return true; 
@@ -688,11 +688,11 @@ bool GetManifold( Manifold2D *out, OBB2 const &a, float aRadius, OBB2 const &b, 
 		out->m_penetration = (aRadius + bRadius) - distance;
 		out->m_contact = bestA + aRadius * -1.f * out->m_normal;
 
-		DebugRenderOptionsT options;
-		options.relativeCoordinates = true;
-		options.space = DEBUG_RENDER_SCREEN;
-		options.beginColor = Rgba::GREEN;
-		g_debugRenderer->DebugRenderPoint2D(options, out->m_contact, 1.f);
+// 		DebugRenderOptionsT options;
+// 		options.relativeCoordinates = true;
+// 		options.space = DEBUG_RENDER_SCREEN;
+// 		options.beginColor = Rgba::GREEN;
+// 		g_debugRenderer->DebugRenderPoint2D(options, out->m_contact, 1.f);
 
 		return true;
 	}
