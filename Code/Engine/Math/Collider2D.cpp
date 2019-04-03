@@ -152,6 +152,7 @@ void CapsuleCollider2D::SetMomentForObject()
 
 	//Disc component
 	m_rigidbody->m_momentOfInertia += 0.5f * m_rigidbody->m_mass * ratioDisc * m_radius * m_radius;
+	//Point component
 	m_rigidbody->m_momentOfInertia += offset * offset * m_rigidbody->m_mass * ratioDisc;
 }
 
