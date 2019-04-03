@@ -39,7 +39,7 @@ public:
 	// state we care about
 	eFilterMode m_minFilter       = FILTER_MODE_POINT; // what to do when "shrinking" an image, or a pixel on screen represents multiple texels.
 	eFilterMode m_magFilter       = FILTER_MODE_POINT; // what to do when "stretching" an image, or when multiple pixels on screen fit in the same texel; 
-													   // eFilterMode m_mipFilter    = FILTER_MODE_POINT; // TODO when we implement mipmaps later; 
+	// eFilterMode m_mipFilter    = FILTER_MODE_POINT; // TODO when we implement mipmaps later; 
 
 	eBlendOperation m_blendOp	  = BLEND_OP_DEFAULT;
 

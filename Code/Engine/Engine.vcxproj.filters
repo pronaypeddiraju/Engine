@@ -232,6 +232,9 @@
     <ClCompile Include="Renderer\BufferLayout.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\Material.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -444,5 +447,6 @@
     <ClInclude Include="Math\Vertex_Lit.hpp" />
     <ClInclude Include="Renderer\BufferLayout.hpp" />
     <ClInclude Include="Math\VertexMaster.hpp" />
+    <ClInclude Include="Renderer\Material.hpp" />
   </ItemGroup>
 </Project>

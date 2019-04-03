@@ -39,7 +39,7 @@ Image::Image( const char* imageFilePath )
 			unsigned char greenByte = m_imageRawData[greenByteIndex];
 			unsigned char blueByte = m_imageRawData[blueByteIndex];
 
-			m_texelRepository[texelIndex] = new Rgba;
+			m_texelRepository[texelIndex] = new Rgba();
 			m_texelRepository[texelIndex]->SetFromBytes(redByte, greenByte, blueByte);
 		}
 	}
@@ -58,10 +58,36 @@ Image::Image( const char* imageFilePath )
 			unsigned char blueByte = m_imageRawData[blueByteIndex];
 			unsigned char alphaByte = m_imageRawData[alphaByteIndex];
 
-			//Store Raw data also
-			m_texelRepository[texelIndex] = new Rgba;
+			m_texelRepository[texelIndex] = new Rgba();
 			m_texelRepository[texelIndex]->SetFromBytes(redByte, greenByte, blueByte, alphaByte);
 		}
+	}
+}
+
+Image::Image( const Rgba& color, const int width /*= 1*/, const int height /*= 1*/ )
+{
+	//Resize vector size to the number of texels
+	int numTexels = width * height;
+
+	m_dimensions.x = width;
+	m_dimensions.y = height;
+
+	m_texelRepository.resize(numTexels);
+
+	for(int texelIndex = 0; texelIndex < numTexels; texelIndex++)
+	{
+		int redByteIndex = texelIndex;
+		int greenByteIndex = redByteIndex + 1;
+		int blueByteIndex = redByteIndex + 2;
+		int alphaByteIndex = redByteIndex + 3;
+
+		unsigned char redByte = m_imageRawData[redByteIndex];
+		unsigned char greenByte = m_imageRawData[greenByteIndex];
+		unsigned char blueByte = m_imageRawData[blueByteIndex];
+		unsigned char alphaByte = m_imageRawData[alphaByteIndex];
+
+		*m_texelRepository[texelIndex] = color;
+		m_texelRepository[texelIndex]->SetFromBytes(redByte, greenByte, blueByte, alphaByte);
 	}
 }
 

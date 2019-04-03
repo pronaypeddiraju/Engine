@@ -12,6 +12,7 @@ class Image
 public:
 	//Use stbi load from the third party image thing we added to our engine (refer to getTextureFromFile in render context)
 	explicit Image(const char* imagePath);
+	explicit Image(const Rgba& color, const int width = 1, const int height = 1);
 	~Image();
 
 	//Accessors
@@ -28,7 +29,7 @@ public:
 	void				SetTexelColor(const IntVec2& texelCoordinates, const Rgba& setColor);
 
 private:
-	std::string			m_imageFilePath;
+	std::string			m_imageFilePath = "";
 	IntVec2				m_dimensions = IntVec2::ZERO;
 	std::vector<Rgba*>	m_texelRepository;
 	

@@ -12,6 +12,7 @@ struct ID3D11InputLayout;
 struct ID3D11BlendState;
 
 class RenderContext;
+class BufferLayout;
 
 // A programmable shader stage, either vertex or pixel fornow; 
 class ShaderStage

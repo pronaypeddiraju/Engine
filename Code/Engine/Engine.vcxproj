@@ -231,6 +231,7 @@
     <ClCompile Include="Renderer\GPUMesh.cpp" />
     <ClCompile Include="Renderer\HSL.cpp" />
     <ClCompile Include="Renderer\IndexBuffer.cpp" />
+    <ClCompile Include="Renderer\Material.cpp" />
     <ClCompile Include="Renderer\RenderBuffer.cpp" />
     <ClCompile Include="Renderer\RenderContext.cpp" />
     <ClCompile Include="Renderer\Rgba.cpp" />
@@ -312,6 +313,7 @@
     <ClInclude Include="Renderer\GPUMesh.hpp" />
     <ClInclude Include="Renderer\HSL.hpp" />
     <ClInclude Include="Renderer\IndexBuffer.hpp" />
+    <ClInclude Include="Renderer\Material.hpp" />
     <ClInclude Include="Renderer\RenderBuffer.hpp" />
     <ClInclude Include="Renderer\RenderContext.hpp" />
     <ClInclude Include="Renderer\RendererTypes.hpp" />
