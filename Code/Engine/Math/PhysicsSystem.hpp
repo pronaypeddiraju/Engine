@@ -7,6 +7,7 @@
 class RenderContext;
 class Collider2D;
 class RigidBodyBucket;
+struct Collision2D;
 
 class PhysicsSystem
 {
@@ -38,6 +39,10 @@ private:
 	void					CheckStaticVsStaticCollisions();
 	void					ResolveDynamicVsStaticCollisions( bool canResolve );
 	void					ResolveDynamicVsDynamicCollisions( bool canResolve );
+
+	//Utilities
+	Vec2					GetImpulseAlongNormal( Vec2* out, const Collision2D& collision, const Rigidbody2D& rb0, const Rigidbody2D& rb1 );
+
 public:
 
 	//Way to store all rigidbodies

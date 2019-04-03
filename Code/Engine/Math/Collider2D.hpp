@@ -36,8 +36,6 @@ public:
 	Rigidbody2D*				m_rigidbody = nullptr;
 	eColliderType2D				m_colliderType = COLLIDER_UNKOWN;
 
-	float						m_momentOfInertia = 0.f;
-
 	bool						m_inCollision = false;
 };
 

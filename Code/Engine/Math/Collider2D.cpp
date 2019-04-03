@@ -96,7 +96,7 @@ void BoxCollider2D::SetMomentForObject()
 	float height = (m_localShape.m_halfExtents.y * 2.f); 
 
 	//0.08333333333 = 1/12 which is what we will need for the Moment of inertia of a box. I avoid the / operation like this 
-	m_momentOfInertia = m_rigidbody->m_mass * (0.08333333333f * width * height * (width * width + height * height));
+	m_rigidbody->m_momentOfInertia = m_rigidbody->m_mass * (1.f/12.f * (width * width + height * height));
 }
 
 OBB2 BoxCollider2D::GetLocalShape() const
@@ -146,10 +146,13 @@ void CapsuleCollider2D::SetMomentForObject()
 	float height = (m_localShape.m_halfExtents.y * 2.f); 
 
 	//0.08333333333 = 1/12 which is what we will need for the Moment of inertia of a box. I avoid the / operation like this 
-	m_momentOfInertia = (0.08333333333f * width * height * (width * width + height * height)) * ratioBox * m_rigidbody->m_mass;
+	m_rigidbody->m_momentOfInertia = (0.08333333333f * (width * width + height * height)) * ratioBox * m_rigidbody->m_mass;
+
+	float offset = GetDistance2D(m_rigidbody->GetPosition(), m_localShape.GetBottomLeft());
 
 	//Disc component
-	m_momentOfInertia += 0.5f * m_rigidbody->m_mass * ratioDisc * m_rigidbody->m_mass;
+	m_rigidbody->m_momentOfInertia += 0.5f * m_rigidbody->m_mass * ratioDisc * m_radius * m_radius;
+	m_rigidbody->m_momentOfInertia += offset * offset * m_rigidbody->m_mass * ratioDisc;
 }
 
 OBB2 CapsuleCollider2D::GetLocalShape() const

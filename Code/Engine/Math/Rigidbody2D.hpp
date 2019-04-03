@@ -35,6 +35,10 @@ public:
 
 	//Apply a single step of movement
 	void									Move(float deltaTime);
+	void									ApplyRotation();
+
+	//Apply specific movement
+	inline void								MoveBy(Vec2 movement) { m_transform.m_position += movement;}
 
 	void									DebugRender(RenderContext* renderContext, const Rgba& color) const;
 	
@@ -47,6 +51,14 @@ public:
 	Vec2									GetPosition() const;
 	eSimulationType							GetSimulationType();
 
+	//Impulses
+	void									ApplyImpulses( Vec2 linearImpulse, float angularImpulse );
+	void									ApplyImpulseAt( Vec2 linearImpulse, Vec2 pointOfContact );
+
+	//Forces and Torques
+	inline void								AddForce(Vec2 force)	{	m_frameForces += force;		}
+	inline void								AddTorque(float torque) {	m_frameTorque += torque;	}
+
 public:
 	PhysicsSystem*							m_system = nullptr; 			// system this rigidbody belongs to; 
 	void*									m_object = nullptr; 			// user (game) pointer for external use
@@ -55,6 +67,7 @@ public:
 	Transform2								m_transform;					// rigidbody transform (mimics the object at start of frame, and used to tell the change to object at end of frame)
 	Vec2									m_gravity_scale = Vec2::ONE;	// how much are we affected by gravity
 	Vec2									m_velocity = Vec2::ZERO; 
+	float 									m_angularVelocity = 0.f;
 	float									m_mass;  						// how heavy am I
 
 	Collider2D*								m_collider = nullptr;						// my shape; (could eventually be made a set)
@@ -62,6 +75,10 @@ public:
 	PhysicsMaterialT						m_material;
 
 	float									m_momentOfInertia = 0.f;
+	float									m_rotation = 0.f;
+
+	Vec2									m_frameForces = Vec2::ZERO;
+	float									m_frameTorque = 0.f;
 
 private:
 	eSimulationType							m_simulationType = TYPE_UNKOWN;
