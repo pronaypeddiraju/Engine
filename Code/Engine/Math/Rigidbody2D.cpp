@@ -84,7 +84,7 @@ void Rigidbody2D::ApplyRotation()
 	break;
 	case COLLIDER_CAPSULE:
 	{
-		BoxCollider2D* collider = reinterpret_cast<BoxCollider2D*>(m_collider);
+		CapsuleCollider2D* collider = reinterpret_cast<CapsuleCollider2D*>(m_collider);
 		collider->m_localShape.SetRotation(m_rotation);
 	}
 	break;

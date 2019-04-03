@@ -329,13 +329,13 @@ void PhysicsSystem::ResolveDynamicVsStaticCollisions(bool canResolve)
 					//Coefficient of restitution
 					float CoefficientOfRestitution = (collision.m_Obj->m_rigidbody->m_material.restitution) * (collision.m_otherObj->m_rigidbody->m_material.restitution);
 
-					Vec2 j = -(1 + CoefficientOfRestitution) * (velocityAtPoint0 - velocityAtPoint1) * manifold.m_normal;
+					float j = -(1 + CoefficientOfRestitution) * GetDotProduct((velocityAtPoint0 - velocityAtPoint1), manifold.m_normal);
 
 					float constant0 = ( GetDotProduct(toPointPerpendicular0, manifold.m_normal) * GetDotProduct(toPointPerpendicular0, manifold.m_normal) / rb0->m_momentOfInertia ) ;
 
 					float d = (1 / mass0) + (constant0);
 
-					Vec2 impulseAlongNormal = j / d;
+					float impulseAlongNormal = j / d;
 
 					rb0->ApplyImpulseAt( impulseAlongNormal * collision.m_manifold.m_normal, contactPoint );					
 				}
@@ -401,7 +401,7 @@ void PhysicsSystem::ResolveDynamicVsDynamicCollisions(bool canResolve)
 					Rigidbody2D* rb1 = m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][otherColliderIndex];
 
 					Vec2 *contactPoint = new Vec2();
-					Vec2 impulseAlongNormal = GetImpulseAlongNormal(contactPoint, collision, *rb0, *rb1);
+					float impulseAlongNormal = GetImpulseAlongNormal(contactPoint, collision, *rb0, *rb1);
 
 					rb0->ApplyImpulseAt( impulseAlongNormal * collision.m_manifold.m_normal, *contactPoint );
 					rb1->ApplyImpulseAt( -1.f * impulseAlongNormal * collision.m_manifold.m_normal, *contactPoint );
@@ -444,7 +444,7 @@ void PhysicsSystem::ResolveDynamicVsDynamicCollisions(bool canResolve)
 }
 
 
-Vec2 PhysicsSystem::GetImpulseAlongNormal(Vec2 *out, const Collision2D& collision, const Rigidbody2D& rb0, const Rigidbody2D& rb1)
+float PhysicsSystem::GetImpulseAlongNormal(Vec2 *out, const Collision2D& collision, const Rigidbody2D& rb0, const Rigidbody2D& rb1)
 {
 	Vec2 velocity0 = rb0.m_velocity;
 	Vec2 velocity1 = rb1.m_velocity;
@@ -480,13 +480,13 @@ Vec2 PhysicsSystem::GetImpulseAlongNormal(Vec2 *out, const Collision2D& collisio
 	//Coefficient of restitution
 	float CoefficientOfRestitution = (collision.m_Obj->m_rigidbody->m_material.restitution) * (collision.m_otherObj->m_rigidbody->m_material.restitution);
 
-	Vec2 j = -(1 + CoefficientOfRestitution) * (velocityAtPoint0 - velocityAtPoint1) * manifold.m_normal;
+	float j = -(1 + CoefficientOfRestitution) * GetDotProduct((velocityAtPoint0 - velocityAtPoint1), manifold.m_normal);
 
 	float constant0 = ( GetDotProduct(toPointPerpendicular0, manifold.m_normal) * GetDotProduct(toPointPerpendicular0, manifold.m_normal) / rb0.m_momentOfInertia ) ;
 	float constant1 = ( GetDotProduct(toPointPerpendicular1, manifold.m_normal) * GetDotProduct(toPointPerpendicular1, manifold.m_normal) / rb1.m_momentOfInertia );
 	
 	float d = ((mass0 + mass1) / (mass0 * mass1)) + constant0 + constant1;
 
-	Vec2 impulseAlongNormal = j / d;
+	float impulseAlongNormal = j / d;
 	return impulseAlongNormal;
 }

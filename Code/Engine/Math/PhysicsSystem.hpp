@@ -41,7 +41,7 @@ private:
 	void					ResolveDynamicVsDynamicCollisions( bool canResolve );
 
 	//Utilities
-	Vec2					GetImpulseAlongNormal( Vec2* out, const Collision2D& collision, const Rigidbody2D& rb0, const Rigidbody2D& rb1 );
+	float					GetImpulseAlongNormal( Vec2* out, const Collision2D& collision, const Rigidbody2D& rb0, const Rigidbody2D& rb1 );
 
 public:
 
