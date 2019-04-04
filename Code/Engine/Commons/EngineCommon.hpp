@@ -89,6 +89,7 @@ const unsigned short TAB_KEY = 9;
 constexpr char SHADER_PATH[] = "Data/Shaders/"; 
 constexpr char IMAGE_PATH[] = "Data/Images/";
 constexpr char FONT_PATH[] = "Data/Fonts/";
+constexpr char MATERIAL_PATH[] = "Data/Materials";
 
 //------------------------------------------------------------------------------------------------------------------------------
 constexpr float		 CONSOLE_LINE_SPACE = 0.05f;

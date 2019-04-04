@@ -16,9 +16,11 @@ enum eTextureSlots
 class Material
 {
 public:
-	Material( RenderContext *renderContext ); 
-	//Material( RenderContext *ctx, XMLElement *xml ); 
+	explicit Material( RenderContext *renderContext ); 
+	explicit Material( RenderContext *renderContext, const std::string& fileName ); 
 	~Material();
+
+	void				LoadMaterialFromXML( const std::string& fileName );
 
 	void				SetShader( Shader *shader ); 
 	void				SetShader( char const *shader_name ); 
@@ -41,6 +43,8 @@ public:
 	void				SetUniforms( UniformBuffer *ubo ); 
 	UniformBuffer*		GetUniformBuffer() const;
 
+	int					GetNumTextures();
+	int					GetNumSamplers();
 	// templated SetUniforms could be useful as well
 	// ...
 
@@ -52,5 +56,16 @@ public:
 	UniformBuffer*				m_materialBuffer = nullptr; 
 
 private:
+	//XML string names
+	std::string					m_materialName = "";
+	std::string					m_shaderName = "";
+	std::string					m_diffuseName = "";
+	std::string					m_normalName = "";
+	std::string					m_specName = "";
+	std::string					m_samplerName = "";
+
+	int							m_samplerIndex = 0;
+	std::string					m_samplerType = "";
+
 	RenderContext*				m_renderContext = nullptr;
 };

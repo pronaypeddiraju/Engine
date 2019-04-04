@@ -12,11 +12,13 @@
 struct VertexMaster
 {
 	Vec3 m_position;							// A04
-	Vec3 m_normal;							// A05
-	Rgba m_color = Rgba::WHITE;				// A04
-	Vec2 m_uv = Vec2::ZERO;					// A04;
+	Vec3 m_normal;								// A05
+	Vec3 m_tangent;								// A07
+	Vec3 m_biTangent;							// A07
 
-	// vec4 tangent;        // A06
+	Rgba m_color = Rgba::WHITE;					// A04
+	Vec2 m_uv = Vec2::ZERO;						// A04;
+
 
 	// skin weights         // Summer
 	// skin indices         // Summer

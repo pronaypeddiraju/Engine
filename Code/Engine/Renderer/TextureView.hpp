@@ -21,15 +21,15 @@ public:
 	ID3D11ShaderResourceView *m_view = nullptr;  // D3D11 view we bind
 	ID3D11Resource *m_source         = nullptr;  // resource this is a view of 
 
-												 // things we're just referencing; 
+	// things we're just referencing; 
 	Sampler *m_sampler               = nullptr;  // optional sampler to use; 
 
-												 // TODO: FAR FUTURE!
-												 // this is a good use case for ref-counting (since each view should
-												 // hold onto the texture it is a view of.  For now, we'll just
-												 // taking advantage of D3D11's ref counting, but in other APIs (D3D12 or Vulkan)
-												 // you would need to do this manually to keep the texture from disappearing from under the view
-												 // std::shared_ptr<Texture> m_source_texture; 
+	// TODO: FAR FUTURE!
+	// this is a good use case for ref-counting (since each view should
+	// hold onto the texture it is a view of.  For now, we'll just
+	// taking advantage of D3D11's ref counting, but in other APIs (D3D12 or Vulkan)
+	// you would need to do this manually to keep the texture from disappearing from under the view
+	// std::shared_ptr<Texture> m_source_texture; 
 }; 
 
 // Specializing with extra information for 2D views

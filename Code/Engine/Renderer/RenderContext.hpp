@@ -9,21 +9,22 @@
 #include <map>
 
 //Forward Declarations
-class ShaderStage;
-class Shader;
+class BitmapFont;
 class ColorTargetView;
+class GPUMesh;
+class Image;
+class IndexBuffer;
+class Material;
 class RenderBuffer;
-class UniformBuffer;
-class VertexBuffer;
-class TextureView2D;
+class Shader;
+class ShaderStage;
 class Texture;
 class Texture2D;
 class TextureView;
-class BitmapFont;
-class Image;
+class TextureView2D;
+class UniformBuffer;
+class VertexBuffer;
 class WindowContext;
-class GPUMesh;
-class IndexBuffer;
 
 //D3D11
 struct ID3D11Device;
@@ -41,6 +42,7 @@ class RenderContext
 	friend class UniformBuffer;
 	friend class Sampler;
 	friend class Texture2D;
+	friend class Texture;
 	friend class DepthStencilTargetView;
 
 public:
@@ -74,36 +76,30 @@ public:
 	void						DisableDirectionalLight();
 
 	//Get resources
-	//Texture*					CreateOrGetTextureFromFile(const char* imageFilePath);
-	TextureView*				GetOrCreateTextureViewFromFile( std::string const &filename, bool isFont = false); 
-	BitmapFont*					CreateOrGetBitmapFontFromFile (const std::string& bitmapName);
-	Shader*						CreateOrGetShaderFromFile(const std::string& fileName);
+	TextureView*				GetOrCreateTextureViewFromFile( std::string const &filename, bool isFont = false ); 
+	BitmapFont*					CreateOrGetBitmapFontFromFile( const std::string& bitmapName );
+	Shader*						CreateOrGetShaderFromFile( const std::string& fileName );
+	Material*					CreateOrGetMaterialFromFile( const std::string& fileName );
 
+	//Shader data
 	void						BindShader(Shader* shader);
 	void						SetBlendMode(eBlendMode blendMode);
 	void						SetDepth(bool write);
 	
+	//Material data
+	void						BindMaterial(Material* material);
 
-	//void						BindTexture(Texture* texture);
+	//Texture data
 	void						BindTextureView( uint slot, TextureView *view ); 
 	void						BindSampler( uint slot, Sampler *sampler ); 
 	void						BindTextureView( uint slot, std::string const &name ); 
 	void						BindSampler( eSampleMode mode );
 
-	// more convince - I store samplers WITH a texture view for convenience (what
-	// is the desired way to sample this texture).  
-	// (Personal Note: I like storing the Sampler on the shader, as the sampling usually has to do with the 
-	// effect I want to achieve, but that seems to be a fairly uncommon practice)
-
-	// sampler I'm storing with the view in this design - but still giving
-	// the context the option of binding a view with a different sampler if we so choose; 
 	void						BindTextureViewWithSampler( uint slot, TextureView *view ); 
 	void						BindTextureViewWithSampler( uint slot, std::string const &name ); 
 	void						BindTextureViewWithSampler( uint slot, TextureView *view, Sampler *sampler ); 
 	void						BindTextureViewWithSampler( uint slot, TextureView *view, eSampleMode mode ); 
 	void						BindTextureViewWithSampler( uint slot, std::string const &name, eSampleMode mode ); 
-
-	void						BindModelMatrix( Matrix44 const &model );
 
 	// Be able to set a model matrix (updates the uniform buffer; 
 	void						SetGlobalTint(const Rgba& color);
@@ -120,9 +116,11 @@ public:
 	void						BindIndexStream( IndexBuffer *ibo );    // A04
 
 	// Uniform/Constant Data
+	void						BindModelMatrix( Matrix44 const &model );
 	void						UpdateFrameBuffer();
 	void						BindUniformBuffer( uint slot, UniformBuffer *ubo ); 
 
+	//Draw Calls
 	bool						PreDraw( GPUMesh *mesh );
 	
 	void						Draw(uint vertexCount, uint byteOffset = 0U);
@@ -195,6 +193,7 @@ public:
 	// we'll pull from this store; 
 	Sampler*											m_cachedSamplers[SAMPLE_MODE_COUNT]; 
 	std::map<std::string, TextureView*>					m_cachedTextureViews;
+	std::map<std::string, Material*>					m_materialDatabase;
 
 	unsigned int										m_frameCount = 0;
 

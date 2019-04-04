@@ -461,8 +461,8 @@ void Shader::LoadShaderFromXMLSource(const std::string &fileName )
 		printf("\n >> Error line number is : %i", shaderDoc.ErrorLineNum());
 		printf("\n >> Error name : %s", shaderDoc.ErrorName());
 		*/
-		ERROR_AND_DIE(">> Error loading GameConfig XML file ")
-			return;
+		ERROR_AND_DIE(">> Error loading Shader XML file ");
+		return;
 	}
 	else
 	{

@@ -293,3 +293,40 @@ void Texture::FreeHandles()
 {
 	DX_SAFE_RELEASE(m_handle);
 }
+
+TextureView* Texture::CreateTextureView() const
+{
+	// if we don't have a handle, we can't create a view, so return nullptr
+	ASSERT_RETURN_VALUE( m_handle != nullptr, nullptr );
+
+	// 2D - we will want to eventually create specific views of a texture
+	// and will want ot fill out a D3D11_SHADER_RESOURCE_VIEW_DESC, but for now
+	// we'll just do the default thing (nullptr)
+
+	// get our device - since we're creating a resource
+	ID3D11Device *dev = m_owner->m_D3DDevice; 
+	ID3D11ShaderResourceView *srv = nullptr; 
+	dev->CreateShaderResourceView( m_handle, nullptr, &srv );
+
+	if (srv != nullptr) {
+		// Awesome, we have one
+		TextureView *view = new TextureView();
+
+		// give it the handle to the srv (we do not AddRef, 
+		// but are instead just handing this off)
+		view->m_view = srv; 
+
+		// Also let the view hold onto a handle to this texture
+		// (so both the texture AND the view are holding onto it)
+		// (hence the AddRef)
+		m_handle->AddRef(); 
+		view->m_source = m_handle; 
+
+		// done - return!
+		return view; 
+	} 
+	else 
+	{
+		return nullptr; 
+	}
+}

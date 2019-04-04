@@ -31,21 +31,28 @@ float			GetDistanceXY(const Vec3& pointA, const Vec3& pointB);
 float			GetDistanceSquared2D(const Vec2& pointA, const Vec2& pointB);
 float			GetDistanceSquared3D(const Vec3& pointA, const Vec3& pointB);
 float			GetDistanceSquaredXY(const Vec3& pointA, const Vec3& pointB);
+
 bool			DoDiscsOverlap(const Vec2& centreA, float radiusA, const Vec2& centreB, float radiusB);
 float			GetOverlapDistance(Vec2 point, Vec2 centre, float radius);
 bool			DoSpheresOverlap(const Vec3& centreA, float radiusA, const Vec3& centreB, float radiusB);
+
 bool			IsPointInDisc2D(const Vec2& point, const Vec2& centre, float radius);
 bool			IsPointInSector2D(const Vec2& point, const Vec2& origin, float orientationDegrees, float maxDistance, float apertureDegrees);
 bool			IsPointInSector2D(const Vec2& point, const Vec2& origin, const Vec2& orientationVector, float maxDistance, float apertureDegrees);
+
 float			GetDotProduct(const Vec2& vecA, const Vec2& vecB);
 float			GetDotProduct(const Vec3& vecA, const Vec3& vecB);
 float			GetDotProduct(const Vec4& vecA, const Vec4& vecB);
+
+Vec3			GetCrossProduct(const Vec3& vecA, const Vec3& vecB);
+
 float			GetProjectedLength(const Vec2& vecToProject, const Vec2& vecToProjectOnto);
 Vec2			GetProjectedVector(const Vec2& vecToProject, const Vec2& vecToProjectOnto);
 Vec2			GetReflectedVector(const Vec2& vecToReflect, const Vec2& vecToReflectBasedOn);
 float			GetProjectedLengthOnAxis2D(const Vec2& vecToProject, const Vec2& normalizedAxis);
 Vec2			GetProjectedVectorOnAxis2D(const Vec2& vecToProject, const Vec2& axis);
 Vec2			ReflectVectorOffSurfaceNormal( const Vec2& incomingVector, const Vec2& surfaceNormal );
+
 Vec2			GetClosestPointOnAABB2(const Vec2& position, const AABB2& box);
 Vec2			GetClosestPointOnDisc2D( const Vec2& referencePos, const Vec2& discCenter, float discRadius );
 bool			DoesDiscOverlapLine2D( const Vec2& discCenter, float discRadius, const Vec2& pointOnLine, const Vec2& anotherPointOnLine );
@@ -54,6 +61,7 @@ Vec2			GetClosestPointOnLineSegment2D( const Vec2& referencePos, const Vec2& lin
 Vec2			GetClosestPointOnCapsule2D( const Vec2& referencePos, const Vec2& capsuleStart, const Vec2& capsuleEnd, float capsuleRadius );
 float			GetRayImpactFractionVsDisc2D( const Vec2& rayStart, const Vec2& rayNormalizedDir, float rayLength, const Vec2& discCenter, float discRadius );
 bool			IsPointInCapsule2D( const Vec2& point, const Vec2& capsuleStart, const Vec2& capsuleEnd, float capsuleRadius );
+
 Vec3			GetSphericalToCartesian(float radius, float angleTheta, float anglePhi);
 
 //Transform Utilities

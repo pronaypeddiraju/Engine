@@ -21,6 +21,7 @@ class Sampler
 {
 public:
 	Sampler();
+	explicit Sampler(const std::string& samplerType);
 	~Sampler();  // be sure to clean up; 
 
 public:

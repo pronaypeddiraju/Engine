@@ -10,6 +10,20 @@ Sampler::Sampler()
 
 }
 
+Sampler::Sampler( const std::string& samplerType )
+{
+	if(samplerType == "liner")
+	{
+		m_minFilter = FILTER_MODE_LINEAR;
+		m_magFilter = FILTER_MODE_LINEAR;
+	}
+	else if(samplerType == "point")
+	{
+		m_minFilter = FILTER_MODE_POINT;
+		m_magFilter = FILTER_MODE_POINT;
+	}
+}
+
 Sampler::~Sampler()
 {
 	DX_SAFE_RELEASE(m_handle);

@@ -7,6 +7,7 @@
 struct ID3D11Resource;
 
 class Image;
+class TextureView;
 class TextureView2D;
 class DepthStencilTargetView;
 class RenderContext;
@@ -22,6 +23,7 @@ public:
 	unsigned int			GetTextureID() const	{return m_textureID; }
 	void					FreeHandles();
 
+	TextureView*			CreateTextureView() const;
 
 protected:
 	//Only render context can set my m_textureID so we don't need a method for it since RenderContext is my friend :')
@@ -37,6 +39,7 @@ public:
 	ID3D11Resource*			m_handle = nullptr; 
 	eGPUMemoryUsage			m_memoryUsage; 
 	eTextureUsageBits		m_textureUsage; 
+
 
 	// If you have the concept of an image format (RGBA8, R8, D24S8, etc..)
 	// It would go here.  If you only have support for RGBA8, we'll just assume it; 

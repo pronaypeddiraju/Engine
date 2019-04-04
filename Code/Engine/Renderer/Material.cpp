@@ -6,10 +6,72 @@ Material::Material( RenderContext *renderContext )
 	m_renderContext = renderContext;
 }
 
+Material::Material( RenderContext *renderContext, const std::string& fileName )
+{
+	m_renderContext = renderContext;
+	LoadMaterialFromXML(fileName);
+
+	m_renderContext->m_materialDatabase[fileName] = this;
+}
+
 Material::~Material()
 {
 	delete m_materialBuffer;
 	m_materialBuffer = nullptr;
+}
+
+void Material::LoadMaterialFromXML( const std::string& fileName )
+{
+	//Open the xml file and parse it
+	tinyxml2::XMLDocument materialDoc;
+	materialDoc.LoadFile(fileName.c_str());
+
+	if(materialDoc.ErrorID() != tinyxml2::XML_SUCCESS)
+	{
+		/*
+		printf("\n >> Error loading XML file from %s ", fileName);
+		printf("\n >> Error ID : %i ", shaderDoc.ErrorID());
+		printf("\n >> Error line number is : %i", shaderDoc.ErrorLineNum());
+		printf("\n >> Error name : %s", shaderDoc.ErrorName());
+		*/
+		ERROR_AND_DIE(">> Error loading Material XML file ");
+		return;
+	}
+
+	XMLElement* rootElement = materialDoc.RootElement();
+
+	m_materialName = ParseXmlAttribute(*rootElement, "id", m_materialName);
+	m_shaderName = ParseXmlAttribute(*rootElement, "shader", m_shaderName);
+
+	XMLElement* child = rootElement->FirstChildElement();
+	m_diffuseName = ParseXmlAttribute(*child, "src", m_diffuseName);
+
+	child = rootElement->FirstChildElement();
+	m_normalName = ParseXmlAttribute(*child, "src", m_normalName);
+
+	child = rootElement->FirstChildElement();
+	m_specName = ParseXmlAttribute(*child, "src", m_specName);
+
+	child = rootElement->FirstChildElement();
+	m_samplerIndex = ParseXmlAttribute(*child, "idx", m_samplerIndex);
+	m_samplerType = ParseXmlAttribute(*child, "type", m_samplerType);
+
+	Sampler* sampler = new Sampler(m_samplerType);
+	SetSampler(m_samplerIndex, sampler);
+
+	child = rootElement->FirstChildElement();
+	m_samplerIndex = ParseXmlAttribute(*child, "idx", m_samplerIndex);
+	m_samplerType = ParseXmlAttribute(*child, "type", m_samplerType);
+
+	sampler = new Sampler(m_samplerType);
+	SetSampler(m_samplerIndex, sampler);
+
+	//Now set the required data
+	SetShader(m_shaderName.c_str());
+	SetTextureView(DIFFUSE_SLOT, m_diffuseName.c_str());
+	SetTextureView(NORMAL_SLOT, m_normalName.c_str());
+	SetTextureView(SPECULAR_SLOT, m_specName.c_str());
+
 }
 
 void Material::SetShader( Shader *shader )
@@ -19,7 +81,14 @@ void Material::SetShader( Shader *shader )
 
 void Material::SetShader( char const *shader_name )
 {
-	m_renderContext->CreateOrGetShaderFromFile(shader_name);
+	if(strcmp(shader_name, ""))
+	{
+		ERROR_AND_DIE("The shader was not defined in material XML");
+		return;
+	}
+
+	//We have valid name
+	m_shader = m_renderContext->CreateOrGetShaderFromFile(shader_name);
 }
 
 void Material::SetTextureView( uint slot, TextureView *view )
@@ -37,6 +106,13 @@ void Material::SetTextureView( uint slot, TextureView *view )
 
 void Material::SetTextureView( uint slot, char const *name )
 {
+	if(strcmp(name, ""))
+	{
+		ERROR_AND_DIE("The texture was not defined in material XML");
+		return;
+	}
+
+	//We have a valid name
 	TextureView* texture = m_renderContext->GetOrCreateTextureViewFromFile(name);
 	SetTextureView(slot, texture);
 }
@@ -66,16 +142,33 @@ Sampler* Material::GetSampler( uint slot ) const
 
 void Material::SetDiffuseMap( TextureView *view )
 {
+	if(view == nullptr)
+	{
+		SetTextureView(DIFFUSE_SLOT, "WHITE.png");
+		return;
+	}
+
 	SetTextureView(DIFFUSE_SLOT, view);
 }
 
 void Material::SetNormalMap( TextureView *view )
 {
+	if(view == nullptr)
+	{
+		SetTextureView(NORMAL_SLOT, "FLAT.png");
+		return;
+	}
+
 	SetTextureView(NORMAL_SLOT, view);
 }
 
 void Material::SetSpecularMap( TextureView *view )
 {
+	if(view == nullptr)
+	{
+		SetTextureView(SPECULAR_SLOT, "WHITE.png");
+	}
+
 	SetTextureView(SPECULAR_SLOT, view);
 }
 
@@ -103,5 +196,15 @@ void Material::SetUniforms( void const *data, size_t const size )
 UniformBuffer* Material::GetUniformBuffer() const
 {
 	return m_materialBuffer;
+}
+
+int Material::GetNumTextures()
+{
+	return static_cast<int>(m_textures.size());
+}
+
+int Material::GetNumSamplers()
+{
+	return static_cast<int>(m_samplers.size());
 }
 

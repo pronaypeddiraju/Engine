@@ -1,37 +1,29 @@
 #include "Engine/Renderer/RenderContext.hpp"
-#include "Engine/Math/Vec2.hpp"
+//3rd Party tools
 #include "ThirdParty/stb/stb_image.h"
-#include "Engine/Renderer/Texture.hpp"
-#include "Engine/Renderer/ColorTargetView.hpp"
-#include "Engine/Renderer/Shader.hpp"
+//Core systems
 #include "Engine/Core/FileUtils.hpp"
-#include "Engine/Renderer/VertexBuffer.hpp"
-#include "Engine/Renderer/UniformBuffer.hpp"
+#include "Engine/Core/Image.hpp"
+#include "Engine/Core/Time.hpp"
+#include "Engine/Core/WindowContext.hpp"
+//Math
+#include "Engine/Math/Vec2.hpp"
+//Rendering systems
+#include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Renderer/ColorTargetView.hpp"
+#include "Engine/Renderer/DepthStencilTargetView.hpp"
+#include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/IndexBuffer.hpp"
+#include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/Sampler.hpp"
+#include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/TextureView.hpp"
-#include "Engine/Renderer/BitmapFont.hpp"
-#include "Engine/Core/Image.hpp"
-#include "Engine/Renderer/Shader.hpp"
-#include "Engine/Core/WindowContext.hpp"
-#include "Engine/Renderer/DepthStencilTargetView.hpp"
-#include "Engine/Core/Time.hpp"
-#include "Engine/Renderer/IndexBuffer.hpp"
-#include "Engine/Renderer/GPUMesh.hpp"
+#include "Engine/Renderer/UniformBuffer.hpp"
+#include "Engine/Renderer/VertexBuffer.hpp"
 
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
-
-/*
-
-NUKED!
-
-//-----------------------------------------------------------------------------------------------
-#include <gl/gl.h>					// Include basic OpenGL constants and function declarations
-#pragma comment( lib, "opengl32" )	// Link in the OpenGL32.lib static library
-
-#define UNUSED(x) (void)(x);
-*/
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // D3D11 STUFF
@@ -207,10 +199,14 @@ void RenderContext::PremakeDefaults()
 {
 	// premake defaults 
 	std::string name = "WHITE.png";
-	
 	GetOrCreateTextureViewFromFile(name);
-	//m_cachedTextureViews["WHITE"] = white;
 	
+	name = "FLAT.png";
+	GetOrCreateTextureViewFromFile(name);
+
+	name = "BLACK.png";
+	GetOrCreateTextureViewFromFile(name);
+
 }
 
 void RenderContext::SetBlendMode(eBlendMode blendMode)
@@ -228,6 +224,28 @@ void RenderContext::SetBlendMode(eBlendMode blendMode)
 void RenderContext::SetDepth( bool write )
 {
 	m_currentShader->m_writeDepth = write;
+}
+
+void RenderContext::BindMaterial( Material* material )
+{
+	//Bind the shader
+	BindShader(material->m_shader);
+
+	//Bind the texture views
+	int numTexs = material->GetNumTextures();
+	for(int index= 0; index < numTexs; index++)
+	{
+		BindTextureView(index, material->GetTextureView(index));
+	}
+
+	//Bind the samplers
+	int numSamplers = material->GetNumSamplers();
+	for(int index= 0; index < numSamplers; index++)
+	{
+		BindSampler(index, material->GetSampler(index));
+	}
+
+	//bind user(material constant) buffer if available
 }
 
 BitmapFont* RenderContext::CreateBitmapFontFromFile(const std::string& bitmapName)
@@ -1008,6 +1026,23 @@ Shader* RenderContext::CreateOrGetShaderFromFile( std::string const &fileName )
 		//Create the newShader
 		Shader *shader = CreateShaderFromFile(filePath); 
 		return shader;
+	}
+}
+
+Material* RenderContext::CreateOrGetMaterialFromFile( const std::string& fileName )
+{
+	std::string filePath = MATERIAL_PATH + fileName;
+	std::map<std::string, Material*>::const_iterator requestedMaterial = m_materialDatabase.find(filePath);
+	if(requestedMaterial != m_materialDatabase.end())
+	{
+		//Shader requested exists in the map
+		return requestedMaterial->second;
+	}
+	else
+	{
+		//Create the newShader
+		Material *material = new Material(this, filePath); 
+		return material;
 	}
 }
 

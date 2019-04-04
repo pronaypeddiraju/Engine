@@ -445,6 +445,17 @@ float GetDotProduct( const Vec4& vecA, const Vec4& vecB )
 	return (vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z + vecA.w * vecB.w);
 }
 
+Vec3 GetCrossProduct( const Vec3& vecA, const Vec3& vecB )
+{
+	Vec3 crossProduct;
+
+	crossProduct.x = vecA.y * vecB.z - vecA.z * vecB.y;
+	crossProduct.y = vecA.z * vecB.x - vecA.x * vecB.z;
+	crossProduct.z = vecA.x * vecB.y - vecA.y * vecB.x;
+
+	return crossProduct;
+}
+
 //------------------------------------------------------------------------------------------------------------------------------
 float GetProjectedLength( const Vec2& vecToProject, const Vec2& vecToProjectOnto )
 {

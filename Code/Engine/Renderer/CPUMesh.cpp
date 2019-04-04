@@ -17,6 +17,8 @@ void CPUMeshAddQuad( CPUMesh *out, const AABB2& quad, const Rgba& color)
 
 	out->SetStampColor( color ); 
 	out->SetNormal( Vec3::BACK ); 
+	out->SetTangent( Vec3::RIGHT );
+	out->SetBiTangent( Vec3::UP );
 
 	// 0 --- 1
 	// |   / |
@@ -103,6 +105,8 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 
 	out->SetStampColor( color ); 
 	out->SetNormal( Vec3::BACK );
+	out->SetTangent( Vec3::RIGHT );
+	out->SetBiTangent( Vec3::UP );
 
 	AABB2 boxFace;
 
@@ -130,6 +134,8 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	// 6 --- 7
 
 	out->SetNormal( Vec3::FRONT );
+	out->SetTangent( Vec3::LEFT );
+	out->SetBiTangent( Vec3::UP );
 
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
 	out->AddVertex( box.m_backTopLeft); 
@@ -150,6 +156,8 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	// 10 --- 11
 
 	out->SetNormal( Vec3::UP );
+	out->SetTangent( Vec3::RIGHT );
+	out->SetBiTangent( Vec3::FRONT );
 
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
 	out->AddVertex( box.m_backTopRight); 
@@ -170,6 +178,8 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	// 14 --- 15
 
 	out->SetNormal( Vec3::DOWN );
+	out->SetTangent( Vec3::RIGHT );
+	out->SetBiTangent( Vec3::BACK );
 
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
 	out->AddVertex( box.m_frontBottomLeft); 
@@ -190,6 +200,8 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	// 18 --- 19
 
 	out->SetNormal( Vec3::LEFT );
+	out->SetTangent( Vec3::BACK );
+	out->SetBiTangent( Vec3::UP );
 
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
 	out->AddVertex( box.m_backTopRight); 
@@ -210,6 +222,8 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	// 22 --- 23
 
 	out->SetNormal( Vec3::RIGHT );
+	out->SetTangent( Vec3::FRONT );
+	out->SetBiTangent( Vec3::UP );
 
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
 	out->AddVertex( box.m_frontTopRight); 
@@ -251,8 +265,14 @@ void CPUMeshAddUVSphere( CPUMesh *out, const Vec3& center, float radius, const R
 			Vec3 norm = position - center;
 			norm = norm.GetNormalized();
 
+			//Get the tangent and bi tangent to the vertex
+			Vec3 tangent = Vec3( -1.f * CosDegrees(phi) * SinDegrees(theta), 0.f, CosDegrees(phi) * CosDegrees(theta));
+			Vec3 biTangent = GetCrossProduct(norm, tangent);
+
 			out->SetUV(Vec2(u,v));
 			out->SetNormal(norm);
+			out->SetTangent(tangent);
+			out->SetBiTangent(biTangent);
 			out->AddVertex(position);
 		}
 	}
@@ -382,4 +402,14 @@ uint const* CPUMesh::GetIndices() const
 void CPUMesh::SetNormal( const Vec3& norm )
 {
 	m_stamp.m_normal = norm;
+}
+
+void CPUMesh::SetTangent( const Vec3& tangent )
+{
+	m_stamp.m_tangent = tangent;
+}
+
+void CPUMesh::SetBiTangent( const Vec3& biTangent )
+{
+	m_stamp.m_biTangent = biTangent;
 }
