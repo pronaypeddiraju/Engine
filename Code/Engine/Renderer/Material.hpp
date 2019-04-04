@@ -9,8 +9,8 @@ enum eTextureSlots
 {
 	DIFFUSE_SLOT = 0U,
 	NORMAL_SLOT = 1U,
-	SPECULAR_SLOT = 2U,
-	EMISSIVE_SLOT = 3U
+	EMISSIVE_SLOT = 2U,
+	SPECULAR_SLOT = 3U
 };
 
 class Material
@@ -63,6 +63,7 @@ private:
 	std::string					m_normalName = "";
 	std::string					m_specName = "";
 	std::string					m_samplerName = "";
+	std::string					m_emissiveName = "";
 
 	int							m_samplerIndex = 0;
 	std::string					m_samplerType = "";

@@ -42,17 +42,22 @@ void Material::LoadMaterialFromXML( const std::string& fileName )
 
 	XMLElement* rootElement = materialDoc.RootElement();
 
+	TODO("Unfuck this section of Material class");
+
 	m_materialName = ParseXmlAttribute(*rootElement, "id", m_materialName);
 	m_shaderName = ParseXmlAttribute(*rootElement, "shader", m_shaderName);
 
 	XMLElement* child = rootElement->FirstChildElement();
-	m_diffuseName = ParseXmlAttribute(*child, "src", m_diffuseName);
+	m_diffuseName = ParseXmlAttribute(*child, "src", m_diffuseName);	
 
 	child = child->NextSiblingElement();
 	m_normalName = ParseXmlAttribute(*child, "src", m_normalName);
 
 	child = child->NextSiblingElement();
 	m_specName = ParseXmlAttribute(*child, "src", m_specName);
+
+	child = child->NextSiblingElement();
+	m_emissiveName = ParseXmlAttribute(*child, "src", m_emissiveName);
 
 	child = child->NextSiblingElement();
 	m_samplerIndex = ParseXmlAttribute(*child, "idx", m_samplerIndex);
@@ -73,6 +78,7 @@ void Material::LoadMaterialFromXML( const std::string& fileName )
 	SetTextureView(DIFFUSE_SLOT, m_diffuseName.c_str());
 	SetTextureView(NORMAL_SLOT, m_normalName.c_str());
 	SetTextureView(SPECULAR_SLOT, m_specName.c_str());
+	SetTextureView(EMISSIVE_SLOT, m_emissiveName.c_str());
 
 }
 
