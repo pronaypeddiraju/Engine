@@ -48,20 +48,20 @@ void Material::LoadMaterialFromXML( const std::string& fileName )
 	XMLElement* child = rootElement->FirstChildElement();
 	m_diffuseName = ParseXmlAttribute(*child, "src", m_diffuseName);
 
-	child = rootElement->FirstChildElement();
+	child = child->NextSiblingElement();
 	m_normalName = ParseXmlAttribute(*child, "src", m_normalName);
 
-	child = rootElement->FirstChildElement();
+	child = child->NextSiblingElement();
 	m_specName = ParseXmlAttribute(*child, "src", m_specName);
 
-	child = rootElement->FirstChildElement();
+	child = child->NextSiblingElement();
 	m_samplerIndex = ParseXmlAttribute(*child, "idx", m_samplerIndex);
 	m_samplerType = ParseXmlAttribute(*child, "type", m_samplerType);
 
 	Sampler* sampler = m_renderContext->GetSamplerOfType(m_samplerType);
 	SetSampler(m_samplerIndex, sampler);
 
-	child = rootElement->FirstChildElement();
+	child = child->NextSiblingElement();
 	m_samplerIndex = ParseXmlAttribute(*child, "idx", m_samplerIndex);
 	m_samplerType = ParseXmlAttribute(*child, "type", m_samplerType);
 
