@@ -267,7 +267,7 @@ void CPUMeshAddUVSphere( CPUMesh *out, const Vec3& center, float radius, const R
 
 			//Get the tangent and bi tangent to the vertex
 			Vec3 tangent = Vec3( -1.f * CosDegrees(phi) * SinDegrees(theta), 0.f, CosDegrees(phi) * CosDegrees(theta));
-			Vec3 biTangent = GetCrossProduct(norm, tangent);
+			Vec3 biTangent = GetCrossProduct(tangent, norm);
 
 			out->SetUV(Vec2(u,v));
 			out->SetNormal(norm);

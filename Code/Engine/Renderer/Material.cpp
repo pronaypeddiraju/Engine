@@ -16,6 +16,8 @@ Material::Material( RenderContext *renderContext, const std::string& fileName )
 
 Material::~Material()
 {
+
+
 	delete m_materialBuffer;
 	m_materialBuffer = nullptr;
 }
@@ -56,14 +58,14 @@ void Material::LoadMaterialFromXML( const std::string& fileName )
 	m_samplerIndex = ParseXmlAttribute(*child, "idx", m_samplerIndex);
 	m_samplerType = ParseXmlAttribute(*child, "type", m_samplerType);
 
-	Sampler* sampler = new Sampler(m_samplerType);
+	Sampler* sampler = m_renderContext->GetSamplerOfType(m_samplerType);
 	SetSampler(m_samplerIndex, sampler);
 
 	child = rootElement->FirstChildElement();
 	m_samplerIndex = ParseXmlAttribute(*child, "idx", m_samplerIndex);
 	m_samplerType = ParseXmlAttribute(*child, "type", m_samplerType);
 
-	sampler = new Sampler(m_samplerType);
+	sampler = m_renderContext->GetSamplerOfType(m_samplerType);
 	SetSampler(m_samplerIndex, sampler);
 
 	//Now set the required data
@@ -81,7 +83,7 @@ void Material::SetShader( Shader *shader )
 
 void Material::SetShader( char const *shader_name )
 {
-	if(strcmp(shader_name, ""))
+	if(strcmp(shader_name, "") == 0)
 	{
 		ERROR_AND_DIE("The shader was not defined in material XML");
 		return;
@@ -97,7 +99,7 @@ void Material::SetTextureView( uint slot, TextureView *view )
 
 	if(numElements <= slot)
 	{
-		m_textures.resize(slot);
+		m_textures.resize(slot + 1);
 	}
 
 	//Set the texture view at the received slot in vector
@@ -106,7 +108,7 @@ void Material::SetTextureView( uint slot, TextureView *view )
 
 void Material::SetTextureView( uint slot, char const *name )
 {
-	if(strcmp(name, ""))
+	if(strcmp(name, "") == 0)
 	{
 		ERROR_AND_DIE("The texture was not defined in material XML");
 		return;
@@ -123,7 +125,7 @@ void Material::SetSampler( uint slot, Sampler *sampler )
 
 	if(numElements <= slot)
 	{
-		m_samplers.resize(slot);
+		m_samplers.resize(slot + 1);
 	}
 
 	//Set the sampler at the recieved slot in the vector

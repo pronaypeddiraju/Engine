@@ -248,6 +248,21 @@ void RenderContext::BindMaterial( Material* material )
 	//bind user(material constant) buffer if available
 }
 
+Sampler* RenderContext::GetSamplerOfType( const std::string& m_samplerType )
+{
+	if(m_samplerType == "linear")
+	{
+		return m_cachedSamplers[SAMPLE_MODE_LINEAR];
+	}
+	else if (m_samplerType == "point")
+	{
+		return m_cachedSamplers[SAMPLE_MODE_POINT];
+	}
+
+	GUARANTEE_RECOVERABLE(true, "The sampler of type passed was not found on RenderContext");
+	return nullptr;
+}
+
 BitmapFont* RenderContext::CreateBitmapFontFromFile(const std::string& bitmapName)
 {
 	//std::string filePath = "Data/Fonts/" + bitmapName + ".png";
@@ -494,6 +509,20 @@ void RenderContext::Shutdown()
 	}
 
 	m_loadedFonts.clear();
+
+	//Clear all Materials
+	std::map< std::string, Material*>::iterator MatIterator;
+	std::map< std::string, Material*>::iterator lastMatIterator;
+
+	MatIterator = m_materialDatabase.begin();
+	lastMatIterator = m_materialDatabase.end();
+
+	for(MatIterator; MatIterator != lastMatIterator; MatIterator++)
+	{
+		delete MatIterator->second;
+	}
+
+	m_materialDatabase.clear();
 
 	/*
 	texIterator = m_loadedTextures.begin();

@@ -88,6 +88,7 @@ public:
 	
 	//Material data
 	void						BindMaterial(Material* material);
+	Sampler*					GetSamplerOfType( const std::string& m_samplerType );
 
 	//Texture data
 	void						BindTextureView( uint slot, TextureView *view ); 
