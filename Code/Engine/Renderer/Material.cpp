@@ -16,8 +16,6 @@ Material::Material( RenderContext *renderContext, const std::string& fileName )
 
 Material::~Material()
 {
-
-
 	delete m_materialBuffer;
 	m_materialBuffer = nullptr;
 }

@@ -19,7 +19,6 @@ Image::Image( const char* imageFilePath )
 	
 	m_imageRawData = stbi_load( imageFilePath, &imageTexelSizeX, &imageTexelSizeY, &numComponents, numComponentsRequested );
 
-	//To-do: For loop through each of the imageData[] and get the RGB data from them
 	m_dimensions.x = imageTexelSizeX;
 	m_dimensions.y = imageTexelSizeY;
 
