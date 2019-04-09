@@ -32,8 +32,10 @@ public:
 	// std::shared_ptr<Texture> m_source_texture; 
 }; 
 
+//------------------------------------------------------------------------------------------------------------------------------
 // Specializing with extra information for 2D views
 // Created FROM a texture; 
+//------------------------------------------------------------------------------------------------------------------------------
 class TextureView2D : public TextureView 
 {
 public:

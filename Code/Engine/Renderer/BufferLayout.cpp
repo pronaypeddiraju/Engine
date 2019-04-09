@@ -1,5 +1,6 @@
 #include "Engine/Renderer/BufferLayout.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 BufferAttributeT::BufferAttributeT( const std::string& attributeName, eDataFormat type, const size_t& size )
 {
 	m_name = attributeName;
@@ -7,21 +8,25 @@ BufferAttributeT::BufferAttributeT( const std::string& attributeName, eDataForma
 	m_memberOffset = size;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 BufferAttributeT::BufferAttributeT()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 BufferAttributeT::~BufferAttributeT()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 BufferLayout::BufferLayout()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const BufferLayout* BufferLayout::For( BufferAttributeT const *attributeList, size_t stride, CopyFromMasterCallback copyCallback )
 {
 	//This function is called by the template and creates bufferLayout for any Vertex type using the LAYOUT of that Vertex type

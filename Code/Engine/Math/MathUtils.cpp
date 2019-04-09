@@ -8,44 +8,57 @@
 
 //180.f/PI to degrees per radian
 
-//Converts radians to degrees
+//------------------------------------------------------------------------------------------------------------------------------
+// Converts radians to degrees
+//------------------------------------------------------------------------------------------------------------------------------
 float RadiansToDegrees( float Radians )
 {
 	return (Radians * (180.0f / PI));
 }
 
-//Converts degrees to radians
+//------------------------------------------------------------------------------------------------------------------------------
+// Converts degrees to radians
+//------------------------------------------------------------------------------------------------------------------------------
 float DegreesToRadians( float Degrees )
 {
 	return (Degrees * (PI / 180.0f));
 }
 
-//Returns cos of degrees
+//------------------------------------------------------------------------------------------------------------------------------
+// Returns cos of degrees
+//------------------------------------------------------------------------------------------------------------------------------
 float CosDegrees( float Degrees )
 {
 	//Returns Cos of degrees
 	return cosf(Degrees * (PI / 180.0f));
 }
 
-//Returns sin of degrees
+//------------------------------------------------------------------------------------------------------------------------------
+// Returns sin of degrees
+//------------------------------------------------------------------------------------------------------------------------------
 float SinDegrees( float Degrees )
 {
 	//Returns sin of degrees
 	return sinf(Degrees * (PI / 180.0f));
 }
 
-//Returns conversion of an ATan of a vector to degrees
+//------------------------------------------------------------------------------------------------------------------------------
+// Returns conversion of an ATan of a vector to degrees
+//------------------------------------------------------------------------------------------------------------------------------
 float ATan2Degrees( float y, float x )
 {
 	return atan2f(y ,x) * (180.0f / PI);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float GetAngularDisplacement( float angleA, float angleB )
 {
 	return (angleB - angleA);
 }
 
-//Function to get distance between 2 points in 2D
+//------------------------------------------------------------------------------------------------------------------------------
+// Function to get distance between 2 points in 2D
+//------------------------------------------------------------------------------------------------------------------------------
 float GetDistance2D( const Vec2& pointA, const Vec2& pointB )
 {
 	float xDisp = (pointA.x - pointB.x);
@@ -53,7 +66,9 @@ float GetDistance2D( const Vec2& pointA, const Vec2& pointB )
 	return sqrtf((xDisp * xDisp) + (yDisp * yDisp));
 }
 
-//Function to get distance between 2 points in 3D
+//------------------------------------------------------------------------------------------------------------------------------
+// Function to get distance between 2 points in 3D
+//------------------------------------------------------------------------------------------------------------------------------
 float GetDistance3D( const Vec3& pointA, const Vec3& pointB )
 {
 	float xDisp = (pointA.x - pointB.x);
@@ -62,7 +77,9 @@ float GetDistance3D( const Vec3& pointA, const Vec3& pointB )
 	return sqrtf((xDisp * xDisp) + (yDisp * yDisp) + (zDisp * zDisp));
 }
 
-//Function to get distance between X and Y coordinates of 2 points
+//------------------------------------------------------------------------------------------------------------------------------
+// Function to get distance between X and Y coordinates of 2 points
+//------------------------------------------------------------------------------------------------------------------------------
 float GetDistanceXY( const Vec3& pointA, const Vec3& pointB )
 {
 	float xDisp = (pointA.x - pointB.x);
@@ -70,7 +87,9 @@ float GetDistanceXY( const Vec3& pointA, const Vec3& pointB )
 	return sqrtf((xDisp * xDisp) + (yDisp * yDisp));
 }
 
-//Function to get square of distance between 2 points (Faster computation)
+//------------------------------------------------------------------------------------------------------------------------------
+// Function to get square of distance between 2 points (Faster computation)
+//------------------------------------------------------------------------------------------------------------------------------
 float GetDistanceSquared2D(const Vec2& pointA,const Vec2& pointB )
 {
 	float xDisp = (pointA.x - pointB.x);
@@ -78,7 +97,9 @@ float GetDistanceSquared2D(const Vec2& pointA,const Vec2& pointB )
 	return (xDisp * xDisp) + (yDisp * yDisp);
 }
 
-//Function to get square of distance between 2 points in 3D
+//------------------------------------------------------------------------------------------------------------------------------
+// Function to get square of distance between 2 points in 3D
+//------------------------------------------------------------------------------------------------------------------------------
 float GetDistanceSquared3D( const Vec3& pointA, const Vec3& pointB )
 {
 	float xDisp = (pointA.x - pointB.x);
@@ -87,7 +108,9 @@ float GetDistanceSquared3D( const Vec3& pointA, const Vec3& pointB )
 	return (xDisp * xDisp) + (yDisp * yDisp) + (zDisp * zDisp);
 }
 
-//Function to get square of distance between 2 points (only X and Y)
+//------------------------------------------------------------------------------------------------------------------------------
+// Function to get square of distance between 2 points (only X and Y)
+//------------------------------------------------------------------------------------------------------------------------------
 float GetDistanceSquaredXY( const Vec3& pointA, const Vec3& pointB )
 {
 	float xDisp = (pointA.x - pointB.x);
@@ -95,7 +118,9 @@ float GetDistanceSquaredXY( const Vec3& pointA, const Vec3& pointB )
 	return (xDisp * xDisp) + (yDisp * yDisp);
 }
 
-//Function to check if discs overlap
+//------------------------------------------------------------------------------------------------------------------------------
+// Function to check if discs overlap
+//------------------------------------------------------------------------------------------------------------------------------
 bool DoDiscsOverlap( const Vec2& centreA, float radiusA, const Vec2& centreB, float radiusB )
 {
 	float discDistance = GetDistance2D(centreA, centreB);
@@ -110,7 +135,9 @@ bool DoDiscsOverlap( const Vec2& centreA, float radiusA, const Vec2& centreB, fl
 	}
 }
 
-//Function to check if spheres overlap
+//------------------------------------------------------------------------------------------------------------------------------
+// Function to check if spheres overlap
+//------------------------------------------------------------------------------------------------------------------------------
 bool DoSpheresOverlap( const Vec3 & centreA, float radiusA, const Vec3 & centreB, float radiusB )
 {
 	float discDistance = GetDistance3D(centreA, centreB);
@@ -126,7 +153,7 @@ bool DoSpheresOverlap( const Vec3 & centreA, float radiusA, const Vec3 & centreB
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-//Is point inside disc 2D
+// Is point inside disc 2D
 //------------------------------------------------------------------------------------------------------------------------------
 bool IsPointInDisc2D( const Vec2& point, const Vec2& centre, float radius )
 {
@@ -145,7 +172,7 @@ bool IsPointInDisc2D( const Vec2& point, const Vec2& centre, float radius )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-//Push discs out of each other if they overlap
+// Push discs out of each other if they overlap
 //------------------------------------------------------------------------------------------------------------------------------
 void PushDiscsIfOverlapping(Vec2 &discAPos, float discAradius, Vec2 &discBPos, float discBradius )
 {
@@ -158,7 +185,7 @@ void PushDiscsIfOverlapping(Vec2 &discAPos, float discAradius, Vec2 &discBPos, f
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-//Logic to push discs apart from each other
+// Logic to push discs apart from each other
 //------------------------------------------------------------------------------------------------------------------------------
 void PushDiscsApart(Vec2& positionA, float radiusA, Vec2& positionB, float radiusB)
 {
@@ -180,7 +207,7 @@ void PushDiscsApart(Vec2& positionA, float radiusA, Vec2& positionB, float radiu
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-//Is point witing a sector
+// Is point witing a sector
 //------------------------------------------------------------------------------------------------------------------------------
 bool IsPointInSector2D( const Vec2& point, const Vec2& origin, float orientationDegrees, float maxDistance, float apertureDegrees )
 {
@@ -197,7 +224,7 @@ bool IsPointInSector2D( const Vec2& point, const Vec2& origin, float orientation
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-//Push disc out of a box
+// Push disc out of a box
 //------------------------------------------------------------------------------------------------------------------------------
 void PushDiscOutOfAABB2(Vec2& position, float radius, const AABB2& tileBounds )
 {
@@ -207,7 +234,7 @@ void PushDiscOutOfAABB2(Vec2& position, float radius, const AABB2& tileBounds )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-//Get the closest point on a box
+// Get the closest point on a box
 //------------------------------------------------------------------------------------------------------------------------------
 Vec2 GetClosestPointOnAABB2(const Vec2& position, const AABB2& box)
 {
@@ -218,7 +245,7 @@ Vec2 GetClosestPointOnAABB2(const Vec2& position, const AABB2& box)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-//Get the closest point on a disc
+// Get the closest point on a disc
 //------------------------------------------------------------------------------------------------------------------------------
 Vec2 GetClosestPointOnDisc2D( const Vec2& referencePos, const Vec2& discCenter, float discRadius )
 {
@@ -246,7 +273,7 @@ bool DoesDiscOverlapLine2D( const Vec2& discCenter, float discRadius, const Vec2
 */
 
 //------------------------------------------------------------------------------------------------------------------------------
-//Get the closest point on the line 
+// Get the closest point on the line 
 //------------------------------------------------------------------------------------------------------------------------------
 Vec2 GetClosestPointOnLine2D( const Vec2& referencePos, const Vec2& pointOnLine, const Vec2& anotherPointOnLine )
 {
@@ -263,7 +290,7 @@ Vec2 GetClosestPointOnLine2D( const Vec2& referencePos, const Vec2& pointOnLine,
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-//Get the closest point on the line segment
+// Get the closest point on the line segment
 //------------------------------------------------------------------------------------------------------------------------------
 Vec2 GetClosestPointOnLineSegment2D( const Vec2& referencePos, const Vec2& lineStart, const Vec2& lineEnd )
 {
@@ -289,7 +316,7 @@ Vec2 GetClosestPointOnLineSegment2D( const Vec2& referencePos, const Vec2& lineS
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-//Get closest point on a capusle
+// Get closest point on a capusle
 //------------------------------------------------------------------------------------------------------------------------------
 Vec2 GetClosestPointOnCapsule2D( const Vec2& referencePos, const Vec2& capsuleStart, const Vec2& capsuleEnd, float capsuleRadius )
 {
@@ -435,16 +462,19 @@ float GetDotProduct( const Vec2& vecA, const Vec2& vecB )
 	return (vecA.x * vecB.x + vecA.y * vecB.y);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float GetDotProduct( const Vec3& vecA, const Vec3& vecB )
 {
 	return (vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float GetDotProduct( const Vec4& vecA, const Vec4& vecB )
 {
 	return (vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z + vecA.w * vecB.w);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec3 GetCrossProduct( const Vec3& vecA, const Vec3& vecB )
 {
 	Vec3 crossProduct;
@@ -507,7 +537,7 @@ Vec2 ReflectVectorOffSurfaceNormal( const Vec2& vecToReflect, const Vec2& normal
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-//Move a 2D position vector
+// Move a 2D position vector
 //------------------------------------------------------------------------------------------------------------------------------
 Vec2 TransformPosition2D( const Vec2& position, float uniformScale, float rotationDegreesOnZ, const Vec2& translateXY )
 {
@@ -527,7 +557,7 @@ Vec2 TransformPosition2D( const Vec2& position, float uniformScale, float rotati
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-//Move a 3D vector
+// Move a 3D vector
 //------------------------------------------------------------------------------------------------------------------------------
 Vec3 TransformPosition3D( const Vec3& position, float uniformScale, float rotationDegreesOnZ, const Vec2& translateXY )
 {
@@ -549,7 +579,7 @@ Vec3 TransformPosition3D( const Vec3& position, float uniformScale, float rotati
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-//Convert to a range
+// Convert to a range
 //------------------------------------------------------------------------------------------------------------------------------
 float RangeMapFloat( float inputValue, float inRangeStart, float inRangeEnd, float outRangeStart, float outRangeEnd)
 {
@@ -602,8 +632,6 @@ float GetHigherValue(const float a, const float b)
 	}
 }
 
-
-
 //------------------------------------------------------------------------------------------------------------------------------
 float Clamp( float x, float minClamp, float maxClamp )
 {
@@ -616,7 +644,7 @@ float Clamp( float x, float minClamp, float maxClamp )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-//Method to get angular displacement
+// Method to get angular displacement
 //------------------------------------------------------------------------------------------------------------------------------
 float GetAngluarDisplacement(float startDegrees, float endDegrees)
 {

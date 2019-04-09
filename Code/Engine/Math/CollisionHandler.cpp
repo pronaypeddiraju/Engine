@@ -7,6 +7,7 @@
 #include "Engine/Math/Segment2D.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 CollisionCheck2DCallback COLLISION_LOOKUP_TABLE[COLLIDER2D_COUNT][COLLIDER2D_COUNT] = {
 	/*******| aabb2 | disc  | capsl | obb2 | line  | point  */
 	/*aabb2*/ { CheckAABB2ByAABB2, CheckAABB2ByDisc, nullptr,				nullptr,			nullptr, nullptr },
@@ -17,9 +18,10 @@ CollisionCheck2DCallback COLLISION_LOOKUP_TABLE[COLLIDER2D_COUNT][COLLIDER2D_COU
 	/*point*/ { nullptr,           nullptr,          nullptr,				nullptr,			nullptr, nullptr },
 }; 
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // Doing this by lookup - as it is a good intro to callbacks
 // but could also do this by double dispatch:  a->collides_with( b )
+//------------------------------------------------------------------------------------------------------------------------------
 bool GetCollisionInfo( Collision2D* out, Collider2D* a, Collider2D* b )
 {
 	uint aType = a->GetType(); 
@@ -42,6 +44,7 @@ bool GetCollisionInfo( Collision2D* out, Collider2D* a, Collider2D* b )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool GetManifold( Manifold2D *out, AABB2Collider const &boxA, AABB2Collider const &boxB )
 {
 	//Get the intersecting box
@@ -82,6 +85,7 @@ bool GetManifold( Manifold2D *out, AABB2Collider const &boxA, AABB2Collider cons
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool GetManifold( Manifold2D *out, AABB2Collider const &box, Disc2DCollider const &disc )
 {
 	Vec2 discCentre = disc.GetWorldShape().GetCentre();
@@ -125,6 +129,7 @@ bool GetManifold( Manifold2D *out, AABB2Collider const &box, Disc2DCollider cons
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool GetManifold( Manifold2D *out, Disc2DCollider const &disc, AABB2Collider const &box)
 {
 	Vec2 discCentre = disc.GetWorldShape().GetCentre();
@@ -158,6 +163,7 @@ bool GetManifold( Manifold2D *out, Disc2DCollider const &disc, AABB2Collider con
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool GetManifold( Manifold2D *out, OBB2 const &boxA, OBB2 const &boxB)
 {
 	Plane2D planesOfThis[4];    // p0
@@ -317,6 +323,7 @@ bool GetManifold( Manifold2D *out, OBB2 const &boxA, OBB2 const &boxB)
 	return true; 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &b )
 {
 	OBB2 boxA = a.GetWorldShape();
@@ -469,31 +476,6 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 		}
 
 	}
-
-	/*
-	//Case where the edges are colliding perfectly (Well almost perfectly)
-	float diff = (bestCaseOther - bestCaseThis);
-	if( diff < 0.00001f )
-	{
-		out->m_penetration = bestCaseOther  * -1.f;
-
-		//DEBUG
-		DebugRenderOptionsT options;
-		options.relativeCoordinates = true;
-		options.space = DEBUG_RENDER_SCREEN;
-		options.beginColor = Rgba::GREEN;
-		g_debugRenderer->DebugRenderPoint2D(options, bestContactOther, 3.f);
-
-		out->m_normal = planesOfOther[bestCaseIndexOther].m_normal;
-		Vec2 tangent = out->m_normal.GetRotated90Degrees();
-
-		//	TO-DO:
-		// Get the mid point for the side that has collided
-		// Set that as the contact point
-
-		return true; 
-	}
-	*/
 	
 	//Check which of the 2 are larger (smaller -ve number)
 	if(bestCaseOther > bestCaseThis)
@@ -526,6 +508,7 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &
 	return true; 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool GetManifold( Manifold2D *out, BoxCollider2D const &a, float aRadius, BoxCollider2D const &b, float bRadius )
 {
 	OBB2 boxA = a.GetWorldShape();
@@ -602,12 +585,14 @@ bool GetManifold( Manifold2D *out, BoxCollider2D const &a, float aRadius, BoxCol
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool GetManifold( Manifold2D *out, CapsuleCollider2D const &a, CapsuleCollider2D const &b )
 {
 	//Call the GetManifold with 2 BoxColliders and radius
 	return GetManifold(out, a.GetWorldShape(), a.GetCapsuleRadius(), b.GetWorldShape(), b.GetCapsuleRadius());
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool GetManifold( Manifold2D *out, OBB2 const &a, float aRadius, OBB2 const &b, float bRadius )
 {
 	if (GetManifold( out, a, b )) 
@@ -698,16 +683,19 @@ bool GetManifold( Manifold2D *out, OBB2 const &a, float aRadius, OBB2 const &b, 
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool GetManifold( Manifold2D *out, BoxCollider2D const &a, CapsuleCollider2D const &b )
 {
 	return GetManifold(out, a.GetWorldShape(), 0.f, b.GetWorldShape(), b.GetCapsuleRadius());
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool GetManifold( Manifold2D *out, CapsuleCollider2D const &a, BoxCollider2D const &b )
 {
 	return GetManifold(out, a.GetWorldShape(), a.GetCapsuleRadius(), b.GetWorldShape(), 0.f);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool IsDiscInBox(Manifold2D* out, const Vec2 &discCentre, const AABB2& boxShape, float radius)
 {
 	//Disc is either inside box or not colliding
@@ -770,6 +758,7 @@ bool IsDiscInBox(Manifold2D* out, const Vec2 &discCentre, const AABB2& boxShape,
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool GetManifold( Manifold2D *out, Disc2DCollider const &discA, Disc2DCollider const &discB )
 {
 	float discARad = discA.GetWorldShape().GetRadius();
@@ -796,6 +785,7 @@ bool GetManifold( Manifold2D *out, Disc2DCollider const &discA, Disc2DCollider c
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void GenerateManifoldBoxToBox(Manifold2D* manifold, Vec2 const &min, Vec2 const &max)
 {
 	//Remember since we collided, the max is actually manifold min and min is actually manifold max
@@ -821,6 +811,7 @@ void GenerateManifoldBoxToBox(Manifold2D* manifold, Vec2 const &min, Vec2 const 
 	manifold->m_penetration = minValue;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool CheckAABB2ByAABB2(Collision2D* out, Collider2D* a, Collider2D* b)
 {
 	//Check collision between 2 boxes
@@ -847,6 +838,7 @@ bool CheckAABB2ByAABB2(Collision2D* out, Collider2D* a, Collider2D* b)
 	return result;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool CheckAABB2ByDisc(Collision2D* out, Collider2D* a, Collider2D* b)
 {
 	//box vs disc
@@ -871,6 +863,7 @@ bool CheckAABB2ByDisc(Collision2D* out, Collider2D* a, Collider2D* b)
 	return result;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool CheckDiscByDisc(Collision2D* out, Collider2D* a, Collider2D* b)
 {
 	//disc vs disc
@@ -896,6 +889,7 @@ bool CheckDiscByDisc(Collision2D* out, Collider2D* a, Collider2D* b)
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool CheckDiscByAABB2(Collision2D* out, Collider2D* a, Collider2D* b)
 {
 	//disc vs box
@@ -921,6 +915,7 @@ bool CheckDiscByAABB2(Collision2D* out, Collider2D* a, Collider2D* b)
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool CheckOBB2ByOBB2( Collision2D* out, Collider2D* a, Collider2D* b )
 {
 	//OBB vs OBB
@@ -946,6 +941,7 @@ bool CheckOBB2ByOBB2( Collision2D* out, Collider2D* a, Collider2D* b )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool CheckCapsuleByCapsule( Collision2D * out, Collider2D * a, Collider2D * b )
 {
 	//Capsule vs Capsule
@@ -971,6 +967,7 @@ bool CheckCapsuleByCapsule( Collision2D * out, Collider2D * a, Collider2D * b )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool CheckCapsuleByOBB2( Collision2D* out, Collider2D* a, Collider2D* b )
 {
 	//Capsule vs OBB2
@@ -996,6 +993,7 @@ bool CheckCapsuleByOBB2( Collision2D* out, Collider2D* a, Collider2D* b )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool CheckOBB2ByCapsule( Collision2D* out, Collider2D* a, Collider2D* b )
 {
 	//OBB2 vs Capsule

@@ -1,3 +1,4 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Rgba.hpp"
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/MathUtils.hpp"
@@ -5,6 +6,7 @@
 #include <vector>
 #include <string>
 
+//------------------------------------------------------------------------------------------------------------------------------
 Rgba::Rgba( float initial_r, float initial_g, float initial_b, float inital_a )
 	: r( initial_r )
 	, g( initial_g )
@@ -13,11 +15,13 @@ Rgba::Rgba( float initial_r, float initial_g, float initial_b, float inital_a )
 {
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Rgba::Rgba( const char* asText )
 {
 	SetFromText(asText);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Rgba::SetFromText( const char* asText )
 {
 	std::vector< std::string> splitStrings = SplitStringOnDelimiter(asText, ',');
@@ -44,6 +48,7 @@ void Rgba::SetFromText( const char* asText )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Rgba::SetFromBytes( unsigned char redByte, unsigned char greenByte, unsigned char blueByte, unsigned char alphaByte)
 {
 	r = static_cast<float>(redByte) / 255.f;
@@ -52,7 +57,7 @@ void Rgba::SetFromBytes( unsigned char redByte, unsigned char greenByte, unsigne
 	a = static_cast<float>(alphaByte) / 255.f;
 }
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 void Rgba::LerpRGBA( Rgba& currentColor, const Rgba& startColor, const Rgba& endColor, float blendFraction )
 {
 	currentColor.r = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.r, endColor.r);
@@ -61,6 +66,7 @@ void Rgba::LerpRGBA( Rgba& currentColor, const Rgba& startColor, const Rgba& end
 	currentColor.a = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.a, endColor.a);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Rgba::LerpRGB( Rgba& currentColor, const Rgba& startColor, const Rgba& endColor, float blendFraction )
 {
 	currentColor.r = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.r, endColor.r);
@@ -68,6 +74,7 @@ void Rgba::LerpRGB( Rgba& currentColor, const Rgba& startColor, const Rgba& endC
 	currentColor.b = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.b, endColor.b);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Rgba Rgba::operator*( float multiplier ) const
 {
 	Rgba color = Rgba(r * multiplier, g * multiplier, b * multiplier, a * multiplier);
@@ -148,6 +155,7 @@ void Rgba::SetHSLFromRGB( Vec3 rgb )
 }
 */
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool Rgba::operator!=( const Rgba& compare ) const
 {
 	if(r != compare.r || g != compare.g || b != compare.b || a != compare.a)
@@ -158,6 +166,7 @@ bool Rgba::operator!=( const Rgba& compare ) const
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool Rgba::operator==( const Rgba& compare ) const
 {
 	if( r == compare.r && g == compare.g && b == compare.b && a == compare.a)
@@ -168,6 +177,7 @@ bool Rgba::operator==( const Rgba& compare ) const
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const STATIC Rgba Rgba::WHITE(1.f,1.f, 1.f, 1.f);
 const STATIC Rgba Rgba::RED(1.f,0.f, 0.f, 1.f);
 const STATIC Rgba Rgba::GREEN(0.f,1.f, 0.f, 1.f);
@@ -178,3 +188,4 @@ const STATIC Rgba Rgba::DARK_GREY(0.6f, 0.6f, 0.6f, 1.f);
 const STATIC Rgba Rgba::ORANGE(1.f, 0.65f, 0.f, 1.f);
 const STATIC Rgba Rgba::MAGENTA(1.f, 0.f, 1.f, 1.f);
 const STATIC Rgba Rgba::NONE(0.f,0.f, 0.f, 0.f);
+//------------------------------------------------------------------------------------------------------------------------------

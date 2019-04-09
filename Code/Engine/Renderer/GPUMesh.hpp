@@ -46,6 +46,7 @@ public:
 	bool					m_useIndexBuffer; 
 };
 
+//------------------------------------------------------------------------------------------------------------------------------
 template <typename VertexType>
 void GPUMesh::CreateFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem )
 {
@@ -86,6 +87,7 @@ void GPUMesh::CreateFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem )
 	m_layout = (BufferLayout*)layout;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
  template <typename VertexType>
 void GPUMesh::CopyFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem )
 {

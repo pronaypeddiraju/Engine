@@ -2,6 +2,7 @@
 #include "Engine/Core/FileUtils.hpp"
 #include <fstream>
 
+//------------------------------------------------------------------------------------------------------------------------------
 unsigned long CreateFileBuffer(const std::string& fileName, char **outData )
 {
 	std::ifstream fileStream;

@@ -21,13 +21,16 @@ ColorTargetView::ColorTargetView()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 ColorTargetView::~ColorTargetView()
 {
 	DX_SAFE_RELEASE(m_renderTargetView);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 // this is an internally used method - not called outside the of the render system; 
 // update the internal handle; 
+//------------------------------------------------------------------------------------------------------------------------------
 void ColorTargetView::CreateForInternalTexture( ID3D11Texture2D &D3D11texture, ID3D11Device &D3Ddevice )
 {
 	DX_SAFE_RELEASE( m_renderTargetView ); // release the old one; 

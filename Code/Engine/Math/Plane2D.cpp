@@ -8,12 +8,14 @@ Plane2D::Plane2D()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Plane2D::Plane2D( Vec2 normal, float distanceToOrigin )
 {
 	m_normal = normal;
 	m_distance = distanceToOrigin;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float Plane2D::GetDistance( Vec2 point ) const
 {
 	float distance = GetDotProduct(point, m_normal);
@@ -21,6 +23,7 @@ float Plane2D::GetDistance( Vec2 point ) const
 	return distance;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC Plane2D Plane2D::AtPosition( Vec2 pos, Vec2 normal ) 
 {
 	Plane2D p; 
@@ -32,6 +35,7 @@ STATIC Plane2D Plane2D::AtPosition( Vec2 pos, Vec2 normal )
 	return p;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC Plane2D Plane2D::FromPoints( Vec2 p0, Vec2 p1 )
 {
 	Plane2D p;

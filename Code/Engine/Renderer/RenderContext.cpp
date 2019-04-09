@@ -159,17 +159,20 @@ void RenderContext::DemoRender()
 
 RenderContext* g_renderContext = nullptr;
 
+//------------------------------------------------------------------------------------------------------------------------------
 RenderContext::RenderContext(WindowContext* window)
 {
 	D3D11Setup(window->m_hwnd);
 	Startup();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 RenderContext::~RenderContext()
 {
 	Shutdown();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::Startup()
 {
 	// Change default behavior to be counter-clockwise is front-face to match GL
@@ -195,6 +198,7 @@ void RenderContext::Startup()
 	m_cpuLightBuffer = LightBufferT();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::PremakeDefaults()
 {
 	// premake defaults 
@@ -209,6 +213,7 @@ void RenderContext::PremakeDefaults()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::SetBlendMode(eBlendMode blendMode)
 {
 	if(m_currentShader == nullptr)
@@ -221,11 +226,13 @@ void RenderContext::SetBlendMode(eBlendMode blendMode)
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::SetDepth( bool write )
 {
 	m_currentShader->m_writeDepth = write;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BindMaterial( Material* material )
 {
 	//Bind the shader
@@ -248,6 +255,7 @@ void RenderContext::BindMaterial( Material* material )
 	//bind user(material constant) buffer if available
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Sampler* RenderContext::GetSamplerOfType( const std::string& m_samplerType )
 {
 	if(m_samplerType == "linear")
@@ -263,6 +271,7 @@ Sampler* RenderContext::GetSamplerOfType( const std::string& m_samplerType )
 	return nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 BitmapFont* RenderContext::CreateBitmapFontFromFile(const std::string& bitmapName)
 {
 	//std::string filePath = "Data/Fonts/" + bitmapName + ".png";
@@ -274,6 +283,7 @@ BitmapFont* RenderContext::CreateBitmapFontFromFile(const std::string& bitmapNam
 	return newFont;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Shader* RenderContext::CreateShaderFromFile(const std::string& fileName)
 {
 	//Check the file extention
@@ -318,6 +328,7 @@ Shader* RenderContext::CreateShaderFromFile(const std::string& fileName)
 	return shader;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::UpdateLightBuffer()
 {
 	if (m_gpuLightBuffer == nullptr) 
@@ -337,18 +348,21 @@ void RenderContext::UpdateLightBuffer()
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::EnableDirectionalLight()
 {
 	m_cpuLightBuffer.lights[0].color.a = 1.f;
 	m_lightBufferDirty = true;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::DisableDirectionalLight()
 {
 	m_cpuLightBuffer.lights[0].color.a = 0.f;
 	m_lightBufferDirty = true;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::CreateAndSetDefaultRasterState()
 {
 	DX_SAFE_RELEASE(m_defaultRasterState);
@@ -371,6 +385,7 @@ void RenderContext::CreateAndSetDefaultRasterState()
 	m_D3DContext->RSSetState( m_defaultRasterState); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::SetRasterStateWireFrame()
 {
 	DX_SAFE_RELEASE(m_defaultRasterState);
@@ -393,6 +408,7 @@ void RenderContext::SetRasterStateWireFrame()
 	m_D3DContext->RSSetState( m_defaultRasterState); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BeginFrame()
 {
 	// Get the back buffer
@@ -416,11 +432,13 @@ void RenderContext::BeginFrame()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 ColorTargetView* RenderContext::GetFrameColorTarget()
 {
 	return m_FrameBuffer_ColorTargetView;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::EndFrame()
 {
 	// We're done rendering, so tell the swap chain they can copy the back buffer to the front (desktop/window) buffer
@@ -436,6 +454,7 @@ void RenderContext::EndFrame()
 	m_defaultDepthStencilView = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::Shutdown()
 {
 	delete m_immediateVBO;
@@ -540,6 +559,7 @@ void RenderContext::Shutdown()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::SetAmbientLight( Rgba const &color, float intensity )
 {
 	m_cpuLightBuffer.ambient = color;
@@ -547,12 +567,14 @@ void RenderContext::SetAmbientLight( Rgba const &color, float intensity )
 	m_lightBufferDirty = true;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::EnableLight( uint slot, LightT const &info )
 {
 	m_cpuLightBuffer.lights[slot] = info;
 	m_lightBufferDirty = true;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::DisableLight( uint slot )
 {
 	m_cpuLightBuffer.lights[slot] = LightT();
@@ -560,6 +582,7 @@ void RenderContext::DisableLight( uint slot )
 	m_lightBufferDirty = true;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BindShader( Shader* shader )
 {
 	//    we only worry about the Vertex and Pixel Shader - but all stages in the Graphics
@@ -580,11 +603,12 @@ void RenderContext::BindShader( Shader* shader )
 	m_currentShader = shader;
 }
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // Note:  We have 128 texture slots, and 16 sampler slots
 // But for simplicity, the system is designed to have the sampler stored
 // with the texture view (so users just have to say "BindTexture").  
 // Meaning, this design limits us to 16 textures.  
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BindTextureView( uint slot, TextureView *view )
 {
 	ID3D11ShaderResourceView *srv = nullptr; 
@@ -611,6 +635,7 @@ void RenderContext::BindTextureView( uint slot, TextureView *view )
 	// m_context->VSSetShaderResource( slot, 1U, &srv ); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BindTextureView( uint slot, std::string const &name )
 {
 	std::map<std::string, TextureView*>::iterator textureIterator;
@@ -619,7 +644,7 @@ void RenderContext::BindTextureView( uint slot, std::string const &name )
 	BindTextureView(slot, textureIterator->second);
 }
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BindSampler( uint slot, Sampler *sampler ) 
 {
 	if (sampler == nullptr) {
@@ -638,7 +663,7 @@ void RenderContext::BindSampler( eSampleMode mode )
 	BindSampler(0U, m_cachedSamplers[mode]);
 }
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BindTextureViewWithSampler( uint slot, TextureView *view )
 {
 	BindTextureView( slot, view ); 
@@ -650,6 +675,7 @@ void RenderContext::BindTextureViewWithSampler( uint slot, TextureView *view )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BindTextureViewWithSampler( uint slot, std::string const &name )
 {
 	std::map< std::string, TextureView* >::iterator textureIterator;
@@ -664,18 +690,21 @@ void RenderContext::BindTextureViewWithSampler( uint slot, std::string const &na
 	BindTextureViewWithSampler(slot, textureIterator->second);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BindTextureViewWithSampler( uint slot, TextureView *view, Sampler *sampler )
 {
 	view->m_sampler = sampler;
 	BindTextureViewWithSampler(slot, view);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BindTextureViewWithSampler( uint slot, TextureView *view, eSampleMode mode )
 {
 	view->m_sampler = m_cachedSamplers[mode];
 	BindTextureViewWithSampler(slot, view);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BindTextureViewWithSampler( uint slot, std::string const &name, eSampleMode mode )
 {
 	std::map<std::string, TextureView*>::iterator texIterator;
@@ -684,6 +713,7 @@ void RenderContext::BindTextureViewWithSampler( uint slot, std::string const &na
 	BindTextureViewWithSampler(slot, texIterator->second, mode);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BindModelMatrix( Matrix44 const &model ) 
 {
 	m_cpuModelBuffer.ModelMatrix = model; 
@@ -691,6 +721,7 @@ void RenderContext::BindModelMatrix( Matrix44 const &model )
 	m_modelBuffer->CopyCPUToGPU( &m_cpuModelBuffer, sizeof(m_cpuModelBuffer) ); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::SetGlobalTint( const Rgba& color )
 {
 	m_cpuModelBuffer.TintColor = color;
@@ -698,14 +729,16 @@ void RenderContext::SetGlobalTint( const Rgba& color )
 	m_modelBuffer->CopyCPUToGPU( &m_cpuModelBuffer, sizeof(m_cpuModelBuffer) ); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::SetModelMatrix( Matrix44 const &modelMatrix )
 {
 	BindModelMatrix(modelMatrix);
 }
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // (NOTE: This design is fairly different from my Engine, 
 // so while I'm fairly sure this should work, if it doesn't, please let me know)
+//------------------------------------------------------------------------------------------------------------------------------
 TextureView* RenderContext::GetOrCreateTextureViewFromFile( std::string const &filename, bool isFont )
 {
 	TextureView* view = nullptr; 
@@ -745,6 +778,7 @@ TextureView* RenderContext::GetOrCreateTextureViewFromFile( std::string const &f
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::Draw( uint vertexCount, uint byteOffset )
 {
 	// **NEW** - before a draw can happen, 
@@ -761,6 +795,7 @@ void RenderContext::Draw( uint vertexCount, uint byteOffset )
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::DrawIndexed( uint indexCount)
 {
 	//bool result =  m_currentShader->CreateInputLayoutForVertexPCU(); 
@@ -774,6 +809,7 @@ void RenderContext::DrawIndexed( uint indexCount)
 		0 );     // vert offset 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::ClearColorTargets( const Rgba& clearColor )
 {
 	// Clear the buffer.
@@ -781,7 +817,7 @@ void RenderContext::ClearColorTargets( const Rgba& clearColor )
 	m_D3DContext->ClearRenderTargetView( m_currentCamera->m_colorTargetView->m_renderTargetView, clearColorArray);
 }
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::ClearDepthStencilTarget( float depth /*= 1.0f*/, uint8_t stencil /*= 0U */ )
 {
 	ID3D11DepthStencilView *dsv = nullptr; 
@@ -789,6 +825,7 @@ void RenderContext::ClearDepthStencilTarget( float depth /*= 1.0f*/, uint8_t ste
 	m_D3DContext->ClearDepthStencilView( dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depth, stencil ); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BindVertexStream( VertexBuffer *vbo )
 {
 	// Bind the input stream; 
@@ -801,6 +838,7 @@ void RenderContext::BindVertexStream( VertexBuffer *vbo )
 		&offset );             // Offset into each buffer (array - we are only passing one. 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BindIndexStream( IndexBuffer *ibo )
 {
 	ID3D11Buffer *handle = nullptr; 
@@ -814,6 +852,7 @@ void RenderContext::BindIndexStream( IndexBuffer *ibo )
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BindUniformBuffer( uint slot, UniformBuffer *uniformBuffer )
 {
 	// The API allows us to bind multiple constant buffers at once
@@ -824,6 +863,7 @@ void RenderContext::BindUniformBuffer( uint slot, UniformBuffer *uniformBuffer )
 	m_D3DContext->PSSetConstantBuffers( slot, 1U, &buffer ); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BeginCamera( Camera& camera )
 {
 	UNUSED(camera);
@@ -889,6 +929,7 @@ void RenderContext::BeginCamera( Camera& camera )
 	BindUniformBuffer( UNIFORM_SLOT_MODEL_MATRIX, m_modelBuffer ); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::UpdateFrameBuffer()
 {
 	if(m_immediateUBO == nullptr)
@@ -907,6 +948,7 @@ void RenderContext::UpdateFrameBuffer()
 	m_immediateUBO->CopyCPUToGPU(&frameBuffer, sizeof(frameBuffer));
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::EndCamera()
 {
 	if(m_currentCamera == nullptr)
@@ -922,13 +964,13 @@ void RenderContext::EndCamera()
 	m_currentCamera = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::DrawVertexArray( int numVertexes, const Vertex_PCU* vertexes )
 {
 	DrawVertexArray(vertexes, numVertexes);
 }
 
-
-
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertexes )
 {
 	if(vertexes.size() == 0)
@@ -939,6 +981,7 @@ void RenderContext::DrawVertexArray( const std::vector<Vertex_PCU>& vertexes )
 	DrawVertexArray( static_cast<int>(vertexes.size()), &vertexes[0]);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::DrawVertexArray( Vertex_PCU const *vertices, uint count )
 {
 	if(m_immediateVBO == nullptr)
@@ -970,6 +1013,7 @@ void RenderContext::DrawVertexArray( Vertex_PCU const *vertices, uint count )
 	*/
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool RenderContext::PreDraw( GPUMesh *mesh)
 {
 	//Bind the uniforms
@@ -985,6 +1029,7 @@ bool RenderContext::PreDraw( GPUMesh *mesh)
 	return result;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::DrawMesh( GPUMesh *mesh )
 {
 	bool result = PreDraw(mesh);
@@ -1006,25 +1051,7 @@ void RenderContext::DrawMesh( GPUMesh *mesh )
 	}
 }
 
-//Depricated. To be removed
-/*
-TextureView* RenderContext::CreateOrGetTextureViewFromFile(std::string const &imageFilePath)
-{
-	std::map<std::string, TextureView*>::const_iterator requestedTexture = m_loadedTextures.find(imageFilePath);
-	if(requestedTexture != m_loadedTextures.end())
-	{
-		//Texture requested exists in the map
-		return requestedTexture->second;
-	}
-	else
-	{
-		//Create the new tex
-		TextureView* texture = CreateTextureViewFromFile(imageFilePath.c_str());
-		return texture;
-	}
-}
-*/
-
+//------------------------------------------------------------------------------------------------------------------------------
 BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile(const std::string& bitmapName)
 {
 	std::map<std::string, BitmapFont*>::const_iterator requestedFont = m_loadedFonts.find(bitmapName);
@@ -1041,6 +1068,7 @@ BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile(const std::string& bitm
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Shader* RenderContext::CreateOrGetShaderFromFile( std::string const &fileName )
 {
 	std::string filePath = SHADER_PATH + fileName;
@@ -1058,6 +1086,7 @@ Shader* RenderContext::CreateOrGetShaderFromFile( std::string const &fileName )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Material* RenderContext::CreateOrGetMaterialFromFile( const std::string& fileName )
 {
 	std::string filePath = MATERIAL_PATH + fileName;
@@ -1074,73 +1103,4 @@ Material* RenderContext::CreateOrGetMaterialFromFile( const std::string& fileNam
 		return material;
 	}
 }
-
-/*
-//------------------------------------------------------------------------------------------------------------------------------
-Texture* RenderContext::CreateTextureFromFile( const char* imageFilePath )
-{
-	int imageTexelSizeX = 0; // Filled in for us to indicate image width
-	int imageTexelSizeY = 0; // Filled in for us to indicate image height
-	int numComponents = 0; // Filled in for us to indicate how many color components the image had (e.g. 3=RGB=24bit, 4=RGBA=32bit)
-	int numComponentsRequested = 0; // don't care; we support 3 (24-bit RGB) or 4 (32-bit RGBA)
-	
-	stbi_set_flip_vertically_on_load( 1 ); // We prefer uvTexCoords has origin (0,0) at BOTTOM LEFT
-	unsigned char* imageData = stbi_load( imageFilePath, &imageTexelSizeX, &imageTexelSizeY, &numComponents, numComponentsRequested );
-	GUARANTEE_OR_DIE( imageData, Stringf( "Failed to load image \"%s\"", imageFilePath ));
-	GUARANTEE_OR_DIE( numComponents >= 3 && numComponents <= 4 && imageTexelSizeX > 0 && imageTexelSizeY > 0, Stringf( "ERROR loading image \"%s\" (Bpp=%i, size=%i,%i)", imageFilePath, numComponents, imageTexelSizeX, imageTexelSizeY ) );	
-
-	Texture* newTexture = new Texture();
-	//This should be your intVec2 data!
-	newTexture->m_dimensions.x = imageTexelSizeX;
-	newTexture->m_dimensions.y = imageTexelSizeY;
-
-	// Enable OpenGL texturing
-	glEnable( GL_TEXTURE_2D );
-
-	// Tell OpenGL that our pixel data is single-byte aligned
-	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-
-	// Ask OpenGL for an unused texName (ID number) to use for this texture
-	glGenTextures( 1, (GLuint*) &newTexture->m_textureID );
-
-	// Tell OpenGL to bind (set) this as the currently active texture
-	glBindTexture( GL_TEXTURE_2D, newTexture->m_textureID );
-
-	// Set texture clamp vs. wrap (repeat) default settings
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP ); // GL_CLAMP or GL_REPEAT
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP ); // GL_CLAMP or GL_REPEAT
-
-																   // Set magnification (texel > pixel) and minification (texel < pixel) filters
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST ); // one of: GL_NEAREST, GL_LINEAR
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR ); // one of: GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_LINEAR
-
-																		// Pick the appropriate OpenGL format (RGB or RGBA) for this texel data
-	GLenum bufferFormat = GL_RGBA; // the format our source pixel data is in; any of: GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, ...
-	if( numComponents == 3 )
-	{
-		bufferFormat = GL_RGB;
-	}
-	GLenum internalFormat = bufferFormat; // the format we want the texture to be on the card; allows us to translate into a different texture format as we upload to OpenGL
-
-	// Upload the image texel data (raw pixels bytes) to OpenGL under this textureID
-	glTexImage2D(			// Upload this pixel data to our new OpenGL texture
-		GL_TEXTURE_2D,		// Creating this as a 2d texture
-		0,					// Which mipmap level to use as the "root" (0 = the highest-quality, full-res image), if mipmaps are enabled
-		internalFormat,		// Type of texel format we want OpenGL to use for this texture internally on the video card
-		imageTexelSizeX,	// Texel-width of image; for maximum compatibility, use 2^N + 2^B, where N is some integer in the range [3,11], and B is the border thickness [0,1]
-		imageTexelSizeY,	// Texel-height of image; for maximum compatibility, use 2^M + 2^B, where M is some integer in the range [3,11], and B is the border thickness [0,1]
-		0,					// Border size, in texels (must be 0 or 1, recommend 0)
-		bufferFormat,		// Pixel format describing the composition of the pixel data in buffer
-		GL_UNSIGNED_BYTE,	// Pixel color components are unsigned bytes (one byte per color channel/component)
-		imageData );		// Address of the actual pixel data bytes/buffer in system memory
-
-	// Free the image data now that we've sent a copy of it down to the GPU to be stored in video memory
-	stbi_image_free( imageData );
-
-	//Add the texture to the map along with it's file path
-	m_loadedTextures[imageFilePath] = newTexture;
-
-	return newTexture;
-}
-*/
 

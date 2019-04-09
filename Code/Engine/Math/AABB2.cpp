@@ -10,6 +10,7 @@ AABB2::AABB2()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 AABB2::AABB2( const Vec2 &minBounds, const Vec2 &maxBounds )
 {
 	m_minBounds = minBounds;
@@ -23,6 +24,7 @@ AABB2::AABB2( const Vec2 &minBounds, const Vec2 &maxBounds )
 	m_3Dcenter = Vec3(m_3Dmax - m_3Dmin);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 AABB2::AABB2( const char* asText )
 {
 	SetFromText(asText);
@@ -36,11 +38,13 @@ AABB2::AABB2( const Vec3& min3D, const Vec3& max3D )
 	//m_3Dcenter = Vec3(max3D - min3D);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec2& AABB2::GetBoxCenter() const
 {
 	return m_center;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AABB2::SetFromText( const char* asText )
 {
 	//Read the data, break using the delimiter and save each block to it's respective Vec2 component
@@ -56,26 +60,31 @@ void AABB2::SetFromText( const char* asText )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec3 AABB2::GetTopLeft() const
 {
 	return Vec3(m_3Dmin.x, m_3Dmax.y, m_3Dmin.z);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec3 AABB2::GetTopRight() const
 {
 	return Vec3(m_3Dmax.x, m_3Dmax.y, m_3Dmax.z);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec3 AABB2::GetBottomLeft() const
 {
 	return Vec3(m_3Dmin.x, m_3Dmin.y, m_3Dmin.z);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec3 AABB2::GetBottomRight() const
 {
 	return Vec3(m_3Dmax.x, m_3Dmin.y, m_3Dmax.z);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AABB2::AlignWithinBox( const AABB2& box, const Vec2& alignment )
 {
 	float boxWidth = box.m_maxBounds.x - box.m_minBounds.x;
@@ -104,14 +113,15 @@ void AABB2::AlignWithinBox( const AABB2& box, const Vec2& alignment )
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AABB2::TranslateByVector( const Vec2& translation )
 {
 	m_minBounds += translation;
 	m_maxBounds += translation;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 AABB2::~AABB2()
 {
 
 }
-

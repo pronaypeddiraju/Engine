@@ -1,12 +1,11 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "StringUtils.hpp"
 #include <stdarg.h>
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 const int STRINGF_STACK_LOCAL_TEMP_LENGTH = 2048;
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 const std::string Stringf( const char* format, ... )
 {
 	char textLiteral[ STRINGF_STACK_LOCAL_TEMP_LENGTH ];
@@ -19,8 +18,7 @@ const std::string Stringf( const char* format, ... )
 	return std::string( textLiteral );
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 const std::string Stringf( const int maxLength, const char* format, ... )
 {
 	char textLiteralSmall[ STRINGF_STACK_LOCAL_TEMP_LENGTH ];
@@ -41,6 +39,7 @@ const std::string Stringf( const int maxLength, const char* format, ... )
 	return returnValue;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 std::vector<std::string> SplitStringOnDelimiter( std::string s, char delimiter )
 {
 	//Make a vector of strings
@@ -64,8 +63,3 @@ std::vector<std::string> SplitStringOnDelimiter( std::string s, char delimiter )
 	return splitStrings;
 
 }
-
-//------------------------------------------------------------------------------------------------------------------------------
-
-
-

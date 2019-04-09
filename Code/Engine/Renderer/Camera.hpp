@@ -4,6 +4,7 @@
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Matrix44.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 class ColorTargetView;
 class DepthStencilTargetView;
 class RenderContext;

@@ -18,16 +18,19 @@ XboxController::XboxController( int ControllerID )
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 XboxController::~XboxController()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const KeyButtonState& XboxController::GetButtonState( XboxButtonID buttonID ) const
 {
 	return m_buttonStates[buttonID];
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void XboxController::Update()
 {
 	memset( &g_xboxControllerState, 0, sizeof( g_xboxControllerState ) );
@@ -69,6 +72,7 @@ void XboxController::Update()
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void XboxController::Reset()
 {
 	//Reset the controller values;
@@ -87,12 +91,14 @@ void XboxController::Reset()
 	//throw std::logic_error( "The method or operation is not implemented." );
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void XboxController::UpdateTrigger( float& triggerValue, unsigned char rawValue )
 {
 	float rangeValFloat = (float)rawValue;
 	triggerValue = RangeMapFloat(rangeValFloat, 0.f, 256.f, 0.f, 1.f);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void XboxController::UpdateJoystick( AnalogJoyStick& joystick, short rawX, short rawY )
 {
 	//normalize my shit
@@ -101,22 +107,26 @@ void XboxController::UpdateJoystick( AnalogJoyStick& joystick, short rawX, short
 	joystick.UpdatePosition(correctedRawX, correctedRawY);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void XboxController::UpdateButton( XboxButtonID buttonID, unsigned short buttonFlags, unsigned short currentButtonFlag )
 {
 	bool isButtonSet = IsBitFlagSet( buttonFlags, currentButtonFlag);
 	m_buttonStates[buttonID].UpdateStatus(isButtonSet);
 }
 
-//---------------------------------------------------------------------------
-// "controllerNumber" can be 0,1,2,3; the XInput API supports up to 4 Xbox controllers at once
+//------------------------------------------------------------------------------------------------------------------------------
 void XboxController::CheckControllerState()
 {
 	
 }
 
-//Code not working
+//------------------------------------------------------------------------------------------------------------------------------
+// Code not working
+//------------------------------------------------------------------------------------------------------------------------------
 void XboxController::SetupDebugController()
 {
+	TODO("Implement Debug Contoroller");
+
 	//draw 3 circles
 
 	//Debug mode quanitites
@@ -163,8 +173,12 @@ void XboxController::SetupDebugController()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
+// Broken too
+//------------------------------------------------------------------------------------------------------------------------------
 void XboxController::RenderDebugController() const
 {
+	TODO("Implement xbox Debugging");
 	g_renderContext->DrawVertexArray(m_NUM_DEBUG_VERTICES, m_outerDeadZone);
 	g_renderContext->DrawVertexArray(m_NUM_DEBUG_VERTICES, m_correctedZone);
 	g_renderContext->DrawVertexArray(m_NUM_DEBUG_VERTICES, m_innerDeadZone);

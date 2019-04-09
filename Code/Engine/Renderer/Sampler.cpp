@@ -5,11 +5,13 @@
 
 struct D3D11_SAMPLER_DESC;
 
+//------------------------------------------------------------------------------------------------------------------------------
 Sampler::Sampler()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Sampler::Sampler( const std::string& samplerType )
 {
 	if(samplerType == "liner")
@@ -24,11 +26,13 @@ Sampler::Sampler( const std::string& samplerType )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Sampler::~Sampler()
 {
 	DX_SAFE_RELEASE(m_handle);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 static D3D11_FILTER DXGetFilter( eFilterMode min, eFilterMode mag ) 
 {
 	if (min == FILTER_MODE_POINT) 
@@ -57,6 +61,7 @@ static D3D11_FILTER DXGetFilter( eFilterMode min, eFilterMode mag )
 	ASSERT_RETURN_VALUE(false, D3D11_FILTER_MIN_MAG_MIP_POINT); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Sampler::CreateStateIfDirty( RenderContext *renderContext )
 {
 	// no changes needed
@@ -74,9 +79,9 @@ void Sampler::CreateStateIfDirty( RenderContext *renderContext )
 	desc.Filter = DXGetFilter( m_minFilter, m_magFilter );
 	desc.MaxAnisotropy = 1U; // anistropic filtering (we're not using this... yet)
 
-							 // set texture to wrap on UV, but clamp on W (mip).  
-							 // (if you're smapling 3D wrapping noise, you may want wrap in all dimensions)
-							 // (if you're doing single sprites, you may want clamp all so you don't get edge bleeding)
+	// set texture to wrap on UV, but clamp on W (mip).  
+	// (if you're smapling 3D wrapping noise, you may want wrap in all dimensions)
+	// (if you're doing single sprites, you may want clamp all so you don't get edge bleeding)
 	desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;  
 	desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP; 
 	desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -88,7 +93,7 @@ void Sampler::CreateStateIfDirty( RenderContext *renderContext )
 
 	desc.ComparisonFunc = D3D11_COMPARISON_NEVER; // will come into play doing shadow maps; 
 
-												   // leaving border color black (only useful if our wrap mode is BORDER
+	// leaving border color black (only useful if our wrap mode is BORDER
 
 	// Create!
 	ID3D11Device *d3dDevice = renderContext->m_D3DDevice; 

@@ -10,6 +10,7 @@ Capsule2D::Capsule2D()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Capsule2D::Capsule2D( Vec2 pos )
 {
 	m_start = pos;
@@ -19,6 +20,7 @@ Capsule2D::Capsule2D( Vec2 pos )
 	m_rotationDegrees = 0.f;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Capsule2D::Capsule2D( Vec2 center, float radius )
 {
 	m_start = center;
@@ -28,6 +30,7 @@ Capsule2D::Capsule2D( Vec2 center, float radius )
 	m_rotationDegrees = 0.f;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Capsule2D::Capsule2D( Vec2 p0, Vec2 p1, float radius )
 {
 	m_start = p0;
@@ -37,11 +40,13 @@ Capsule2D::Capsule2D( Vec2 p0, Vec2 p1, float radius )
 	m_rotationDegrees = Vec2(m_start - m_end).GetAngleDegrees();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Capsule2D::~Capsule2D()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Capsule2D::SetPosition( Vec2 pos )
 {
 	Vec2 disp = m_start - m_end;
@@ -55,29 +60,34 @@ void Capsule2D::SetPosition( Vec2 pos )
 	m_end = pos + invNormal * halfLength;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Capsule2D::SetPositions( Vec2 p0, Vec2 p1 )
 {
 	m_start = p0;
 	m_end = p1;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Capsule2D::Translate( Vec2 offset )
 {
 	m_start += offset;
 	m_end += offset;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool Capsule2D::Contains( Vec2 worldPoint )
 {
 	return IsPointInCapsule2D(worldPoint, m_start, m_end, m_radius);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec2 Capsule2D::GetClosestPoint( Vec2 worldPoint )
 {
 	Vec2 closestPoint = GetClosestPointOnCapsule2D(worldPoint, m_start, m_end, m_radius);
 	return closestPoint;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec2 Capsule2D::GetCenter() const
 {
 	Vec2 disp = m_start - m_end;
@@ -87,6 +97,7 @@ Vec2 Capsule2D::GetCenter() const
 	return m_end + (norm * distance * 0.5f);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 AABB2 Capsule2D::GetBoundingAABB() const
 {
 	Vec2 minBounds = Vec2(GetLowerValue(m_start.x, m_end.x), GetLowerValue(m_start.y, m_end.y));
@@ -101,4 +112,3 @@ AABB2 Capsule2D::GetBoundingAABB() const
 	
 	return AABB2(minBounds, maxBounds);
 }
-

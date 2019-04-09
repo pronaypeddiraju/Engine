@@ -2,12 +2,14 @@
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 GPUMesh::GPUMesh( RenderContext *renderContext )
 {
 	m_vertexBuffer = new VertexBuffer(renderContext);
 	m_indexBuffer = new IndexBuffer(renderContext);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 GPUMesh::~GPUMesh()
 {
 	delete m_vertexBuffer;
@@ -17,6 +19,7 @@ GPUMesh::~GPUMesh()
 	m_indexBuffer = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void GPUMesh::SetDrawCall( bool useIndexBuffer, uint elemCount )
 {
 	if (useIndexBuffer) {

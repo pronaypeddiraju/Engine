@@ -4,7 +4,7 @@
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Commons/StringUtils.hpp"
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // To disable audio entirely (and remove requirement for fmod.dll / fmod64.dll) for any game,
 //	#define ENGINE_DISABLE_AUDIO in your game's Code/Game/EngineBuildPreferences.hpp file.
 //
@@ -17,22 +17,20 @@
 
 #if !defined( ENGINE_DISABLE_AUDIO )
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // Link in the appropriate FMOD static library (32-bit or 64-bit)
-//
+//------------------------------------------------------------------------------------------------------------------------------
 #if defined( _WIN64 )
 #pragma comment( lib, "ThirdParty/fmod/fmod64_vc.lib" )
 #else
 #pragma comment( lib, "ThirdParty/fmod/fmod_vc.lib" )
 #endif
 
-
 AudioSystem *g_audio = nullptr;
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // Initialization code based on example from "FMOD Studio Programmers API for Windows"
-//
+//------------------------------------------------------------------------------------------------------------------------------
 AudioSystem::AudioSystem()
 	: m_fmodSystem( nullptr )
 {
@@ -44,8 +42,7 @@ AudioSystem::AudioSystem()
 	ValidateResult( result );
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 AudioSystem::~AudioSystem()
 {
 	FMOD_RESULT result = m_fmodSystem->release();
@@ -54,21 +51,18 @@ AudioSystem::~AudioSystem()
 	m_fmodSystem = nullptr; // #Fixme: do we delete/free the object also, or just do this?
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void AudioSystem::BeginFrame()
 {
 	m_fmodSystem->update();
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void AudioSystem::EndFrame()
 {
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 SoundID AudioSystem::CreateOrGetSound( const std::string& soundFilePath )
 {
 	std::map< std::string, SoundID >::iterator found = m_registeredSoundIDs.find( soundFilePath );
@@ -92,8 +86,7 @@ SoundID AudioSystem::CreateOrGetSound( const std::string& soundFilePath )
 	return MISSING_SOUND_ID;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 SoundPlaybackID AudioSystem::PlaySound( SoundID soundID, bool isLooped, float volume, float balance, float speed, bool isPaused )
 {
 	size_t numSounds = m_registeredSounds.size();
@@ -122,8 +115,7 @@ SoundPlaybackID AudioSystem::PlaySound( SoundID soundID, bool isLooped, float vo
 	return (SoundPlaybackID) channelAssignedToSound;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void AudioSystem::StopSound( SoundPlaybackID soundPlaybackID )
 {
 	if( soundPlaybackID == MISSING_SOUND_ID )
@@ -136,10 +128,9 @@ void AudioSystem::StopSound( SoundPlaybackID soundPlaybackID )
 	channelAssignedToSound->stop();
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // Volume is in [0,1]
-//
+//------------------------------------------------------------------------------------------------------------------------------
 void AudioSystem::SetSoundPlaybackVolume( SoundPlaybackID soundPlaybackID, float volume )
 {
 	if( soundPlaybackID == MISSING_SOUND_ID )
@@ -152,10 +143,9 @@ void AudioSystem::SetSoundPlaybackVolume( SoundPlaybackID soundPlaybackID, float
 	channelAssignedToSound->setVolume( volume );
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // Balance is in [-1,1], where 0 is L/R centered
-//
+//------------------------------------------------------------------------------------------------------------------------------
 void AudioSystem::SetSoundPlaybackBalance( SoundPlaybackID soundPlaybackID, float balance )
 {
 	if( soundPlaybackID == MISSING_SOUND_ID )
@@ -168,12 +158,11 @@ void AudioSystem::SetSoundPlaybackBalance( SoundPlaybackID soundPlaybackID, floa
 	channelAssignedToSound->setPan( balance );
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // Speed is frequency multiplier (1.0 == normal)
 //	A speed of 2.0 gives 2x frequency, i.e. exactly one octave higher
 //	A speed of 0.5 gives 1/2 frequency, i.e. exactly one octave lower
-//
+//------------------------------------------------------------------------------------------------------------------------------
 void AudioSystem::SetSoundPlaybackSpeed( SoundPlaybackID soundPlaybackID, float speed )
 {
 	if( soundPlaybackID == MISSING_SOUND_ID )
@@ -194,8 +183,7 @@ void AudioSystem::SetSoundPlaybackSpeed( SoundPlaybackID soundPlaybackID, float 
 	channelAssignedToSound->setFrequency( frequency * speed );
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void AudioSystem::ValidateResult( FMOD_RESULT result )
 {
 	if( result != FMOD_OK )
@@ -203,6 +191,5 @@ void AudioSystem::ValidateResult( FMOD_RESULT result )
 		ERROR_RECOVERABLE( Stringf( "Engine/Audio SYSTEM ERROR: Got error result code %i - error codes listed in fmod_common.h\n", (int) result ) );
 	}
 }
-
 
 #endif // !defined( ENGINE_DISABLE_AUDIO )

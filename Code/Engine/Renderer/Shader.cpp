@@ -25,12 +25,14 @@
 
 #define DX_SAFE_RELEASE(dx_resource)   if ((dx_resource) != nullptr) { dx_resource->Release(); dx_resource = nullptr; }
 
+//------------------------------------------------------------------------------------------------------------------------------
 ShaderStage::ShaderStage()
 	: m_handle(nullptr)
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 ShaderStage::~ShaderStage()
 {
 	DX_SAFE_RELEASE(m_handle); 
@@ -38,6 +40,7 @@ ShaderStage::~ShaderStage()
 	m_owningRenderContext = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC ID3D10Blob* CompileHLSLToShaderBlob( char const *opt_filename,  // optional: used for error messages
 	void const* source_code,                                          // buffer containing source code.
 	size_t const source_code_size,                                    // size of the above buffer.
@@ -97,6 +100,7 @@ STATIC ID3D10Blob* CompileHLSLToShaderBlob( char const *opt_filename,  // option
 	return code;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC D3D11_BLEND_OP Shader::DXUsageFromBlendOp( eBlendOperation const usage )
 {
 	switch (usage) 
@@ -111,6 +115,7 @@ STATIC D3D11_BLEND_OP Shader::DXUsageFromBlendOp( eBlendOperation const usage )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC D3D11_BLEND Shader::DXUsageFromBlendFactor( eBlendFactor const usage)
 {
 	switch (usage) 
@@ -128,6 +133,7 @@ STATIC D3D11_BLEND Shader::DXUsageFromBlendFactor( eBlendFactor const usage)
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC D3D11_COMPARISON_FUNC Shader::DXGetCompareFunction( eCompareOp const usage)
 {
 	switch (usage) 
@@ -148,6 +154,7 @@ STATIC D3D11_COMPARISON_FUNC Shader::DXGetCompareFunction( eCompareOp const usag
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC DXGI_FORMAT Shader::GetDXDataFormat( eDataFormat const format )
 {
 	switch( format )
@@ -164,11 +171,13 @@ STATIC DXGI_FORMAT Shader::GetDXDataFormat( eDataFormat const format )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Shader::Shader()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Shader::~Shader()
 {
 	DX_SAFE_RELEASE(m_inputLayout);
@@ -176,6 +185,7 @@ Shader::~Shader()
 	DX_SAFE_RELEASE(m_depthStencilState);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool Shader::UpdateBlendStateIfDirty( RenderContext *renderContext )
 {
 	// if we already have a good blend state - keep it; 
@@ -231,6 +241,7 @@ bool Shader::UpdateBlendStateIfDirty( RenderContext *renderContext )
 	return (m_blendState != nullptr); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool Shader::UpdateDepthStateIfDirty( RenderContext *renderContext )
 {
 	if (m_depthStateDirty || (m_depthStencilState == nullptr)) 
@@ -267,6 +278,7 @@ bool Shader::UpdateDepthStateIfDirty( RenderContext *renderContext )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Shader::SetDepth( eCompareOp op, bool write )
 {
 	if(m_depthCompareOp != op || m_writeDepth != write)
@@ -278,6 +290,7 @@ void Shader::SetDepth( eCompareOp op, bool write )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Shader::SetBlendMode( eBlendMode mode )
 {
 	if(m_blendMode != mode)
@@ -287,6 +300,7 @@ void Shader::SetBlendMode( eBlendMode mode )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool Shader::CreateInputLayoutForVertexPCU()
 {
 	// Early out - we've already created it; 
@@ -346,6 +360,7 @@ bool Shader::CreateInputLayoutForVertexPCU()
 	return SUCCEEDED(hr); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool Shader::CreateInputLayout(const BufferLayout* layout)
 {
 	if(layout == m_bufferLayout)
@@ -394,6 +409,7 @@ bool Shader::CreateInputLayout(const BufferLayout* layout)
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC char const* Shader::GetEntryForStage( eShaderStage stage ) 
 {
 	switch (stage) {
@@ -403,7 +419,7 @@ STATIC char const* Shader::GetEntryForStage( eShaderStage stage )
 	}
 }
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC char const* Shader::GetShaderModelForStage( eShaderStage stage ) 
 {
 	switch (stage) {
@@ -413,7 +429,7 @@ STATIC char const* Shader::GetShaderModelForStage( eShaderStage stage )
 	}
 }
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 eBlendOperation Shader::GetBlendOpForBlendMode( eBlendMode blendMode )
 {
 	switch (blendMode)
@@ -425,6 +441,7 @@ eBlendOperation Shader::GetBlendOpForBlendMode( eBlendMode blendMode )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 eBlendFactor Shader::GetSourceFactorForBlendMode( eBlendMode blendMode )
 {
 	switch (blendMode)
@@ -436,6 +453,7 @@ eBlendFactor Shader::GetSourceFactorForBlendMode( eBlendMode blendMode )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 eBlendFactor Shader::GetDestFactorForBlendMode( eBlendMode blendMode )
 {
 	switch (blendMode)
@@ -447,6 +465,7 @@ eBlendFactor Shader::GetDestFactorForBlendMode( eBlendMode blendMode )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Shader::LoadShaderFromXMLSource(const std::string &fileName )
 {
 	//Open the xml file and parse it
@@ -511,6 +530,7 @@ void Shader::LoadShaderFromXMLSource(const std::string &fileName )
 	SetBlendDataFromString();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Shader::SetBlendDataFromString()
 {
 	//Set Blend Op
@@ -528,6 +548,7 @@ void Shader::SetBlendDataFromString()
 	m_dstAlphaFactor = SetFactorFromString(m_blendDstAlphaString);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 eBlendOperation Shader::SetOpFromString(const std::string& blendOp)
 {
 	if(blendOp == "add")			{		return BLEND_OP_ADD;		}
@@ -541,6 +562,7 @@ eBlendOperation Shader::SetOpFromString(const std::string& blendOp)
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 eBlendFactor Shader::SetFactorFromString(const std::string& blendFactor)
 {
 	if(blendFactor == "one")
@@ -571,6 +593,7 @@ eBlendFactor Shader::SetFactorFromString(const std::string& blendFactor)
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Shader::SetDepthOpFromString()
 {
 	if(m_depthCompareOpString == "lequal")
@@ -590,11 +613,13 @@ void Shader::SetDepthOpFromString()
 	//Add other depth operations when you start using them here
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Shader::ReadFromPass( XMLElement& passEntry )
 {
 	m_shaderSourcePath = ParseXmlAttribute(passEntry, "src", m_shaderSourcePath);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool ShaderStage::LoadShaderFromSource( RenderContext *renderContext, const std::string &fileName, void const *source, unsigned long sourceSize, eShaderStage stage )
 {
 	m_stage = stage; 
@@ -642,4 +667,3 @@ bool ShaderStage::LoadShaderFromSource( RenderContext *renderContext, const std:
 	}
 	return IsValid();
 }
-

@@ -29,6 +29,7 @@ typedef std::function<bool(Collision2D* out, Collider2D* a, Collider2D* b)> Coll
 // 2D arrays are [Y][X] remember
 extern CollisionCheck2DCallback COLLISION_LOOKUP_TABLE[][COLLIDER2D_COUNT];
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool				CheckAABB2ByAABB2(Collision2D* out, Collider2D* a, Collider2D* b );
 bool				CheckAABB2ByDisc(Collision2D* out, Collider2D* a, Collider2D* b );
 bool				CheckDiscByDisc(Collision2D* out, Collider2D* a, Collider2D* b );
@@ -39,25 +40,32 @@ bool				CheckCapsuleByOBB2(Collision2D* out, Collider2D* a, Collider2D* b);
 bool				CheckOBB2ByCapsule(Collision2D* out, Collider2D* a, Collider2D* b);
 bool				GetCollisionInfo( Collision2D *out, Collider2D * a, Collider2D *b );
 
+//------------------------------------------------------------------------------------------------------------------------------
 //Manifold Generation
+//------------------------------------------------------------------------------------------------------------------------------
 bool				GetManifold( Manifold2D *out, AABB2Collider const &obj0, AABB2Collider const &obj1 ); 
 bool				GetManifold( Manifold2D *out, AABB2Collider const &obj0, Disc2DCollider const &obj1 ); 
 bool				GetManifold( Manifold2D *out, Disc2DCollider const &obj0, Disc2DCollider const &obj1 );
 bool				GetManifold( Manifold2D *out, Disc2DCollider const &disc, AABB2Collider const &box );
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 //OBB to OBB and Pillbox to Pillbox collisions
+//------------------------------------------------------------------------------------------------------------------------------
 bool				GetManifold( Manifold2D *out, OBB2 const &boxA, OBB2 const &boxB );
 bool				GetManifold( Manifold2D *out, BoxCollider2D const &a, BoxCollider2D const &b );
 bool				GetManifold( Manifold2D *out, BoxCollider2D const &a, float aRadius, BoxCollider2D const &b, float bRadius );
 bool				GetManifold( Manifold2D *out, OBB2 const &a, float aRadius, OBB2 const &b, float bRadius );
 
+//------------------------------------------------------------------------------------------------------------------------------
 //Capsules and OBBs Collision Manifolds
+//------------------------------------------------------------------------------------------------------------------------------
 bool				GetManifold( Manifold2D *out, CapsuleCollider2D const &a, CapsuleCollider2D const &b );
 bool				GetManifold( Manifold2D *out, BoxCollider2D const &a, CapsuleCollider2D const &b );
 bool				GetManifold( Manifold2D *out, CapsuleCollider2D const &a, BoxCollider2D const &b );
 
 bool				IsDiscInBox( Manifold2D* out, const Vec2 &discCentre, const AABB2& boxShape, float radius );
 
+//------------------------------------------------------------------------------------------------------------------------------
 //Manifold Helpers
+//------------------------------------------------------------------------------------------------------------------------------
 void				GenerateManifoldBoxToBox( Manifold2D* manifold, Vec2 const &min, Vec2 const &max );

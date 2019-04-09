@@ -2,7 +2,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Renderer/RenderBuffer.hpp"
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // convenience class - makes working with a RenderBuffer
 // for the purposes of constant data a little easier; 
 class UniformBuffer : public RenderBuffer

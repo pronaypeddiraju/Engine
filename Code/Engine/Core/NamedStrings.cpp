@@ -11,16 +11,19 @@ NamedStrings::NamedStrings()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 NamedStrings::NamedStrings( const std::string& keyName, const std::string& value )
 {
 	m_keyValuePairs[keyName] = value;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 NamedStrings::~NamedStrings()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void NamedStrings::PopulateFromXmlElementAttributes( const XMLElement& element )
 {
 	for(const tinyxml2::XMLAttribute* attribute = element.FirstAttribute(); attribute; attribute = attribute->Next())
@@ -30,6 +33,7 @@ void NamedStrings::PopulateFromXmlElementAttributes( const XMLElement& element )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void NamedStrings::SetValue( const std::string& keyName, const std::string& newValue )
 {
 	//m_keyValuePairs.at(keyName) = newValue;
@@ -44,6 +48,7 @@ void NamedStrings::SetValue( const std::string& keyName, const std::string& newV
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool NamedStrings::GetValue( const std::string& keyName, bool defaultValue ) const
 {
 	std::map<std::string, std::string>::const_iterator stringPair = m_keyValuePairs.find(keyName);
@@ -60,6 +65,7 @@ bool NamedStrings::GetValue( const std::string& keyName, bool defaultValue ) con
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 int NamedStrings::GetValue( const std::string& keyName, int defaultValue ) const
 {
 	std::map<std::string, std::string>::const_iterator stringPair = m_keyValuePairs.find(keyName);
@@ -73,6 +79,7 @@ int NamedStrings::GetValue( const std::string& keyName, int defaultValue ) const
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float NamedStrings::GetValue( const std::string& keyName, float defaultValue ) const
 {
 	std::map<std::string, std::string>::const_iterator stringPair = m_keyValuePairs.find(keyName);
@@ -84,6 +91,7 @@ float NamedStrings::GetValue( const std::string& keyName, float defaultValue ) c
 		return defaultValue;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 std::string NamedStrings::GetValue( const std::string& keyName, std::string defaultValue ) const
 {
 	std::map<std::string, std::string>::const_iterator stringPair = m_keyValuePairs.find(keyName);
@@ -97,6 +105,7 @@ std::string NamedStrings::GetValue( const std::string& keyName, std::string defa
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 std::string NamedStrings::GetValue( const std::string& keyName, const char* defaultValue ) const
 {
 	std::map<std::string, std::string>::const_iterator stringPair = m_keyValuePairs.find(keyName);
@@ -110,6 +119,7 @@ std::string NamedStrings::GetValue( const std::string& keyName, const char* defa
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Rgba NamedStrings::GetValue( const std::string& keyName, const Rgba& defaultValue ) const
 {
 	std::map<std::string, std::string>::const_iterator stringPair = m_keyValuePairs.find(keyName);
@@ -124,6 +134,7 @@ Rgba NamedStrings::GetValue( const std::string& keyName, const Rgba& defaultValu
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec2 NamedStrings::GetValue( const std::string& keyName, const Vec2& defaultValue ) const
 {
 	std::map<std::string, std::string>::const_iterator stringPair = m_keyValuePairs.find(keyName);
@@ -138,6 +149,7 @@ Vec2 NamedStrings::GetValue( const std::string& keyName, const Vec2& defaultValu
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 IntVec2 NamedStrings::GetValue( const std::string& keyName, const IntVec2& defaultValue ) const
 {
 	std::map<std::string, std::string>::const_iterator stringPair = m_keyValuePairs.find(keyName);
@@ -152,6 +164,7 @@ IntVec2 NamedStrings::GetValue( const std::string& keyName, const IntVec2& defau
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 FloatRange NamedStrings::GetValue( const std::string& keyName, const FloatRange& defaultValue ) const
 {
 	std::map<std::string, std::string>::const_iterator stringPair = m_keyValuePairs.find(keyName);
@@ -166,6 +179,7 @@ FloatRange NamedStrings::GetValue( const std::string& keyName, const FloatRange&
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 IntRange NamedStrings::GetValue( const std::string& keyName, const IntRange& defaultValue ) const
 {
 	std::map<std::string, std::string>::const_iterator stringPair = m_keyValuePairs.find(keyName);
@@ -180,6 +194,7 @@ IntRange NamedStrings::GetValue( const std::string& keyName, const IntRange& def
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 size_t NamedStrings::GetNamedStringSize() const
 {
 	return m_keyValuePairs.size();

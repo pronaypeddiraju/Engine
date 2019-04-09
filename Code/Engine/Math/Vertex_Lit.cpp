@@ -3,6 +3,7 @@
 #include "Engine/Renderer/BufferLayout.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vertex_Lit::Vertex_Lit( const VertexMaster& master )
 {
 	m_position = master.m_position;
@@ -14,6 +15,7 @@ Vertex_Lit::Vertex_Lit( const VertexMaster& master )
 	m_uv = master.m_uv;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC BufferAttributeT Vertex_Lit::LAYOUT[] = {
 	BufferAttributeT( "POSITION",  DF_VEC3,      offsetof(Vertex_Lit, m_position) ), 
 	BufferAttributeT( "NORMAL",    DF_VEC3,      offsetof(Vertex_Lit, m_normal)   ), 
@@ -24,8 +26,10 @@ STATIC BufferAttributeT Vertex_Lit::LAYOUT[] = {
 	BufferAttributeT() // end		
 };
 
+//------------------------------------------------------------------------------------------------------------------------------
 const BufferLayout* Vertex_Lit::layout = BufferLayout::For<Vertex_Lit>();
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC void Vertex_Lit::CopyFromMaster( void *buffer, VertexMaster const *src, uint count )
 {
 	Vertex_Lit *dst = (Vertex_Lit*)buffer; 

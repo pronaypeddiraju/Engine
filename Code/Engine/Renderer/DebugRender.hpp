@@ -17,8 +17,9 @@ class Disc2D;
 class TextureView;
 class RenderContext;
 
+//------------------------------------------------------------------------------------------------------------------------------
 // System to render debugging data for specified objects in the system.
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 enum eDebugRenderSpace 
 {
 	DEBUG_RENDER_SCREEN,          // renders in screen space (ie, backbuffer), defined when initializing the system 
@@ -33,7 +34,7 @@ enum eDebugRenderMode
 							   // darken or thin the line during behind render to differentiate from it being in front; 
 }; 
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 struct DebugRenderOptionsT
 {
 	eDebugRenderSpace space       = DEBUG_RENDER_SCREEN; 
@@ -55,6 +56,7 @@ struct DebugRenderOptionsT
 	ObjectProperties* objectProperties = nullptr; 
 };
 
+//------------------------------------------------------------------------------------------------------------------------------
 class DebugRender
 {
 public:

@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
-#include "Engine/Renderer/SpriteDefenition.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Renderer/SpriteDefenition.hpp"
 #include <vector>
 
 class TextureView;

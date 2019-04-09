@@ -9,31 +9,37 @@ EventSystems::EventSystems()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 EventSystems::~EventSystems()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void EventSystems::StartUp()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void EventSystems::BeginFrame()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void EventSystems::EndFrame()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void EventSystems::ShutDown()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void EventSystems::SubscribeEventCallBackFn( const std::string& eventName, EventCallBackFn callBack )
 {
 	//Push the event into the event list
@@ -41,6 +47,7 @@ void EventSystems::SubscribeEventCallBackFn( const std::string& eventName, Event
 	m_eventSubscriptions[eventName].push_back(subscriber);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void EventSystems::UnsubscribeEventCallBackFn( const std::string& eventName, EventCallBackFn callBack )
 {
 	std::map<std::string, SubscribersList >::iterator eventIterator;
@@ -65,12 +72,14 @@ void EventSystems::UnsubscribeEventCallBackFn( const std::string& eventName, Eve
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 int EventSystems::FireEvent( const std::string& eventName )
 {
 	EventArgs args;
 	return FireEvent(eventName, args);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 int EventSystems::FireEvent( const std::string& eventName, EventArgs& args )
 {
 	int numFired = 0;
@@ -100,6 +109,7 @@ int EventSystems::FireEvent( const std::string& eventName, EventArgs& args )
 	return numFired;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 int EventSystems::GetNumSubscribersForCommand( const std::string& eventName ) const
 {
 	//Find the event
@@ -110,6 +120,7 @@ int EventSystems::GetNumSubscribersForCommand( const std::string& eventName ) co
 	return numEvents;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void EventSystems::GetSubscribedEventsList( std::vector<std::string>& eventNamesWithSubscribers ) const
 {
 	std::map<std::string, SubscribersList >::const_iterator eventIterator;

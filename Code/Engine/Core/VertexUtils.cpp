@@ -30,6 +30,7 @@ void AddVertsForDisc2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& center
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForLine2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& start, const Vec2& end, float thickness, const Rgba& color )
 {
 	Vec2 centerToBoundVector = end - start;
@@ -58,6 +59,7 @@ void AddVertsForLine2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& start,
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForRing2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, float thickness, const Rgba& color, int numSides /*= 64 */ )
 {
 	float angleToAdd = 360.f / numSides;
@@ -98,6 +100,7 @@ void AddVertsForRing2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& center
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForWireBox2D(std::vector<Vertex_PCU>& vertexArray, const AABB2& box, float thickness, const Rgba& color)
 {
 	//Draw 4 lines for the edge of AABB2 recieved
@@ -112,6 +115,7 @@ void AddVertsForWireBox2D(std::vector<Vertex_PCU>& vertexArray, const AABB2& box
 	AddVertsForLine2D(vertexArray, bottomRight, bottomLeft, thickness, color);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba& color, const Vec2& uvAtMins /*= Vec2(0.f,0.f)*/, const Vec2& uvAtMaxs /*= Vec2(1.f,1.f) */ )
 {
 	Vec3 boxBottomLeft = Vec3(box.m_minBounds.x, box.m_minBounds.y, 0.f);
@@ -128,6 +132,7 @@ void AddVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, 
 	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForAABB3D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba& color, const Vec2& uvAtMins /*= Vec2(0.f,1.f)*/, const Vec2& uvAtMaxs /*= Vec2(1.f,0.f) */ )
 {
 	Vec3 boxBottomLeft = Vec3(box.m_3Dmin.x, box.m_3Dmin.y, box.m_3Dmin.z);
@@ -144,6 +149,7 @@ void AddVertsForAABB3D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, 
 	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& box, const Rgba& color, const Vec2& uvAtMins /*= Vec2(0.f,1.f)*/, const Vec2& uvAtMaxs /*= Vec2(1.f,0.f) */ )
 {
 	Vec2 position2D;
@@ -165,6 +171,7 @@ void AddVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& box, co
 	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& capsuleBox, float radius, const Rgba& color )
 {
 	AddVertsForDisc2D(vertexArray, capsuleBox.GetTopLeft(), radius, color);
@@ -180,6 +187,7 @@ void AddVertsForCapsule2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& cap
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForWireCapsule2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& capsuleBox, float radius, const Rgba& color, float thickness )
 {
 	AddVertsForRing2D(vertexArray, capsuleBox.GetTopLeft(), radius, thickness, color);
@@ -200,6 +208,7 @@ void AddVertsForWireCapsule2D( std::vector<Vertex_PCU>& vertexArray, const OBB2&
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba& color, float thickness )
 {
 	//Left Line
@@ -212,6 +221,7 @@ void AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const AABB2& 
 	AddVertsForLine2D(vertexArray, Vec2(box.m_maxBounds.x, box.m_minBounds.y), box.m_minBounds, thickness, color);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const OBB2& box, const Rgba& color, float thickness )
 {
 	//Left Line
@@ -224,7 +234,9 @@ void AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const OBB2& b
 	AddVertsForLine2D(vertexArray, box.GetBottomRight(), box.GetBottomLeft(), thickness, color);
 }
 
-//Move a vertex
+//------------------------------------------------------------------------------------------------------------------------------
+// Move a vertex
+//------------------------------------------------------------------------------------------------------------------------------
 void TransformVertex2D( Vertex_PCU& vertex, float uniformScale, float rotationDegreesOnZ, const Vec2& translateXY )
 {
 	//For now 
@@ -234,7 +246,9 @@ void TransformVertex2D( Vertex_PCU& vertex, float uniformScale, float rotationDe
 	UNUSED (translateXY);
 }
 
-//Move an array of vertices
+//------------------------------------------------------------------------------------------------------------------------------
+// Move an array of vertices
+//------------------------------------------------------------------------------------------------------------------------------
 void TransformVertexArray2D( int numVerts, Vertex_PCU* vertices, float uniformScale, float rotationDegreesOnZ, const Vec2& translateXY )
 {
 	for (int i = 0; i < numVerts; i++)

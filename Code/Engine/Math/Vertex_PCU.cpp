@@ -12,6 +12,7 @@ Vertex_PCU::Vertex_PCU( const Vec3& position, const Rgba& color, const Vec2& uvT
 	m_uvTexCoords = uvTexCoords;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vertex_PCU::Vertex_PCU( const VertexMaster& master )
 {
 	m_position = master.m_position;
@@ -19,6 +20,7 @@ Vertex_PCU::Vertex_PCU( const VertexMaster& master )
 	m_uvTexCoords = master.m_uv;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC BufferAttributeT Vertex_PCU::LAYOUT[] = {
 	BufferAttributeT( "POSITION",  DF_VEC3,      offsetof(Vertex_PCU, m_position) ), 
 	BufferAttributeT( "COLOR",     DF_RGBA32,    offsetof(Vertex_PCU, m_color) ), 
@@ -26,8 +28,10 @@ STATIC BufferAttributeT Vertex_PCU::LAYOUT[] = {
 	BufferAttributeT() // end		
 };
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC const BufferLayout* Vertex_PCU::layout = BufferLayout::For<Vertex_PCU>();
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC void Vertex_PCU::CopyFromMaster( void *buffer, VertexMaster const *src, uint count )
 {
 	Vertex_PCU *dst = (Vertex_PCU*)buffer; 

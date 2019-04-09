@@ -1,21 +1,22 @@
 //------------------------------------------------------------------------------------------------------------------------------
-#include "Engine/Renderer/UniformBuffer.hpp"
-#include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/RenderBuffer.hpp"
+#include "Engine/Renderer/RenderContext.hpp"
+#include "Engine/Renderer/UniformBuffer.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
-
 UniformBuffer::UniformBuffer( RenderContext *owningRenderContext )
 	: RenderBuffer(owningRenderContext)
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 UniformBuffer::~UniformBuffer()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool UniformBuffer::CopyCPUToGPU( void const *data, size_t const byteSize )
 {
 

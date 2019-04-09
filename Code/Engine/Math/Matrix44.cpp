@@ -22,6 +22,7 @@ const Vec2 Matrix44::TransformPosition2D( const Vec2& posQuantity ) const				//a
 	return transformedPos;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Matrix44::TransformPosition3D( const Vec3& posQuantity ) const				//assumes w = 1;
 {
 	Vec3 transformedPos;
@@ -44,6 +45,7 @@ const Vec3 Matrix44::TransformPosition3D( const Vec3& posQuantity ) const				//a
 	return transformedPos;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec2 Matrix44::TransformVector2D( const Vec2& vecQuantity ) const				//assumes z = 0, w = 0;
 {
 	Vec2 transformedVec;
@@ -57,6 +59,7 @@ const Vec2 Matrix44::TransformVector2D( const Vec2& vecQuantity ) const				//ass
 	return transformedVec;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Matrix44::TransformVector3D( const Vec3& vecQuantity ) const				//assumes w = 0;
 {
 	Vec3 transformedVec;
@@ -76,6 +79,7 @@ const Vec3 Matrix44::TransformVector3D( const Vec3& vecQuantity ) const				//ass
 	return transformedVec;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec4 Matrix44::TransformHomogeneousPoint3D( const Vec4& homogeneousVec ) const
 {
 	Vec4 transformedPos;
@@ -103,6 +107,7 @@ const Vec4 Matrix44::TransformHomogeneousPoint3D( const Vec4& homogeneousVec ) c
 	return transformedPos;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Matrix44::GetIVector()
 {
 	Vec3 iVector = Vec3(m_values[Ix], m_values[Iy], m_values[Iz]);
@@ -111,6 +116,7 @@ const Vec3 Matrix44::GetIVector()
 	return iVector;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Matrix44::GetJVector()
 {
 	Vec3 jVector = Vec3(m_values[Jx], m_values[Jy], m_values[Jz]);
@@ -119,6 +125,7 @@ const Vec3 Matrix44::GetJVector()
 	return jVector;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Matrix44::GetKVector()
 {
 	Vec3 kVector = Vec3(m_values[Kx], m_values[Ky], m_values[Kz]);
@@ -127,6 +134,7 @@ const Vec3 Matrix44::GetKVector()
 	return kVector;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Matrix44::GetTVector()
 {
 	Vec3 tVector = Vec3(m_values[Tx], m_values[Ty], m_values[Tz]);
@@ -134,6 +142,7 @@ const Vec3 Matrix44::GetTVector()
 	return tVector;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Matrix44::SetIVector( const Vec3& i )
 {
 	m_values[Ix] = i.x;
@@ -141,6 +150,7 @@ void Matrix44::SetIVector( const Vec3& i )
 	m_values[Iz] = i.z;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Matrix44::SetJVector( const Vec3& j )
 {
 	m_values[Jx] = j.x;
@@ -148,6 +158,7 @@ void Matrix44::SetJVector( const Vec3& j )
 	m_values[Jz] = j.z;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Matrix44::SetKVector( const Vec3& k )
 {
 	m_values[Kx] = k.x;
@@ -155,6 +166,7 @@ void Matrix44::SetKVector( const Vec3& k )
 	m_values[Kz] = k.z;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Matrix44::SetTVector( const Vec3& t )
 {
 	m_values[Tx] = t.x;
@@ -162,6 +174,7 @@ void Matrix44::SetTVector( const Vec3& t )
 	m_values[Tz] = t.z;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 /*
 
 Matrix.Append()
@@ -182,7 +195,7 @@ C= (BIxAIx+(BIyAJx+(BIzAKx+BIwATx)), BJxAIx+(BJyAJx+(BJzAKx+BJwATx)), BKxAIx+(BK
 	BIxAIw+(BIyAJw+(BIzAKw+BIwATw)), BJxAIw+(BJyAJw+(BJzAKw+BJwATw)), BKxAIw+(BKyAJw+(BKzAKw+BKwATw)), BTxAIw+(BTyAJw+(BTzAKw+BTwATw)) )
 	
 */
-
+//------------------------------------------------------------------------------------------------------------------------------
 Matrix44 Matrix44::AppendMatrix( const Matrix44& matrix )
 {
 	Matrix44 appendMatrix;
@@ -274,6 +287,7 @@ Matrix44 Matrix44::AppendMatrix( const Matrix44& matrix )
 	return appendMatrix;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Matrix44::Matrix44()
 {
 	//Create an identity matrix by default
@@ -300,6 +314,7 @@ Matrix44::Matrix44()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Matrix44::Matrix44( float* sixteenValuesBasisMajor )
 {
 	m_values[Ix] = sixteenValuesBasisMajor[0];
@@ -324,6 +339,7 @@ Matrix44::Matrix44( float* sixteenValuesBasisMajor )
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Matrix44::Matrix44( const Vec2& iBasis2D, const Vec2& jBasis2D, const Vec2& translation2D )
 {
 	m_values[Ix] = iBasis2D.x;
@@ -347,8 +363,7 @@ Matrix44::Matrix44( const Vec2& iBasis2D, const Vec2& jBasis2D, const Vec2& tran
 	m_values[Tw] = 1.f;
 }
 
-
-
+//------------------------------------------------------------------------------------------------------------------------------
 Matrix44::Matrix44( const Vec3& iBasis3D, const Vec3& jBasis3D, const Vec3& kBasis3D, const Vec3& translation3D )
 {
 	m_values[Ix] = iBasis3D.x;
@@ -372,6 +387,7 @@ Matrix44::Matrix44( const Vec3& iBasis3D, const Vec3& jBasis3D, const Vec3& kBas
 	m_values[Tw] = 1.f;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Matrix44::Matrix44( const Vec4& iBasisHomogeneous, const Vec4& jBasisHomogeneous, const Vec4& kBasisHomogeneous, const Vec4& translationHomogeneous )
 {
 	m_values[Ix] = iBasisHomogeneous.x;
@@ -395,6 +411,7 @@ Matrix44::Matrix44( const Vec4& iBasisHomogeneous, const Vec4& jBasisHomogeneous
 	m_values[Tw] = translationHomogeneous.w;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Matrix44::Matrix44( float ix, float iy, float iz, float iw, float jx, float jy, float jz, float jw, float kx, float ky, float kz, float kw, float tx, float ty, float tz, float tw )
 {
 	m_values[Ix] = ix;
@@ -418,11 +435,13 @@ Matrix44::Matrix44( float ix, float iy, float iz, float iw, float jx, float jy, 
 	m_values[Tw] = tw;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Matrix44::~Matrix44()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const STATIC Matrix44 Matrix44::MakeTranslation2D( const Vec2& translation )
 {
 	Matrix44 translationMatrix;
@@ -432,6 +451,7 @@ const STATIC Matrix44 Matrix44::MakeTranslation2D( const Vec2& translation )
 	return translationMatrix;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Matrix44 Matrix44::MakeTranslation3D( const Vec3& translation )
 {
 	Matrix44 translationMatrix;
@@ -442,6 +462,7 @@ const Matrix44 Matrix44::MakeTranslation3D( const Vec3& translation )
 	return translationMatrix;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const STATIC Matrix44 Matrix44::MakeZRotationDegrees( float RotationZ )
 {
 	float consine = CosDegrees(RotationZ);
@@ -456,6 +477,7 @@ const STATIC Matrix44 Matrix44::MakeZRotationDegrees( float RotationZ )
 	return rotationMatrix;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const STATIC Matrix44 Matrix44::MakeXRotationDegrees( float RotationX )
 {
 	float cosine = CosDegrees(RotationX);
@@ -470,6 +492,7 @@ const STATIC Matrix44 Matrix44::MakeXRotationDegrees( float RotationX )
 	return rotationMatrix;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const STATIC Matrix44 Matrix44::MakeYRotationDegrees( float RotationY )
 {
 	float cosine = CosDegrees(RotationY);
@@ -484,6 +507,7 @@ const STATIC Matrix44 Matrix44::MakeYRotationDegrees( float RotationY )
 	return rotationMatrix;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Matrix44 Matrix44::MakeOrthoMatrix(const Vec2& min, const Vec2& max, float nearZ, float farZ)
 {
 	Matrix44 orthoMatrix;
@@ -498,6 +522,7 @@ const Matrix44 Matrix44::MakeOrthoMatrix(const Vec2& min, const Vec2& max, float
 	return orthoMatrix;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Matrix44 Matrix44::MakePerspectiveMatrix( float FieldOfView, float nearZ, float farZ, float aspectRatio )
 {
 	Matrix44 projectionMatrix;
@@ -527,6 +552,7 @@ const Matrix44 Matrix44::MakePerspectiveMatrix( float FieldOfView, float nearZ, 
 	return projectionMatrix;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const STATIC Matrix44 Matrix44::MakeUniformScale2D( float uniformScale )
 {
 	Matrix44 uniformScaleMatrix;
@@ -536,8 +562,10 @@ const STATIC Matrix44 Matrix44::MakeUniformScale2D( float uniformScale )
 	return uniformScaleMatrix;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 //To do: Write down the actual multiplication of the 3 matrices and quickly plug in those values to make this process faster
 // as opposed to making the 3 rotation matrices and then appending 2 of them 
+//------------------------------------------------------------------------------------------------------------------------------
 const STATIC Matrix44 Matrix44::MakeFromEuler( const Vec3& euler, eRotationOrder rotationOrder )
 {
 	Matrix44 rotatedX = MakeXRotationDegrees(euler.x); 
@@ -561,7 +589,7 @@ const STATIC Matrix44 Matrix44::MakeFromEuler( const Vec3& euler, eRotationOrder
 	return returnMatrix; 
 }
 
-//Is this correct? Double check this!
+//------------------------------------------------------------------------------------------------------------------------------
 const STATIC Matrix44 Matrix44::InvertOrthoNormal( const Matrix44 sourceMatrix )
 {
 	Matrix44 invertedMatrix = sourceMatrix;
@@ -578,6 +606,7 @@ const STATIC Matrix44 Matrix44::InvertOrthoNormal( const Matrix44 sourceMatrix )
 	return invertedMatrix;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const STATIC Matrix44 Matrix44::SetTranslation3D(const Vec3& position, Matrix44& setMatrix)
 {
 	setMatrix.m_values[Tx] = position.x;
@@ -587,6 +616,7 @@ const STATIC Matrix44 Matrix44::SetTranslation3D(const Vec3& position, Matrix44&
 	return setMatrix;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Matrix44 Matrix44::TransposeRotationComponents( const Matrix44& sourceMatrix )
 {
 	//Transpose all the R component values and return that matrix;
@@ -604,6 +634,7 @@ const Matrix44 Matrix44::TransposeRotationComponents( const Matrix44& sourceMatr
 	return RTransposeMat;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Matrix44 Matrix44::Transpose( const Matrix44& sourceMatrix )
 {
 	Matrix44 TransposeMat = sourceMatrix;
@@ -627,7 +658,7 @@ const Matrix44 Matrix44::Transpose( const Matrix44& sourceMatrix )
 	return TransposeMat;
 }
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void Matrix44::InverseMatrix()
 {
 	double inverse[16];
@@ -759,6 +790,7 @@ void Matrix44::InverseMatrix()
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Matrix44::SetRotationFromMatrix( Matrix44& out, Matrix44& sourceMatrix )
 {
 	out.m_values[Ix] = sourceMatrix.m_values[Ix];

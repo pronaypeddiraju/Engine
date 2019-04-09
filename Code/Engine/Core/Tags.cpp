@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
-#include "Engine/Core/Tags.hpp"
 #include "Engine/Commons/StringUtils.hpp"
+#include "Engine/Core/Tags.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 Tags::Tags()
@@ -8,11 +8,13 @@ Tags::Tags()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Tags::Tags(const std::string& commaSeparatedTagNames)
 {
 	SetOrRemoveTags(commaSeparatedTagNames);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Tags::SetOrRemoveTags( const std::string& commaSeparatedTagNames )
 {
 	//Get split strings
@@ -35,6 +37,7 @@ void Tags::SetOrRemoveTags( const std::string& commaSeparatedTagNames )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool Tags::HasTags( const std::string& commaSeparatedTagNames )
 {
 	//Get split strings
@@ -56,6 +59,7 @@ bool Tags::HasTags( const std::string& commaSeparatedTagNames )
 	return true;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Tags::SetTag( const std::string& tagName )
 {
 	std::vector<std::string>::iterator tagIterator;
@@ -73,6 +77,7 @@ void Tags::SetTag( const std::string& tagName )
 	
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Tags::RemoveTag( const std::string& tagName )
 {
 	std::vector<std::string>::iterator tagIterator;
@@ -90,6 +95,7 @@ void Tags::RemoveTag( const std::string& tagName )
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool Tags::HasTag( const std::string& tagName )
 {
 	std::vector<std::string>::iterator tagIterator;
@@ -120,6 +126,7 @@ bool Tags::HasTag( const std::string& tagName )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const std::string Tags::GetAllTags() const
 {
 	std::string allTags = "";
@@ -131,4 +138,3 @@ const std::string Tags::GetAllTags() const
 
 	return allTags;
 }
-

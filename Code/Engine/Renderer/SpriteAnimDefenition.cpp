@@ -1,8 +1,8 @@
 #include "Engine/Renderer/SpriteAnimDefenition.hpp"
-#include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/SpriteDefenition.hpp"
+#include "Engine/Renderer/SpriteSheet.hpp"
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 SpriteAnimDefenition::SpriteAnimDefenition( const SpriteSheet& sheet, int startSpriteIndex, int endSpriteIndex, float durationSeconds, SpriteAnimPlaybackType playbackType/*=SPRITE_ANIM_PLAYBACK_LOOP */ )
 	: m_spriteSheet (sheet)
 {
@@ -12,6 +12,7 @@ SpriteAnimDefenition::SpriteAnimDefenition( const SpriteSheet& sheet, int startS
 	m_playbackType = playbackType;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const SpriteDefenition& SpriteAnimDefenition::GetSpriteDefAtTime( float seconds ) const
 {
 	switch( m_playbackType )
@@ -30,7 +31,7 @@ const SpriteDefenition& SpriteAnimDefenition::GetSpriteDefAtTime( float seconds 
 	return m_spriteSheet.GetSpriteDef(0);
 }
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 const SpriteDefenition& SpriteAnimDefenition::GetSpriteDefAtTime_Once( float seconds ) const
 {
 	//Get total number of frames
@@ -51,7 +52,7 @@ const SpriteDefenition& SpriteAnimDefenition::GetSpriteDefAtTime_Once( float sec
 	return m_spriteSheet.GetSpriteDef(animFrameNum);
 }
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 const SpriteDefenition& SpriteAnimDefenition::GetSpriteDefAtTime_Loop( float seconds ) const
 {
 	//Get total number of frames
@@ -65,7 +66,7 @@ const SpriteDefenition& SpriteAnimDefenition::GetSpriteDefAtTime_Loop( float sec
 	return m_spriteSheet.GetSpriteDef(animFrameNum + m_startSpriteIndex);
 }
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 const SpriteDefenition& SpriteAnimDefenition::GetSpriteDefAtTime_PingPong( float seconds ) const
 {
 	//Get number of frames and each frame duration
@@ -87,4 +88,3 @@ const SpriteDefenition& SpriteAnimDefenition::GetSpriteDefAtTime_PingPong( float
 		return m_spriteSheet.GetSpriteDef(reverseIndexFromEnd + m_endSpriteIndex);
 	}
 }
-

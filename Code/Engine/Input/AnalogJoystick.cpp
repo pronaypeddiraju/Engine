@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
-#include "Engine/Input/AnalogJoystick.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Input/AnalogJoystick.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 AnalogJoyStick::AnalogJoyStick( float innerDeadZoneFraction, float outerDeadZoneFraction )
@@ -9,6 +9,7 @@ AnalogJoyStick::AnalogJoyStick( float innerDeadZoneFraction, float outerDeadZone
 {
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AnalogJoyStick::Reset()
 {
 	m_rawPosition = Vec2(0.f, 0.f);
@@ -17,6 +18,7 @@ void AnalogJoyStick::Reset()
 	m_correctedMagnitude = 0.f;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AnalogJoyStick::UpdatePosition( float rawNormalizedX, float rawNormalizedY )
 {
 	m_rawPosition.x = rawNormalizedX;

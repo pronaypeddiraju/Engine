@@ -18,12 +18,14 @@ Point2DProperties::Point2DProperties( eDebugRenderObject renderObject, const Vec
 	m_size = size;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Point2DProperties::~Point2DProperties()
 {
 	delete m_mesh;
 	m_mesh = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Line2DProperties::Line2DProperties( eDebugRenderObject renderObject, const Vec2& startPos, const Vec2& endPos, float durationSeconds, float lineWidth )
 {
 	//Base properties
@@ -37,12 +39,14 @@ Line2DProperties::Line2DProperties( eDebugRenderObject renderObject, const Vec2&
 	m_lineWidth = lineWidth;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Line2DProperties::~Line2DProperties()
 {
 	delete m_mesh;
 	m_mesh = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Quad2DProperties::Quad2DProperties( eDebugRenderObject renderObject, const AABB2& quad, float durationSeconds, float thickness, TextureView* texture )
 {
 	//Base properties
@@ -56,6 +60,7 @@ Quad2DProperties::Quad2DProperties( eDebugRenderObject renderObject, const AABB2
 	m_thickness = thickness;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Quad2DProperties::~Quad2DProperties()
 {
 	delete m_texture;
@@ -65,6 +70,7 @@ Quad2DProperties::~Quad2DProperties()
 	m_mesh = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Point3DProperties::Point3DProperties( eDebugRenderObject renderObject, const Vec3& position, float size, float durationSeconds /*= 0.f*/ , TextureView* texture /*= nullptr*/ )
 {
 	//Base properties
@@ -89,6 +95,7 @@ Point3DProperties::Point3DProperties( eDebugRenderObject renderObject, const Vec
 	CPUMeshAddQuad(m_mesh, m_point);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Point3DProperties::~Point3DProperties()
 {
 	delete m_texture;
@@ -98,6 +105,7 @@ Point3DProperties::~Point3DProperties()
 	m_mesh = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Disc2DProperties::Disc2DProperties( eDebugRenderObject renderObject, const Disc2D& disc, float thickness, float durationSeconds /*= 0.f*/ )
 {
 	//Base properties
@@ -110,12 +118,14 @@ Disc2DProperties::Disc2DProperties( eDebugRenderObject renderObject, const Disc2
 	m_thickness = thickness;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Disc2DProperties::~Disc2DProperties()
 {
 	delete m_mesh;
 	m_mesh = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Line3DProperties::Line3DProperties( eDebugRenderObject renderObject, const Vec3& startPos, const Vec3& endPos, float durationSeconds /*= 0.f*/, float lineWidth /*= DEFAULT_LINE_WIDTH*/ )
 {
 	//Base properties
@@ -147,12 +157,14 @@ Line3DProperties::Line3DProperties( eDebugRenderObject renderObject, const Vec3&
 	CPUMeshAddQuad(m_mesh, m_line);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Line3DProperties::~Line3DProperties()
 {
 	delete m_mesh;
 	m_mesh = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 SphereProperties::SphereProperties( eDebugRenderObject renderObject, const Vec3& center, float radius, float durationSeconds /*= 0.f*/, TextureView* texture /*= nullptr*/ )
 {
 	//Base properties
@@ -170,6 +182,7 @@ SphereProperties::SphereProperties( eDebugRenderObject renderObject, const Vec3&
 	CPUMeshAddUVSphere( m_mesh, center, radius);  
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 SphereProperties::~SphereProperties()
 {
 	delete m_texture;
@@ -179,7 +192,8 @@ SphereProperties::~SphereProperties()
 	m_mesh = nullptr;
 }
 
-BoxProperties::BoxProperties( eDebugRenderObject renderObject, const AABB3& box, const Vec3& position, float durationSeconds /*= 0.f*/, TextureView* texture /*= nullptr*/ )
+//------------------------------------------------------------------------------------------------------------------------------
+BoxProperties::BoxProperties( eDebugRenderObject renderObject, const AABB3& box, const Vec3& position, float durationSeconds /*=0.f*/, TextureView* texture /*= nullptr*/ )
 {
 	//Base properties
 	m_durationSeconds = durationSeconds;
@@ -196,12 +210,14 @@ BoxProperties::BoxProperties( eDebugRenderObject renderObject, const AABB3& box,
 	CPUMeshAddCube( m_mesh, box);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 BoxProperties::~BoxProperties()
 {
 	delete m_mesh;
 	m_mesh = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Quad3DProperties::Quad3DProperties( eDebugRenderObject renderObject, const AABB2& quad, const Vec3& position, float durationSeconds /*= 0.f*/, TextureView* texture /*= nullptr */, bool billBoarded /* = true */ )
 {
 	//Base properties
@@ -220,6 +236,7 @@ Quad3DProperties::Quad3DProperties( eDebugRenderObject renderObject, const AABB2
 	CPUMeshAddQuad(m_mesh, m_quad);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Quad3DProperties::~Quad3DProperties()
 {
 	delete m_texture;
@@ -229,6 +246,7 @@ Quad3DProperties::~Quad3DProperties()
 	m_mesh = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 TextProperties::TextProperties( eDebugRenderObject renderObject, const Vec3& position, const Vec2& pivot, const std::string& text, float fontHeight, float durationSeconds /*= 0.f*/, bool isBillBoarded )
 {
 	//Base properties
@@ -244,6 +262,7 @@ TextProperties::TextProperties( eDebugRenderObject renderObject, const Vec3& pos
 	m_isBillboarded = isBillBoarded;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 TextProperties::TextProperties( eDebugRenderObject renderObject, const Vec2& startPosition, const Vec2& endPosition, const std::string& text, float fontHeight, float durationSeconds /*= 0.f*/ )
 {
 	//Base properties
@@ -258,12 +277,14 @@ TextProperties::TextProperties( eDebugRenderObject renderObject, const Vec2& sta
 	m_fontHeight = fontHeight;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 TextProperties::~TextProperties()
 {
 	delete m_mesh;
 	m_mesh = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 LogProperties::LogProperties( eDebugRenderObject renderObject, const Rgba& printColor, const std::string& printString, float durationSeconds /*= 0.f*/ )
 {
 	m_renderObjectType = renderObject;
@@ -275,11 +296,13 @@ LogProperties::LogProperties( eDebugRenderObject renderObject, const Rgba& print
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 LogProperties::~LogProperties()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Arrow2DProperties::Arrow2DProperties( eDebugRenderObject renderObject, const Vec2& start, const Vec2& end, float durationSeconds /*= 0.f*/, float lineWidth /*= DEFAULT_LINE_WIDTH*/ )
 {
 	//Base properties
@@ -301,6 +324,7 @@ Arrow2DProperties::Arrow2DProperties( eDebugRenderObject renderObject, const Vec
 	m_lineWidth = lineWidth;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Arrow2DProperties::~Arrow2DProperties()
 {
 

@@ -1,11 +1,14 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 Material::Material( RenderContext *renderContext )
 {
 	m_renderContext = renderContext;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Material::Material( RenderContext *renderContext, const std::string& fileName )
 {
 	m_renderContext = renderContext;
@@ -14,12 +17,14 @@ Material::Material( RenderContext *renderContext, const std::string& fileName )
 	m_renderContext->m_materialDatabase[fileName] = this;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Material::~Material()
 {
 	delete m_materialBuffer;
 	m_materialBuffer = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Material::LoadMaterialFromXML( const std::string& fileName )
 {
 	//Open the xml file and parse it
@@ -80,11 +85,13 @@ void Material::LoadMaterialFromXML( const std::string& fileName )
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Material::SetShader( Shader *shader )
 {
 	m_shader = shader;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Material::SetShader( char const *shader_name )
 {
 	if(strcmp(shader_name, "") == 0)
@@ -97,6 +104,7 @@ void Material::SetShader( char const *shader_name )
 	m_shader = m_renderContext->CreateOrGetShaderFromFile(shader_name);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Material::SetTextureView( uint slot, TextureView *view )
 {
 	uint numElements = static_cast<uint>(m_textures.size());
@@ -110,6 +118,7 @@ void Material::SetTextureView( uint slot, TextureView *view )
 	m_textures[slot] = view;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Material::SetTextureView( uint slot, char const *name )
 {
 	if(strcmp(name, "") == 0)
@@ -123,6 +132,7 @@ void Material::SetTextureView( uint slot, char const *name )
 	SetTextureView(slot, texture);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Material::SetSampler( uint slot, Sampler *sampler )
 {
 	uint numElements = static_cast<uint>(m_samplers.size());
@@ -136,16 +146,19 @@ void Material::SetSampler( uint slot, Sampler *sampler )
 	m_samplers[slot] = sampler;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 TextureView* Material::GetTextureView( uint slot ) const
 {
 	return m_textures[slot];
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Sampler* Material::GetSampler( uint slot ) const
 {
 	return m_samplers[slot];
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Material::SetDiffuseMap( TextureView *view )
 {
 	if(view == nullptr)
@@ -157,6 +170,7 @@ void Material::SetDiffuseMap( TextureView *view )
 	SetTextureView(DIFFUSE_SLOT, view);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Material::SetNormalMap( TextureView *view )
 {
 	if(view == nullptr)
@@ -168,6 +182,7 @@ void Material::SetNormalMap( TextureView *view )
 	SetTextureView(NORMAL_SLOT, view);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Material::SetSpecularMap( TextureView *view )
 {
 	if(view == nullptr)
@@ -178,16 +193,19 @@ void Material::SetSpecularMap( TextureView *view )
 	SetTextureView(SPECULAR_SLOT, view);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Material::SetEmissiveMap( TextureView *view )
 {
 	SetTextureView(EMISSIVE_SLOT, view);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Material::SetUniforms( UniformBuffer *ubo )
 {
 	m_materialBuffer = ubo;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Material::SetUniforms( void const *data, size_t const size )
 {
 	UniformBuffer* buffer = new UniformBuffer(m_renderContext);
@@ -199,18 +217,20 @@ void Material::SetUniforms( void const *data, size_t const size )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 UniformBuffer* Material::GetUniformBuffer() const
 {
 	return m_materialBuffer;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 int Material::GetNumTextures()
 {
 	return static_cast<int>(m_textures.size());
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 int Material::GetNumSamplers()
 {
 	return static_cast<int>(m_samplers.size());
 }
-

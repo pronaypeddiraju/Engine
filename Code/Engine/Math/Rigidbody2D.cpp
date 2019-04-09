@@ -14,6 +14,7 @@ Rigidbody2D::Rigidbody2D(float mass)
 	m_mass = mass;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Rigidbody2D::Rigidbody2D( PhysicsSystem* physicsSystem, eSimulationType simulationType, float mass /*= 1.0f*/ )
 {
 	m_system = physicsSystem;
@@ -21,6 +22,7 @@ Rigidbody2D::Rigidbody2D( PhysicsSystem* physicsSystem, eSimulationType simulati
 	m_mass = mass;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Rigidbody2D::~Rigidbody2D()
 {
 	for(int rbType = 0; rbType < NUM_SIMULATION_TYPES; rbType++)
@@ -43,6 +45,7 @@ Rigidbody2D::~Rigidbody2D()
 	//m_object_transform = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Rigidbody2D::Move( float deltaTime )
 {
 	if(m_simulationType == STATIC_SIMULATION)
@@ -72,6 +75,7 @@ void Rigidbody2D::Move( float deltaTime )
 	ApplyRotation();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Rigidbody2D::ApplyRotation()
 {
 	switch (m_collider->m_colliderType)
@@ -91,6 +95,7 @@ void Rigidbody2D::ApplyRotation()
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Rigidbody2D::DebugRender( RenderContext* renderContext, const Rgba& color ) const
 {
 	if(this == nullptr)
@@ -143,41 +148,46 @@ void Rigidbody2D::DebugRender( RenderContext* renderContext, const Rgba& color )
 	renderContext->DrawVertexArray(verts);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Rigidbody2D::SetSimulationMode( eSimulationType simulationType )
 {
 	m_simulationType = simulationType;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Collider2D* Rigidbody2D::SetCollider( Collider2D* collider )
 {
 	m_collider = collider;
 	return m_collider;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Rigidbody2D::SetObject( void* object, Transform2* objectTransform )
 {
 	m_object = object;
 	m_object_transform = objectTransform;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec2 Rigidbody2D::GetPosition() const
 {
 	return m_transform.m_position;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 eSimulationType Rigidbody2D::GetSimulationType()
 {
 	return m_simulationType;
 }
 
-//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void Rigidbody2D::ApplyImpulses( Vec2 linearImpulse, float angularImpulse )
 {
 	m_velocity += linearImpulse / m_mass;
 	m_angularVelocity += RadiansToDegrees(angularImpulse / m_momentOfInertia);  
 }
 
-//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void Rigidbody2D::ApplyImpulseAt( Vec2 linearImpulse, Vec2 pointOfContact )
 {
 	Vec2 linear = linearImpulse; 

@@ -9,39 +9,45 @@
 
 PhysicsSystem* g_physicsSystem = nullptr;
 
+//------------------------------------------------------------------------------------------------------------------------------
 PhysicsSystem::PhysicsSystem()
 {
 	m_rbBucket = new RigidBodyBucket;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 PhysicsSystem::~PhysicsSystem()
 {
 
 }
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 Rigidbody2D* PhysicsSystem::CreateRigidbody( eSimulationType simulationType )
 {
 	Rigidbody2D *rigidbody = new Rigidbody2D(this, simulationType);
 	return rigidbody;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::AddRigidbodyToVector(Rigidbody2D* rigidbody)
 {
 	m_rbBucket->m_RbBucket[rigidbody->GetSimulationType()].push_back(rigidbody);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::DestroyRigidbody( Rigidbody2D* rigidbody )
 {
 	delete rigidbody;
 	rigidbody = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::SetGravity( const Vec2& gravity )
 {
 	m_gravity = gravity;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::CopyTransformsFromObjects()
 {
 	// reset per frame stuff; 
@@ -60,6 +66,7 @@ void PhysicsSystem::CopyTransformsFromObjects()
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::CopyTransformsToObjects()
 {
 	// figure out movement, apply to actual game object;
@@ -78,6 +85,7 @@ void PhysicsSystem::CopyTransformsToObjects()
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::Update( float deltaTime )
 {
 	CopyTransformsFromObjects(); 
@@ -92,6 +100,7 @@ void PhysicsSystem::Update( float deltaTime )
 	CopyTransformsToObjects();  
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::SetAllCollisionsToFalse()
 {
 	for(int rigidTypes = 0; rigidTypes < NUM_SIMULATION_TYPES; rigidTypes++)
@@ -108,6 +117,7 @@ void PhysicsSystem::SetAllCollisionsToFalse()
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::DebugRender( RenderContext* renderContext ) const
 {
 	for (int rbTypes = 0; rbTypes < NUM_SIMULATION_TYPES; rbTypes++)
@@ -160,11 +170,13 @@ void PhysicsSystem::DebugRender( RenderContext* renderContext ) const
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec2& PhysicsSystem::GetGravity() const
 {
 	return m_gravity;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::RunStep( float deltaTime )
 {
 	//First move all rigidbodies based on forces on them
@@ -184,6 +196,7 @@ void PhysicsSystem::RunStep( float deltaTime )
 	ResolveDynamicVsStaticCollisions(false);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::MoveAllDynamicObjects(float deltaTime)
 {
 	int numObjects = static_cast<int>(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION].size());
@@ -198,6 +211,7 @@ void PhysicsSystem::MoveAllDynamicObjects(float deltaTime)
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::CheckStaticVsStaticCollisions()
 {
 	int numStaticObjects = static_cast<int>(m_rbBucket->m_RbBucket[STATIC_SIMULATION].size());
@@ -235,6 +249,7 @@ void PhysicsSystem::CheckStaticVsStaticCollisions()
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::ResolveDynamicVsStaticCollisions(bool canResolve)
 {
 	int numDynamicObjects = static_cast<int>(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION].size());
@@ -345,6 +360,7 @@ void PhysicsSystem::ResolveDynamicVsStaticCollisions(bool canResolve)
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::ResolveDynamicVsDynamicCollisions(bool canResolve)
 {
 	int numDynamicObjects = static_cast<int>(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION].size());
@@ -413,7 +429,7 @@ void PhysicsSystem::ResolveDynamicVsDynamicCollisions(bool canResolve)
 	}
 }
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 float PhysicsSystem::GetImpulseAlongNormal(Vec2 *out, const Collision2D& collision, const Rigidbody2D& rb0, const Rigidbody2D& rb1)
 {
 	Vec2 velocity0 = rb0.m_velocity;

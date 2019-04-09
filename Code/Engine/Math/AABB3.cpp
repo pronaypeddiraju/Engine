@@ -9,6 +9,7 @@ AABB3::AABB3()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 AABB3::AABB3( const Vec3& minBounds, const Vec3& maxBounds)
 {
 	//Setup the front face
@@ -28,9 +29,11 @@ AABB3::AABB3( const Vec3& minBounds, const Vec3& maxBounds)
 	m_center = Vec3(m_frontTopLeft.x + (m_frontTopRight.x - m_frontTopLeft.x) * 0.5f, m_frontBottomLeft.y + (m_frontTopLeft.y - m_frontBottomLeft.y) * 0.5f, m_frontBottomLeft.z + (m_backBottomLeft.z - m_frontBottomLeft.z) * 0.5f);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 AABB3::~AABB3()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const STATIC AABB3 AABB3::UNIT_CUBE(Vec3(-0.5f, -0.5f, -0.5f), Vec3(0.5f, 0.5f, 0.5f));

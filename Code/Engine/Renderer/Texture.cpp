@@ -1,10 +1,10 @@
-//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Renderer/Texture.hpp"
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Core/Image.hpp"
+#include "Engine/Renderer/DepthStencilTargetView.hpp"
+#include "Engine/Renderer/RenderBuffer.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/TextureView.hpp"
-#include "Engine/Renderer/RenderBuffer.hpp"
-#include "Engine/Renderer/DepthStencilTargetView.hpp"
 #include <d3d11.h>
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -24,17 +24,20 @@ static uint DXBindFromUsage( uint usage )
 	return binds; 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Texture2D::Texture2D( RenderContext *renderContext )
 	: Texture(renderContext)
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Texture2D::~Texture2D()
 {
 	DX_SAFE_RELEASE(m_handle);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool Texture2D::LoadTextureFromFile( std::string const &filename, bool isFont ) 
 {
 	std::string path;
@@ -60,7 +63,7 @@ bool Texture2D::LoadTextureFromFile( std::string const &filename, bool isFont )
 	return LoadTextureFromImage( image ); 
 }
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 bool Texture2D::LoadTextureFromImage( Image const &image ) 
 {
 	// cleanup old resources before creating new one just in case; 
@@ -133,7 +136,7 @@ bool Texture2D::LoadTextureFromImage( Image const &image )
 	}
 }
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 TextureView2D* Texture2D::CreateTextureView2D() const
 {
 	// if we don't have a handle, we can't create a view, so return nullptr
@@ -174,6 +177,7 @@ TextureView2D* Texture2D::CreateTextureView2D() const
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 DepthStencilTargetView* Texture2D::CreateDepthStencilTargetView()
 {
 	// if we don't have a handle, we can't create a view, so return nullptr
@@ -215,6 +219,7 @@ DepthStencilTargetView* Texture2D::CreateDepthStencilTargetView()
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool Texture2D::CreateDepthStencilTarget( uint width, uint height )
 {
 	// cleanup old resources before creating new one just in case; 
@@ -267,6 +272,7 @@ bool Texture2D::CreateDepthStencilTarget( uint width, uint height )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC Texture2D* Texture2D::CreateDepthStencilTarget( RenderContext *renderContext, uint width, uint height )
 {
 	Texture2D* depthStencilView = new Texture2D(renderContext);
@@ -274,26 +280,31 @@ STATIC Texture2D* Texture2D::CreateDepthStencilTarget( RenderContext *renderCont
 	return depthStencilView;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC Texture2D* Texture2D::CreateDepthStencilTargetFor( Texture2D *colorTarget )
 {
 	return CreateDepthStencilTarget( colorTarget->m_owner, colorTarget->m_dimensions.x, colorTarget->m_dimensions.y );
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Texture::Texture( RenderContext *renderContext )
 {
 	m_owner = renderContext;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Texture::~Texture()
 {
 	DX_SAFE_RELEASE(m_handle);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Texture::FreeHandles()
 {
 	DX_SAFE_RELEASE(m_handle);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 TextureView* Texture::CreateTextureView() const
 {
 	// if we don't have a handle, we can't create a view, so return nullptr

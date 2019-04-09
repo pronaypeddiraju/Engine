@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------------------------------------------------------
-#include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Commons/StringUtils.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
-#include "Engine/Commons/StringUtils.hpp"
+#include "Engine/Renderer/BitmapFont.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 BitmapFont::BitmapFont( std::string bitmapName, TextureView* bitmapTexture )
@@ -13,6 +13,7 @@ BitmapFont::BitmapFont( std::string bitmapName, TextureView* bitmapTexture )
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float BitmapFont::GetGlyphAspect( int glyphCode )
 {
 	//For now we always assume the aspect to be 1;
@@ -20,11 +21,13 @@ float BitmapFont::GetGlyphAspect( int glyphCode )
 	return 1.0f;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 AABB2& BitmapFont::GetTextBoundingBox()
 {
 	return m_boundingBox;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void BitmapFont::AddVertsForText2D( std::vector<Vertex_PCU>& textVerts, const Vec2& textStartPosition, float cellHeight, std::string printText, const Rgba &color, float cellAspect, int maxGlyphsToDraw)
 {
 	//For now unused
@@ -56,6 +59,7 @@ void BitmapFont::AddVertsForText2D( std::vector<Vertex_PCU>& textVerts, const Ve
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void BitmapFont::AddVertsForText3D( std::vector<Vertex_PCU>& textVerts, const Vec3& textStartPosition, float cellHeight, std::string printText, const Rgba &tintColor /*= Rgba::WHITE*/, float cellAspect /*= 1.f*/, int maxGlyphsToDraw /*= 999999999*/ )
 {
 	//For now unused
@@ -88,6 +92,7 @@ void BitmapFont::AddVertsForText3D( std::vector<Vertex_PCU>& textVerts, const Ve
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void BitmapFont::AddVertsForTextInBox2D( std::vector<Vertex_PCU>& textVerts, const AABB2& box, float cellHeight, const std::string& printText, const Rgba& tintColor /*= Rgba::WHITE*/, float cellAspect /*= 1.f*/, const Vec2& alignment /*= Vec2::ALIGN_CENTERED*/, TextBoxMode textBoxMode /*= TEXT_BOX_MODE_SHRINK*/, int maxGlyphsToDraw /*= 999999999 */ )
 {
 	UNUSED(maxGlyphsToDraw);
@@ -117,6 +122,7 @@ void BitmapFont::AddVertsForTextInBox2D( std::vector<Vertex_PCU>& textVerts, con
 	AddVertsForText2D(textVerts, m_boundingBox.m_minBounds, cellHeight, printText, tintColor, cellAspect, maxGlyphsToDraw);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void BitmapFont::AddVertsForTextInBox3D( std::vector<Vertex_PCU>& textVerts, const AABB2& box, float cellHeight, const std::string& printText, const Rgba& tintColor /*= Rgba::WHITE*/, float cellAspect /*= 1.f*/, const Vec2& alignment /*= Vec2::ALIGN_CENTERED*/, TextBoxMode mode /*= TEXT_BOX_MODE_SHRINK*/, int maxGlyphsToDraw /*= 999999999 */ )
 {
 	UNUSED(maxGlyphsToDraw);
@@ -146,6 +152,7 @@ void BitmapFont::AddVertsForTextInBox3D( std::vector<Vertex_PCU>& textVerts, con
 	AddVertsForText3D(textVerts, m_boundingBox.m_3Dmin, cellHeight, printText, tintColor, cellAspect, maxGlyphsToDraw);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float BitmapFont::GetNewCellAspect3D(const AABB2& box, float cellHeight, float cellAspect, const std::string& printText)
 {
 	float boxWidth = box.m_3Dmax.x - box.m_3Dmin.x;
@@ -194,6 +201,7 @@ float BitmapFont::GetNewCellAspect3D(const AABB2& box, float cellHeight, float c
 	return cellAspect;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float BitmapFont::GetNewCellAspect(const AABB2& box, float cellHeight, float cellAspect, const std::string& printText)
 {
 	float boxWidth = box.m_maxBounds.x - box.m_minBounds.x;
@@ -242,6 +250,7 @@ float BitmapFont::GetNewCellAspect(const AABB2& box, float cellHeight, float cel
 	return cellAspect;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 TextureView* BitmapFont::GetTexture()
 {
 	return m_bitmapTexture;

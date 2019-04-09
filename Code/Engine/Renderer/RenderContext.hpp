@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 
+//------------------------------------------------------------------------------------------------------------------------------
 //Forward Declarations
 class BitmapFont;
 class ColorTargetView;
@@ -188,10 +189,6 @@ public:
 	bool												m_lightBufferDirty = true;                           
 	uint												m_lightSlot = 0U;
 
-	// There are a small set of sampler state that
-	// we can get by with just reusing everywhere, 
-	// so instead of creating a sampler per texture, 
-	// we'll pull from this store; 
 	Sampler*											m_cachedSamplers[SAMPLE_MODE_COUNT]; 
 	std::map<std::string, TextureView*>					m_cachedTextureViews;
 	std::map<std::string, Material*>					m_materialDatabase;

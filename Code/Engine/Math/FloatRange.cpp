@@ -27,18 +27,21 @@ void FloatRange::SetFromText( const char* asText )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 FloatRange::FloatRange( const FloatRange& copyFrom )
 {
 	minFloat = copyFrom.minFloat;
 	maxFloat = copyFrom.maxFloat;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 FloatRange::FloatRange( float min, float max )
 {
 	minFloat = min;
 	maxFloat = max;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 FloatRange::FloatRange( const char* asText )
 {
 	SetFromText(asText);

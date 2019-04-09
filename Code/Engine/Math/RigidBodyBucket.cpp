@@ -7,6 +7,7 @@ RigidBodyBucket::RigidBodyBucket()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 RigidBodyBucket::~RigidBodyBucket()
 {
 	for(int numTypes = 0; numTypes < NUM_SIMULATION_TYPES; numTypes++)

@@ -15,24 +15,27 @@
 #include <cmath>
 #include <vector>
 
+//------------------------------------------------------------------------------------------------------------------------------
 DebugRender* g_debugRenderer = nullptr;
-
 DebugRender* DebugRender::s_debugRender = nullptr;
 
 const STATIC Rgba DebugRender::DEBUG_INFO			=	Rgba::WHITE;
 const STATIC Rgba DebugRender::DEBUG_ECHO			=	Rgba::YELLOW;
 const STATIC Rgba DebugRender::DEBUG_BG_COLOR		=	Rgba(0.0f, 0.0f, 0.0f, 0.75f);
 
+//------------------------------------------------------------------------------------------------------------------------------
 DebugRender::DebugRender()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 DebugRender::~DebugRender()
 {
 	Shutdown();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::Startup( RenderContext* renderContext )
 {
 	m_renderContext = renderContext;
@@ -61,7 +64,7 @@ void DebugRender::Startup( RenderContext* renderContext )
 	
 }
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::SetClientDimensions( int height, int width )
 {
 	m_clientHeight = height;
@@ -75,11 +78,13 @@ void DebugRender::SetClientDimensions( int height, int width )
 	m_debug2DCam->SetOrthoView(Vec2(-halfWidth, -halfHeight), Vec2(halfWidth, halfHeight));	
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::SetDebugFont( BitmapFont* font )
 {
 	m_debugFont = font;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::Shutdown()
 {
 	delete m_debug2DCam;
@@ -92,16 +97,19 @@ void DebugRender::Shutdown()
 	//m_debug3DCam = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::BeginFrame()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::EndFrame()
 {
 	CleanUpObjects();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::Update( float deltaTime )
 {
 	int vectorSize;
@@ -172,6 +180,7 @@ void DebugRender::Update( float deltaTime )
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::CleanUpObjects()
 {
 	//Screen 
@@ -202,6 +211,7 @@ void DebugRender::CleanUpObjects()
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderToScreen() const
 {
 	if(!m_canRender)
@@ -242,6 +252,7 @@ void DebugRender::DebugRenderToScreen() const
 	DebugRenderToLog();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderToCamera() const
 {
 	if(!m_canRender)
@@ -270,6 +281,7 @@ void DebugRender::DebugRenderToCamera() const
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderToLog() const
 {
 	Setup2DCamera();
@@ -348,11 +360,13 @@ void DebugRender::DebugRenderToLog() const
 	m_renderContext->DrawVertexArray(textVerts);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Camera& DebugRender::Get2DCamera()
 {
 	return *m_debug2DCam;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawPoint2D( const DebugRenderOptionsT* renderObject) const
 {
 	Setup2DCamera();
@@ -390,17 +404,20 @@ void DebugRender::DrawPoint2D( const DebugRenderOptionsT* renderObject) const
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::Setup2DCamera() const
 {
 	m_debug2DCam->SetModelMatrix(Matrix44::IDENTITY);
 	m_debug2DCam->UpdateUniformBuffer(m_renderContext);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::Setup3DCamera(Camera* const debugCamera)
 {
 	m_debug3DCam = debugCamera;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawLine2D( const DebugRenderOptionsT* renderObject ) const
 {
 	Setup2DCamera();
@@ -430,6 +447,7 @@ void DebugRender::DrawLine2D( const DebugRenderOptionsT* renderObject ) const
 	m_renderContext->DrawVertexArray(lineVerts);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawQuad2D( const DebugRenderOptionsT* renderObject ) const
 {
 	Setup2DCamera();
@@ -458,6 +476,7 @@ void DebugRender::DrawQuad2D( const DebugRenderOptionsT* renderObject ) const
 	m_renderContext->DrawVertexArray(boxVerts);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawWireQuad2D( const DebugRenderOptionsT* renderObject ) const
 {
 	Setup2DCamera();
@@ -486,6 +505,7 @@ void DebugRender::DrawWireQuad2D( const DebugRenderOptionsT* renderObject ) cons
 	m_renderContext->DrawVertexArray(boxVerts);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawDisc2D( const DebugRenderOptionsT* renderObject ) const
 {
 	Setup2DCamera();
@@ -515,7 +535,7 @@ void DebugRender::DrawDisc2D( const DebugRenderOptionsT* renderObject ) const
 	m_renderContext->DrawVertexArray(ringVerts);
 }
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawRing2D( const DebugRenderOptionsT* renderObject ) const
 {
 	Setup2DCamera();
@@ -545,6 +565,7 @@ void DebugRender::DrawRing2D( const DebugRenderOptionsT* renderObject ) const
 	m_renderContext->DrawVertexArray(ringVerts);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawArrow2D( const DebugRenderOptionsT* renderObject ) const
 {
 	Setup2DCamera();
@@ -590,6 +611,7 @@ void DebugRender::DrawArrow2D( const DebugRenderOptionsT* renderObject ) const
 	m_renderContext->DrawVertexArray(arrowVerts);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawText2D( const DebugRenderOptionsT* renderObject ) const
 {
 	Setup2DCamera();
@@ -620,6 +642,7 @@ void DebugRender::DrawText2D( const DebugRenderOptionsT* renderObject ) const
 	m_renderContext->DrawVertexArray(textVerts);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawPoint3D( const DebugRenderOptionsT* renderObject ) const
 {
 	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
@@ -665,6 +688,7 @@ void DebugRender::DrawPoint3D( const DebugRenderOptionsT* renderObject ) const
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawQuad3D( const DebugRenderOptionsT* renderObject ) const
 {
 	m_renderContext->BindTextureViewWithSampler(0U, nullptr);
@@ -715,6 +739,7 @@ void DebugRender::DrawQuad3D( const DebugRenderOptionsT* renderObject ) const
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
 {
 	Line3DProperties* objectProperties = reinterpret_cast<Line3DProperties*>(renderObject->objectProperties);
@@ -757,6 +782,7 @@ void DebugRender::DrawLine3D( const DebugRenderOptionsT* renderObject ) const
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawSphere( const DebugRenderOptionsT* renderObject ) const
 {
 	SphereProperties* objectProperties = reinterpret_cast<SphereProperties*>(renderObject->objectProperties);
@@ -798,6 +824,7 @@ void DebugRender::DrawSphere( const DebugRenderOptionsT* renderObject ) const
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawWireSphere( const DebugRenderOptionsT* renderObject ) const
 {
 	SphereProperties* objectProperties = reinterpret_cast<SphereProperties*>(renderObject->objectProperties);
@@ -841,6 +868,7 @@ void DebugRender::DrawWireSphere( const DebugRenderOptionsT* renderObject ) cons
 	m_renderContext->CreateAndSetDefaultRasterState();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawBox( const DebugRenderOptionsT* renderObject ) const
 {
 	BoxProperties* objectProperties = reinterpret_cast<BoxProperties*>(renderObject->objectProperties);
@@ -882,6 +910,7 @@ void DebugRender::DrawBox( const DebugRenderOptionsT* renderObject ) const
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawWireBox( const DebugRenderOptionsT* renderObject ) const
 {
 	BoxProperties* objectProperties = reinterpret_cast<BoxProperties*>(renderObject->objectProperties);
@@ -925,6 +954,7 @@ void DebugRender::DrawWireBox( const DebugRenderOptionsT* renderObject ) const
 	m_renderContext->CreateAndSetDefaultRasterState();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DrawText3D( const DebugRenderOptionsT* renderObject ) const
 {
 	TextProperties* objectProperties = reinterpret_cast<TextProperties*>(renderObject->objectProperties);
@@ -980,16 +1010,19 @@ void DebugRender::DrawText3D( const DebugRenderOptionsT* renderObject ) const
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DestroyAllScreenObjects()
 {
 	m_screenRenderObjects.clear();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DestroyAllWorldObjects()
 {
 	m_worldRenderObjects.clear();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::SetObjectMatrixForPosition( Vec3 position ) const
 {
 	//Setup matrix for position
@@ -1000,6 +1033,7 @@ void DebugRender::SetObjectMatrixForPosition( Vec3 position ) const
 	m_renderContext->SetModelMatrix( objectMatrix ); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::SetObjectMatrixForBillBoard( Vec3 position ) const
 {
 	Matrix44 cameraModel = m_debug3DCam->GetModelMatrix();
@@ -1011,12 +1045,14 @@ void DebugRender::SetObjectMatrixForBillBoard( Vec3 position ) const
 	m_renderContext->SetModelMatrix(objectModel);	
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::SetWorldSize2D( const Vec2& worldMin, const Vec2& worldMax )
 {
 	m_worldMin2D = worldMin;
 	m_worldMax2D = worldMax;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec2 DebugRender::GetRelativePosInWorld2D( const Vec2& positionInWorld )
 {
 	Vec2 correctedPos;
@@ -1025,6 +1061,7 @@ Vec2 DebugRender::GetRelativePosInWorld2D( const Vec2& positionInWorld )
 	return correctedPos;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT options, const Vec2& position, float duration, float size /*= DEFAULT_POINT_SIZE */ )
 {
 	if(options.relativeCoordinates)
@@ -1040,7 +1077,7 @@ void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT options, const Vec2& p
 	m_screenRenderObjects.push_back(options);
 }
 
-//Inplementation to debug render a line using 2D debug camera
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderLine2D(DebugRenderOptionsT options, const Vec2& start, const Vec2& end, float duration, float lineWidth)
 {
 	options.objectProperties = new Line2DProperties(DEBUG_RENDER_LINE, start, end, duration, lineWidth);
@@ -1049,6 +1086,7 @@ void DebugRender::DebugRenderLine2D(DebugRenderOptionsT options, const Vec2& sta
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderQuad2D( DebugRenderOptionsT options, AABB2 const & quad, float duration, TextureView* texture )
 {
 	options.objectProperties = new Quad2DProperties(DEBUG_RENDER_QUAD, quad, duration, DEFAULT_WIRE_WIDTH_2D, texture);
@@ -1056,6 +1094,7 @@ void DebugRender::DebugRenderQuad2D( DebugRenderOptionsT options, AABB2 const & 
 	m_screenRenderObjects.push_back(options);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderWireQuad2D( DebugRenderOptionsT options, AABB2 const &quad, float duration /*= 0.f*/, float thickness /*= DEFAULT_WIRE_WIDTH_2D */ )
 {
 	options.objectProperties = new Quad2DProperties(DEBUG_RENDER_WIRE_QUAD, quad, duration, thickness);
@@ -1063,7 +1102,9 @@ void DebugRender::DebugRenderWireQuad2D( DebugRenderOptionsT options, AABB2 cons
 	m_screenRenderObjects.push_back(options);
 }
 
-// This function is currently useless
+//------------------------------------------------------------------------------------------------------------------------------
+// This function is currently useless (For now)
+//------------------------------------------------------------------------------------------------------------------------------
 IntVec2 DebugRender::ConvertWorldToScreenPoint( Vec3 worldPoint)
 {
 	//Get the view projection matrix
@@ -1082,6 +1123,7 @@ IntVec2 DebugRender::ConvertWorldToScreenPoint( Vec3 worldPoint)
 	return IntVec2(winX, winY);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderDisc2D( DebugRenderOptionsT options, Disc2D const &disc, float duration /*= 0.f*/)
 {
 	options.objectProperties = new Disc2DProperties(DEBUG_RENDER_DISC, disc, 0.f, duration);
@@ -1089,6 +1131,7 @@ void DebugRender::DebugRenderDisc2D( DebugRenderOptionsT options, Disc2D const &
 	m_screenRenderObjects.push_back(options);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderRing2D( DebugRenderOptionsT options, Disc2D const &disc, float duration /*= 0.f*/, float thickness /*= DEFAULT_DISC_THICKNESS */ )
 {
 	options.objectProperties = new Disc2DProperties(DEBUG_RENDER_RING, disc, thickness, duration);
@@ -1096,6 +1139,7 @@ void DebugRender::DebugRenderRing2D( DebugRenderOptionsT options, Disc2D const &
 	m_screenRenderObjects.push_back(options);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderText2D( DebugRenderOptionsT options, const Vec2& startPosition, const Vec2& endPosition, char const *format, float fontHeight /*= DEFAULT_TEXT_HEIGHT*/, float duration /*= 0.f*/, ... )
 {
 	char buffer[1024]; 
@@ -1113,6 +1157,7 @@ void DebugRender::DebugRenderText2D( DebugRenderOptionsT options, const Vec2& st
 	m_screenRenderObjects.push_back(options);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderArrow2D( DebugRenderOptionsT options, const Vec2& start, const Vec2& end, float duration /*= 0.f*/, float lineWidth /*= DEFAULT_LINE_WIDTH */ )
 {
 	if(options.relativeCoordinates)
@@ -1129,6 +1174,7 @@ void DebugRender::DebugRenderArrow2D( DebugRenderOptionsT options, const Vec2& s
 	m_screenRenderObjects.push_back(options);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugAddToLog( DebugRenderOptionsT options, char const* format, const Rgba& color, float duration, ... )
 {
 	char buffer[1024]; 
@@ -1146,6 +1192,7 @@ void DebugRender::DebugAddToLog( DebugRenderOptionsT options, char const* format
 	m_printLogObjects.push_back(options);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration, float size, TextureView* texture )
 {
 	options.objectProperties = new Point3DProperties(DEBUG_RENDER_POINT3D, position, size, duration, texture);
@@ -1153,6 +1200,7 @@ void DebugRender::DebugRenderPoint( DebugRenderOptionsT options, const Vec3& pos
 	m_worldRenderObjects.push_back(options);
 }
  
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderLine( DebugRenderOptionsT options, const Vec3& start, const Vec3& end, float duration, float lineWidth /*= DEFAULT_LINE_WIDTH */ )
 {
 	options.objectProperties = new Line3DProperties(DEBUG_RENDER_LINE3D, start, end, duration, lineWidth);
@@ -1160,6 +1208,7 @@ void DebugRender::DebugRenderLine( DebugRenderOptionsT options, const Vec3& star
 	m_worldRenderObjects.push_back(options);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
 {
 	options.objectProperties = new SphereProperties(DEBUG_RENDER_SPHERE, center, radius, duration, texture);
@@ -1167,6 +1216,7 @@ void DebugRender::DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, f
 	m_worldRenderObjects.push_back(options);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
 {
 	options.objectProperties = new BoxProperties(DEBUG_RENDER_BOX, box, position, duration, texture);
@@ -1174,6 +1224,7 @@ void DebugRender::DebugRenderBox( DebugRenderOptionsT options, const AABB3& box,
 	m_worldRenderObjects.push_back(options);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderQuad( DebugRenderOptionsT options, const AABB2& quad, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr*/, bool billBoarded /* = true */ )
 {
 	options.objectProperties = new Quad3DProperties(DEBUG_RENDER_QUAD3D, quad, position, duration, texture, billBoarded);
@@ -1181,6 +1232,7 @@ void DebugRender::DebugRenderQuad( DebugRenderOptionsT options, const AABB2& qua
 	m_worldRenderObjects.push_back(options);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderWireSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
 {
 	options.objectProperties = new SphereProperties(DEBUG_RENDER_WIRE_SPHERE, center, radius, duration, texture);
@@ -1188,6 +1240,7 @@ void DebugRender::DebugRenderWireSphere( DebugRenderOptionsT options, Vec3 cente
 	m_worldRenderObjects.push_back(options);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderWireBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
 {
 	options.objectProperties = new BoxProperties(DEBUG_RENDER_WIRE_BOX, box, position, duration, texture);
@@ -1195,6 +1248,7 @@ void DebugRender::DebugRenderWireBox( DebugRenderOptionsT options, const AABB3& 
 	m_worldRenderObjects.push_back(options);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderText3D( DebugRenderOptionsT options, const Vec3& position, const Vec2& pivot, char const *format, float fontHeight, float duration, bool isBillboarded, ... )
 {
 	char buffer[1024]; 
@@ -1212,6 +1266,7 @@ void DebugRender::DebugRenderText3D( DebugRenderOptionsT options, const Vec3& po
 	m_worldRenderObjects.push_back(options);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC bool DebugRender::DisableDebugRender(EventArgs& args)
 {
 	UNUSED(args);
@@ -1220,6 +1275,7 @@ STATIC bool DebugRender::DisableDebugRender(EventArgs& args)
 	return true;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC bool DebugRender::EnableDebugRender( EventArgs& args )
 {
 	UNUSED(args);
@@ -1228,6 +1284,7 @@ STATIC bool DebugRender::EnableDebugRender( EventArgs& args )
 	return true;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC bool DebugRender::ClearAllLiveObjects( EventArgs& args )
 {
 	UNUSED(args);
@@ -1240,6 +1297,7 @@ STATIC bool DebugRender::ClearAllLiveObjects( EventArgs& args )
 	return true;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC bool DebugRender::ClearAllLiveScreenObjects( EventArgs& args )
 {
 	UNUSED(args);
@@ -1249,6 +1307,7 @@ STATIC bool DebugRender::ClearAllLiveScreenObjects( EventArgs& args )
 	return true;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC bool DebugRender::ClearAllLiveWorldObjects( EventArgs& args )
 {
 	UNUSED(args);

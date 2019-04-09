@@ -13,12 +13,15 @@ RandomNumberGenerator::RandomNumberGenerator(unsigned int seed)
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 RandomNumberGenerator::~RandomNumberGenerator()
 {
 
 }
 
-//Returns an int less than minInt
+//------------------------------------------------------------------------------------------------------------------------------
+// Returns an int less than minInt
+//------------------------------------------------------------------------------------------------------------------------------
 int RandomNumberGenerator::GetRandomIntLessThan( int maxInt )
 {
 	//int ranInt = rand() % minInt;
@@ -29,7 +32,9 @@ int RandomNumberGenerator::GetRandomIntLessThan( int maxInt )
 	return randNum % maxInt;
 }
 
-//Returns an int in range of minInt and maxInt
+//------------------------------------------------------------------------------------------------------------------------------
+// Returns an int in range of minInt and maxInt
+//------------------------------------------------------------------------------------------------------------------------------
 int RandomNumberGenerator::GetRandomIntInRange( int minInt, int maxInt )
 {
 	//return minInt + (rand() % (maxInt - minInt + 1));
@@ -42,7 +47,9 @@ int RandomNumberGenerator::GetRandomIntInRange( int minInt, int maxInt )
 
 }
 
-//Returns a float between 0 and 1
+//------------------------------------------------------------------------------------------------------------------------------
+// Returns a float between 0 and 1
+//------------------------------------------------------------------------------------------------------------------------------
 float RandomNumberGenerator::GetRandomFloatZeroToOne()
 {
 	float randNum = Get1dNoiseZeroToOne(m_position, m_currentSeed);
@@ -50,7 +57,9 @@ float RandomNumberGenerator::GetRandomFloatZeroToOne()
 	return randNum;
 }
 
-//Returns a float in range of minFloat to maxFloat
+//------------------------------------------------------------------------------------------------------------------------------
+// Returns a float in range of minFloat to maxFloat
+//------------------------------------------------------------------------------------------------------------------------------
 float RandomNumberGenerator::GetRandomFloatInRange( float minFloat, float maxFloat )
 {
 	//float ranFloat = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
@@ -62,6 +71,7 @@ float RandomNumberGenerator::GetRandomFloatInRange( float minFloat, float maxFlo
 	return randNum;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void RandomNumberGenerator::Seed( unsigned int newSeed )
 {
 	m_currentSeed = newSeed;

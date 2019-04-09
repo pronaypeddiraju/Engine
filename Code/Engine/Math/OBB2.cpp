@@ -10,6 +10,7 @@ OBB2::OBB2()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 OBB2::OBB2( Vec2 center, Vec2 size /*= Vec2::ZERO*/, float rotationDegrees /*= 0.0f */ )
 {
 	m_center = center;
@@ -18,6 +19,7 @@ OBB2::OBB2( Vec2 center, Vec2 size /*= Vec2::ZERO*/, float rotationDegrees /*= 0
 	SetRotation(rotationDegrees);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 OBB2::OBB2( AABB2 const &aabb )
 {
 	m_right = Vec2( 1.0f, 0.0f ); 
@@ -26,22 +28,26 @@ OBB2::OBB2( AABB2 const &aabb )
 	m_halfExtents = (aabb.m_maxBounds - aabb.m_minBounds) * 0.5f; 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void OBB2::Translate( Vec2 offset )
 {
 	m_center += offset;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void OBB2::MoveTo( Vec2 position )
 {
 	m_center = position;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void OBB2::RotateBy( float degrees )
 {
 	m_right.RotateDegrees(degrees);
 	m_up = m_right.GetRotated90Degrees();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void OBB2::SetRotation( float degrees )
 {
 	float cosDeg = CosDegrees(degrees);
@@ -51,11 +57,13 @@ void OBB2::SetRotation( float degrees )
 	m_up = m_right.GetRotated90Degrees();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void OBB2::SetSize( Vec2 newSize )
 {
 	m_halfExtents = newSize * 0.5f;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec2 OBB2::ToLocalPoint( Vec2 worldPoint ) const
 {
 	Vec2 disp = worldPoint - GetCenter();  
@@ -68,6 +76,7 @@ Vec2 OBB2::ToLocalPoint( Vec2 worldPoint ) const
 	return Vec2( localI, localJ ); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec2 OBB2::ToWorldPoint( Vec2 localPoint ) const
 {
 	// world i = m_right;
@@ -77,6 +86,7 @@ Vec2 OBB2::ToWorldPoint( Vec2 localPoint ) const
 		+ GetCenter();                                           // Translate
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void OBB2::GetPlanes( Plane2D* out ) const
 {
 	//Populate the 4 planes
@@ -86,6 +96,7 @@ void OBB2::GetPlanes( Plane2D* out ) const
 	out[3] = Plane2D::AtPosition(GetBottomLeft(), m_right * -1.f);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void OBB2::GetCorners( Vec2* out ) const
 {
 	//Populate the 4 corners (order of planes?)
@@ -95,6 +106,7 @@ void OBB2::GetCorners( Vec2* out ) const
 	out[3] = GetBottomLeft();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void OBB2::GetSides( Segment2D* out ) const
 {
 	out[0] = Segment2D(GetTopLeft(), GetTopRight());
@@ -103,6 +115,7 @@ void OBB2::GetSides( Segment2D* out ) const
 	out[3] = Segment2D(GetBottomLeft(), GetTopLeft());
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool OBB2::Contains( Vec2 worldPoint ) const
 {
 	Vec2 localPoint = ToLocalPoint( worldPoint ); 
@@ -110,6 +123,7 @@ bool OBB2::Contains( Vec2 worldPoint ) const
 	return (absLocalPoint.x < m_halfExtents.x) && (absLocalPoint.y < m_halfExtents.y); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec2 OBB2::GetClosestPoint( Vec2 worldPoint ) const
 {
 	Vec2 localPoint = ToLocalPoint( worldPoint ); 
@@ -118,6 +132,7 @@ Vec2 OBB2::GetClosestPoint( Vec2 worldPoint ) const
 	return ToWorldPoint( clampedPoint ); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool OBB2::Intersects( OBB2 const &other ) const
 {
 	Plane2D planesOfThis[4];    // p0
@@ -165,6 +180,7 @@ bool OBB2::Intersects( OBB2 const &other ) const
 	return true; 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 OBB2::~OBB2()
 {
 

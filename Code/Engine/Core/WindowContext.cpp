@@ -7,7 +7,7 @@
 
 static constexpr const TCHAR* GAME_WINDOW_CLASS_NAME = TEXT("GameWindowClass");
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 static void LockMouseToWindow( HWND hwnd )
 {
 	RECT clientRect; 
@@ -24,12 +24,10 @@ static void LockMouseToWindow( HWND hwnd )
 	::ClipCursor( &clientRect ); 
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // Handles Windows (Win32) messages/events; i.e. the OS is trying to tell us something happened.
 // This function is called by Windows whenever we ask it for notifications
-//
-// #SD1ToDo: We will move this function to a more appropriate place later on...
-//
+//------------------------------------------------------------------------------------------------------------------------------
 static LRESULT CALLBACK GameCommonWindowProc( HWND windowHandle, UINT wmMessageCode, WPARAM wParam, LPARAM lParam )
 {
 	WindowContext *windowContext = (WindowContext*) GetWindowLongPtr( windowHandle, GWLP_USERDATA );
@@ -66,7 +64,7 @@ static LRESULT CALLBACK GameCommonWindowProc( HWND windowHandle, UINT wmMessageC
 
 static int gRegisterCount = 0; 
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 static void RegisterGameWindowClass()
 {
 	// Define a window style/class
@@ -83,7 +81,7 @@ static void RegisterGameWindowClass()
 }
 
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 WindowContext::WindowContext()
 {
 	m_hwnd = nullptr; 
@@ -94,7 +92,7 @@ WindowContext::WindowContext()
 	++gRegisterCount; 
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 WindowContext::~WindowContext()
 {
 	Close(); 
@@ -105,8 +103,7 @@ WindowContext::~WindowContext()
 	}
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void WindowContext::Create( std::string const &title, float clientAspect, float maxClientFractionOfDesktop, windows_proc_cb app_proc )
 {
 	ASSERT_OR_DIE( !IsOpen(), "Window already open." ); 
@@ -186,7 +183,7 @@ void WindowContext::Create( std::string const &title, float clientAspect, float 
 	m_currentMousePosition = GetClientMousePosition(); 
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void WindowContext::Close()
 {
 	if (!IsOpen()) {
@@ -197,7 +194,7 @@ void WindowContext::Close()
 	m_hwnd = nullptr; 
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void WindowContext::BeginFrame()
 {
 	MSG queuedMessage;
@@ -224,7 +221,7 @@ void WindowContext::BeginFrame()
 	}
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 IntVec2 WindowContext::GetClientCenter() const
 {
 	RECT clientRect; 
@@ -237,7 +234,7 @@ IntVec2 WindowContext::GetClientCenter() const
 	return center; 
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 IntVec2 WindowContext::GetClientMousePosition()
 {
 	POINT desktopPosition; 
@@ -250,7 +247,7 @@ IntVec2 WindowContext::GetClientMousePosition()
 	return IntVec2( desktopPosition.x, desktopPosition.y ); 
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void WindowContext::SetClientMousePosition( IntVec2 &clientPos )
 {
 	POINT screen = { clientPos.x, clientPos.y }; 
@@ -259,7 +256,7 @@ void WindowContext::SetClientMousePosition( IntVec2 &clientPos )
 	::SetCursorPos( screen.x, screen.y ); 
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 IntVec2 WindowContext::GetClientMouseRelativeMovement()
 {
 	return m_currentMousePosition - m_lastFrameMousePosition; 
@@ -271,7 +268,7 @@ const IntVec2& WindowContext::GetClientBounds()
 	return m_clientRectSize;
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void WindowContext::LockMouse()
 {
 	++m_lockCount; 
@@ -284,7 +281,7 @@ void WindowContext::LockMouse()
 	m_currentMousePosition = GetClientMousePosition(); 
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void WindowContext::UnlockMouse() 
 {
 	--m_lockCount; 
@@ -293,25 +290,25 @@ void WindowContext::UnlockMouse()
 	}
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void WindowContext::ShowMouse()
 {
 	::ShowCursor(TRUE); 
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void WindowContext::HideMouse()
 {
 	::ShowCursor(FALSE); 
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 bool WindowContext::HasFocus() const
 {
 	return (::GetActiveWindow() == (HWND)m_hwnd); 
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void WindowContext::SetMouseMode(eMouseMode mode)
 {
 	m_mouseMode = mode; 

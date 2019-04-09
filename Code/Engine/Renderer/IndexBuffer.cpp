@@ -1,17 +1,21 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 IndexBuffer::IndexBuffer( RenderContext *renderContext )
 	: RenderBuffer(renderContext)
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 IndexBuffer::~IndexBuffer()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool IndexBuffer::CreateStaticFor( uint const *indices, uint const count )
 {
 	// how many bytes do we need
@@ -36,6 +40,7 @@ bool IndexBuffer::CreateStaticFor( uint const *indices, uint const count )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool IndexBuffer::CopyCPUToGPU( uint const *indices, uint const count )
 {
 	// how many bytes do we need

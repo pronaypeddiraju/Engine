@@ -4,21 +4,22 @@
 #include "Engine/Math/Vertex_PCU.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------
-
 VertexBuffer::VertexBuffer(RenderContext *owner )
 	: RenderBuffer(owner )
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 VertexBuffer::~VertexBuffer()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 // Similar to UBO - since we are assuming if they are using this method 
 // it is dynamic, and we only need to remake if the size changes; 
+//------------------------------------------------------------------------------------------------------------------------------
 bool VertexBuffer::CopyCPUToGPU( void const *vertices, uint const count, uint const stride )
 {
 	// how many bytes do we need
@@ -60,10 +61,10 @@ bool VertexBuffer::CopyCPUToGPU( void const *vertices, uint const count, uint co
 	return false;
 }
 
-
-
+//------------------------------------------------------------------------------------------------------------------------------
 //Creating a static buffer because we could store a static mesh in which case the vertices dont 
 //change and can be saved as a static buffer
+//------------------------------------------------------------------------------------------------------------------------------
 bool VertexBuffer::CreateStaticFor( Vertex_PCU const *vertices, uint const count )
 {
 	GUARANTEE_RECOVERABLE(true, "Use CreateStaticForBuffer Instead");
@@ -90,6 +91,7 @@ bool VertexBuffer::CreateStaticFor( Vertex_PCU const *vertices, uint const count
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool VertexBuffer::CreateStaticForBuffer( void const *vertices, uint stride,  uint const count)
 {
 	// how many bytes do we need

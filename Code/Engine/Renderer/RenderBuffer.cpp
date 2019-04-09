@@ -21,14 +21,15 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // RenderBuffer.cpp
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // translate external enum to D3D11 specific options; 
 // These will be used by texture as well,
 // so may want to move this function to a common include; 
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC D3D11_USAGE RenderBuffer::DXUsageFromMemoryUsage( eGPUMemoryUsage const usage )
 {
 	switch (usage) 
@@ -45,9 +46,10 @@ STATIC D3D11_USAGE RenderBuffer::DXUsageFromMemoryUsage( eGPUMemoryUsage const u
 	}
 }
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // Convert a buffer usage bitfield to a DX specific 
 // version; 
+//------------------------------------------------------------------------------------------------------------------------------
 static uint DXBufferUsageFromBufferUsage( eRenderBufferUsageBits const usage )
 {
 	uint ret = 0U;
@@ -67,8 +69,9 @@ static uint DXBufferUsageFromBufferUsage( eRenderBufferUsageBits const usage )
 	return ret;
 }
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // Creates a buffer; 
+//------------------------------------------------------------------------------------------------------------------------------
 bool RenderBuffer::CreateBuffer( void const *initialData, 
 	size_t bufferSize, 
 	size_t elementSize, 
@@ -139,7 +142,7 @@ bool RenderBuffer::CreateBuffer( void const *initialData,
 	}
 }
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 bool RenderBuffer::CopyCPUToGPU( void const *data, size_t const byteSize )
 {
 	// staging or dynamic only & we better have room; 
@@ -176,11 +179,13 @@ bool RenderBuffer::CopyCPUToGPU( void const *data, size_t const byteSize )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 RenderBuffer::RenderBuffer( RenderContext *owner )
 {
 	m_owningRenderContext = owner;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 RenderBuffer::~RenderBuffer()
 {
 	DX_SAFE_RELEASE(m_handle);
@@ -188,11 +193,13 @@ RenderBuffer::~RenderBuffer()
 	m_owningRenderContext = nullptr;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 size_t RenderBuffer::GetSize() const
 {
 	return m_bufferSize;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool RenderBuffer::IsStatic() const
 {
 	if(m_memoryUsage == GPU_MEMORY_USAGE_STATIC)
@@ -205,6 +212,7 @@ bool RenderBuffer::IsStatic() const
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool RenderBuffer::IsDynamic() const
 {
 	if(m_memoryUsage == GPU_MEMORY_USAGE_DYNAMIC)

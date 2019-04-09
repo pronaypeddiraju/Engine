@@ -1,7 +1,8 @@
-#include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/Texture.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 SpriteSheet::SpriteSheet( const TextureView* texture, const IntVec2 spriteGridDefenition )
 	: m_spriteTexture(texture)
 {
@@ -35,11 +36,13 @@ SpriteSheet::SpriteSheet( const TextureView* texture, const IntVec2 spriteGridDe
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const SpriteDefenition& SpriteSheet::GetSpriteDef( int spriteIndex ) const
 {
 	return m_spriteDefs[spriteIndex];
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const SpriteDefenition& SpriteSheet::GetSpriteDef( IntVec2 spriteCoords, int sheetWidth ) const
 {
 	//Calculate Sprite index from coordinates

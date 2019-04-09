@@ -7,7 +7,7 @@
 // that OpenGL does.  So I have implementations for both;
 #define NDC_IS_ZERO_TO_ONE
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // These matrices are assuming a "Z-Forward" basis (0 is near, 1 is far)
 Matrix44 MakeProjectionOrthographic( float nx, float fx,
 	float const ny, float const fy, 
@@ -43,7 +43,7 @@ Matrix44 MakeProjectionOrthographic( float nx, float fx,
 #endif
 }
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 Matrix44 MakeProjectionPerspective( float fovDegrees,  // what is our view angle; 
 	float aspect,     // width/height of your target
 	float nz,         // near clip plane

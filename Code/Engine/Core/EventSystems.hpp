@@ -1,10 +1,11 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
-#include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Core/NamedStrings.hpp"
 
 typedef bool (*EventCallBackFn)(EventArgs& args);
 
+//------------------------------------------------------------------------------------------------------------------------------
 class EventSubscription
 {
 	friend class EventSystems;
@@ -19,6 +20,7 @@ private:
 	EventCallBackFn m_callbackFn = nullptr;
 };
 
+//------------------------------------------------------------------------------------------------------------------------------
 class EventSystems
 {
 	//Use this for std::map being stored as m_eventSubscriptions

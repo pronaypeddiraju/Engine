@@ -8,6 +8,7 @@ void KeyButtonState::UpdateStatus( bool isNowPressed )
 	m_isPressed = isNowPressed;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool KeyButtonState::wasJustPressed() const
 {
 	if (m_isPressed && !m_wasPressedLastFrame)
@@ -20,6 +21,7 @@ bool KeyButtonState::wasJustPressed() const
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool KeyButtonState::wasJustReleased() const
 {
 	if(!m_isPressed && m_wasPressedLastFrame)
@@ -32,6 +34,7 @@ bool KeyButtonState::wasJustReleased() const
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void KeyButtonState::ResetButton()
 {
 	m_wasPressedLastFrame = false;

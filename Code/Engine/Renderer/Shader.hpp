@@ -1,9 +1,10 @@
 #pragma once
-#include "Engine/Renderer/RendererTypes.hpp"
 #include "Engine/Core/XMLUtils/XMLUtils.hpp"
+#include "Engine/Renderer/RendererTypes.hpp"
 #include <d3d11.h>
 #include <string>
 
+//------------------------------------------------------------------------------------------------------------------------------
 struct ID3D11Resource;
 struct ID3D11VertexShader;
 struct ID3D11PixelShader;
@@ -11,10 +12,13 @@ struct ID3D10Blob;
 struct ID3D11InputLayout;
 struct ID3D11BlendState;
 
+//------------------------------------------------------------------------------------------------------------------------------
 class RenderContext;
 class BufferLayout;
 
-// A programmable shader stage, either vertex or pixel fornow; 
+//------------------------------------------------------------------------------------------------------------------------------
+// A programmable shader stage, either vertex or pixel for now; 
+//------------------------------------------------------------------------------------------------------------------------------
 class ShaderStage
 {
 public:
@@ -37,7 +41,7 @@ public:
 	inline bool IsValid() const { return m_handle != nullptr; }
 }; 
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 class Shader 
 {
 public:
@@ -120,6 +124,7 @@ public:
 	ID3D11DepthStencilState*	m_depthStencilState = nullptr;     // A04
 }; 
 
+//------------------------------------------------------------------------------------------------------------------------------
 ID3D10Blob* CompileHLSLToShaderBlob( char const *opt_filename,		// optional: used for error messages
 	void const* source_code,                                          // buffer containing source code.
 	size_t const source_code_size,                                    // size of the above buffer.

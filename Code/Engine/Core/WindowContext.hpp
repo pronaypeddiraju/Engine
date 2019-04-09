@@ -4,16 +4,18 @@
 #include <string>
 #include "Engine/Math/IntVec2.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 enum eMouseMode
 {
 	MOUSE_MODE_ABSOLUTE, 
 	MOUSE_MODE_RELATIVE, 
 };
 
+//------------------------------------------------------------------------------------------------------------------------------
 typedef unsigned int uint; 
 typedef bool (*windows_proc_cb)( void*, uint msg, uintptr_t wparam, uintptr_t lparam ); 
 
-//---------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 class WindowContext
 {
 public:
@@ -56,4 +58,3 @@ public:
 
 	IntVec2				m_clientRectSize = IntVec2::ZERO;
 };
-

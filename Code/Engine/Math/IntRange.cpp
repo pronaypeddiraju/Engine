@@ -29,18 +29,21 @@ void IntRange::SetFromText( const char* asText )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 IntRange::IntRange( const IntRange& copyFrom )
 {
 	minInt = copyFrom.minInt;
 	maxInt = copyFrom.maxInt;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 IntRange::IntRange( int min, int max )
 {
 	minInt = min;
 	maxInt = max;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 IntRange::IntRange( const char* asText )
 {
 	SetFromText(asText);

@@ -1,22 +1,21 @@
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // ErrorWarningAssert.cpp
-//
+//------------------------------------------------------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 #ifdef _WIN32
 #define PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #endif
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 #include "ErrorWarningAssert.hpp"
 #include "StringUtils.hpp"
 #include <stdarg.h>
 #include <iostream>
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 bool IsDebuggerAvailable()
 {
 #if defined( PLATFORM_WINDOWS )
@@ -40,8 +39,7 @@ bool IsDebuggerAvailable()
 #endif
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void DebuggerPrintf( const char* messageFormat, ... )
 {
 	const int MESSAGE_MAX_LENGTH = 2048;
@@ -62,10 +60,9 @@ void DebuggerPrintf( const char* messageFormat, ... )
 	std::cout << messageLiteral;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // Converts a SeverityLevel to a Windows MessageBox icon type (MB_etc)
-//
+//------------------------------------------------------------------------------------------------------------------------------
 #if defined( PLATFORM_WINDOWS )
 UINT GetWindowsMessageBoxIconFlagForSeverityLevel( SeverityLevel severity )
 {
@@ -80,8 +77,7 @@ UINT GetWindowsMessageBoxIconFlagForSeverityLevel( SeverityLevel severity )
 }
 #endif
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 const char* FindStartOfFileNameWithinFilePath( const char* filePath )
 {
 	if( filePath == nullptr )
@@ -103,8 +99,7 @@ const char* FindStartOfFileNameWithinFilePath( const char* filePath )
 	return scan;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void SystemDialogue_Okay( const std::string& messageTitle, const std::string& messageText, SeverityLevel severity )
 {
 	#if defined( PLATFORM_WINDOWS )
@@ -117,10 +112,9 @@ void SystemDialogue_Okay( const std::string& messageTitle, const std::string& me
 	#endif
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // Returns true if OKAY was chosen, false if CANCEL was chosen.
-//
+//------------------------------------------------------------------------------------------------------------------------------
 bool SystemDialogue_OkayCancel( const std::string& messageTitle, const std::string& messageText, SeverityLevel severity )
 {
 	bool isAnswerOkay = true;
@@ -138,10 +132,9 @@ bool SystemDialogue_OkayCancel( const std::string& messageTitle, const std::stri
 	return isAnswerOkay;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // Returns true if YES was chosen, false if NO was chosen.
-//
+//------------------------------------------------------------------------------------------------------------------------------
 bool SystemDialogue_YesNo( const std::string& messageTitle, const std::string& messageText, SeverityLevel severity )
 {
 	bool isAnswerYes = true;
@@ -159,10 +152,9 @@ bool SystemDialogue_YesNo( const std::string& messageTitle, const std::string& m
 	return isAnswerYes;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 // Returns 1 if YES was chosen, 0 if NO was chosen, -1 if CANCEL was chosen.
-//
+//------------------------------------------------------------------------------------------------------------------------------
 int SystemDialogue_YesNoCancel( const std::string& messageTitle, const std::string& messageText, SeverityLevel severity )
 {
 	int answerCode = 1;
@@ -180,8 +172,7 @@ int SystemDialogue_YesNoCancel( const std::string& messageTitle, const std::stri
 	return answerCode;
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 __declspec( noreturn ) void FatalError( const char* filePath, const char* functionName, int lineNum, const std::string& reasonForError, const char* conditionText )
 {
 	std::string errorMessage = reasonForError;
@@ -240,8 +231,7 @@ __declspec( noreturn ) void FatalError( const char* filePath, const char* functi
 	exit( 0 );
 }
 
-
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void RecoverableWarning( const char* filePath, const char* functionName, int lineNum, const std::string& reasonForWarning, const char* conditionText )
 {
 	std::string errorMessage = reasonForWarning;
@@ -309,5 +299,3 @@ void RecoverableWarning( const char* filePath, const char* functionName, int lin
 		}
 	}
 }
-
-

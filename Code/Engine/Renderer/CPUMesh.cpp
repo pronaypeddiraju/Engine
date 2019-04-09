@@ -1,16 +1,18 @@
-#include "Engine/Renderer/CPUMesh.hpp"
-#include "Engine/Math/AABB2.hpp"
+//------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Commons/ErrorWarningAssert.hpp"
+#include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/OBB2.hpp"
+#include "Engine/Renderer/CPUMesh.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 CPUMesh::CPUMesh()
 {
 	Clear();
 }
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMeshAddQuad( CPUMesh *out, const AABB2& quad, const Rgba& color)
 {
 	out->Clear(); 
@@ -40,6 +42,7 @@ void CPUMeshAddQuad( CPUMesh *out, const AABB2& quad, const Rgba& color)
 	out->AddIndexedTriangle( 2, 3, 1 ); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMeshAddBox2D( CPUMesh *out, const OBB2& obb, Rgba const &color )
 {
 	out->Clear();
@@ -71,6 +74,7 @@ void CPUMeshAddBox2D( CPUMesh *out, const OBB2& obb, Rgba const &color )
 	out->AddIndexedTriangle( 2, 3, 1 ); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMeshAddBoxFace(CPUMesh *out, const AABB2& quad)
 {
 	out->SetColor( Rgba::WHITE ); 
@@ -96,6 +100,7 @@ void CPUMeshAddBoxFace(CPUMesh *out, const AABB2& quad)
 	out->AddIndexedTriangle( 2, 3, 1 ); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool clearMesh )
 {
 	if(clearMesh)
@@ -238,6 +243,7 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	out->AddIndexedTriangle( 22, 23, 21 );
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMeshAddUVSphere( CPUMesh *out, const Vec3& center, float radius, const Rgba& color, uint wedges /*= 32*/, uint slices /*= 16 */ )
 {
 	out->Clear();
@@ -292,7 +298,7 @@ void CPUMeshAddUVSphere( CPUMesh *out, const Vec3& center, float radius, const R
 
 }
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMesh::AddIndexedTriangle( uint i0, uint i1, uint i2 )
 {
 	ASSERT_RECOVERABLE( i0 < m_vertices.size() , "Index is greater than the number of vertices");
@@ -305,16 +311,19 @@ void CPUMesh::AddIndexedTriangle( uint i0, uint i1, uint i2 )
 	m_indices.push_back(i2);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 uint CPUMesh::GetIndexCount() const
 {
 	return static_cast<int>(m_indices.size());
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 uint CPUMesh::GetVertexCount() const
 {
 	return static_cast<int>(m_vertices.size());
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMesh::Clear()
 {
 	m_vertices.clear();
@@ -325,11 +334,13 @@ void CPUMesh::Clear()
 	m_stamp.m_uv = Vec2::ZERO;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 CPUMesh::~CPUMesh()
 {
 	Clear();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMesh::SetColor( const Rgba& color )
 {
 	int vertexCount = (int)m_vertices.size();
@@ -340,16 +351,19 @@ void CPUMesh::SetColor( const Rgba& color )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMesh::SetStampColor( const Rgba& color)
 {
 	m_stamp.m_color = color;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMesh::SetUV( const Vec2& uv )
 {
 	m_stamp.m_uv = uv;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 uint CPUMesh::AddVertex( VertexMaster const &m )
 {
 	m_vertices.push_back(m);
@@ -360,6 +374,7 @@ uint CPUMesh::AddVertex( VertexMaster const &m )
 	return index;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 uint CPUMesh::AddVertex( Vec3 const &pos )
 {
 	VertexMaster m = m_stamp;
@@ -373,42 +388,50 @@ uint CPUMesh::AddVertex( Vec3 const &pos )
 	return index;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMesh::AddIndexedQuad( uint topLeft, uint topRight, uint bottomLeft, uint bottomRight )
 {
 	AddIndexedTriangle(bottomLeft, topRight, topLeft);
 	AddIndexedTriangle(bottomLeft, bottomRight, topRight);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMesh::SetLayout( const BufferLayout* layout )
 {
 	m_layout = layout;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 BufferLayout const* CPUMesh::GetLayout() const
 {
 	return m_layout;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 VertexMaster const* CPUMesh::GetVertices() const
 {
 	return &m_vertices[0];
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 uint const* CPUMesh::GetIndices() const
 {
 	return &m_indices[0];
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMesh::SetNormal( const Vec3& norm )
 {
 	m_stamp.m_normal = norm;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMesh::SetTangent( const Vec3& tangent )
 {
 	m_stamp.m_tangent = tangent;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMesh::SetBiTangent( const Vec3& biTangent )
 {
 	m_stamp.m_biTangent = biTangent;

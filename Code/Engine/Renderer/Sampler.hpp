@@ -9,6 +9,7 @@ struct ID3D11SamplerState;
 
 #define DX_SAFE_RELEASE(dx_resource)   if ((dx_resource) != nullptr) { dx_resource->Release(); dx_resource = nullptr; }
 
+//------------------------------------------------------------------------------------------------------------------------------
 enum eFilterMode
 {
 	FILTER_MODE_POINT,
@@ -17,6 +18,7 @@ enum eFilterMode
 	NUM_FILTER_MODES
 };
 
+//------------------------------------------------------------------------------------------------------------------------------
 class Sampler
 {
 public:

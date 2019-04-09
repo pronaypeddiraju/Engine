@@ -11,42 +11,50 @@ bool Collider2D::IsTouching(Collision2D* collision, Collider2D* otherCollider )
 	return GetCollisionInfo( collision, this, otherCollider); 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 eColliderType2D Collider2D::GetType()
 {
 	return m_colliderType;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Collider2D::SetCollision( bool inCollision )
 {
 	m_inCollision = inCollision;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 AABB2Collider::AABB2Collider( const Vec2& minBounds, const Vec2& maxBounds )
 {
 	m_localShape = AABB2(minBounds, maxBounds);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 AABB2Collider::~AABB2Collider()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void AABB2Collider::SetMomentForObject()
 {
 	GUARANTEE_OR_DIE(true, "There is no implementation for handling the Moment of Inertia for a AABB2");
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool AABB2Collider::Contains( Vec2 worldPoint )
 {
 	UNUSED(worldPoint);
 	return false;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 AABB2 AABB2Collider::GetLocalShape() const
 {
 	return m_localShape;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 AABB2 AABB2Collider::GetWorldShape() const
 {
 	AABB2 box = GetLocalShape();
@@ -54,37 +62,44 @@ AABB2 AABB2Collider::GetWorldShape() const
 	return box;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Vec2 AABB2Collider::GetBoxCenter() const
 {
 	return m_localShape.GetBoxCenter();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Disc2DCollider::Disc2DCollider( const Vec2& centre, float radius )
 {
 	m_localShape = Disc2D(centre, radius);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Disc2DCollider::~Disc2DCollider()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void Disc2DCollider::SetMomentForObject()
 {
 	GUARANTEE_OR_DIE(true, "There is no implementation for handling the Moment of Inertia for a Disc");
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool Disc2DCollider::Contains( Vec2 worldPoint )
 {
 	UNUSED(worldPoint);
 	return false;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Disc2D Disc2DCollider::GetLocalShape() const
 {
 	return m_localShape;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 Disc2D Disc2DCollider::GetWorldShape() const
 {
 	Disc2D disc = GetLocalShape();
@@ -92,16 +107,19 @@ Disc2D Disc2DCollider::GetWorldShape() const
 	return disc;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 BoxCollider2D::BoxCollider2D( Vec2 center, Vec2 size /*= Vec2::ZERO*/, float rotationDegrees /*= 0.0f */ )
 {
 	m_localShape = OBB2(center, size, rotationDegrees);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 BoxCollider2D::~BoxCollider2D()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void BoxCollider2D::SetMomentForObject()
 {
 	float width = (m_localShape.m_halfExtents.x * 2.f); 
@@ -111,17 +129,20 @@ void BoxCollider2D::SetMomentForObject()
 	m_rigidbody->m_momentOfInertia = m_rigidbody->m_mass * (1.f/12.f * (width * width + height * height));
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool BoxCollider2D::Contains( Vec2 worldPoint )
 {
 	OBB2 worldShape = GetWorldShape();
 	return worldShape.Contains(worldPoint);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 OBB2 BoxCollider2D::GetLocalShape() const
 {
 	return m_localShape;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 OBB2 BoxCollider2D::GetWorldShape() const
 {
 	OBB2 box = GetLocalShape();
@@ -129,6 +150,7 @@ OBB2 BoxCollider2D::GetWorldShape() const
 	return box;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 CapsuleCollider2D::CapsuleCollider2D( Vec2 start, Vec2 end, float radius )
 {
 	m_referenceCapsule = Capsule2D(start, end, radius);
@@ -142,11 +164,13 @@ CapsuleCollider2D::CapsuleCollider2D( Vec2 start, Vec2 end, float radius )
 	m_radius = radius;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 CapsuleCollider2D::~CapsuleCollider2D()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void CapsuleCollider2D::SetMomentForObject()
 {
 
@@ -174,17 +198,20 @@ void CapsuleCollider2D::SetMomentForObject()
 	m_rigidbody->m_momentOfInertia += offset * offset * m_rigidbody->m_mass * ratioDisc;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool CapsuleCollider2D::Contains( Vec2 worldPoint )
 {
 	OBB2 worldShape = GetWorldShape();
 	return IsPointInCapsule2D(worldPoint, worldShape.GetBottomLeft(), worldShape.GetTopRight(), m_radius);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 OBB2 CapsuleCollider2D::GetLocalShape() const
 {
 	return m_localShape;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 OBB2 CapsuleCollider2D::GetWorldShape() const
 {
 	OBB2 box = GetLocalShape();
@@ -192,11 +219,13 @@ OBB2 CapsuleCollider2D::GetWorldShape() const
 	return box;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const Capsule2D& CapsuleCollider2D::GetReferenceShape() const
 {
 	return m_referenceCapsule;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 float CapsuleCollider2D::GetCapsuleRadius() const
 {
 	return m_radius;

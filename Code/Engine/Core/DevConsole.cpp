@@ -59,12 +59,14 @@ bool DevConsole::ExecuteCommandLine( const std::string& commandLine )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::HandleKeyUp( unsigned char vkKeyCode )
 {
 	UNUSED(vkKeyCode);
 	GUARANTEE_RECOVERABLE(true, "Nothing to handle");
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::ShowLastCommand()
 {
 	if(m_lastCommandIndex == 0)
@@ -88,6 +90,7 @@ void DevConsole::ShowLastCommand()
 	m_carotPosition = static_cast<int>(m_currentInput.size());
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::ShowNextCommand()
 {
 	if(m_lastCommandIndex == static_cast<unsigned int>(m_commandLog.size()) - 1)
@@ -104,6 +107,7 @@ void DevConsole::ShowNextCommand()
 	m_carotPosition = static_cast<int>(m_currentInput.size());
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::HandleKeyDown( unsigned char vkKeyCode )
 {
 	switch( vkKeyCode )
@@ -225,11 +229,13 @@ void DevConsole::HandleKeyDown( unsigned char vkKeyCode )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::ResetIndexValues()
 {
 	m_lastCommandIndex = 0;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::HandleCharacter( unsigned char charCode )
 {
 	if(m_carotPosition == m_currentInput.size())
@@ -251,18 +257,22 @@ void DevConsole::HandleCharacter( unsigned char charCode )
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 const STATIC Rgba DevConsole::CONSOLE_ECHO		=	Rgba(0.255f, 0.450f, 1.0f, 1.0f);
 
+//------------------------------------------------------------------------------------------------------------------------------
 DevConsole::DevConsole()
 {
 	m_timeAtStart = static_cast<float>(GetCurrentTimeSeconds());
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 DevConsole::~DevConsole()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::Startup()
 {
 	g_eventSystem->SubscribeEventCallBackFn( "Test", Command_Test );
@@ -270,11 +280,13 @@ void DevConsole::Startup()
 	m_currentInput.empty();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::BeginFrame()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::UpdateConsole(float deltaTime)
 {
 	m_carotTimeDiff += deltaTime;
@@ -286,21 +298,25 @@ void DevConsole::UpdateConsole(float deltaTime)
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::EndFrame()
 {
 	m_frameCount++;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::Shutdown()
 {
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::SetBitmapFont( BitmapFont& bitmapFont )
 {
 	m_consoleFont = &bitmapFont;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 ConsoleEntry::ConsoleEntry(const Rgba& textColor, const std::string& printString, unsigned int frameNum, float frameTime)
 	: m_printColor (textColor),
 	  m_printString (printString),
@@ -310,6 +326,7 @@ ConsoleEntry::ConsoleEntry(const Rgba& textColor, const std::string& printString
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::PrintString( const Rgba& textColor, const std::string& devConsolePrintString )
 {
 	float time = static_cast<float>(GetCurrentTimeSeconds());
@@ -318,6 +335,7 @@ void DevConsole::PrintString( const Rgba& textColor, const std::string& devConso
 	m_printLog.push_back(consoleEntry);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeight ) const
 {
 	camera.SetModelMatrix(Matrix44::IDENTITY);
@@ -426,6 +444,7 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 	renderer.EndCamera();
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::ToggleOpenFull()
 {
 	if(m_isOpen)
@@ -438,12 +457,13 @@ void DevConsole::ToggleOpenFull()
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool DevConsole::IsOpen() const
 {
 	return m_isOpen;
 }
 
-//------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC bool DevConsole::Command_Test( EventArgs& args )
 {
 	UNUSED( args );
