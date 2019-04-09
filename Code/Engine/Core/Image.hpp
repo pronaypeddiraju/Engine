@@ -31,7 +31,7 @@ public:
 private:
 	std::string			m_imageFilePath = "";
 	IntVec2				m_dimensions = IntVec2::ZERO;
-	std::vector<Rgba*>	m_texelRepository;
+	std::vector<Rgba>	m_texelRepository;
 	
 	//Raw data
 	unsigned char*		m_imageRawData = nullptr;

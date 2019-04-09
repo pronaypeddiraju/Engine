@@ -751,6 +751,7 @@ TextureView* RenderContext::GetOrCreateTextureViewFromFile( std::string const &f
 	} 
 
 	Texture2D *tex = new Texture2D(this); 
+	DebuggerPrintf( "Loading: %s\n", filename.c_str() ); 
 
 	if (!tex->LoadTextureFromFile( filename, isFont))
 	{

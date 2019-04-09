@@ -49,6 +49,7 @@ enum eDebugRenderObject
 class ObjectProperties
 {
 public:
+	virtual ~ObjectProperties();
 	eDebugRenderObject m_renderObjectType;
 	float m_durationSeconds         = 0.0f;  // show for a single frame
 	float m_startDuration			= 0.f;
@@ -68,7 +69,7 @@ class Point2DProperties : public ObjectProperties
 public:
 	explicit Point2DProperties(eDebugRenderObject renderObject, const Vec2& screenPosition, 
 							   float durationSeconds = 0.f, float size = DEFAULT_POINT_SIZE);
-	~Point2DProperties();
+	virtual ~Point2DProperties();
 
 public:
 	Vec2 m_screenPosition				= Vec2::ZERO;
@@ -82,7 +83,7 @@ class Line2DProperties : public ObjectProperties
 public:
 	explicit Line2DProperties(eDebugRenderObject renderObject, const Vec2& startPos, const Vec2& endPos, 
 							  float durationSeconds = 0.f, float lineWidth = DEFAULT_LINE_WIDTH);
-	~Line2DProperties();
+	virtual ~Line2DProperties();
 
 public:
 	Vec2 m_startPos						= Vec2::ZERO;
@@ -98,7 +99,7 @@ class Arrow2DProperties : public ObjectProperties
 public:
 	explicit Arrow2DProperties(eDebugRenderObject renderObject, const Vec2& start, const Vec2& end,
 							   float durationSeconds = 0.f, float lineWidth = DEFAULT_LINE_WIDTH);
-	~Arrow2DProperties();
+	virtual ~Arrow2DProperties();
 
 public:
 	Vec2 m_startPos						= Vec2::ZERO;
@@ -118,7 +119,7 @@ class Quad2DProperties : public ObjectProperties
 public:
 	explicit Quad2DProperties( eDebugRenderObject renderObject, const AABB2& quad, 
 							   float durationSeconds = 0.f, float thickness = DEFAULT_WIRE_WIDTH_2D, TextureView* texture = nullptr );
-	~Quad2DProperties();
+	virtual ~Quad2DProperties();
 
 public:
 	TextureView* m_texture				= nullptr;
@@ -133,7 +134,7 @@ class Disc2DProperties : public ObjectProperties
 public:
 	explicit Disc2DProperties( eDebugRenderObject renderObject, const Disc2D& disc, float thickness, 
 							   float durationSeconds = 0.f);
-	~Disc2DProperties();
+	virtual ~Disc2DProperties();
 
 public:
 	Disc2D m_disc;
@@ -151,7 +152,7 @@ class Point3DProperties : public ObjectProperties
 public:
 	explicit Point3DProperties( eDebugRenderObject renderObject, const Vec3& position, float size = DEFAULT_POINT_SIZE_3D, 
 								float durationSeconds = 0.f, TextureView* texture = nullptr);
-	~Point3DProperties();
+	virtual ~Point3DProperties();
 
 public:
 	Vec3 m_position						= Vec3::ZERO;
@@ -168,7 +169,7 @@ class Line3DProperties : public ObjectProperties
 public:
 	explicit Line3DProperties( eDebugRenderObject renderObject, const Vec3& startPos, const Vec3& endPos, 
 							   float durationSeconds = 0.f, float lineWidth = DEFAULT_LINE_WIDTH);
-	~Line3DProperties();
+	virtual ~Line3DProperties();
 
 public:
 	Vec3 m_startPos						= Vec3::ZERO;
@@ -186,7 +187,7 @@ class Quad3DProperties : public ObjectProperties
 public:
 	explicit Quad3DProperties( eDebugRenderObject renderObject, const AABB2& quad, const Vec3& position, 
 							   float durationSeconds = 0.f, TextureView* texture = nullptr, bool billBoarded = true );
-	~Quad3DProperties();
+	virtual ~Quad3DProperties();
 
 public:
 	Vec3 m_position						= Vec3::ZERO;
@@ -203,7 +204,7 @@ class SphereProperties : public ObjectProperties
 public:
 	explicit SphereProperties( eDebugRenderObject renderObject, const Vec3& center, float radius, 
 							   float durationSeconds = 0.f, TextureView* texture = nullptr);
-	~SphereProperties();
+	virtual ~SphereProperties();
 
 public:
 	Vec3 m_center						= Vec3::ZERO;
@@ -218,7 +219,7 @@ class BoxProperties : public ObjectProperties
 public:
 	explicit BoxProperties( eDebugRenderObject renderObject, const AABB3& box, const Vec3& position, 
 							float durationSeconds = 0.f, TextureView* texture = nullptr);
-	~BoxProperties();
+	virtual ~BoxProperties();
 
 public:
 	Vec3 m_position						= Vec3::ZERO;
@@ -237,7 +238,7 @@ public:
 							 float fontHeight, float durationSeconds = 0.f, bool isBillboarded = true);
 	explicit TextProperties( eDebugRenderObject renderObject, const Vec2& startPosition, const Vec2& endPosition, const std::string& text,
 							 float fontHeight, float durationSeconds = 0.f);
-	~TextProperties();
+	virtual ~TextProperties();
 
 public:
 	//For 3D
@@ -260,7 +261,7 @@ class LogProperties : public ObjectProperties
 {
 public:
 	explicit LogProperties(eDebugRenderObject renderObject, const Rgba& printColor, const std::string& printString, float durationSeconds = 0.f);
-	~LogProperties();
+	virtual ~LogProperties();
 
 public:
 	Rgba m_printColor						= Rgba::WHITE;

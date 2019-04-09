@@ -38,8 +38,8 @@ Image::Image( const char* imageFilePath )
 			unsigned char greenByte = m_imageRawData[greenByteIndex];
 			unsigned char blueByte = m_imageRawData[blueByteIndex];
 
-			m_texelRepository[texelIndex] = new Rgba();
-			m_texelRepository[texelIndex]->SetFromBytes(redByte, greenByte, blueByte);
+			m_texelRepository[texelIndex] = Rgba();
+			m_texelRepository[texelIndex].SetFromBytes(redByte, greenByte, blueByte);
 		}
 	}
 	else
@@ -57,8 +57,8 @@ Image::Image( const char* imageFilePath )
 			unsigned char blueByte = m_imageRawData[blueByteIndex];
 			unsigned char alphaByte = m_imageRawData[alphaByteIndex];
 
-			m_texelRepository[texelIndex] = new Rgba();
-			m_texelRepository[texelIndex]->SetFromBytes(redByte, greenByte, blueByte, alphaByte);
+			m_texelRepository[texelIndex] = Rgba();
+			m_texelRepository[texelIndex].SetFromBytes(redByte, greenByte, blueByte, alphaByte);
 		}
 	}
 }
@@ -86,8 +86,8 @@ Image::Image( const Rgba& color, const int width /*= 1*/, const int height /*= 1
 		unsigned char blueByte = m_imageRawData[blueByteIndex];
 		unsigned char alphaByte = m_imageRawData[alphaByteIndex];
 
-		*m_texelRepository[texelIndex] = color;
-		m_texelRepository[texelIndex]->SetFromBytes(redByte, greenByte, blueByte, alphaByte);
+		m_texelRepository[texelIndex] = color;
+		m_texelRepository[texelIndex].SetFromBytes(redByte, greenByte, blueByte, alphaByte);
 	}
 }
 
@@ -103,14 +103,14 @@ const Rgba& Image::GetTexelColor( const IntVec2& texelCoordinates ) const
 {
 	//Get index from the coordinates
 	int texelIndex = texelCoordinates.x + texelCoordinates.y * m_dimensions.x;
-	return *m_texelRepository[texelIndex];	
+	return m_texelRepository[texelIndex];	
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 const Rgba& Image::GetTexelColor(int xCoord, int yCoord) const
 {
 	int texelIndex = xCoord + yCoord * m_dimensions.x;
-	return *m_texelRepository[texelIndex];	
+	return m_texelRepository[texelIndex];	
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -142,12 +142,12 @@ const void* Image::GetImageBuffer() const
 void Image::SetTexelColor( int xCoord, int yCoord, const Rgba& setColor )
 {
 	int texelIndex = xCoord + yCoord * m_dimensions.x;
-	*m_texelRepository[texelIndex] = setColor;
+	m_texelRepository[texelIndex] = setColor;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 void Image::SetTexelColor( const IntVec2& texelCoordinates, const Rgba& setColor )
 {
 	int texelIndex = texelCoordinates.x + texelCoordinates.y * m_dimensions.x;
-	*m_texelRepository[texelIndex] = setColor;
+	m_texelRepository[texelIndex] = setColor;
 }
