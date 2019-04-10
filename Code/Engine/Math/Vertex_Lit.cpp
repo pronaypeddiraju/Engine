@@ -16,6 +16,12 @@ Vertex_Lit::Vertex_Lit( const VertexMaster& master )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+Vertex_Lit::Vertex_Lit()
+{
+
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC BufferAttributeT Vertex_Lit::LAYOUT[] = {
 	BufferAttributeT( "POSITION",  DF_VEC3,      offsetof(Vertex_Lit, m_position) ), 
 	BufferAttributeT( "NORMAL",    DF_VEC3,      offsetof(Vertex_Lit, m_normal)   ), 

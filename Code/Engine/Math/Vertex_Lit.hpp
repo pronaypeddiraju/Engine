@@ -24,6 +24,7 @@ public:
 	Vec2 m_uv; 
 
 public:
+	Vertex_Lit();
 	explicit Vertex_Lit(const VertexMaster& master);
 	~Vertex_Lit() {}
 
