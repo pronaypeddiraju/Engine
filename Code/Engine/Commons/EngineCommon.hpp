@@ -101,6 +101,16 @@ const unsigned short F5_KEY = 116;
 const unsigned short F6_KEY = 117;
 const unsigned short F7_KEY = 118;
 const unsigned short F8_KEY = 119;
+const unsigned short NUM_1  = 49;
+const unsigned short NUM_2  = 50;
+const unsigned short NUM_3  = 51;
+const unsigned short NUM_4  = 52;
+const unsigned short NUM_5  = 53;
+const unsigned short NUM_6  = 54;
+const unsigned short NUM_7  = 55;
+const unsigned short NUM_8  = 56;
+const unsigned short NUM_9  = 57;
+const unsigned short NUM_0  = 58;
 const unsigned short TILDY_KEY = 192;
 const unsigned short TAB_KEY = 9;
 
