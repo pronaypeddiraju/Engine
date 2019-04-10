@@ -192,6 +192,8 @@ void DebugRender::CleanUpObjects()
 	{
 		if(m_screenRenderObjects[objectIndex].objectProperties->m_durationSeconds <= 0.f)
 		{
+			delete m_screenRenderObjects[objectIndex].objectProperties;
+			m_screenRenderObjects[objectIndex].objectProperties = nullptr;
 			m_screenRenderObjects.erase(m_screenRenderObjects.begin() + objectIndex);
 		}
 	}
@@ -201,6 +203,8 @@ void DebugRender::CleanUpObjects()
 	{
 		if(m_worldRenderObjects[objectIndex].objectProperties->m_durationSeconds <= 0.f)
 		{
+			delete m_worldRenderObjects[objectIndex].objectProperties;
+			m_worldRenderObjects[objectIndex].objectProperties = nullptr;
 			m_worldRenderObjects.erase(m_worldRenderObjects.begin() + objectIndex);
 		}
 	}
@@ -210,6 +214,8 @@ void DebugRender::CleanUpObjects()
 	{
 		if(m_printLogObjects[objectIndex].objectProperties->m_durationSeconds <= 0.f)
 		{
+			delete m_printLogObjects[objectIndex].objectProperties;
+			m_printLogObjects[objectIndex].objectProperties = nullptr;
 			m_printLogObjects.erase(m_printLogObjects.begin() + objectIndex);
 		}
 	}
