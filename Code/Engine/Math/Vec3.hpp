@@ -53,6 +53,7 @@ public:
 	void				ClampLengthXY(float maxLength);
 	void				SetLengthXY(float setLength);
 	void				Normalize();
+	const Vec3			ClampVector(Vec3& toClamp, const Vec3& minBound, const Vec3& maxBound);
 
 	// Operators
 	const Vec3			operator+( const Vec3& vecToAdd ) const;					// vec3 + vec3

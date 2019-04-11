@@ -284,6 +284,16 @@ void Vec3::Normalize()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+const Vec3 Vec3::ClampVector( Vec3& toClamp, const Vec3& minBound, const Vec3& maxBound )
+{
+	toClamp.x = Clamp(toClamp.x, minBound.x, maxBound.x);
+	toClamp.y = Clamp(toClamp.y, minBound.y, maxBound.y);
+	toClamp.z = Clamp(toClamp.z, minBound.z, maxBound.z);
+
+	return toClamp;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec3::operator+=( const Vec3& vecToAdd )
 {
 	x += vecToAdd.x;
