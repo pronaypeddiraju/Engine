@@ -59,6 +59,18 @@ float Vec3::GetLengthXY() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+float Vec3::GetLengthXZ() const
+{
+	return sqrtf(x*x + z*z);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+float Vec3::GetLengthYZ() const
+{
+	return sqrtf(y*y + z*z);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 float Vec3::GetLengthSquared() const
 {
 	return (x*x + y*y + z*z);
@@ -83,6 +95,30 @@ float Vec3::GetAngleAboutZRadians() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+float Vec3::GetAngleAboutYDegrees() const
+{
+	return ATan2Degrees(z ,x);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+float Vec3::GetAngleAboutYRadians() const
+{
+	return atan2f(z, x);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+float Vec3::GetAngleAboutXDegrees() const
+{
+	return ATan2Degrees(z ,y);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+float Vec3::GetAngleAboutXRadians() const
+{
+	return atan2f(z, y);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Vec3::GetRotatedAboutZDegrees( float degreesToRotateAroundZ ) const
 {
 	float radiansToRotate = DegreesToRadians(degreesToRotateAroundZ);
@@ -103,6 +139,52 @@ const Vec3 Vec3::GetRotatedAboutZRadians( float radiansToRotateAroundZ ) const
 	float newY = r * sinf(newRadians);
 
 	return Vec3(newX, newY, z);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const Vec3 Vec3::GetRotatedAboutYDegrees( float degreesToRotateAroundY ) const
+{
+	float radiansToRotate = DegreesToRadians(degreesToRotateAroundY);
+	Vec3 resultVec = GetRotatedAboutYRadians(radiansToRotate);	
+	return resultVec;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const Vec3 Vec3::GetRotatedAboutYRadians( float radiansToRotateAroundY ) const
+{
+	float r = GetLengthXZ();
+
+	float currentRadians = GetAngleAboutYRadians();
+
+	float newRadians = currentRadians + radiansToRotateAroundY;
+
+	float newX = r * cosf(newRadians);
+	float newZ = r * sinf(newRadians);
+
+	return Vec3(newX, y, newZ);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const Vec3 Vec3::GetRotatedAboutXDegrees( float degreesToRotateAroundX ) const
+{
+	float radiansToRotate = DegreesToRadians(degreesToRotateAroundX);
+	Vec3 resultVec = GetRotatedAboutXRadians(radiansToRotate);	
+	return resultVec;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const Vec3 Vec3::GetRotatedAboutXRadians( float radiansToRotateAroundX ) const
+{
+	float r = GetLengthXZ();
+
+	float currentRadians = GetAngleAboutYRadians();
+
+	float newRadians = currentRadians + radiansToRotateAroundX;
+
+	float newY = r * cosf(newRadians);
+	float newZ = r * sinf(newRadians);
+
+	return Vec3(x, newY, newZ);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -184,6 +266,21 @@ void Vec3::SetLengthXY( float setLength )
 	x = newLength * cosf(vectorAngle);
 	y = newLength * sinf(vectorAngle);
 	z = 0.f;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Vec3::Normalize()
+{
+	if(GetLength() == NULL)
+	{
+		x = 1.f;
+		y = 1.f; 
+		z = 1.f;
+	}
+
+	x = x / sqrtf(x*x + y*y + z*z);
+	y = y / sqrtf(x*x + y*y + z*z);
+	z = z / sqrtf(x*x + y*y + z*z);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

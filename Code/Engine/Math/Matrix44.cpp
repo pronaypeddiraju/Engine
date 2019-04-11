@@ -659,6 +659,26 @@ const Matrix44 Matrix44::Transpose( const Matrix44& sourceMatrix )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+STATIC const Matrix44 Matrix44::LookAt( const Vec3& position, const Vec3& focalPoint, const Vec3& worldUp )
+{
+	Vec3 forward = (focalPoint - position).GetNormalized();
+	Vec3 right = GetCrossProduct(worldUp, forward).GetNormalized();
+	Vec3 up = GetCrossProduct(forward, right);
+
+	Vec3 translation = position;
+
+	Matrix44 lookAtMat = Matrix44::IDENTITY;
+	
+	lookAtMat.SetIVector(right);
+	lookAtMat.SetJVector(up);
+	lookAtMat.SetKVector(forward);
+
+	lookAtMat.SetTranslation3D(translation, lookAtMat);
+
+	return lookAtMat;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void Matrix44::InverseMatrix()
 {
 	double inverse[16];

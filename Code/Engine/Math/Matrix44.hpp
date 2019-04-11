@@ -76,7 +76,7 @@ public:
 	static const Matrix44	SetTranslation3D (const Vec3& position, Matrix44& setMatrix);
 	static const Matrix44	TransposeRotationComponents( const Matrix44& sourceMatrix);
 	static const Matrix44	Transpose( const Matrix44& sourceMatrix );
-
+	static const Matrix44	LookAt(const Vec3& positionOffset, const Vec3& focalPoint, const Vec3& worldUp);
 
 	//Operations on Matrix
 	// Mat44 * Vec3

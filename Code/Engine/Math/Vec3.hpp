@@ -28,21 +28,32 @@ public:
 	//Access Methods
 	float				GetLength() const;
 	float				GetLengthXY() const;
+	float				GetLengthXZ() const;
+	float				GetLengthYZ() const;
 	float				GetLengthSquared() const;
 	float				GetLengthSquaredXY() const;
 	float				GetAngleAboutZDegrees() const;
 	float				GetAngleAboutZRadians() const;
+	float				GetAngleAboutYDegrees() const;
+	float				GetAngleAboutYRadians() const;
+	float				GetAngleAboutXDegrees() const;
+	float				GetAngleAboutXRadians() const;
 	float				GetAngleDegreesXY() const;
 	float				GetAngleRadiansXY() const;
 	const Vec3			GetRotatedAboutZDegrees(float degreesToRotateAroundZ) const;
 	const Vec3			GetRotatedAboutZRadians(float radiansToRotateAroundZ) const;
+	const Vec3			GetRotatedAboutYDegrees(float degreesToRotateAroundY) const;
+	const Vec3			GetRotatedAboutYRadians(float radiansToRotateAroundY) const;
+	const Vec3			GetRotatedAboutXDegrees(float degreesToRotateAroundX) const;
+	const Vec3			GetRotatedAboutXRadians(float radiansToRotateAroundX) const;
 	const Vec3			GetNormalized() const;
 
 	//Mutator methods
 	void				SetFromText(const char* asText);
 	void				ClampLengthXY(float maxLength);
 	void				SetLengthXY(float setLength);
-	
+	void				Normalize();
+
 	// Operators
 	const Vec3			operator+( const Vec3& vecToAdd ) const;					// vec3 + vec3
 	const Vec3			operator-( const Vec3& vecToSubtract ) const;				// vec3 - vec3
