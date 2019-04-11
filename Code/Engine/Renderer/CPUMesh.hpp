@@ -42,18 +42,22 @@ public:
 		SetLayout( BufferLayout::For<T>() ); 
 	}
 
-	BufferLayout const* GetLayout() const;       // A06
-	VertexMaster const* GetVertices() const;     // A06 - just since I don't like accessing members direction
+	BufferLayout const*		GetLayout() const;       // A06
+	VertexMaster const*		GetVertices() const;     // A06 - just since I don't like accessing members direction
 	uint const*				GetIndices() const;
 
 	// Stamp a vertex into the list - return the index; 
 	uint						AddVertex( const VertexMaster& m );     // A04
 	uint						AddVertex( const Vec3& pos );           // A04
+	
+	void						AddIndex( uint index);
 	// Adds a single triangle; 
 	void						AddIndexedTriangle( uint i0, uint i1, uint i2 );    // a04
 	// adds two triangles (bl, tr, tl) and (bl, br, tr)
 	void						AddIndexedQuad( uint topLeft, uint topRight, uint bottomLeft, uint bottomRight );    // A04
-		
+	
+
+
 	// Helpers
 	uint GetVertexCount() const;                 // A04
 	uint GetIndexCount() const;                  // A04

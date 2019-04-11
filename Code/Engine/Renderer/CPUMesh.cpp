@@ -436,3 +436,9 @@ void CPUMesh::SetBiTangent( const Vec3& biTangent )
 {
 	m_stamp.m_biTangent = biTangent;
 }
+
+//------------------------------------------------------------------------------------------------------------------------------
+void CPUMesh::AddIndex( uint index )
+{
+	m_indices.push_back(index);
+}
