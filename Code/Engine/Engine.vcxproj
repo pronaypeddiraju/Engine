@@ -191,6 +191,7 @@
     <ClCompile Include="Core\WindowContext.cpp" />
     <ClCompile Include="Core\XMLUtils\XMLUtils.cpp" />
     <ClCompile Include="Input\AnalogJoystick.cpp" />
+    <ClCompile Include="Input\InputEvent.cpp" />
     <ClCompile Include="Input\InputSystem.cpp" />
     <ClCompile Include="Input\KeyButtonState.cpp" />
     <ClCompile Include="Input\XboxController.cpp" />
@@ -270,6 +271,7 @@
     <ClInclude Include="Core\WindowContext.hpp" />
     <ClInclude Include="Core\XMLUtils\XMLUtils.hpp" />
     <ClInclude Include="Input\AnalogJoystick.hpp" />
+    <ClInclude Include="Input\InputEvent.hpp" />
     <ClInclude Include="Input\InputSystem.hpp" />
     <ClInclude Include="Input\KeyButtonState.hpp" />
     <ClInclude Include="Input\XboxController.hpp" />
