@@ -60,6 +60,7 @@ public:
 	static bool		Command_Exec(EventArgs& args);
 
 
+
 public:
 
  	const static Rgba						CONSOLE_INFO;

@@ -37,6 +37,7 @@ void NamedStrings::PopulateFromXmlElementAttributes( const XMLElement& element )
 void NamedStrings::SetValue( const std::string& keyName, const std::string& newValue )
 {
 	//m_keyValuePairs.at(keyName) = newValue;
+	/*
 	std::map<std::string, std::string>::iterator stringPair = m_keyValuePairs.find(keyName);
 	if(stringPair == m_keyValuePairs.end())
 	{
@@ -46,6 +47,9 @@ void NamedStrings::SetValue( const std::string& keyName, const std::string& newV
 	{
 		stringPair->second = newValue;
 	}
+	*/
+
+	m_keyValuePairs[keyName] = newValue;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

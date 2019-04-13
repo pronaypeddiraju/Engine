@@ -22,11 +22,11 @@ bool DevConsole::ExecuteCommandLine( const std::string& commandLine )
 {
 	//Split the string to sensible key value pairs
 	std::vector<std::string> splitStrings = SplitStringOnDelimiter(commandLine, ' ');
-	if(splitStrings[0] != "Exec")
+	
+	if(splitStrings.size() == 0)
 	{
 		return false;
 	}
-
 	else
 	{
 		g_devConsole->PrintString(CONSOLE_INFO, "Data Received:");
@@ -37,6 +37,7 @@ bool DevConsole::ExecuteCommandLine( const std::string& commandLine )
 		}
 		g_devConsole->PrintString(CONSOLE_INFO, printS);
 
+		EventArgs args;
 
 		for(int stringIndex = 1; stringIndex < static_cast<int>(splitStrings.size()); stringIndex++)
 		{
@@ -52,10 +53,12 @@ bool DevConsole::ExecuteCommandLine( const std::string& commandLine )
 				//Print the data we read
 				printS = " Action: " + KeyValSplit[0] + " = " + KeyValSplit[1];
 				g_devConsole->PrintString(CONSOLE_ECHO, printS);
+
+				args.SetValue(KeyValSplit[0], KeyValSplit[1]);
 			}
 		}
 
-		return true;
+		g_eventSystem->FireEvent(splitStrings[0], args);
 	}
 }
 
@@ -193,7 +196,9 @@ void DevConsole::HandleKeyDown( unsigned char vkKeyCode )
 			return;
 		}
 
-		bool result = g_eventSystem->FireEvent(m_currentInput);
+		//bool result = g_eventSystem->FireEvent(m_currentInput);
+
+		bool result = ExecuteCommandLine(m_currentInput);
 
 		if(!result)
 		{
