@@ -22,6 +22,7 @@ public:
 	const static Rgba ORANGE;
 	const static Rgba DARK_GREY;
 	const static Rgba MAGENTA;
+	const static Rgba CLEAR;
 
 private:
 	//private variables

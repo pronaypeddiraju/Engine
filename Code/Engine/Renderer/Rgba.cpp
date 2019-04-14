@@ -188,4 +188,5 @@ const STATIC Rgba Rgba::DARK_GREY(0.6f, 0.6f, 0.6f, 1.f);
 const STATIC Rgba Rgba::ORANGE(1.f, 0.65f, 0.f, 1.f);
 const STATIC Rgba Rgba::MAGENTA(1.f, 0.f, 1.f, 1.f);
 const STATIC Rgba Rgba::NONE(0.f,0.f, 0.f, 0.f);
+const STATIC Rgba Rgba::CLEAR(1.f, 1.f, 1.f, 0.f);
 //------------------------------------------------------------------------------------------------------------------------------
