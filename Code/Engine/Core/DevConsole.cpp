@@ -58,7 +58,8 @@ bool DevConsole::ExecuteCommandLine( const std::string& commandLine )
 			}
 		}
 
-		g_eventSystem->FireEvent(splitStrings[0], args);
+		bool result = g_eventSystem->FireEvent(splitStrings[0], args);
+		return result;
 	}
 }
 

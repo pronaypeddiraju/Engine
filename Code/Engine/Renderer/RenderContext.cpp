@@ -8,6 +8,7 @@
 #include "Engine/Core/WindowContext.hpp"
 //Math
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/IntVec2.hpp"
 //Rendering systems
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/ColorTargetView.hpp"
@@ -1050,6 +1051,12 @@ void RenderContext::DrawMesh( GPUMesh *mesh )
 	{
 		ERROR_AND_DIE("Could not create input layout!");
 	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+IntVec2 RenderContext::GetCurrentScreenDimensions()
+{
+	return g_windowContext->GetClientBounds();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

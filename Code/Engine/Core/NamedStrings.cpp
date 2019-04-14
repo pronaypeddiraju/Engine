@@ -37,17 +37,6 @@ void NamedStrings::PopulateFromXmlElementAttributes( const XMLElement& element )
 void NamedStrings::SetValue( const std::string& keyName, const std::string& newValue )
 {
 	//m_keyValuePairs.at(keyName) = newValue;
-	/*
-	std::map<std::string, std::string>::iterator stringPair = m_keyValuePairs.find(keyName);
-	if(stringPair == m_keyValuePairs.end())
-	{
-		ERROR_AND_DIE(" >> ERROR : The key requested doesn't exist in the named string");
-	}
-	else
-	{
-		stringPair->second = newValue;
-	}
-	*/
 
 	m_keyValuePairs[keyName] = newValue;
 }

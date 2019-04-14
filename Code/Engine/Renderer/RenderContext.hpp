@@ -26,6 +26,7 @@ class TextureView2D;
 class UniformBuffer;
 class VertexBuffer;
 class WindowContext;
+struct IntVec2;
 
 //D3D11
 struct ID3D11Device;
@@ -134,6 +135,8 @@ public:
 
 	void						DrawMesh( GPUMesh *mesh );                                         // A04
 	
+	IntVec2						GetCurrentScreenDimensions();
+
 public:
 	//White texture
 	unsigned char				plainWhiteImageData[4] = {255, 255, 255, 255};

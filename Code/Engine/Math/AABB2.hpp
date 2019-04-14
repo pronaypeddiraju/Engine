@@ -30,9 +30,19 @@ public:
 	void					SetFromText(const char* asText);
 
 	Vec3					GetTopLeft() const;
+	Vec2					GetTopLeft2D() const;
+
 	Vec3					GetTopRight() const;
+	Vec2					GetTopRight2D() const;
+
 	Vec3					GetBottomLeft() const;
+	Vec2					GetBottomLeft2D() const;
+
 	Vec3					GetBottomRight() const;
+	Vec2					GetBottomRight2D() const;
+
+	float 					GetWidth() const;
+	float 					GetHeight() const;
 
 	void					Resize( const Vec2& newDimensions, const Vec2& pivotAnchorAlignment = Vec2::ALIGN_CENTERED );
 	void					AlignWithinBox( const AABB2& box, const Vec2& alignment );
