@@ -125,7 +125,7 @@ void XboxController::CheckControllerState()
 //------------------------------------------------------------------------------------------------------------------------------
 void XboxController::SetupDebugController()
 {
-	TODO("Implement Debug Contoroller");
+	//TODO("Implement Debug Contoroller");
 
 	//draw 3 circles
 
@@ -178,7 +178,7 @@ void XboxController::SetupDebugController()
 //------------------------------------------------------------------------------------------------------------------------------
 void XboxController::RenderDebugController() const
 {
-	TODO("Implement xbox Debugging");
+	//TODO("Implement xbox Debugging");
 	g_renderContext->DrawVertexArray(m_NUM_DEBUG_VERTICES, m_outerDeadZone);
 	g_renderContext->DrawVertexArray(m_NUM_DEBUG_VERTICES, m_correctedZone);
 	g_renderContext->DrawVertexArray(m_NUM_DEBUG_VERTICES, m_innerDeadZone);

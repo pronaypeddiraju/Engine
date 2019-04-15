@@ -92,7 +92,7 @@ void DebugRender::Shutdown()
 
 	s_debugRender = nullptr;
 
-	TODO("Properly delete all the DebugRenderOptionsT objects stored in vectors");
+	//TODO("Properly delete all the DebugRenderOptionsT objects stored in vectors");
 
 	// No need to delete debug3DCam as we get this from Game camera. It is destroyed when Game is shutting down
 	//delete m_debug3DCam;
@@ -185,7 +185,7 @@ void DebugRender::Update( float deltaTime )
 //------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::CleanUpObjects()
 {
-	TODO("Call Delete on all the ObjectProperties and also add destructor to the DebugRenderOptionsT object");
+	//TODO("Call Delete on all the ObjectProperties and also add destructor to the DebugRenderOptionsT object");
 
 	//Screen 
 	for(int objectIndex = 0; objectIndex < (int)m_screenRenderObjects.size(); objectIndex++)

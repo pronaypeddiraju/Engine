@@ -45,7 +45,7 @@ void Material::LoadMaterialFromXML( const std::string& fileName )
 
 	XMLElement* rootElement = materialDoc.RootElement();
 
-	TODO("Unfuck this section of Material class");
+	//TODO("Unfuck this section of Material class");
 
 	m_materialName = ParseXmlAttribute(*rootElement, "id", m_materialName);
 	m_shaderName = ParseXmlAttribute(*rootElement, "shader", m_shaderName);

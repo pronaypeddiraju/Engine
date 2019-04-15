@@ -134,7 +134,7 @@ void WindowContext::Create( std::string const &title, float clientAspect, float 
 		clientWidth = clientHeight * clientAspect;
 	}
 
-	m_trueClientSize = IntVec2(clientWidth, clientHeight);
+	m_trueClientSize = IntVec2((int)clientWidth, (int)clientHeight);
 
 	// Calculate client rect bounds by centering the client area
 	float clientMarginX = 0.5f * (desktopWidth - clientWidth);
