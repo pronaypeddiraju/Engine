@@ -74,6 +74,7 @@ public:
 	void					SetClientDimensions(int height, int width);
 	void					SetDebugFont( BitmapFont* font);
 	void					Shutdown();
+
 	void					BeginFrame();
 	void					EndFrame();
 	void					Update(float deltaTime);
