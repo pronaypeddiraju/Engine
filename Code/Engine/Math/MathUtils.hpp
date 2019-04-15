@@ -39,6 +39,7 @@ bool			DoSpheresOverlap(const Vec3& centreA, float radiusA, const Vec3& centreB,
 bool			IsPointInDisc2D(const Vec2& point, const Vec2& centre, float radius);
 bool			IsPointInSector2D(const Vec2& point, const Vec2& origin, float orientationDegrees, float maxDistance, float apertureDegrees);
 bool			IsPointInSector2D(const Vec2& point, const Vec2& origin, const Vec2& orientationVector, float maxDistance, float apertureDegrees);
+bool			IsPointInAABBB2(const AABB2& box, const Vec2& point);
 
 float			GetDotProduct(const Vec2& vecA, const Vec2& vecB);
 float			GetDotProduct(const Vec3& vecA, const Vec3& vecB);

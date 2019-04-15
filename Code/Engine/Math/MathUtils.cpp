@@ -224,6 +224,22 @@ bool IsPointInSector2D( const Vec2& point, const Vec2& origin, float orientation
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+bool IsPointInAABBB2( const AABB2& box, const Vec2& point )
+{
+	Vec2 newPoint = point;
+	newPoint.ClampVector(newPoint, box.m_minBounds, box.m_maxBounds);
+
+	if(newPoint.x > box.m_minBounds.x && newPoint.x < box.m_maxBounds.x && newPoint.y > box.m_minBounds.y && newPoint.y < box.m_maxBounds.y)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 // Push disc out of a box
 //------------------------------------------------------------------------------------------------------------------------------
 void PushDiscOutOfAABB2(Vec2& position, float radius, const AABB2& tileBounds )

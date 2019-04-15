@@ -134,6 +134,8 @@ void WindowContext::Create( std::string const &title, float clientAspect, float 
 		clientWidth = clientHeight * clientAspect;
 	}
 
+	m_trueClientSize = IntVec2(clientWidth, clientHeight);
+
 	// Calculate client rect bounds by centering the client area
 	float clientMarginX = 0.5f * (desktopWidth - clientWidth);
 	float clientMarginY = 0.5f * (desktopHeight - clientHeight);
@@ -266,6 +268,12 @@ IntVec2 WindowContext::GetClientMouseRelativeMovement()
 const IntVec2& WindowContext::GetClientBounds()
 {
 	return m_clientRectSize;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const IntVec2& WindowContext::GetTureClientBounds()
+{
+	return m_trueClientSize;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

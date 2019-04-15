@@ -33,6 +33,7 @@ public:
 
 	IntVec2				GetClientMouseRelativeMovement(); 
 	const IntVec2&		GetClientBounds();
+	const IntVec2&		GetTureClientBounds();
 
 	void				LockMouse(); 
 	void				UnlockMouse(); 
@@ -57,4 +58,5 @@ public:
 	int					m_lockCount            = 0; 
 
 	IntVec2				m_clientRectSize = IntVec2::ZERO;
+	IntVec2				m_trueClientSize = IntVec2::ZERO;
 };
