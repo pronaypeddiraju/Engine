@@ -238,6 +238,9 @@
     <ClCompile Include="Input\InputEvent.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Clock.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -452,5 +455,6 @@
     <ClInclude Include="Math\VertexMaster.hpp" />
     <ClInclude Include="Renderer\Material.hpp" />
     <ClInclude Include="Input\InputEvent.hpp" />
+    <ClInclude Include="Core\Clock.hpp" />
   </ItemGroup>
 </Project>

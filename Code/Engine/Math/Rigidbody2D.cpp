@@ -137,6 +137,7 @@ void Rigidbody2D::DebugRender( RenderContext* renderContext, const Rgba& color )
 		CapsuleCollider2D* collider = reinterpret_cast<CapsuleCollider2D*>(m_collider);
 
 		AddVertsForWireCapsule2D(verts, collider->GetWorldShape(), collider->GetCapsuleRadius(), color, 0.5f);
+		AddVertsForLine2D(verts, collider->GetWorldShape().m_center, collider->GetWorldShape().m_center + collider->GetCapsuleRadius() * Vec2(0.f, 1.f).GetRotatedDegrees(m_rotation), 0.2f, Rgba::WHITE);
 	}
 	break;
 	case NUM_COLLIDER_TYPES:

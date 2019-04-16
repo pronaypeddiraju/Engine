@@ -80,6 +80,8 @@ public:
 	Vec2									m_frameForces = Vec2::ZERO;
 	float									m_frameTorque = 0.f;
 
+	float									m_friction = 0.0f;				// Friction along the surface
+
 private:
 	eSimulationType							m_simulationType = TYPE_UNKOWN;
 

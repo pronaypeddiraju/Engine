@@ -287,28 +287,6 @@ void PhysicsSystem::ResolveDynamicVsStaticCollisions(bool canResolve)
 
 				if(canResolve)
 				{
-					//Resolve
-					/*
-					Vec2 velocity = m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_velocity;
-
-					float velocityOnNormal = GetDotProduct(velocity, collision.m_manifold.m_normal);
-					if(velocityOnNormal > 0.f)
-					{
-						//Ignore this collision as we are already moving out of object
-						return;
-					}
-
-					Vec2 tangent = collision.m_manifold.m_normal.GetRotated90Degrees();
-					Vec2 tangentialVelocity = GetProjectedVector(velocity, tangent);
-
-					float finalVelocityScale = -velocityOnNormal * (collision.m_Obj->m_rigidbody->m_material.restitution) * (collision.m_otherObj->m_rigidbody->m_material.restitution);
-
-					//Comute final velocity along normal and add to existing velocity on tangent
-					Vec2 fVelocityNormal = collision.m_manifold.m_normal * finalVelocityScale;
-					Vec2 finalVelocity = fVelocityNormal + tangentialVelocity;
-
-					m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_velocity = finalVelocity;
-					*/
 
 					Rigidbody2D* rb0 = m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex];
 					Rigidbody2D* rb1 = m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex];
@@ -317,13 +295,7 @@ void PhysicsSystem::ResolveDynamicVsStaticCollisions(bool canResolve)
 					Vec2 velocity1 = rb1->m_velocity;
 
 					float mass0 = rb0->m_mass; 
-					//float mass1 = rb1->m_mass; 
-					//float totalMass = mass0 + mass1;
-
-					//Correction on system mass
-					//float correct0 = mass1 / totalMass;   // move myself along the correction normal
-					//float correct1 = 1 - correct0;  // move opposite along the normal
-
+				
 					Manifold2D manifold = collision.m_manifold;
 					Vec2 contactPoint = manifold.m_contact + manifold.m_normal * (manifold.m_penetration);
 
@@ -335,24 +307,35 @@ void PhysicsSystem::ResolveDynamicVsStaticCollisions(bool canResolve)
 					Vec2 toPointPerpendicular0 = rb0toContact.GetRotated90Degrees();
 					Vec2 toPointPerpendicular1 = rb1toContact.GetRotated90Degrees();
 
-					//Generate the impulse along normal
-
 					//Get the velocity at the impact point for both objects
 					Vec2 velocityAtPoint0 = velocity0 + DegreesToRadians(rb0->m_angularVelocity) * toPointPerpendicular0;
 					Vec2 velocityAtPoint1 = velocity1 + DegreesToRadians(rb1->m_angularVelocity) * toPointPerpendicular1;
 
 					//Coefficient of restitution
 					float CoefficientOfRestitution = (collision.m_Obj->m_rigidbody->m_material.restitution) * (collision.m_otherObj->m_rigidbody->m_material.restitution);
-
+					
+					//Generate Impulse along the normal
 					float j = -(1 + CoefficientOfRestitution) * GetDotProduct((velocityAtPoint0 - velocityAtPoint1), manifold.m_normal);
-
 					float constant0 = ( GetDotProduct(toPointPerpendicular0, manifold.m_normal) * GetDotProduct(toPointPerpendicular0, manifold.m_normal) / rb0->m_momentOfInertia ) ;
-
 					float d = (1 / mass0) + (constant0);
 
 					float impulseAlongNormal = j / d;
 
-					rb0->ApplyImpulseAt( impulseAlongNormal * collision.m_manifold.m_normal, contactPoint );					
+					//Generate the impuse along the tangent
+					Vec2 tangent = manifold.m_normal.GetRotated90Degrees();
+					float jT = -(1 + CoefficientOfRestitution) * GetDotProduct((velocityAtPoint0 - velocityAtPoint1), tangent);
+					float constant0T = (GetDotProduct(toPointPerpendicular0, tangent) * GetDotProduct(toPointPerpendicular0, tangent) / rb0->m_momentOfInertia);
+					float dT = (1 / mass0) + (constant0T);
+
+					float impulseAlongTangent = jT / dT;
+
+					//Coulumb's law
+					float frictionCoefficient = sqrt(abs(rb0->m_friction * rb1->m_friction));
+
+					impulseAlongTangent = Clamp(impulseAlongTangent, -impulseAlongNormal, impulseAlongNormal);
+					impulseAlongTangent *= frictionCoefficient;
+
+					rb0->ApplyImpulseAt( impulseAlongNormal * collision.m_manifold.m_normal + impulseAlongTangent * tangent, contactPoint );					
 				}
 
 			}
@@ -416,12 +399,63 @@ void PhysicsSystem::ResolveDynamicVsDynamicCollisions(bool canResolve)
 					Rigidbody2D* rb0 = m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex];
 					Rigidbody2D* rb1 = m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][otherColliderIndex];
 
-					Vec2 *contactPoint = new Vec2();
-					float impulseAlongNormal = GetImpulseAlongNormal(contactPoint, collision, *rb0, *rb1);
+					//Vec2 *contactPoint = new Vec2();
+					//float impulseAlongNormal = GetImpulseAlongNormal(contactPoint, collision, *rb0, *rb1);
 
-					rb0->ApplyImpulseAt( impulseAlongNormal * collision.m_manifold.m_normal, *contactPoint );
-					rb1->ApplyImpulseAt( -1.f * impulseAlongNormal * collision.m_manifold.m_normal, *contactPoint );
+					Vec2 velocity0 = rb0->m_velocity;
+					Vec2 velocity1 = rb1->m_velocity;
 
+					float mass0 = rb0->m_mass;
+					float mass1 = rb1->m_mass;
+					float totalMass = mass0 + mass1;
+
+					//Correction on system mass
+					float correct0 = mass1 / totalMass;   // move myself along the correction normal
+					//float correct1 = 1 - correct0;  // move opposite along the normal
+
+					Manifold2D manifold = collision.m_manifold;
+					Vec2 contactPoint = manifold.m_contact + manifold.m_normal * (manifold.m_penetration * correct0);
+
+					//Get the vector from the object centre to the point of contact for both objects
+					Vec2 rb0toContact = contactPoint - rb0->m_object_transform->m_position;
+					Vec2 rb1toContact = contactPoint - rb1->m_object_transform->m_position;
+
+					//Get the perpendicular of the vector from center to point
+					Vec2 toPointPerpendicular0 = rb0toContact.GetRotated90Degrees();
+					Vec2 toPointPerpendicular1 = rb1toContact.GetRotated90Degrees();
+
+					//Get the velocity at the impact point for both objects
+					Vec2 velocityAtPoint0 = velocity0 + DegreesToRadians(rb0->m_angularVelocity) * toPointPerpendicular0;
+					Vec2 velocityAtPoint1 = velocity1 + DegreesToRadians(rb1->m_angularVelocity) * toPointPerpendicular1;
+
+					//Coefficient of restitution
+					float CoefficientOfRestitution = (collision.m_Obj->m_rigidbody->m_material.restitution) * (collision.m_otherObj->m_rigidbody->m_material.restitution);
+
+					//Impulse along the normal
+					float j = -(1 + CoefficientOfRestitution) * GetDotProduct((velocityAtPoint0 - velocityAtPoint1), manifold.m_normal);
+					float constant0 = (GetDotProduct(toPointPerpendicular0, manifold.m_normal) * GetDotProduct(toPointPerpendicular0, manifold.m_normal) / rb0->m_momentOfInertia);
+					float constant1 = (GetDotProduct(toPointPerpendicular1, manifold.m_normal) * GetDotProduct(toPointPerpendicular1, manifold.m_normal) / rb1->m_momentOfInertia);
+					float d = ((mass0 + mass1) / (mass0 * mass1)) + constant0 + constant1;
+
+					float impulseAlongNormal = j / d;
+
+					//Impulse along the tangent
+					Vec2 tangent = manifold.m_normal.GetRotated90Degrees();
+					float jT = -(1 + CoefficientOfRestitution) * GetDotProduct((velocityAtPoint0 - velocityAtPoint1), tangent);
+					float constant0T = (GetDotProduct(toPointPerpendicular0, tangent) * GetDotProduct(toPointPerpendicular0, tangent) / rb0->m_momentOfInertia);
+					float constant1T = (GetDotProduct(toPointPerpendicular1, tangent) * GetDotProduct(toPointPerpendicular1, tangent) / rb1->m_momentOfInertia);
+					float dT = ((mass0 + mass1) / (mass0 * mass1)) + constant0T + constant1T;
+
+					float impulseAlongTangent = jT / dT;
+
+					//Coulumb's law
+					float frictionCoefficient = sqrt(abs(rb0->m_friction * rb1->m_friction));
+
+					impulseAlongTangent = Clamp(impulseAlongTangent, -impulseAlongNormal, impulseAlongNormal);
+					impulseAlongTangent *= frictionCoefficient;
+
+					rb0->ApplyImpulseAt( impulseAlongNormal * collision.m_manifold.m_normal + impulseAlongTangent * tangent, contactPoint );
+					rb1->ApplyImpulseAt( -1.f * (impulseAlongNormal * collision.m_manifold.m_normal + impulseAlongTangent * tangent), contactPoint );
 				}
 
 			}

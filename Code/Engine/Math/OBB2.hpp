@@ -17,8 +17,8 @@ public:
 	explicit OBB2( AABB2 const &aabb ); 
 
 	//Modification Utilities
-	void Translate(Vec2 offset);
-	void MoveTo(Vec2 position);
+	void Translate( Vec2 offset );
+	void MoveTo( Vec2 position );
 
 	void RotateBy( float degrees );
 	void SetRotation( float degrees );

@@ -180,6 +180,7 @@
     <ClCompile Include="Commons\EngineCommon.cpp" />
     <ClCompile Include="Commons\ErrorWarningAssert.cpp" />
     <ClCompile Include="Commons\StringUtils.cpp" />
+    <ClCompile Include="Core\Clock.cpp" />
     <ClCompile Include="Core\DevConsole.cpp" />
     <ClCompile Include="Core\EventSystems.cpp" />
     <ClCompile Include="Core\FileUtils.cpp" />
@@ -260,6 +261,7 @@
     <ClInclude Include="Commons\EngineCommon.hpp" />
     <ClInclude Include="Commons\ErrorWarningAssert.hpp" />
     <ClInclude Include="Commons\StringUtils.hpp" />
+    <ClInclude Include="Core\Clock.hpp" />
     <ClInclude Include="Core\DevConsole.hpp" />
     <ClInclude Include="Core\EventSystems.hpp" />
     <ClInclude Include="Core\FileUtils.hpp" />
