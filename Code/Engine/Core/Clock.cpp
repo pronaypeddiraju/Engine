@@ -71,7 +71,7 @@ void Clock::SetFrameLimit(double frameLimit)
 //------------------------------------------------------------------------------------------------------------------------------
 void Clock::Step(float deltaSeconds)
 {
-	deltaSeconds *= m_dilation;
+	deltaSeconds *= (float)m_dilation;
 
 	//If paused simply set DeltaSeconds to 0
 	if(IsPaused())
@@ -79,7 +79,7 @@ void Clock::Step(float deltaSeconds)
 		deltaSeconds = 0;
 	}
 
-	deltaSeconds = Clamp(deltaSeconds, 0.f, m_frameLimit);
+	deltaSeconds = Clamp(deltaSeconds, 0.f, (float)m_frameLimit);
 
 	++m_framCount;
 	m_totalTime += deltaSeconds;

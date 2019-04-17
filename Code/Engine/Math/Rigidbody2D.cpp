@@ -67,13 +67,13 @@ void Rigidbody2D::Move( float deltaTime )
 	m_velocity *= (1.0f - (GetLinearDrag() * deltaTime));
 
 	//Set new position based on new velocities
-	m_transform.m_position += m_velocity * deltaTime;
+	m_transform.m_position += m_velocity * deltaTime * Vec2(m_constraints.x, m_constraints.y);
 
 	//Angular velocity steps
 	float angularAcc = m_frameTorque / m_momentOfInertia;
 	m_angularVelocity += angularAcc * deltaTime;
 	m_angularVelocity *= (1.f - (GetAngularDrag() * deltaTime));
-	m_rotation += m_angularVelocity * deltaTime;
+	m_rotation += m_angularVelocity * deltaTime * m_constraints.z;
 
 	ApplyRotation();
 }
@@ -98,13 +98,13 @@ void Rigidbody2D::ApplyRotation()
 	case COLLIDER_BOX:
 	{
 		BoxCollider2D* collider = reinterpret_cast<BoxCollider2D*>(m_collider);
-		collider->m_localShape.SetRotation(m_rotation);
+		collider->m_localShape.SetRotation(m_rotation * m_constraints.z);
 	}
 	break;
 	case COLLIDER_CAPSULE:
 	{
 		CapsuleCollider2D* collider = reinterpret_cast<CapsuleCollider2D*>(m_collider);
-		collider->m_localShape.SetRotation(m_rotation);
+		collider->m_localShape.SetRotation(m_rotation * m_constraints.z);
 	}
 	break;
 	}
@@ -193,9 +193,9 @@ void Rigidbody2D::SetConstraints(const Vec3& constraints)
 //------------------------------------------------------------------------------------------------------------------------------
 void Rigidbody2D::SetConstraints(bool x, bool y, bool rotation)
 {
-	(x) ? m_constraints.x = 0.f : m_constraints.x = 1.f;
-	(y) ? m_constraints.y = 0.f : m_constraints.y = 1.f;
-	(rotation) ? m_constraints.z = 0.f : m_constraints.z = 1.f;
+	(x) ? m_constraints.x = 1.f : m_constraints.x = 0.f;
+	(y) ? m_constraints.y = 1.f : m_constraints.y = 0.f;
+	(rotation) ? m_constraints.z = 1.f : m_constraints.z = 0.f;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -214,7 +214,9 @@ eSimulationType Rigidbody2D::GetSimulationType()
 void Rigidbody2D::ApplyImpulses( Vec2 linearImpulse, float angularImpulse )
 {
 	m_velocity += linearImpulse / m_mass;
-	m_angularVelocity += RadiansToDegrees(angularImpulse / m_momentOfInertia);  
+	m_velocity = m_velocity * Vec2(m_constraints.x, m_constraints.y);
+	m_angularVelocity += RadiansToDegrees(angularImpulse / m_momentOfInertia); 
+	m_angularVelocity *= m_constraints.z;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

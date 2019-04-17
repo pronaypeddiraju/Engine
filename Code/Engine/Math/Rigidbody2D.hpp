@@ -38,7 +38,7 @@ public:
 	void									Move(float deltaTime);
 	void									ApplyRotation();
 	//Apply specific movement
-	inline void								MoveBy(Vec2 movement) { m_transform.m_position += movement;}
+	inline void								MoveBy(Vec2 movement) { m_transform.m_position += movement * Vec2(m_constraints.x, m_constraints.y);}
 	
 	//Impulses
 	void									ApplyImpulses(Vec2 linearImpulse, float angularImpulse);
@@ -90,7 +90,7 @@ public:
 	float									m_linearDrag = 0.1f;
 	float									m_angularDrag = 0.1f;
 
-	Vec3									m_constraints = Vec3::ONE;
+	Vec3									m_constraints = Vec3(0.f, 1.f, 0.f);
 
 private:
 	eSimulationType							m_simulationType = TYPE_UNKOWN;
