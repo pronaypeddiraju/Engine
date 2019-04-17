@@ -64,15 +64,30 @@ void Rigidbody2D::Move( float deltaTime )
 	acc = m_frameForces / m_mass;
 	m_velocity += acc * deltaTime;
 
+	m_velocity *= (1.0f - (GetLinearDrag() * deltaTime));
+
 	//Set new position based on new velocities
 	m_transform.m_position += m_velocity * deltaTime;
 
 	//Angular velocity steps
 	float angularAcc = m_frameTorque / m_momentOfInertia;
 	m_angularVelocity += angularAcc * deltaTime;
+	m_angularVelocity *= (1.f - (GetAngularDrag() * deltaTime));
 	m_rotation += m_angularVelocity * deltaTime;
 
 	ApplyRotation();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+float Rigidbody2D::GetLinearDrag()
+{
+	return m_linearDrag;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+float Rigidbody2D::GetAngularDrag()
+{
+	return m_angularDrag;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -167,6 +182,20 @@ void Rigidbody2D::SetObject( void* object, Transform2* objectTransform )
 {
 	m_object = object;
 	m_object_transform = objectTransform;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Rigidbody2D::SetConstraints(const Vec3& constraints)
+{
+	m_constraints = constraints;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Rigidbody2D::SetConstraints(bool x, bool y, bool rotation)
+{
+	(x) ? m_constraints.x = 0.f : m_constraints.x = 1.f;
+	(y) ? m_constraints.y = 0.f : m_constraints.y = 1.f;
+	(rotation) ? m_constraints.z = 0.f : m_constraints.z = 1.f;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

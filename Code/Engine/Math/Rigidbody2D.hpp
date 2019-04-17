@@ -3,6 +3,7 @@
 //Engine Systems
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/Transform2.hpp"
+#include "Engine/Math/Vec3.hpp"
 
 class Collider2D;
 class RenderContext;
@@ -36,28 +37,32 @@ public:
 	//Apply a single step of movement
 	void									Move(float deltaTime);
 	void									ApplyRotation();
-
 	//Apply specific movement
 	inline void								MoveBy(Vec2 movement) { m_transform.m_position += movement;}
+	
+	//Impulses
+	void									ApplyImpulses(Vec2 linearImpulse, float angularImpulse);
+	void									ApplyImpulseAt(Vec2 linearImpulse, Vec2 pointOfContact);
+	
+	//Forces and Torques
+	inline void								AddForce(Vec2 force) { m_frameForces += force; }
+	inline void								AddTorque(float torque) { m_frameTorque += torque; }
 
+	//Render
 	void									DebugRender(RenderContext* renderContext, const Rgba& color) const;
 	
 	//Mutators
 	void									SetSimulationMode(eSimulationType simulationType);
 	Collider2D*								SetCollider(Collider2D* collider);
 	void									SetObject(void* object, Transform2* objectTransform);
+	void									SetConstraints(const Vec3& constraints);
+	void									SetConstraints(bool x, bool y, bool rotation);
 
 	//Accessors
 	Vec2									GetPosition() const;
 	eSimulationType							GetSimulationType();
-
-	//Impulses
-	void									ApplyImpulses( Vec2 linearImpulse, float angularImpulse );
-	void									ApplyImpulseAt( Vec2 linearImpulse, Vec2 pointOfContact );
-
-	//Forces and Torques
-	inline void								AddForce(Vec2 force)	{	m_frameForces += force;		}
-	inline void								AddTorque(float torque) {	m_frameTorque += torque;	}
+	float									GetLinearDrag();
+	float									GetAngularDrag();
 
 public:
 	PhysicsSystem*							m_system = nullptr; 			// system this rigidbody belongs to; 
@@ -70,7 +75,7 @@ public:
 	float 									m_angularVelocity = 0.f;
 	float									m_mass;  						// how heavy am I
 
-	Collider2D*								m_collider = nullptr;						// my shape; (could eventually be made a set)
+	Collider2D*								m_collider = nullptr;			// my shape; (could eventually be made a set)
 	bool									m_isTrigger = false;
 	PhysicsMaterialT						m_material;
 
@@ -80,7 +85,12 @@ public:
 	Vec2									m_frameForces = Vec2::ZERO;
 	float									m_frameTorque = 0.f;
 
-	float									m_friction = 0.0f;				// Friction along the surface
+	float									m_friction = 1.f;				// Friction along the surface
+
+	float									m_linearDrag = 0.1f;
+	float									m_angularDrag = 0.1f;
+
+	Vec3									m_constraints = Vec3::ONE;
 
 private:
 	eSimulationType							m_simulationType = TYPE_UNKOWN;
