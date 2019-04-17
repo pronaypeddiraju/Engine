@@ -97,7 +97,7 @@ void Clock::Step(float deltaSeconds)
 void Clock::ForceStep(float deltaSeconds)
 {
 	// Do everything Steo does but without the check for a pause
-	deltaSeconds *= (float)m_dilation;
+	//deltaSeconds *= (float)m_dilation;
 
 	deltaSeconds = Clamp(deltaSeconds, 0.f, (float)m_frameLimit);
 
