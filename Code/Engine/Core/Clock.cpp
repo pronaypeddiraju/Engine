@@ -93,3 +93,71 @@ void Clock::Step(float deltaSeconds)
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
+void Clock::ForceStep(float deltaSeconds)
+{
+	// Do everything Steo does but without the check for a pause
+	deltaSeconds *= (float)m_dilation;
+
+	deltaSeconds = Clamp(deltaSeconds, 0.f, (float)m_frameLimit);
+
+	++m_framCount;
+	m_totalTime += deltaSeconds;
+	m_frameTime = deltaSeconds;
+
+	//Call step on all the child clocks
+	int numChildren = (int)m_children.size();
+	for (int childIndex = 0; childIndex < numChildren; childIndex++)
+	{
+		m_children[childIndex]->Step(deltaSeconds);
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Clock::Dilate(double timeDilation)
+{
+	m_dilation = timeDilation;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Clock::Pause()
+{
+	m_pauseCount++;
+	if (m_pauseCount > 0)
+	{
+		m_dilation = 0.0;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Clock::Resume()
+{
+	m_pauseCount--;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Clock::ForcePause()
+{
+	m_pauseCount = 1;
+	m_dilation = 0.0;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Clock::ForceResume()
+{
+	m_pauseCount = 0;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool Clock::IsPaused()
+{
+	if (m_pauseCount > 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+

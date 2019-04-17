@@ -11,17 +11,19 @@ public:
 	Clock( Clock* parent );
 	~Clock();
 
-	void		SetParent( Clock* parent);
-	void		SetFrameLimit( double frameLimit );
-				
-	void		Step( float deltaSeconds );
-	void		Dilate( double timeDilation );
-	void		Pause();
-	void		Resume();
-	void		ForcePause();
-	void		ForceResume();
+	void				SetParent( Clock* parent);
+	void				SetFrameLimit( double frameLimit );
+						
+	void				Step( float deltaSeconds );
+	void				ForceStep( float deltaSeconds );
+	void				Dilate( double timeDilation );
+	void				Pause();
+	void				Resume();
+	void				ForcePause();
+	void				ForceResume();
 
-	bool		IsPaused();
+	inline double		GetFrameTime() { return m_frameTime; }
+	bool				IsPaused();
 
 private:
 	double m_frameTime							= 0.0;
