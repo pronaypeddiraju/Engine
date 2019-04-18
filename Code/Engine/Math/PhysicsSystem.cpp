@@ -321,6 +321,16 @@ void PhysicsSystem::ResolveDynamicVsStaticCollisions(bool canResolve)
 
 					float impulseAlongNormal = j / d;
 
+					rb0->ApplyImpulseAt( impulseAlongNormal * collision.m_manifold.m_normal, contactPoint );					
+
+					//Get updated velocity
+					velocity0 = rb0->m_velocity;
+					velocity1 = rb1->m_velocity;
+
+					//Get the velocity at the impact point for both objects
+					velocityAtPoint0 = velocity0 + DegreesToRadians(rb0->m_angularVelocity) * toPointPerpendicular0;
+					velocityAtPoint1 = velocity1 + DegreesToRadians(rb1->m_angularVelocity) * toPointPerpendicular1;
+
 					//Generate the impuse along the tangent
 					Vec2 tangent = manifold.m_normal.GetRotated90Degrees();
 					float jT = -(1 + CoefficientOfRestitution) * GetDotProduct((velocityAtPoint0 - velocityAtPoint1), tangent);
@@ -335,7 +345,7 @@ void PhysicsSystem::ResolveDynamicVsStaticCollisions(bool canResolve)
 					impulseAlongTangent = Clamp(impulseAlongTangent, -impulseAlongNormal, impulseAlongNormal);
 					impulseAlongTangent *= frictionCoefficient;
 
-					rb0->ApplyImpulseAt( impulseAlongNormal * collision.m_manifold.m_normal + impulseAlongTangent * tangent, contactPoint );					
+					rb0->ApplyImpulseAt(impulseAlongTangent * tangent, contactPoint);
 				}
 
 			}
@@ -439,6 +449,17 @@ void PhysicsSystem::ResolveDynamicVsDynamicCollisions(bool canResolve)
 
 					float impulseAlongNormal = j / d;
 
+					rb0->ApplyImpulseAt(impulseAlongNormal * collision.m_manifold.m_normal, contactPoint);
+					rb1->ApplyImpulseAt(-1.f * (impulseAlongNormal * collision.m_manifold.m_normal), contactPoint);
+
+					// Get updated velocities
+					velocity0 = rb0->m_velocity;
+					velocity1 = rb1->m_velocity;
+
+					//Get the velocity at the impact point for both objects
+					velocityAtPoint0 = velocity0 + DegreesToRadians(rb0->m_angularVelocity) * toPointPerpendicular0;
+					velocityAtPoint1 = velocity1 + DegreesToRadians(rb1->m_angularVelocity) * toPointPerpendicular1;
+
 					//Impulse along the tangent
 					Vec2 tangent = manifold.m_normal.GetRotated90Degrees();
 					float jT = -(1 + CoefficientOfRestitution) * GetDotProduct((velocityAtPoint0 - velocityAtPoint1), tangent);
@@ -454,8 +475,8 @@ void PhysicsSystem::ResolveDynamicVsDynamicCollisions(bool canResolve)
 					impulseAlongTangent = Clamp(impulseAlongTangent, -impulseAlongNormal, impulseAlongNormal);
 					impulseAlongTangent *= frictionCoefficient;
 
-					rb0->ApplyImpulseAt( impulseAlongNormal * collision.m_manifold.m_normal + impulseAlongTangent * tangent, contactPoint );
-					rb1->ApplyImpulseAt( -1.f * (impulseAlongNormal * collision.m_manifold.m_normal + impulseAlongTangent * tangent), contactPoint );
+					rb0->ApplyImpulseAt( impulseAlongTangent * tangent, contactPoint );
+					rb1->ApplyImpulseAt( -1.f * (impulseAlongTangent * tangent), contactPoint );
 				}
 
 			}
