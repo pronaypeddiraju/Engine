@@ -1,5 +1,5 @@
 #pragma once
-
+#include <string>
 //-----------------------------------------------------------------------------------------------
 struct Vec2
 {
@@ -56,6 +56,7 @@ public:
 	void				SetFromText(const char* asText);
 
 	//Debug
+	std::string			GetAsString() const;
 	const float			GetX();
 	const float			GetY();
 

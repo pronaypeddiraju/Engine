@@ -203,6 +203,19 @@ const Vec3 Vec3::GetNormalized() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+std::string Vec3::GetAsString() const
+{
+	std::string string;
+	string = std::to_string(x);
+	string += ",";
+	string += std::to_string(y);
+	string += ",";
+	string += std::to_string(z);
+
+	return string;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec3::SetFromText( const char* asText )
 {
 	//Read the data, break using the delimiter and save each block to it's respective Vec2 component

@@ -4,6 +4,7 @@
 #include "Engine/Math/IntRange.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/Vec3.hpp"
 #include "Engine/Renderer/Rgba.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -161,5 +162,20 @@ std::string ParseXmlAttribute( const XMLElement& xmlElement, const char* attribu
 	else
 	{
 		return s;
+	}
+}
+
+Vec3 ParseXmlAttribute(const XMLElement& xmlElement, const char* attributeName, const Vec3& defaultValue)
+{
+	std::string defaultString = std::to_string(defaultValue.x) + "," + std::to_string(defaultValue.y) + "," + std::to_string(defaultValue.z);
+	std::string s = ParseXmlAttribute(xmlElement, attributeName, defaultString);
+	if (s.size() == 0)
+	{
+		return defaultValue;
+	}
+	else
+	{
+		Vec3 newVec3 = Vec3(s.c_str());
+		return newVec3;
 	}
 }

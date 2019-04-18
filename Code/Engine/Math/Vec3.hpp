@@ -1,5 +1,5 @@
 #pragma once
-
+#include <string>
 //------------------------------------------------------------------------------------------------------------------------------
 struct Vec2;
 
@@ -47,6 +47,7 @@ public:
 	const Vec3			GetRotatedAboutXDegrees(float degreesToRotateAroundX) const;
 	const Vec3			GetRotatedAboutXRadians(float radiansToRotateAroundX) const;
 	const Vec3			GetNormalized() const;
+	std::string			GetAsString() const;
 
 	//Mutator methods
 	void				SetFromText(const char* asText);
