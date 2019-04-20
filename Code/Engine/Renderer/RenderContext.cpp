@@ -16,6 +16,8 @@
 #include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/Renderer/Material.hpp"
+#include "Engine/Renderer/Model.hpp"
+#include "Engine/Renderer/ObjectLoader.hpp"
 #include "Engine/Renderer/Sampler.hpp"
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/Texture.hpp"
@@ -1101,14 +1103,34 @@ Material* RenderContext::CreateOrGetMaterialFromFile( const std::string& fileNam
 	std::map<std::string, Material*>::const_iterator requestedMaterial = m_materialDatabase.find(filePath);
 	if(requestedMaterial != m_materialDatabase.end())
 	{
-		//Shader requested exists in the map
+		//Material requested exists in the map
 		return requestedMaterial->second;
 	}
 	else
 	{
-		//Create the newShader
+		//Create the Material
 		Material *material = new Material(this, filePath); 
 		return material;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+GPUMesh* RenderContext::CreateOrGetMeshFromFile(const std::string& fileName)
+{
+	std::string filePath = MODEL_PATH + fileName;
+	std::map<std::string, GPUMesh*>::const_iterator requestedModel = m_modelDatabase.find(filePath);
+	if (requestedModel != m_modelDatabase.end())
+	{
+		//Model requested exists in the map
+		return requestedModel->second;
+	}
+	else
+	{
+		//Create the Model
+		ObjectLoader* model = ObjectLoader::CreateMeshFromFile(filePath);
+		m_modelDatabase[fileName] = model->m_mesh;
+		//return model->m_mesh;
+		return nullptr;
 	}
 }
 

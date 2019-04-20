@@ -241,6 +241,12 @@
     <ClCompile Include="Core\Clock.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\Model.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\ObjectLoader.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -456,5 +462,7 @@
     <ClInclude Include="Renderer\Material.hpp" />
     <ClInclude Include="Input\InputEvent.hpp" />
     <ClInclude Include="Core\Clock.hpp" />
+    <ClInclude Include="Renderer\Model.hpp" />
+    <ClInclude Include="Renderer\ObjectLoader.hpp" />
   </ItemGroup>
 </Project>

@@ -35,6 +35,7 @@ public:
 	inline bool				UsesIndexBuffer() {return m_useIndexBuffer;}
 	inline uint				GetElementCount() {return m_elementCount;}
 	inline uint				GetVertexCount() {return m_vertexBuffer->GetVertexCount();}
+	inline std::string const&	GetDefaultMaterialName() const { return m_defaultMaterial; } // A09
 
 public: 
 	VertexBuffer*			m_vertexBuffer = nullptr; 
@@ -44,6 +45,7 @@ public:
 	// information for drawing; 
 	uint					m_elementCount = 0U; 
 	bool					m_useIndexBuffer; 
+	std::string				m_defaultMaterial = "";
 };
 
 //------------------------------------------------------------------------------------------------------------------------------

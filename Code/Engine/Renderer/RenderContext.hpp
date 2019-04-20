@@ -16,6 +16,7 @@ class GPUMesh;
 class Image;
 class IndexBuffer;
 class Material;
+class Model;
 class RenderBuffer;
 class Shader;
 class ShaderStage;
@@ -38,14 +39,15 @@ struct ID3D11RasterizerState;
 //------------------------------------------------------------------------------------------------------------------------------
 class RenderContext
 {
-	friend class ShaderStage;
-	friend class Shader;
-	friend class RenderBuffer;
-	friend class UniformBuffer;
-	friend class Sampler;
-	friend class Texture2D;
-	friend class Texture;
 	friend class DepthStencilTargetView;
+	friend class Material;
+	friend class RenderBuffer;
+	friend class Sampler;
+	friend class Shader;
+	friend class ShaderStage;
+	friend class Texture;
+	friend class Texture2D;
+	friend class UniformBuffer;
 
 public:
 	explicit RenderContext(WindowContext* window);
@@ -82,6 +84,7 @@ public:
 	BitmapFont*					CreateOrGetBitmapFontFromFile( const std::string& bitmapName );
 	Shader*						CreateOrGetShaderFromFile( const std::string& fileName );
 	Material*					CreateOrGetMaterialFromFile( const std::string& fileName );
+	GPUMesh*					CreateOrGetMeshFromFile( const std::string& fileName );
 
 	//Shader data
 	void						BindShader(Shader* shader);
@@ -156,6 +159,9 @@ private:
 	// Private (internal) data members will go here
 	std::map< std::string, BitmapFont* >				m_loadedFonts;
 	std::map< std::string, Shader*>						m_loadedShaders;
+	std::map<std::string, TextureView*>					m_cachedTextureViews;
+	std::map<std::string, Material*>					m_materialDatabase;
+	std::map<std::string, GPUMesh*>						m_modelDatabase;
 
 	ID3D11Device										*m_D3DDevice = nullptr;
 	ID3D11DeviceContext									*m_D3DContext = nullptr;
@@ -193,8 +199,6 @@ public:
 	uint												m_lightSlot = 0U;
 
 	Sampler*											m_cachedSamplers[SAMPLE_MODE_COUNT]; 
-	std::map<std::string, TextureView*>					m_cachedTextureViews;
-	std::map<std::string, Material*>					m_materialDatabase;
 
 	unsigned int										m_frameCount = 0;
 

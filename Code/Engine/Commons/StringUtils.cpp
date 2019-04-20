@@ -40,7 +40,7 @@ const std::string Stringf( const int maxLength, const char* format, ... )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-std::vector<std::string> SplitStringOnDelimiter( std::string s, char delimiter )
+std::vector<std::string> SplitStringOnDelimiter(std::string s, char delimiter )
 {
 	//Make a vector of strings
 	std::vector<std::string> splitStrings;
