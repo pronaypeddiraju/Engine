@@ -32,6 +32,12 @@ void GPUMesh::SetDrawCall( bool useIndexBuffer, uint elemCount )
 	m_useIndexBuffer = useIndexBuffer; 
 }
 
+void GPUMesh::CopyIndices(uint const *indices, uint count)
+{
+	m_indexBuffer->CreateStaticFor(indices, count);
+	SetDrawCall((count > 0), (count > 0) ? count : m_elementCount);
+}
+
 /*
 void GPUMesh::CreateFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem /*= GPU_MEMORY_USAGE_STATIC  )
 {

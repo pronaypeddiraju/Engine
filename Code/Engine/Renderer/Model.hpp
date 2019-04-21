@@ -11,6 +11,7 @@ class Model
 public:
 	Model(RenderContext *ctx, const std::string& meshName);
 	Model(GPUMesh *mesh);
+	~Model();
 
 public:
 

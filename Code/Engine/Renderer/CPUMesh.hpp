@@ -45,6 +45,7 @@ public:
 	BufferLayout const*		GetLayout() const;       // A06
 	VertexMaster const*		GetVertices() const;     // A06 - just since I don't like accessing members direction
 	uint const*				GetIndices() const;
+	uint*						GetIndicesEditable();
 
 	// Stamp a vertex into the list - return the index; 
 	uint						AddVertex( const VertexMaster& m );     // A04

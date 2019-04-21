@@ -247,6 +247,9 @@
     <ClCompile Include="Renderer\ObjectLoader.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="ThirdParty\Mikkt\Source.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">

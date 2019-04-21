@@ -546,6 +546,20 @@ void RenderContext::Shutdown()
 
 	m_materialDatabase.clear();
 
+	//Clear all Models
+	std::map< std::string, GPUMesh*>::iterator modelIterator;
+	std::map< std::string, GPUMesh*>::iterator lastModelIterator;
+
+	modelIterator = m_modelDatabase.begin();
+	lastModelIterator = m_modelDatabase.end();
+
+	for (modelIterator; modelIterator != lastModelIterator; modelIterator++)
+	{
+		delete modelIterator->second;
+	}
+
+	m_modelDatabase.clear();
+
 	/*
 	texIterator = m_loadedTextures.begin();
 	lastTexIterator = m_loadedTextures.end();
@@ -1099,7 +1113,23 @@ Shader* RenderContext::CreateOrGetShaderFromFile( std::string const &fileName )
 //------------------------------------------------------------------------------------------------------------------------------
 Material* RenderContext::CreateOrGetMaterialFromFile( const std::string& fileName )
 {
-	std::string filePath = MATERIAL_PATH + fileName;
+	std::vector<std::string> splits = SplitStringOnDelimiter(fileName, '/');
+	bool isModel = false;
+	if ((int)splits.size() > 1)
+	{
+		isModel = true;
+	}
+
+	std::string filePath;
+	if (!isModel)
+	{
+		filePath = MATERIAL_PATH + fileName;
+	}
+	else
+	{
+		filePath = fileName;
+	}
+
 	std::map<std::string, Material*>::const_iterator requestedMaterial = m_materialDatabase.find(filePath);
 	if(requestedMaterial != m_materialDatabase.end())
 	{
@@ -1127,10 +1157,19 @@ GPUMesh* RenderContext::CreateOrGetMeshFromFile(const std::string& fileName)
 	else
 	{
 		//Create the Model
-		ObjectLoader* model = ObjectLoader::CreateMeshFromFile(filePath);
+		ObjectLoader* model = ObjectLoader::CreateMeshFromFile(this, filePath);
+		//Setup materials
+		std::vector<std::string> splits = SplitStringOnDelimiter(fileName, '.');
+		if (splits[1] == "obj")
+		{
+			filePath = MODEL_PATH + splits[0] + ".mat";
+			model->m_mesh->m_defaultMaterial = filePath;
+		}
+
 		m_modelDatabase[fileName] = model->m_mesh;
-		//return model->m_mesh;
-		return nullptr;
+		delete model;
+		model = nullptr;
+		return m_modelDatabase[fileName];
 	}
 }
 

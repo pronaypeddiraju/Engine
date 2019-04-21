@@ -30,6 +30,10 @@ public:
 	void					CopyVertexArray( Vertex_PCU const *vertices, uint count );                           // A04 Optional; 
 	void					CopyIndices( uint const *indices, uint count );                                      // A04 Optional;
 
+	template <typename VertexType>
+	void					CopyVertexArray(const VertexMaster& verts, uint numVerts);
+	void					CopyIndexArray(int* indices, uint numIndices);
+
 	void					SetDrawCall( bool useIndexBuffer, uint elemCount ); 
 
 	inline bool				UsesIndexBuffer() {return m_useIndexBuffer;}
@@ -47,6 +51,33 @@ public:
 	bool					m_useIndexBuffer; 
 	std::string				m_defaultMaterial = "";
 };
+
+template <typename VertexType>
+void GPUMesh::CopyVertexArray(const VertexMaster& verts, uint numVerts)
+{
+	const BufferLayout* layout = VertexType::layout;
+	if (layout == nullptr)
+	{
+		ERROR_AND_DIE("The buffer layout recieved from the CPU Mesh was nullptr!");
+	}
+
+	//We actually have a buffer layout with valid data
+	std::vector<VertexType> vertices;
+
+	vertices.reserve(numVerts);
+
+	layout->m_copyFromMaster(vertices.data(), &verts, numVerts);
+
+	bool result = m_vertexBuffer->CreateStaticForBuffer(vertices.data(), layout->m_stride, numVerts);
+	if (!result)
+	{
+		ERROR_AND_DIE("The vertex buffer could not be created");
+	}
+
+	SetDrawCall(false, numVerts);
+
+	m_layout = (BufferLayout*)layout;
+}
 
 //------------------------------------------------------------------------------------------------------------------------------
 template <typename VertexType>

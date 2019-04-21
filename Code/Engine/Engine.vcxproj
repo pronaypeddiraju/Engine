@@ -248,6 +248,7 @@
     <ClCompile Include="Renderer\TextureView.cpp" />
     <ClCompile Include="Renderer\UniformBuffer.cpp" />
     <ClCompile Include="Renderer\VertexBuffer.cpp" />
+    <ClCompile Include="ThirdParty\Mikkt\Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirdParty\fmod\fmod.h" />

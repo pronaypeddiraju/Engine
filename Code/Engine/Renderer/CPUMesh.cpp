@@ -442,3 +442,9 @@ void CPUMesh::AddIndex( uint index )
 {
 	m_indices.push_back(index);
 }
+
+//------------------------------------------------------------------------------------------------------------------------------
+uint* CPUMesh::GetIndicesEditable()
+{
+	return &m_indices[0];
+}
