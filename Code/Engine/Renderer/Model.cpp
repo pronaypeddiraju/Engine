@@ -10,7 +10,7 @@ Model::Model(RenderContext *ctx, const std::string& meshName)
 	m_mesh = ctx->CreateOrGetMeshFromFile(meshName);
 
 	if (m_mesh != nullptr) {
-		m_material = ctx->CreateOrGetMaterialFromFile(m_mesh->GetDefaultMaterialName());
+		//m_material = ctx->CreateOrGetMaterialFromFile("default_lit.xml");
 	}
 
 	m_modelMatrix = Matrix44::IDENTITY;

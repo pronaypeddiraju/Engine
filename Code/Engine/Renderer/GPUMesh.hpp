@@ -28,11 +28,10 @@ public:
 	void					CopyFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem = GPU_MEMORY_USAGE_DYNAMIC );  // A04
 
 	void					CopyVertexArray( Vertex_PCU const *vertices, uint count );                           // A04 Optional; 
-	void					CopyIndices( uint const *indices, uint count );                                      // A04 Optional;
 
 	template <typename VertexType>
 	void					CopyVertexArray(const VertexMaster& verts, uint numVerts);
-	void					CopyIndexArray(int* indices, uint numIndices);
+	void					CopyIndices( uint const *indices, uint count );                                     
 
 	void					SetDrawCall( bool useIndexBuffer, uint elemCount ); 
 

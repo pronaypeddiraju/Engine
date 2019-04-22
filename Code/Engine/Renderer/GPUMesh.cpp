@@ -34,7 +34,13 @@ void GPUMesh::SetDrawCall( bool useIndexBuffer, uint elemCount )
 
 void GPUMesh::CopyIndices(uint const *indices, uint count)
 {
-	m_indexBuffer->CreateStaticFor(indices, count);
+	bool result = m_indexBuffer->CreateStaticFor(indices, count);
+
+	if (!result)
+	{
+		ASSERT_RECOVERABLE(true, "Index buffer not created")
+	}
+
 	SetDrawCall((count > 0), (count > 0) ? count : m_elementCount);
 }
 

@@ -65,11 +65,11 @@ void ObjectLoader::CreateFromString(const char* data)
 			std::vector<std::string> tokens = SplitStringOnDelimiter(lines[lineIndex], ' ');
 
 			Vec3 value;
-			std::string valueString(tokens[2]);
+			std::string valueString(tokens[1]);
+			valueString += ",";
+			valueString += std::string(tokens[2]);
 			valueString += ",";
 			valueString += std::string(tokens[3]);
-			valueString += ",";
-			valueString += std::string(tokens[4]);
 
 			value.SetFromText(valueString.c_str());
 			DebuggerPrintf(std::to_string(value.x).c_str());
@@ -118,15 +118,14 @@ void ObjectLoader::CreateFromString(const char* data)
 			//Read index for the face
 			std::vector<std::string> tokens = SplitStringOnDelimiter(lines[lineIndex], ' ');
 
-			int numIndices = (int)tokens.size() - 2;
+			int numIndices = (int)tokens.size() - 1;
 
 			if (numIndices == 3)
 			{
 				//We have a tri so this is EZ
-				for (int i = 0; i < numIndices; i++)
-				{
-					this->AddIndicesForTri(tokens[i + 1]);
-				}
+				this->AddIndicesForTri(tokens[1]);
+				this->AddIndicesForTri(tokens[2]);
+				this->AddIndicesForTri(tokens[3]);
 			}
 			else if (numIndices == 4)
 			{
@@ -148,7 +147,7 @@ void ObjectLoader::CreateFromString(const char* data)
 		}
 	}
 
-	CreateCPUMesh();
+	CreateGPUMesh();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -156,26 +155,31 @@ void ObjectLoader::AddIndicesForTri(const std::string& indices)
 {
 	std::vector<std::string> values = SplitStringOnDelimiter(indices, '/');
 
+	ObjIndex idx;
+	idx.vertexIndex = atoi(values[0].c_str()) - 1;
+	idx.uvIndex = atoi(values[1].c_str()) - 1;
+	//std::vector<std::string> normal = SplitStringOnDelimiter(values[2], '\'');
+	idx.normalIndex = atoi(values[2].c_str()) - 1;
+
+	m_indices.push_back(idx);
+
+	/*
 	for (int i = 0; i < 3; i++)
 	{
-		ObjIndex idx;
-		idx.vertexIndex = atoi(values[0].c_str()) - 1;
-		idx.uvIndex = atoi(values[1].c_str()) - 1;
-		idx.normalIndex = atoi(values[2].c_str()) - 1;
-
-		m_indices.push_back(idx);
+		
 	}
+	*/
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void ObjectLoader::CreateCPUMesh()
+void ObjectLoader::CreateGPUMesh()
 {
-	//m_cpuMesh = new CPUMesh;
-
-	//int numVerts = (int)m_positions.size();
 	int numIndices = (int)m_indices.size();
 
+	m_cpuMesh = new CPUMesh();
+
 	std::vector<VertexMaster> vertices;
+	std::vector<uint> indices;
 	for (int index = 0; index < numIndices; index++)
 	{
 		VertexMaster vertex;
@@ -184,19 +188,22 @@ void ObjectLoader::CreateCPUMesh()
 		vertex.m_normal = m_normals[m_indices[index].normalIndex];
 		vertex.m_uv = m_uvs[m_indices[index].uvIndex];
 
-		//m_cpuMesh->AddVertex(vertex);
 		vertices.push_back(vertex);
+		//indices.push_back(index);
+
+		m_cpuMesh->AddVertex(vertex);
+	}
+
+	for (int index = 0; index < numIndices; index++)
+	{
+		//Add correct vertices here
+		m_cpuMesh->AddIndex(index);
 	}
 
 	m_mesh = new GPUMesh(m_renderContext);
-	m_mesh->CopyVertexArray<Vertex_Lit>(vertices[0], (uint)vertices.size());
+	//m_mesh->CopyVertexArray<Vertex_Lit>(vertices[0], (uint)vertices.size());
+	//m_mesh->CopyIndices(&indices[0], (uint)indices.size());
+	
+	m_mesh->CreateFromCPUMesh<Vertex_Lit>(m_cpuMesh, GPU_MEMORY_USAGE_STATIC);
 
-	/*
-	for (int index = 1; index <= numIndices - 2; index++)
-	{
-		m_cpuMesh->AddIndexedTriangle(m_indices[numIndices].vertexIndex, m_indices[numIndices + 1].vertexIndex, m_indices[numIndices + 2].vertexIndex);
-	}
-
-	m_mesh->CopyIndices(m_cpuMesh->GetIndicesEditable(), m_cpuMesh->GetIndexCount());
-	*/
 }

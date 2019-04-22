@@ -1127,7 +1127,7 @@ Material* RenderContext::CreateOrGetMaterialFromFile( const std::string& fileNam
 	}
 	else
 	{
-		filePath = fileName;
+		filePath = MODEL_PATH + fileName;
 	}
 
 	std::map<std::string, Material*>::const_iterator requestedMaterial = m_materialDatabase.find(filePath);
@@ -1167,8 +1167,8 @@ GPUMesh* RenderContext::CreateOrGetMeshFromFile(const std::string& fileName)
 		}
 
 		m_modelDatabase[fileName] = model->m_mesh;
-		delete model;
-		model = nullptr;
+		//delete model;
+		//model = nullptr;
 		return m_modelDatabase[fileName];
 	}
 }

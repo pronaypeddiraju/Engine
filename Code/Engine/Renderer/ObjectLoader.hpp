@@ -29,7 +29,7 @@ public:
 
 	void					CreateFromString(const char* data);
 	void					AddIndicesForTri(const std::string& indices);
-	void					CreateCPUMesh();
+	void					CreateGPUMesh();
 public:
 	std::vector<Vec3>				m_positions;
 	std::vector<Vec2>				m_uvs;

@@ -563,6 +563,17 @@ const STATIC Matrix44 Matrix44::MakeUniformScale2D( float uniformScale )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+const STATIC Matrix44 Matrix44::MakeUniformScale3D(float uniformScale)
+{
+	Matrix44 uniformScaleMatrix;
+	uniformScaleMatrix.m_values[Ix] = uniformScale;
+	uniformScaleMatrix.m_values[Jy] = uniformScale;
+	uniformScaleMatrix.m_values[Kz] = uniformScale;
+
+	return uniformScaleMatrix;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 //To do: Write down the actual multiplication of the 3 matrices and quickly plug in those values to make this process faster
 // as opposed to making the 3 rotation matrices and then appending 2 of them 
 //------------------------------------------------------------------------------------------------------------------------------
