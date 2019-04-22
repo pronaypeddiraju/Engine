@@ -40,13 +40,18 @@ Texture2D::~Texture2D()
 //------------------------------------------------------------------------------------------------------------------------------
 bool Texture2D::LoadTextureFromFile( std::string const &filename, bool isFont ) 
 {
-	std::string path;
+	std::string path = filename;
 
-	std::vector<std::string> splitStrings = SplitStringOnDelimiter(path, '.');
+	std::vector<std::string> splitStrings = SplitStringOnDelimiter(path, '/');
 
-	if(!isFont)
+	if(!isFont && splitStrings.size() == 1)
 	{
 		path = IMAGE_PATH + filename;
+	}
+	else if (splitStrings.size() > 1 && !isFont)
+	{
+		// Encountered a '/' character so this is for a model
+		path = MODEL_PATH + filename;
 	}
 	else
 	{

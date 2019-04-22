@@ -28,7 +28,7 @@ public:
 	static ObjectLoader*	CreateMeshFromFile(RenderContext* renderContext, const std::string& filePath);
 
 	void					CreateFromString(const char* data);
-	void					AddIndicesForTri(const std::string& indices);
+	void					AddIndexForMesh(const std::string& indices);
 	void					CreateGPUMesh();
 public:
 	std::vector<Vec3>				m_positions;

@@ -4,3 +4,4 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 unsigned long				CreateFileBuffer(const std::string& fileName, char** outData);
+unsigned long				CreateFileTextBuffer(const std::string& fileName, char** outData);

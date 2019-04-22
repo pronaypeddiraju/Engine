@@ -6,6 +6,7 @@
 
 struct ID3D11Resource;
 
+class ColorTargetView;
 class Image;
 class TextureView;
 class TextureView2D;
@@ -61,6 +62,7 @@ public:
 	// Create a view of this texture usable in the shader; 
 	TextureView2D*				CreateTextureView2D() const;  
 	DepthStencilTargetView*		CreateDepthStencilTargetView();  // A04
+	ColorTargetView*			CreateColorTargetView(); //A10
 
 	static Texture2D* CreateDepthStencilTarget( RenderContext *renderContext, uint width, uint height );   // A04
 	static Texture2D* CreateDepthStencilTargetFor( Texture2D *colorTarget );   // A04

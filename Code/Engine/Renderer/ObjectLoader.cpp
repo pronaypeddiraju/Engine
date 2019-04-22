@@ -7,6 +7,7 @@
 #include "Engine/Renderer/GPUMesh.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include <vector>
+#include <fstream>
 
 //------------------------------------------------------------------------------------------------------------------------------
 ObjectLoader::ObjectLoader()
@@ -40,8 +41,10 @@ ObjectLoader* ObjectLoader::CreateMeshFromFile(RenderContext* renderContext, con
 	}
 	else
 	{
-		bufferSize = CreateFileBuffer(fileName, &outData);
-		object->CreateFromString(outData);
+		//bufferSize = CreateFileTextBuffer(fileName, &outData);
+		//object->CreateFromString(outData);
+
+		object->CreateFromString(fileName.c_str());
 	}
 
 	return object;
@@ -50,8 +53,132 @@ ObjectLoader* ObjectLoader::CreateMeshFromFile(RenderContext* renderContext, con
 //------------------------------------------------------------------------------------------------------------------------------
 void ObjectLoader::CreateFromString(const char* data)
 {
-	std::vector<std::string> lines = SplitStringOnDelimiter(std::string(data), '\n');
+	std::ifstream fileStream;
+	fileStream.open(data, std::ios::beg);
+	//unsigned long fileSize = (unsigned long)fileStream.tellg();
+	//Get the cursor back to the start of the file so we read the whole thing as opposed to reading nothing lol
+	//fileStream.seekg(std::ios::beg);
 
+	//char* outData = new char[fileSize];
+	//fileStream.read(outData, fileSize);
+
+	std::string lineString;
+	
+	
+	//std::vector<std::string> lines = SplitStringOnDelimiter(std::string(data), '\n');
+	
+	while (std::getline(fileStream, lineString))
+	{
+		if (lineString.size() == 0 || lineString[0] == '#')
+		{
+			continue;
+		}
+		else if (lineString[0] == 'v' && lineString[1] == ' ')
+		{
+			//Read the vertex
+			std::vector<std::string> tokens = SplitStringOnDelimiter(lineString, ' ');
+
+			for (int i = 0; i < tokens.size(); i++)
+			{
+				if (tokens[i] == "" || tokens[i] == "v")
+				{
+					tokens.erase(tokens.begin() + i);
+					i = -1;
+				}
+			}
+
+			Vec3 value;
+			std::string valueString(tokens[0]);
+			valueString += ",";
+			valueString += std::string(tokens[1]);
+			valueString += ",";
+			valueString += std::string(tokens[2]);
+
+			value.SetFromText(valueString.c_str());
+			DebuggerPrintf(std::to_string(value.x).c_str());
+			DebuggerPrintf(std::to_string(value.y).c_str());
+			DebuggerPrintf(std::to_string(value.z).c_str());
+
+			m_positions.push_back(value);
+		}
+		else if (lineString[0] == 'v' && lineString[1] == 'n')
+		{
+			// read the normal
+			std::vector<std::string> tokens = SplitStringOnDelimiter(lineString, ' ');
+
+			Vec3 value;
+			std::string valueString(tokens[1]);
+			valueString += ",";
+			valueString += std::string(tokens[2]);
+			valueString += ",";
+			valueString += std::string(tokens[3]);
+
+			value.SetFromText(valueString.c_str());
+			DebuggerPrintf(std::to_string(value.x).c_str());
+			DebuggerPrintf(std::to_string(value.y).c_str());
+			DebuggerPrintf(std::to_string(value.z).c_str());
+
+			m_normals.push_back(value);
+		}
+		else if (lineString[0] == 'v' && lineString[1] == 't')
+		{
+			//Read the uv
+			std::vector<std::string> tokens = SplitStringOnDelimiter(lineString, ' ');
+
+			Vec2 value;
+			std::string valueString(tokens[1]);
+			valueString += ",";
+			valueString += std::string(tokens[2]);
+
+			value.SetFromText(valueString.c_str());
+			value.y = 1 - value.y;
+			DebuggerPrintf(std::to_string(value.x).c_str());
+			DebuggerPrintf(std::to_string(value.y).c_str());
+
+			m_uvs.push_back(value);
+		}
+		else if (lineString[0] == 'f')
+		{
+			//Read index for the face
+			std::vector<std::string> tokens = SplitStringOnDelimiter(lineString, ' ');
+
+			for (int i = 0; i < tokens.size(); i++)
+			{
+				if (tokens[i] == "" || tokens[i] == "f")
+				{
+					tokens.erase(tokens.begin() + i);
+				}
+			}
+
+			int numIndices = (int)tokens.size();
+
+			if (numIndices == 3)
+			{
+				//We have a tri so this is EZ
+				this->AddIndexForMesh(tokens[0]);
+				this->AddIndexForMesh(tokens[1]);
+				this->AddIndexForMesh(tokens[2]);
+			}
+			else if (numIndices == 4)
+			{
+				//Bruh we have quad so better plit into tris
+				this->AddIndexForMesh(tokens[0]);
+				this->AddIndexForMesh(tokens[1]);
+				this->AddIndexForMesh(tokens[2]);
+
+				this->AddIndexForMesh(tokens[0]);
+				this->AddIndexForMesh(tokens[2]);
+				this->AddIndexForMesh(tokens[3]);
+			}
+			else
+			{
+				ERROR_AND_DIE("Obj file contains an n-gon");
+			}
+		}
+
+	}
+
+	/*
 	for (int lineIndex = 0; lineIndex < (int)lines.size(); lineIndex++)
 	{
 		//Ignore all comments
@@ -65,11 +192,11 @@ void ObjectLoader::CreateFromString(const char* data)
 			std::vector<std::string> tokens = SplitStringOnDelimiter(lines[lineIndex], ' ');
 
 			Vec3 value;
-			std::string valueString(tokens[1]);
-			valueString += ",";
-			valueString += std::string(tokens[2]);
+			std::string valueString(tokens[2]);
 			valueString += ",";
 			valueString += std::string(tokens[3]);
+			valueString += ",";
+			valueString += std::string(tokens[4]);
 
 			value.SetFromText(valueString.c_str());
 			DebuggerPrintf(std::to_string(value.x).c_str());
@@ -108,6 +235,7 @@ void ObjectLoader::CreateFromString(const char* data)
 			valueString += std::string(tokens[2]);
 
 			value.SetFromText(valueString.c_str());
+			value.y = 1 - value.y;
 			DebuggerPrintf(std::to_string(value.x).c_str());
 			DebuggerPrintf(std::to_string(value.y).c_str());
 
@@ -118,25 +246,25 @@ void ObjectLoader::CreateFromString(const char* data)
 			//Read index for the face
 			std::vector<std::string> tokens = SplitStringOnDelimiter(lines[lineIndex], ' ');
 
-			int numIndices = (int)tokens.size() - 1;
+			int numIndices = (int)tokens.size() - 2;
 
 			if (numIndices == 3)
 			{
 				//We have a tri so this is EZ
-				this->AddIndicesForTri(tokens[1]);
-				this->AddIndicesForTri(tokens[2]);
-				this->AddIndicesForTri(tokens[3]);
+				this->AddIndexForMesh(tokens[1]);
+				this->AddIndexForMesh(tokens[3]);
+				this->AddIndexForMesh(tokens[2]);
 			}
 			else if (numIndices == 4)
 			{
 				//Bruh we have quad so better plit into tris
-				this->AddIndicesForTri(tokens[1]);
-				this->AddIndicesForTri(tokens[2]);
-				this->AddIndicesForTri(tokens[3]);
-				
-				this->AddIndicesForTri(tokens[1]);
-				this->AddIndicesForTri(tokens[3]);
-				this->AddIndicesForTri(tokens[4]);
+				this->AddIndexForMesh(tokens[1]);
+				this->AddIndexForMesh(tokens[2]);
+				this->AddIndexForMesh(tokens[3]);
+
+				this->AddIndexForMesh(tokens[1]);
+				this->AddIndexForMesh(tokens[3]);
+				this->AddIndexForMesh(tokens[4]);
 			}
 			else
 			{
@@ -146,19 +274,19 @@ void ObjectLoader::CreateFromString(const char* data)
 
 		}
 	}
+	*/
 
 	CreateGPUMesh();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void ObjectLoader::AddIndicesForTri(const std::string& indices)
+void ObjectLoader::AddIndexForMesh(const std::string& indices)
 {
 	std::vector<std::string> values = SplitStringOnDelimiter(indices, '/');
 
 	ObjIndex idx;
 	idx.vertexIndex = atoi(values[0].c_str()) - 1;
 	idx.uvIndex = atoi(values[1].c_str()) - 1;
-	//std::vector<std::string> normal = SplitStringOnDelimiter(values[2], '\'');
 	idx.normalIndex = atoi(values[2].c_str()) - 1;
 
 	m_indices.push_back(idx);
@@ -176,8 +304,6 @@ void ObjectLoader::CreateGPUMesh()
 {
 	int numIndices = (int)m_indices.size();
 
-	m_cpuMesh = new CPUMesh();
-
 	std::vector<VertexMaster> vertices;
 	std::vector<uint> indices;
 	for (int index = 0; index < numIndices; index++)
@@ -189,21 +315,11 @@ void ObjectLoader::CreateGPUMesh()
 		vertex.m_uv = m_uvs[m_indices[index].uvIndex];
 
 		vertices.push_back(vertex);
-		//indices.push_back(index);
+		indices.push_back(index);
 
-		m_cpuMesh->AddVertex(vertex);
-	}
-
-	for (int index = 0; index < numIndices; index++)
-	{
-		//Add correct vertices here
-		m_cpuMesh->AddIndex(index);
 	}
 
 	m_mesh = new GPUMesh(m_renderContext);
-	//m_mesh->CopyVertexArray<Vertex_Lit>(vertices[0], (uint)vertices.size());
-	//m_mesh->CopyIndices(&indices[0], (uint)indices.size());
-	
-	m_mesh->CreateFromCPUMesh<Vertex_Lit>(m_cpuMesh, GPU_MEMORY_USAGE_STATIC);
-
+	m_mesh->CopyVertexArray<Vertex_Lit>(vertices[0], (uint)vertices.size());
+	m_mesh->CopyIndices(&indices[0], (uint)indices.size());
 }
