@@ -23,8 +23,6 @@ ObjectLoader* ObjectLoader::CreateMeshFromFile(RenderContext* renderContext, con
 	object->m_renderContext = renderContext;
 
 	//Open file and see what it says
-	char* outData = nullptr;
-	unsigned long bufferSize;
 	if (isDataDriven)
 	{
 		//Load the models from xml;
@@ -51,11 +49,11 @@ void ObjectLoader::LoadFromXML(const std::string& fileName)
 	if (meshDoc.ErrorID() != tinyxml2::XML_SUCCESS)
 	{
 		
-		DebuggerPrintf("\n >> Error loading XML file from %s ", fileName);
-		DebuggerPrintf("\n >> Error ID : %i ", meshDoc.ErrorID());
-		DebuggerPrintf("\n >> Error line number is : %i", meshDoc.ErrorLineNum());
-		DebuggerPrintf("\n >> Error name : %s", meshDoc.ErrorName());
-		
+// 		DebuggerPrintf("\n >> Error loading XML file from %s ", fileName);
+// 		DebuggerPrintf("\n >> Error ID : %i ", meshDoc.ErrorID());
+// 		DebuggerPrintf("\n >> Error line number is : %i", meshDoc.ErrorLineNum());
+// 		DebuggerPrintf("\n >> Error name : %s", meshDoc.ErrorName());
+// 		
 		ERROR_AND_DIE(">> Error loading Mesh XML file ");
 		return;
 	}
