@@ -1127,7 +1127,7 @@ Material* RenderContext::CreateOrGetMaterialFromFile( const std::string& fileNam
 	}
 	else
 	{
-		filePath = MODEL_PATH + fileName;
+		filePath = fileName;
 	}
 
 	std::map<std::string, Material*>::const_iterator requestedMaterial = m_materialDatabase.find(filePath);
@@ -1156,19 +1156,29 @@ GPUMesh* RenderContext::CreateOrGetMeshFromFile(const std::string& fileName)
 	}
 	else
 	{
+		//Check the file extention
+		std::vector<std::string> strings = SplitStringOnDelimiter(fileName, '.');
+		bool isDataDriven = false;
+		if (strings.size() > 1)
+		{
+			if (strings[(strings.size() - 1)] == "mesh")
+			{
+				isDataDriven = true;
+			}
+		}
+
 		//Create the Model
-		ObjectLoader* model = ObjectLoader::CreateMeshFromFile(this, filePath);
+		ObjectLoader* model = ObjectLoader::CreateMeshFromFile(this, filePath, isDataDriven);
+		
 		//Setup materials
 		std::vector<std::string> splits = SplitStringOnDelimiter(fileName, '.');
-		if (splits[1] == "obj")
+		if (splits[splits.size() - 1] == "obj" || splits[splits.size() - 1] == "mesh")
 		{
 			filePath = MODEL_PATH + splits[0] + ".mat";
 			model->m_mesh->m_defaultMaterial = filePath;
 		}
 
 		m_modelDatabase[fileName] = model->m_mesh;
-		//delete model;
-		//model = nullptr;
 		return m_modelDatabase[fileName];
 	}
 }

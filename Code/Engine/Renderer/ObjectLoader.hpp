@@ -25,8 +25,9 @@ class ObjectLoader
 public:
 	ObjectLoader();
 
-	static ObjectLoader*	CreateMeshFromFile(RenderContext* renderContext, const std::string& filePath);
+	static ObjectLoader*	CreateMeshFromFile(RenderContext* renderContext, const std::string& filePath, bool isDataDriven);
 
+	void					LoadFromXML(const std::string& fileName);
 	void					CreateFromString(const char* data);
 	void					AddIndexForMesh(const std::string& indices);
 	void					CreateGPUMesh();
@@ -39,4 +40,10 @@ public:
 	RenderContext*					m_renderContext = nullptr;
 	CPUMesh*						m_cpuMesh = nullptr;
 	GPUMesh*						m_mesh = nullptr;
+
+	std::string						m_source = "";
+	std::string						m_transform = "";
+	bool							m_invert = false;
+	bool							m_tangents = false;
+	float							m_scale = 0.f;
 };

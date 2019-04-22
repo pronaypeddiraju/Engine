@@ -2,6 +2,7 @@
 #include "Engine/Renderer/ObjectLoader.hpp"
 #include "Engine/Commons/StringUtils.hpp"
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/XMLUtils/XMLUtils.hpp"
 #include "Engine/Math/Vertex_Lit.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
@@ -16,21 +17,10 @@ ObjectLoader::ObjectLoader()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-ObjectLoader* ObjectLoader::CreateMeshFromFile(RenderContext* renderContext, const std::string& fileName)
+ObjectLoader* ObjectLoader::CreateMeshFromFile(RenderContext* renderContext, const std::string& fileName, bool isDataDriven)
 {
 	ObjectLoader* object = new ObjectLoader();
 	object->m_renderContext = renderContext;
-	
-	//Check the file extention
-	std::vector<std::string> strings = SplitStringOnDelimiter(fileName, '.');
-	bool isDataDriven = false;
-	if (strings.size() > 1)
-	{
-		if (strings[(strings.size() - 1)] == "mesh")
-		{
-			isDataDriven = true;
-		}
-	}
 
 	//Open file and see what it says
 	char* outData = nullptr;
@@ -38,6 +28,7 @@ ObjectLoader* ObjectLoader::CreateMeshFromFile(RenderContext* renderContext, con
 	if (isDataDriven)
 	{
 		//Load the models from xml;
+		object->LoadFromXML(fileName);
 	}
 	else
 	{
@@ -48,6 +39,61 @@ ObjectLoader* ObjectLoader::CreateMeshFromFile(RenderContext* renderContext, con
 	}
 
 	return object;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void ObjectLoader::LoadFromXML(const std::string& fileName)
+{
+	//Open the xml file and parse it
+	tinyxml2::XMLDocument meshDoc;
+	meshDoc.LoadFile(fileName.c_str());
+
+	if (meshDoc.ErrorID() != tinyxml2::XML_SUCCESS)
+	{
+		
+		DebuggerPrintf("\n >> Error loading XML file from %s ", fileName);
+		DebuggerPrintf("\n >> Error ID : %i ", meshDoc.ErrorID());
+		DebuggerPrintf("\n >> Error line number is : %i", meshDoc.ErrorLineNum());
+		DebuggerPrintf("\n >> Error name : %s", meshDoc.ErrorName());
+		
+		ERROR_AND_DIE(">> Error loading Mesh XML file ");
+		return;
+	}
+	else
+	{
+		//We loaded the file successfully
+		XMLElement* root = meshDoc.RootElement();
+
+		if (root->FindAttribute("src"))
+		{
+			m_source = ParseXmlAttribute(*root, "src", m_source);
+		}
+		
+		if (root->FindAttribute("invert"))
+		{
+			m_invert = ParseXmlAttribute(*root, "invert", false);
+		}
+
+		if (root->FindAttribute("tangents"))
+		{
+			m_tangents = ParseXmlAttribute(*root, "tangents", false);
+		}
+
+		if (root->FindAttribute("scale"))
+		{
+			m_scale = ParseXmlAttribute(*root, "scale", 1.f);
+		}
+		
+		m_transform = ParseXmlAttribute(*root, "transform", "");
+
+		CreateFromString((MODEL_PATH + m_source).c_str());
+
+		XMLElement* elem = root->FirstChildElement("material");
+		if (elem != nullptr)
+		{
+			m_mesh->m_defaultMaterial = ParseXmlAttribute(*elem, "src", "");
+		}
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -154,21 +200,45 @@ void ObjectLoader::CreateFromString(const char* data)
 
 			if (numIndices == 3)
 			{
-				//We have a tri so this is EZ
-				this->AddIndexForMesh(tokens[0]);
-				this->AddIndexForMesh(tokens[1]);
-				this->AddIndexForMesh(tokens[2]);
+				if (!m_invert)
+				{
+					//We have a tri so this is EZ
+					this->AddIndexForMesh(tokens[0]);
+					this->AddIndexForMesh(tokens[1]);
+					this->AddIndexForMesh(tokens[2]);
+				}
+				else
+				{
+					//We have a tri so this is EZ
+					this->AddIndexForMesh(tokens[0]);
+					this->AddIndexForMesh(tokens[2]);
+					this->AddIndexForMesh(tokens[1]);
+				}
 			}
 			else if (numIndices == 4)
 			{
-				//Bruh we have quad so better plit into tris
-				this->AddIndexForMesh(tokens[0]);
-				this->AddIndexForMesh(tokens[1]);
-				this->AddIndexForMesh(tokens[2]);
+				if (!m_invert)
+				{
+					//Bruh we have quad so better plit into tris
+					this->AddIndexForMesh(tokens[0]);
+					this->AddIndexForMesh(tokens[1]);
+					this->AddIndexForMesh(tokens[2]);
 
-				this->AddIndexForMesh(tokens[0]);
-				this->AddIndexForMesh(tokens[2]);
-				this->AddIndexForMesh(tokens[3]);
+					this->AddIndexForMesh(tokens[0]);
+					this->AddIndexForMesh(tokens[2]);
+					this->AddIndexForMesh(tokens[3]);
+				}
+				else
+				{
+					//Bruh we have quad so better plit into tris
+					this->AddIndexForMesh(tokens[0]);
+					this->AddIndexForMesh(tokens[2]);
+					this->AddIndexForMesh(tokens[1]);
+
+					this->AddIndexForMesh(tokens[0]);
+					this->AddIndexForMesh(tokens[3]);
+					this->AddIndexForMesh(tokens[2]);
+				}
 			}
 			else
 			{
@@ -277,6 +347,7 @@ void ObjectLoader::CreateFromString(const char* data)
 	*/
 
 	CreateGPUMesh();
+
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -316,6 +387,56 @@ void ObjectLoader::CreateGPUMesh()
 
 		vertices.push_back(vertex);
 		indices.push_back(index);
+
+	}
+
+	Matrix44 mat = Matrix44::IDENTITY;
+	Vec3 vectors[3];
+
+	//Setup transforms and scale
+	if (m_transform != "")
+	{
+		bool negative = false;
+		std::vector<std::string> tokens = SplitStringOnDelimiter(m_transform, ' ');
+		for (int i = 0; i < 3; i++)
+		{
+			if (tokens[i].find('-') != std::string::npos)
+			{
+				//We did find a -ve
+				negative = true;
+			}
+
+			if (tokens[i].find('x') != std::string::npos)
+			{
+				//We are x
+				vectors[i] = (negative) ? Vec3(-1.0f, 0.f, 0.f) : Vec3(1.0f, 0.f, 0.f);
+			}
+			else if (tokens[i].find('y') != std::string::npos)
+			{
+				//We are x
+				vectors[i] = (negative) ? Vec3(0.0f, -1.f, 0.f) : Vec3(0.0f, 1.f, 0.f);
+			}
+			else if (tokens[i].find('z') != std::string::npos)
+			{
+				//We are x
+				vectors[i] = (negative) ? Vec3(0.0f, 0.f, -1.f) : Vec3(0.0f, 0.f, 1.f);
+			}
+
+			if (m_scale != 0.f)
+			{
+				vectors[i] *= m_scale;
+			}
+		}
+
+		mat.SetIVector(vectors[0]);
+		mat.SetJVector(vectors[1]);
+		mat.SetKVector(vectors[2]);
+
+		for (int vertexIndex = 0; vertexIndex < (int)vertices.size(); vertexIndex++)
+		{
+			vertices[vertexIndex].m_position = mat.TransformPosition3D(vertices[vertexIndex].m_position);
+			vertices[vertexIndex].m_normal = mat.TransformPosition3D(vertices[vertexIndex].m_normal);
+		}
 
 	}
 
