@@ -1,6 +1,7 @@
 #include "Engine/Renderer/Texture.hpp"
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Core/Image.hpp"
+#include "Engine/Renderer/ColorTargetView.hpp"
 #include "Engine/Renderer/DepthStencilTargetView.hpp"
 #include "Engine/Renderer/RenderBuffer.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -225,6 +226,47 @@ DepthStencilTargetView* Texture2D::CreateDepthStencilTargetView()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+ColorTargetView* Texture2D::CreateColorTargetView()
+{
+	// if we don't have a handle, we can't create a view, so return nullptr
+	ASSERT_RETURN_VALUE(m_handle != nullptr, nullptr);
+
+	// get our device - since we're creating a resource
+	ID3D11Device *dev = m_owner->m_D3DDevice;
+
+
+	ID3D11RenderTargetView *ctv = nullptr;
+
+	D3D11_RENDER_TARGET_VIEW_DESC ctv_desc;
+	memset(&ctv_desc, 0, sizeof(ctv_desc));
+	ctv_desc.Format = DXGI_FORMAT_R8G8B8A8_TYPELESS;
+	ctv_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+
+	dev->CreateRenderTargetView(m_handle, &ctv_desc, &ctv);
+
+	if (ctv != nullptr) {
+		// Awesome, we have one
+		ColorTargetView *view = new ColorTargetView();
+
+		// give it the handle to the srv (we do not AddRef, 
+		// but are instead just handing this off)
+		view->m_renderTargetView = ctv;
+
+		// copy the size over for convenience
+		view->m_width = m_dimensions.x;
+		view->m_height = m_dimensions.y;
+
+		// done - return!
+		return view;
+
+	}
+	else {
+		ASSERT_RECOVERABLE(true, "Failed to create the ColorTargetView from Texture2D");
+		return nullptr;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 bool Texture2D::CreateDepthStencilTarget( uint width, uint height )
 {
 	// cleanup old resources before creating new one just in case; 
@@ -289,6 +331,76 @@ STATIC Texture2D* Texture2D::CreateDepthStencilTarget( RenderContext *renderCont
 STATIC Texture2D* Texture2D::CreateDepthStencilTargetFor( Texture2D *colorTarget )
 {
 	return CreateDepthStencilTarget( colorTarget->m_owner, colorTarget->m_dimensions.x, colorTarget->m_dimensions.y );
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC Texture2D* Texture2D::CreateColorTarget(RenderContext* renderContext, uint width, uint height)
+{
+	Texture2D* colorTarget = new Texture2D(renderContext);
+	bool result = colorTarget->CreateColorTarget(width, height);
+
+	if (!result)
+	{
+		ERROR_AND_DIE("Creating color target from Texture2D failed");
+	}
+	else
+	{
+		return colorTarget;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool Texture2D::CreateColorTarget(uint width, uint height)
+{
+	// cleanup old resources before creating new one just in case; 
+	FreeHandles();
+
+	ID3D11Device *dd = m_owner->m_D3DDevice;
+
+	// We want this to be bindable as a depth texture
+	// AND a shader resource (for effects later);
+	m_textureUsage = TEXTURE_USAGE_TEXTURE_BIT | TEXTURE_USAGE_COLOR_TARGET_BIT;
+
+	// we are not picking static here because
+	// we will eventually want to generate mipmaps,
+	// which requires a GPU access pattern to generate.
+	m_memoryUsage = GPU_MEMORY_USAGE_GPU;
+
+	D3D11_TEXTURE2D_DESC texDesc;
+	memset(&texDesc, 0, sizeof(texDesc));
+
+	texDesc.Width = width;
+	texDesc.Height = height;
+	texDesc.MipLevels = 1; // setting to 0 means there's a full chain (or can generate a full chain)
+	texDesc.ArraySize = 1; // only one texture
+	texDesc.Usage = RenderBuffer::DXUsageFromMemoryUsage(m_memoryUsage);  // loaded from image - probably not changing
+	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;            // if you support different image types  - this could change!  
+	texDesc.BindFlags = DXBindFromUsage(m_textureUsage);    // only allowing rendertarget for mipmap generation
+	texDesc.CPUAccessFlags = 0U;                            // Determines how I can access this resource CPU side 
+	texDesc.MiscFlags = 0U;
+
+	// If Multisampling - set this up.
+	texDesc.SampleDesc.Count = 1;
+	texDesc.SampleDesc.Quality = 0;
+
+	// Actually create it
+	ID3D11Texture2D *tex2D = nullptr;
+	HRESULT hr = dd->CreateTexture2D(&texDesc,
+		nullptr,
+		&tex2D);
+
+	if (SUCCEEDED(hr)) {
+		// save off the info; 
+		m_dimensions = IntVec2(width, height);
+		m_handle = tex2D;
+
+		return true;
+
+	}
+	else {
+		ASSERT(tex2D == nullptr); // should be, just like to have the postcondition; 
+		return false;
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

@@ -126,6 +126,9 @@ public:
 	void						UpdateFrameBuffer();
 	void						BindUniformBuffer( uint slot, UniformBuffer *ubo ); 
 
+	//Utility for copying between Texture2Ds (For fullscreen FX)
+	//void						CopyTexture(Texture2D *dst, Texture2D *src);   // A10
+
 	//Draw Calls
 	bool						PreDraw( GPUMesh *mesh );
 	
@@ -187,8 +190,11 @@ public:
 	Image*												m_whiteImage = nullptr;
 
 	Texture2D*											m_defaultDepthTexture = nullptr;
-	DepthStencilTargetView*								m_defaultDepthStencilView = nullptr; // A04
-	UniformBuffer*										m_modelBuffer = nullptr;                      // A04
+	DepthStencilTargetView*								m_defaultDepthStencilView = nullptr; 
+	Texture2D*											m_defaultColorTexture = nullptr;
+	ColorTargetView*									m_defaultColorTargetView = nullptr;
+
+	UniformBuffer*										m_modelBuffer = nullptr;                      
 
 	// A06 - constant buffer storing lights; 
 	UniformBuffer*										m_gpuLightBuffer = nullptr;

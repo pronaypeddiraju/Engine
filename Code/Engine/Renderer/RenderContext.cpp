@@ -425,25 +425,35 @@ void RenderContext::BeginFrame()
 	m_defaultDepthTexture = Texture2D::CreateDepthStencilTarget(this, m_FrameBuffer_ColorTargetView->m_width, m_FrameBuffer_ColorTargetView->m_height);
 	m_defaultDepthStencilView = m_defaultDepthTexture->CreateDepthStencilTargetView();
 	
+	m_defaultColorTexture = Texture2D::CreateColorTarget(this, m_FrameBuffer_ColorTargetView->m_width, m_FrameBuffer_ColorTargetView->m_height);
+	m_defaultColorTargetView = new ColorTargetView();
+	m_defaultColorTargetView->CreateForInternalTexture( *(ID3D11Texture2D*)m_defaultColorTexture->m_handle, *m_D3DDevice);
+
 	m_defaultDepthStencilView->ClearDepthStencilView(this, 1.0f);
 
 	delete m_defaultDepthTexture;
 	m_defaultDepthTexture = nullptr;
 
 	//ColorTargetView holds a reference to the back_buffer so we can now release it from this function
-	DX_SAFE_RELEASE( back_buffer ); // I'm done using this - so release my hold on it (does not destroy it!)
+	DX_SAFE_RELEASE( back_buffer );
 
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 ColorTargetView* RenderContext::GetFrameColorTarget()
 {
-	return m_FrameBuffer_ColorTargetView;
+	return m_defaultColorTargetView;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::EndFrame()
 {
+	// Get the back buffer
+	ID3D11Texture2D *back_buffer = nullptr;
+	m_D3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
+
+	m_D3DContext->CopyResource(back_buffer, (ID3D11Resource*)m_defaultColorTexture->m_handle);
+
 	// We're done rendering, so tell the swap chain they can copy the back buffer to the front (desktop/window) buffer
 	m_D3DSwapChain->Present( 0, // Sync Interval, set to 1 for VSync
 		0 );                    // Present flags, see;
@@ -455,6 +465,14 @@ void RenderContext::EndFrame()
 
 	delete m_defaultDepthStencilView;
 	m_defaultDepthStencilView = nullptr;
+
+	delete m_defaultColorTexture;
+	m_defaultColorTexture = nullptr;
+
+	delete m_defaultColorTargetView;
+	m_defaultColorTargetView = nullptr;
+
+	DX_SAFE_RELEASE(back_buffer);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -474,6 +492,9 @@ void RenderContext::Shutdown()
 
 	delete m_defaultDepthStencilView;
 	m_defaultDepthStencilView = nullptr;
+
+	delete m_defaultColorTargetView;
+	m_defaultColorTargetView = nullptr;
 
 	delete m_modelBuffer;
 	m_modelBuffer = nullptr;

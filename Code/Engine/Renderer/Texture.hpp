@@ -58,12 +58,17 @@ public:
 	bool				LoadTextureFromImage( Image const &image ); 
 
 	bool				CreateDepthStencilTarget( uint width, uint height ); 
+	bool				CreateColorTarget( uint width, uint height );
 
 	// Create a view of this texture usable in the shader; 
 	TextureView2D*				CreateTextureView2D() const;  
-	DepthStencilTargetView*		CreateDepthStencilTargetView();  // A04
+	
+	DepthStencilTargetView*		CreateDepthStencilTargetView();  
 	ColorTargetView*			CreateColorTargetView(); //A10
 
-	static Texture2D* CreateDepthStencilTarget( RenderContext *renderContext, uint width, uint height );   // A04
-	static Texture2D* CreateDepthStencilTargetFor( Texture2D *colorTarget );   // A04
+	static Texture2D* CreateDepthStencilTarget( RenderContext* renderContext, uint width, uint height );   
+	static Texture2D* CreateDepthStencilTargetFor( Texture2D* colorTarget );   
+
+	static Texture2D* CreateColorTarget( RenderContext* renderContext, uint width, uint height );
+	static Texture2D* CreateMatchingColorTarget( Texture2D* other );
 };
