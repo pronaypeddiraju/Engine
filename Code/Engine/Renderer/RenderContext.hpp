@@ -58,6 +58,7 @@ public:
 	void						BeginFrame();
 
 	ColorTargetView*			GetFrameColorTarget();
+	Texture2D*					GetFrameColorTexture();
 
 	void						SetRasterStateWireFrame();
 	void						CreateAndSetDefaultRasterState();
@@ -124,7 +125,8 @@ public:
 	// Uniform/Constant Data
 	void						BindModelMatrix( Matrix44 const &model );
 	void						UpdateFrameBuffer();
-	void						BindUniformBuffer( uint slot, UniformBuffer *ubo ); 
+	void						UpdateFxBuffer(float effectStrenght);
+	void						BindUniformBuffer(uint slot, UniformBuffer *ubo);
 
 	//Utility for copying between Texture2Ds (For full screen FX)
 	void						CopyTexture(Texture2D *dst, Texture2D *src);   // A10
@@ -142,6 +144,7 @@ public:
 	void						DrawMesh( GPUMesh *mesh );                                         
 	
 	//Full screen effects helpers
+	void						ApplyEffect(Material *mat);
 	void						ApplyEffect(Texture2D *dst, Texture2D *src, Material *mat); // A10 
 
 	IntVec2						GetCurrentScreenDimensions();

@@ -20,7 +20,7 @@ public:
 	float GetRemainingTime() const;  // how much time until it ends
 	float GetNormalizedElapsedTime() const; // 0 - 1 value saying how far I am into a duration (>1 if elapsed)
 
-	bool HasElapsed() const;
+	bool HasElapsed();
 	uint GetElapseCount() const;
 
 	bool Decrement();          // remove one duration if we've elapsed (return whether it happened)

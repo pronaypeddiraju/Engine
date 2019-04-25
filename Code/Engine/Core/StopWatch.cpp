@@ -66,9 +66,9 @@ float StopWatch::GetNormalizedElapsedTime() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-bool StopWatch::HasElapsed() const
+bool StopWatch::HasElapsed()
 {
-	float currentTime = GetCurrentTimeSeconds();
+	float currentTime = (float)GetCurrentTimeSeconds();
 	float nextLap = m_startTime + m_duration;
 
 	return (currentTime >= nextLap);
@@ -77,7 +77,7 @@ bool StopWatch::HasElapsed() const
 //------------------------------------------------------------------------------------------------------------------------------
 uint StopWatch::GetElapseCount() const
 {
-	float currentTime = GetCurrentTimeSeconds();
+	float currentTime = (float)GetCurrentTimeSeconds();
 	float elapsedTime = currentTime - m_startTime;
 
 	return (uint)(elapsedTime / m_duration);
@@ -86,10 +86,11 @@ uint StopWatch::GetElapseCount() const
 //------------------------------------------------------------------------------------------------------------------------------
 bool StopWatch::Decrement()
 {
-	float currentTime = GetCurrentTimeSeconds(); 
+	float currentTime = (float)GetCurrentTimeSeconds(); 
+	m_elapsedTime = currentTime - m_startTime;
 	float nextLap = m_startTime + m_duration;
 
-	if (currentTime >= nextLap) 
+	if (currentTime >= nextLap)
 	{
 		m_elapsedCount++;
 		m_startTime += m_duration;

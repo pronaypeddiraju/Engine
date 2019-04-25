@@ -245,9 +245,16 @@ void RenderContext::BindMaterial( Material* material )
 
 	//Bind the texture views
 	int numTexs = material->GetNumTextures();
-	for(int index= 0; index < numTexs; index++)
+	if (numTexs == 0)
 	{
-		BindTextureView(index, material->GetTextureView(index));
+		BindTextureView(0U, nullptr);
+	}
+	else
+	{
+		for (int index = 0; index < numTexs; index++)
+		{
+			BindTextureView(index, material->GetTextureView(index));
+		}
 	}
 
 	//Bind the samplers
@@ -449,6 +456,12 @@ void RenderContext::BeginFrame()
 ColorTargetView* RenderContext::GetFrameColorTarget()
 {
 	return m_defaultColorTargetView;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+Texture2D* RenderContext::GetFrameColorTexture()
+{
+	return m_defaultColorTexture;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -1017,6 +1030,19 @@ void RenderContext::UpdateFrameBuffer()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void RenderContext::UpdateFxBuffer(float effectStrenght)
+{
+	if (m_immediateUBO == nullptr)
+	{
+		m_immediateUBO = new UniformBuffer(this);
+	}
+
+	Vec4 FXIntensity(effectStrenght, 0.f, 0.f, 0.f);
+	//Copy the cpu to gpu here(on your ubo)
+	m_immediateUBO->CopyCPUToGPU(&FXIntensity, sizeof(FXIntensity));
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::EndCamera()
 {
 	if(m_currentCamera == nullptr)
@@ -1120,16 +1146,15 @@ void RenderContext::DrawMesh( GPUMesh *mesh )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void RenderContext::ApplyEffect(Texture2D *dst, Texture2D *src, Material *mat)
+// Version to apply the effect on the default FX Color Target
+//------------------------------------------------------------------------------------------------------------------------------
+void RenderContext::ApplyEffect(Material *mat)
 {
-	UNUSED(dst);
-	UNUSED(src);
-
-	m_FXCam->SetOrthoView(Vec2::ZERO, Vec2(m_defaultColorTargetView->m_width, m_defaultColorTargetView->m_height));
+	m_FXCam->SetOrthoView(Vec2::ZERO, Vec2((float)m_defaultColorTargetView->m_width, (float)m_defaultColorTargetView->m_height));
 	m_FXCam->SetColorTarget(m_FXColorTargetView);
 
 	BeginCamera(*m_FXCam);
-	
+
 	TextureView* tex = m_defaultColorTexture->CreateTextureView();
 	mat->SetTextureView(0, tex);
 	BindMaterial(mat);
@@ -1147,6 +1172,42 @@ void RenderContext::ApplyEffect(Texture2D *dst, Texture2D *src, Material *mat)
 	backBufferTexture->m_handle = back_buffer;
 
 	CopyTexture(m_defaultColorTexture, m_FXTexture);
+
+	delete tex;
+	tex = nullptr;
+
+	delete backBufferTexture;
+	backBufferTexture = nullptr;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void RenderContext::ApplyEffect(Texture2D *dst, Texture2D *src, Material *mat)
+{
+	ColorTargetView* sourceTarget = src->CreateColorTargetView();
+	ColorTargetView* destTarget = dst->CreateColorTargetView();
+
+	m_FXCam->SetOrthoView(Vec2::ZERO, Vec2((float)sourceTarget->m_width, (float)sourceTarget->m_height));
+	m_FXCam->SetColorTarget(destTarget);
+
+	BeginCamera(*m_FXCam);
+
+	TextureView* tex = src->CreateTextureView();
+	mat->SetTextureView(0, tex);
+	BindMaterial(mat);
+
+	Draw(3);
+
+	EndCamera();
+
+	Texture2D* backBufferTexture = new Texture2D(this);
+
+	// Get the back buffer
+	ID3D11Texture2D *back_buffer = nullptr;
+	m_D3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
+
+	backBufferTexture->m_handle = back_buffer;
+
+	CopyTexture(dst, m_FXTexture);
 
 	delete tex;
 	tex = nullptr;
