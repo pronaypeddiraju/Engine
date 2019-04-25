@@ -227,8 +227,12 @@ void Material::SetUniforms( UniformBuffer *ubo )
 //------------------------------------------------------------------------------------------------------------------------------
 void Material::SetUniforms( void const *data, size_t const size )
 {
-	UniformBuffer* buffer = new UniformBuffer(m_renderContext);
-	bool result = buffer->CopyCPUToGPU(data, size);
+	if (m_materialBuffer == nullptr)
+	{
+		m_materialBuffer = new UniformBuffer(m_renderContext);
+	}
+
+	bool result = m_materialBuffer->CopyCPUToGPU(data, size);
 
 	if(!result)
 	{

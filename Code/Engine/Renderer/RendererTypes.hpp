@@ -214,3 +214,14 @@ struct LightBufferT
 
 	LightT lights[MAX_LIGHTS]; 
 }; 
+
+//------------------------------------------------------------------------------------------------------------------------------
+// Slot 8, material buffer stuff
+struct TonemapBufferT
+{
+	float intensity;
+
+	float pad00;
+	float pad01;
+	float pad02;
+};

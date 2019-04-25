@@ -87,7 +87,6 @@ uint StopWatch::GetElapseCount() const
 bool StopWatch::Decrement()
 {
 	float currentTime = (float)GetCurrentTimeSeconds(); 
-	m_elapsedTime = currentTime - m_startTime;
 	float nextLap = m_startTime + m_duration;
 
 	if (currentTime >= nextLap)

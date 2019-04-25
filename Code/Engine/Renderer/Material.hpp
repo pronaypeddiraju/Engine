@@ -49,7 +49,6 @@ public:
 	int					GetNumTextures();
 	int					GetNumSamplers();
 	// templated SetUniforms could be useful as well
-	// ...
 
 public:
 	Shader*						m_shader = nullptr; 

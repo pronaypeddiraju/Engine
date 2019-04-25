@@ -265,6 +265,7 @@ void RenderContext::BindMaterial( Material* material )
 	}
 
 	//bind user(material constant) buffer if available
+	BindUniformBuffer(8U, material->m_materialBuffer);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -1037,7 +1038,7 @@ void RenderContext::UpdateFxBuffer(float effectStrenght)
 		m_immediateUBO = new UniformBuffer(this);
 	}
 
-	Vec4 FXIntensity(effectStrenght, 0.f, 0.f, 0.f);
+	Vec4 FXIntensity(effectStrenght, effectStrenght, effectStrenght, effectStrenght);
 	//Copy the cpu to gpu here(on your ubo)
 	m_immediateUBO->CopyCPUToGPU(&FXIntensity, sizeof(FXIntensity));
 }
