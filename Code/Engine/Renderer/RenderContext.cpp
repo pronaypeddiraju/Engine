@@ -199,6 +199,8 @@ void RenderContext::Startup()
 	m_modelBuffer->CopyCPUToGPU( &buffer, sizeof(buffer) ); 
 
 	m_cpuLightBuffer = LightBufferT();
+
+	m_FXCam = new Camera();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -427,7 +429,11 @@ void RenderContext::BeginFrame()
 	
 	m_defaultColorTexture = Texture2D::CreateColorTarget(this, m_FrameBuffer_ColorTargetView->m_width, m_FrameBuffer_ColorTargetView->m_height);
 	m_defaultColorTargetView = new ColorTargetView();
-	m_defaultColorTargetView->CreateForInternalTexture( *(ID3D11Texture2D*)m_defaultColorTexture->m_handle, *m_D3DDevice);
+	m_defaultColorTargetView->CreateForInternalTexture(*(ID3D11Texture2D*)m_defaultColorTexture->m_handle, *m_D3DDevice);
+
+	m_FXTexture = Texture2D::CreateColorTarget(this, m_FrameBuffer_ColorTargetView->m_width, m_FrameBuffer_ColorTargetView->m_height);
+	m_FXColorTargetView = new ColorTargetView();
+	m_FXColorTargetView->CreateForInternalTexture(*(ID3D11Texture2D*)m_FXTexture->m_handle, *m_D3DDevice);
 
 	m_defaultDepthStencilView->ClearDepthStencilView(this, 1.0f);
 
@@ -448,11 +454,15 @@ ColorTargetView* RenderContext::GetFrameColorTarget()
 //------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::EndFrame()
 {
+	Texture2D* backBufferTexture = new Texture2D(this);
+	
 	// Get the back buffer
 	ID3D11Texture2D *back_buffer = nullptr;
 	m_D3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
 
-	m_D3DContext->CopyResource(back_buffer, (ID3D11Resource*)m_defaultColorTexture->m_handle);
+	backBufferTexture->m_handle = back_buffer;
+
+	CopyTexture(backBufferTexture, m_defaultColorTexture);
 
 	// We're done rendering, so tell the swap chain they can copy the back buffer to the front (desktop/window) buffer
 	m_D3DSwapChain->Present( 0, // Sync Interval, set to 1 for VSync
@@ -472,12 +482,25 @@ void RenderContext::EndFrame()
 	delete m_defaultColorTargetView;
 	m_defaultColorTargetView = nullptr;
 
-	DX_SAFE_RELEASE(back_buffer);
+	delete m_FXTexture;
+	m_FXTexture = nullptr;
+
+	delete m_FXColorTargetView;
+	m_FXColorTargetView = nullptr;
+
+	delete backBufferTexture;
+	backBufferTexture = nullptr;
+
+	// We don't need to release back buffer anymore as it is being released when we delete the backBufferTexture as the texture stores it as a handle
+	//DX_SAFE_RELEASE(back_buffer);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::Shutdown()
 {
+	delete m_FXCam;
+	m_FXCam = nullptr;
+
 	delete m_immediateVBO;
 	m_immediateVBO = nullptr;
 
@@ -903,6 +926,12 @@ void RenderContext::BindUniformBuffer( uint slot, UniformBuffer *uniformBuffer )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void RenderContext::CopyTexture(Texture2D *dst, Texture2D *src)
+{
+	m_D3DContext->CopyResource((ID3D11Resource*)dst->m_handle, (ID3D11Resource*)src->m_handle);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BeginCamera( Camera& camera )
 {
 	UNUSED(camera);
@@ -1088,6 +1117,42 @@ void RenderContext::DrawMesh( GPUMesh *mesh )
 	{
 		ERROR_AND_DIE("Could not create input layout!");
 	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void RenderContext::ApplyEffect(Texture2D *dst, Texture2D *src, Material *mat)
+{
+	UNUSED(dst);
+	UNUSED(src);
+
+	m_FXCam->SetOrthoView(Vec2::ZERO, Vec2(m_defaultColorTargetView->m_width, m_defaultColorTargetView->m_height));
+	m_FXCam->SetColorTarget(m_FXColorTargetView);
+
+	BeginCamera(*m_FXCam);
+	
+	TextureView* tex = m_defaultColorTexture->CreateTextureView();
+	mat->SetTextureView(0, tex);
+	BindMaterial(mat);
+
+	Draw(3);
+
+	EndCamera();
+
+	Texture2D* backBufferTexture = new Texture2D(this);
+
+	// Get the back buffer
+	ID3D11Texture2D *back_buffer = nullptr;
+	m_D3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
+
+	backBufferTexture->m_handle = back_buffer;
+
+	CopyTexture(m_defaultColorTexture, m_FXTexture);
+
+	delete tex;
+	tex = nullptr;
+
+	delete backBufferTexture;
+	backBufferTexture = nullptr;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

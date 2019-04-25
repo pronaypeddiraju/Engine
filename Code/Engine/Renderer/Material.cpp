@@ -50,31 +50,32 @@ void Material::LoadMaterialFromXML( const std::string& fileName )
 	m_materialName = ParseXmlAttribute(*rootElement, "id", m_materialName);
 	m_shaderName = ParseXmlAttribute(*rootElement, "shader", m_shaderName);
 
-	XMLElement* child = rootElement->FirstChildElement("diffuse");
-	if (child != nullptr)
+	XMLElement* child = rootElement;
+	if (child->FirstChildElement("diffuse") != nullptr)
 	{
+		child = child->FirstChildElement("diffuse");
 		m_diffuseName = ParseXmlAttribute(*child, "src", m_diffuseName);
 	}
 
-	if (child->NextSiblingElement("normal") != nullptr)
+	if (child->NextSiblingElement("normal") != nullptr && child != nullptr)
 	{
 		child = child->NextSiblingElement("normal");
 		m_normalName = ParseXmlAttribute(*child, "src", m_normalName);
 	}
 
-	if (child->NextSiblingElement("spec") != nullptr)
+	if (child->NextSiblingElement("spec") != nullptr && child != nullptr)
 	{
 		child = child->NextSiblingElement("spec");
 		m_specName = ParseXmlAttribute(*child, "src", m_specName);
 	}
 
-	if (child->NextSiblingElement("emissive") != nullptr)
+	if (child->NextSiblingElement("emissive") != nullptr && child != nullptr)
 	{
 		child = child->NextSiblingElement("emissive");
 		m_emissiveName = ParseXmlAttribute(*child, "src", m_emissiveName);
 	}
 
-	if (child->NextSiblingElement("sampler") != nullptr)
+	if (child->NextSiblingElement("sampler") != nullptr && child != nullptr)
 	{
 		child = child->NextSiblingElement("sampler");
 		m_samplerIndex = ParseXmlAttribute(*child, "idx", m_samplerIndex);
@@ -84,7 +85,7 @@ void Material::LoadMaterialFromXML( const std::string& fileName )
 	Sampler* sampler = m_renderContext->GetSamplerOfType(m_samplerType);
 	SetSampler(m_samplerIndex, sampler);
 
-	if (child->NextSiblingElement("sampler") != nullptr)
+	if (child->NextSiblingElement("sampler") != nullptr && child != nullptr)
 	{
 		child = child->NextSiblingElement("sampler");
 		m_samplerIndex = ParseXmlAttribute(*child, "idx", m_samplerIndex);

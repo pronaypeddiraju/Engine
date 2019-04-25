@@ -58,7 +58,7 @@ public:
 	void						BeginFrame();
 
 	ColorTargetView*			GetFrameColorTarget();
-	DepthStencilTargetView*		GetFrameDepthStencilTarget(); 
+
 	void						SetRasterStateWireFrame();
 	void						CreateAndSetDefaultRasterState();
 
@@ -109,38 +109,41 @@ public:
 
 	// Be able to set a model matrix (updates the uniform buffer; 
 	void						SetGlobalTint(const Rgba& color);
-	void						SetModelMatrix( Matrix44 const &modelMatrix );            // A04
+	void						SetModelMatrix( Matrix44 const &modelMatrix );      
 	inline const Matrix44&		GetProjectionMatrix()	{return m_currentCamera->m_projection;}
 	inline const Matrix44&		GetViewMatrix() {return m_currentCamera->m_view;}
 
-	void						ClearColorTargets( const Rgba& clearColor );		//Previously was ClearScreen
-	void						ClearDepthStencilTarget( float depth = 1.0f, uint8_t stencil = 0U ); // A04
+	void						ClearColorTargets( const Rgba& clearColor );		
+	void						ClearDepthStencilTarget( float depth = 1.0f, uint8_t stencil = 0U ); 
 
 	// Stream Data
 	void						BindVertexStream( VertexBuffer *vbo ); 
 	// Be able to bind index buffers; 
-	void						BindIndexStream( IndexBuffer *ibo );    // A04
+	void						BindIndexStream( IndexBuffer *ibo );    
 
 	// Uniform/Constant Data
 	void						BindModelMatrix( Matrix44 const &model );
 	void						UpdateFrameBuffer();
 	void						BindUniformBuffer( uint slot, UniformBuffer *ubo ); 
 
-	//Utility for copying between Texture2Ds (For fullscreen FX)
-	//void						CopyTexture(Texture2D *dst, Texture2D *src);   // A10
+	//Utility for copying between Texture2Ds (For full screen FX)
+	void						CopyTexture(Texture2D *dst, Texture2D *src);   // A10
 
 	//Draw Calls
 	bool						PreDraw( GPUMesh *mesh );
 	
 	void						Draw(uint vertexCount, uint byteOffset = 0U);
-	void						DrawIndexed( uint indexCount);                                 // A04
+	void						DrawIndexed( uint indexCount);                                 
 
 	void						DrawVertexArray( Vertex_PCU const *vertices, uint count ); 
 	void						DrawVertexArray( int numVertexes, const Vertex_PCU* vertexes );
 	void						DrawVertexArray( const std::vector<Vertex_PCU>& vertexes);
 
-	void						DrawMesh( GPUMesh *mesh );                                         // A04
+	void						DrawMesh( GPUMesh *mesh );                                         
 	
+	//Full screen effects helpers
+	void						ApplyEffect(Texture2D *dst, Texture2D *src, Material *mat); // A10 
+
 	IntVec2						GetCurrentScreenDimensions();
 
 public:
@@ -170,18 +173,14 @@ private:
 	ID3D11DeviceContext									*m_D3DContext = nullptr;
 	IDXGISwapChain										*m_D3DSwapChain = nullptr;
 	ID3D11RasterizerState								*m_defaultRasterState = nullptr; 
-	
-	//For now make a global render target view
-	//Wait no! we shouldn't be fucking with this
-	//ID3D11RenderTargetView							*m_renderTargetView = nullptr;
 
+	//CTV holding reference to the back_buffer
 	ColorTargetView*									m_FrameBuffer_ColorTargetView = nullptr;
+
 	Camera*												m_currentCamera = nullptr;
 	Shader*												m_currentShader = nullptr;
 
 	void*												m_hwnd = nullptr;
-
-	//Matrix44											m_modelMatrix;
 
 public:
 
@@ -194,13 +193,17 @@ public:
 	Texture2D*											m_defaultColorTexture = nullptr;
 	ColorTargetView*									m_defaultColorTargetView = nullptr;
 
+	//For FX
+	Texture2D*											m_FXTexture = nullptr;
+	ColorTargetView*									m_FXColorTargetView = nullptr;
+
 	UniformBuffer*										m_modelBuffer = nullptr;                      
 
-	// A06 - constant buffer storing lights; 
+	// constant buffer storing lights; 
 	UniformBuffer*										m_gpuLightBuffer = nullptr;
-	// A06 - CPU copy of light data
+	// CPU copy of light data
 	LightBufferT										m_cpuLightBuffer;                   
-	// A06 - need to update the light buffer before a draw
+	// need to update the light buffer before a draw
 	bool												m_lightBufferDirty = true;                           
 	uint												m_lightSlot = 0U;
 
@@ -208,8 +211,11 @@ public:
 
 	unsigned int										m_frameCount = 0;
 
-	GPUMesh*											m_immediateMesh = nullptr;   //A04
+	GPUMesh*											m_immediateMesh = nullptr;  
 	ModelBufferT										m_cpuModelBuffer;
+
+	//Full screen effects
+	Camera*												m_FXCam = nullptr;
 };
 
 

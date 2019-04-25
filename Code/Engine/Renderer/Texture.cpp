@@ -242,7 +242,7 @@ ColorTargetView* Texture2D::CreateColorTargetView()
 	ctv_desc.Format = DXGI_FORMAT_R8G8B8A8_TYPELESS;
 	ctv_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 
-	dev->CreateRenderTargetView(m_handle, &ctv_desc, &ctv);
+	dev->CreateRenderTargetView(m_handle, nullptr, &ctv);
 
 	if (ctv != nullptr) {
 		// Awesome, we have one
