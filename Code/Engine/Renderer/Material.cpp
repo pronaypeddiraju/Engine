@@ -234,7 +234,7 @@ void Material::SetUniforms( void const *data, size_t const size )
 
 	bool result = m_materialBuffer->CopyCPUToGPU(data, size);
 
-	if(!result)
+	if(!result)                          
 	{
 		ERROR_AND_DIE("The uniform buffer was not set for Material");
 	}

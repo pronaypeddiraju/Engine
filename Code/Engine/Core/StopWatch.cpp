@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Core/StopWatch.hpp"
 #include "Engine/Core/Time.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 StopWatch::StopWatch(Clock* clock)
@@ -27,6 +28,8 @@ void StopWatch::Start(float time)
 {
 	m_startTime = (float)GetCurrentTimeSeconds();
 	m_duration = time;
+	m_elapsedTime = 0.f;
+	m_elapsedCount = 0.f;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -39,6 +42,7 @@ void StopWatch::Set(float time)
 void StopWatch::Reset()
 {
 	m_elapsedTime = 0.f;
+	m_elapsedCount = 0;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -60,9 +64,14 @@ float StopWatch::GetRemainingTime() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-float StopWatch::GetNormalizedElapsedTime() const
+float StopWatch::GetNormalizedElapsedTime()
 {
-	return (m_elapsedTime) / m_duration;
+	float currentTime = (float)GetCurrentTimeSeconds();
+	m_elapsedTime = currentTime - m_startTime;
+
+	float mapped = RangeMapFloat(m_elapsedTime, 0.f, m_duration, 0.f, 1.f);
+
+	return mapped;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -75,12 +84,12 @@ bool StopWatch::HasElapsed()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-uint StopWatch::GetElapseCount() const
+uint StopWatch::GetElapseCount()
 {
 	float currentTime = (float)GetCurrentTimeSeconds();
-	float elapsedTime = currentTime - m_startTime;
+	m_elapsedTime = currentTime - m_startTime;
 
-	return (uint)(elapsedTime / m_duration);
+	return (uint)(m_elapsedTime / m_duration);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

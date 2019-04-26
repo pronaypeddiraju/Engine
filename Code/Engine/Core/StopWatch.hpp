@@ -18,10 +18,10 @@ public:
 	float GetDuration() const;       // how long is this timer for total
 	float GetElapsedTime() const;    // How long as the timer been running;
 	float GetRemainingTime() const;  // how much time until it ends
-	float GetNormalizedElapsedTime() const; // 0 - 1 value saying how far I am into a duration (>1 if elapsed)
+	float GetNormalizedElapsedTime(); // 0 - 1 value saying how far I am into a duration (>1 if elapsed)
 
 	bool HasElapsed();
-	uint GetElapseCount() const;
+	uint GetElapseCount();
 
 	bool Decrement();          // remove one duration if we've elapsed (return whether it happened)
 	uint DecrementAll();       // return number of "durations" passed, and remove them; 

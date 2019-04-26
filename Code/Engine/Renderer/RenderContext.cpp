@@ -1163,22 +1163,10 @@ void RenderContext::ApplyEffect(Material *mat)
 	Draw(3);
 
 	EndCamera();
-
-	Texture2D* backBufferTexture = new Texture2D(this);
-
-	// Get the back buffer
-	ID3D11Texture2D *back_buffer = nullptr;
-	m_D3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
-
-	backBufferTexture->m_handle = back_buffer;
-
 	CopyTexture(m_defaultColorTexture, m_FXTexture);
 
 	delete tex;
 	tex = nullptr;
-
-	delete backBufferTexture;
-	backBufferTexture = nullptr;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
