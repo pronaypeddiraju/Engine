@@ -29,7 +29,7 @@ void StopWatch::Start(float time)
 	m_startTime = (float)GetCurrentTimeSeconds();
 	m_duration = time;
 	m_elapsedTime = 0.f;
-	m_elapsedCount = 0.f;
+	m_elapsedCount = 0;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
