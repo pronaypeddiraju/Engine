@@ -35,6 +35,7 @@ public:
 
 	//Transforms and Matrices
 	void					SetModelMatrix(Matrix44 camModel);
+	void					SetViewMatrix(Matrix44 camView);
 	const Matrix44&			GetModelMatrix() const;
 	const Matrix44&			GetViewMatrix() const;
 	const Matrix44&			GetProjectionMatrix() const;

@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
-#include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include <vector>
 #include <string>
@@ -40,6 +41,13 @@ Vec2::Vec2( float initialX, float initialY )
 Vec2::Vec2( const char* asText )
 {
 	SetFromText(asText);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+Vec2::Vec2(const IntVec2& copyfrom)
+{
+	x = (float)copyfrom.x;
+	y = (float)copyfrom.y;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

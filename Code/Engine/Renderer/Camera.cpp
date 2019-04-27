@@ -75,6 +75,12 @@ void Camera::SetModelMatrix( Matrix44 camModel )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void Camera::SetViewMatrix(Matrix44 camView)
+{
+	m_view = camView;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 const Matrix44& Camera::GetModelMatrix() const
 {
 	return m_cameraModel;

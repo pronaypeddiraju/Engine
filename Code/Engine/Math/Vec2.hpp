@@ -1,5 +1,9 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include <string>
+
+struct IntVec2;
+
 //-----------------------------------------------------------------------------------------------
 struct Vec2
 {
@@ -7,6 +11,7 @@ public:
 	// Construction/Destruction
 	Vec2() {}												// default constructor: do nothing (for speed)
 	Vec2( const Vec2& copyFrom );							// copy constructor (from another vec2)
+	Vec2( const IntVec2& copyfrom );
 	explicit Vec2( float initialX, float initialY );		// explicit constructor (from x, y)
 	explicit Vec2( const char* asText);
 

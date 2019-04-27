@@ -271,6 +271,12 @@ const IntVec2& WindowContext::GetClientBounds()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+float WindowContext::GetClientAspect()
+{
+	return (float)m_clientRectSize.x / (float)m_clientRectSize.y;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 const IntVec2& WindowContext::GetTureClientBounds()
 {
 	return m_trueClientSize;
