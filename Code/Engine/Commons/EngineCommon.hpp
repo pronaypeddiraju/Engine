@@ -62,6 +62,7 @@ class DevConsole;
 class WindowContext;
 class DebugRender;
 class RenderContext;
+class RandomNumberGenerator;
 
 //------------------------------------------------------------------------------------------------------------------------------
 extern DevConsole* g_devConsole;
@@ -71,6 +72,7 @@ extern NamedStrings g_gameConfigBlackboard; // declared in EngineCommon.hpp, def
 extern WindowContext* g_windowContext;
 extern DebugRender*	g_debugRenderer;
 extern RenderContext* g_renderContext;
+extern RandomNumberGenerator* g_RNG;
 
 typedef NamedStrings EventArgs;
 
