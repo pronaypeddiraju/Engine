@@ -253,6 +253,9 @@
     <ClCompile Include="Core\StopWatch.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\NamedProperties.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -471,5 +474,6 @@
     <ClInclude Include="Renderer\Model.hpp" />
     <ClInclude Include="Renderer\ObjectLoader.hpp" />
     <ClInclude Include="Core\StopWatch.hpp" />
+    <ClInclude Include="Core\NamedProperties.hpp" />
   </ItemGroup>
 </Project>

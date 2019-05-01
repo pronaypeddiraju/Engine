@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Core/EventSystems.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 
 EventSystems* g_eventSystem = nullptr;
 

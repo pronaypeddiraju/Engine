@@ -185,6 +185,7 @@
     <ClCompile Include="Core\EventSystems.cpp" />
     <ClCompile Include="Core\FileUtils.cpp" />
     <ClCompile Include="Core\Image.cpp" />
+    <ClCompile Include="Core\NamedProperties.cpp" />
     <ClCompile Include="Core\NamedStrings.cpp" />
     <ClCompile Include="Core\StopWatch.cpp" />
     <ClCompile Include="Core\Tags.cpp" />
@@ -270,6 +271,7 @@
     <ClInclude Include="Core\EventSystems.hpp" />
     <ClInclude Include="Core\FileUtils.hpp" />
     <ClInclude Include="Core\Image.hpp" />
+    <ClInclude Include="Core\NamedProperties.hpp" />
     <ClInclude Include="Core\NamedStrings.hpp" />
     <ClInclude Include="Core\StopWatch.hpp" />
     <ClInclude Include="Core\Tags.hpp" />

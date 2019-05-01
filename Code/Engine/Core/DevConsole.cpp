@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EventSystems.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"

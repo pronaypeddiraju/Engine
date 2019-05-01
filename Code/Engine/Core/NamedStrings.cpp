@@ -29,15 +29,12 @@ void NamedStrings::PopulateFromXmlElementAttributes( const XMLElement& element )
 	for(const tinyxml2::XMLAttribute* attribute = element.FirstAttribute(); attribute; attribute = attribute->Next())
 	{
 		m_keyValuePairs[attribute->Name()] = attribute->Value();
-		//m_keyValuePairs.insert(std::pair<std::string,std::string> (attribute->Name(), attribute->Value()));
 	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 void NamedStrings::SetValue( const std::string& keyName, const std::string& newValue )
 {
-	//m_keyValuePairs.at(keyName) = newValue;
-
 	m_keyValuePairs[keyName] = newValue;
 }
 

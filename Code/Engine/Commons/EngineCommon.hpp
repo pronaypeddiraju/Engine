@@ -56,6 +56,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 class NamedStrings;
+class NamedProperties;
 class EventSystems;
 class PhysicsSystem;
 class DevConsole;
@@ -72,7 +73,7 @@ extern WindowContext* g_windowContext;
 extern DebugRender*	g_debugRenderer;
 extern RenderContext* g_renderContext;
 
-typedef NamedStrings EventArgs;
+typedef NamedProperties EventArgs;
 
 //------------------------------------------------------------------------------------------------------------------------------
 const unsigned short KEY_ESC = 27;
