@@ -344,10 +344,20 @@ void PhysicsSystem::CheckStaticVsStaticCollisions()
 			continue;
 		}
 
+		if (!m_rbBucket->m_RbBucket[STATIC_SIMULATION][colliderIndex]->m_isAlive)
+		{
+			continue;
+		}
+
 		for(int otherColliderIndex = 0; otherColliderIndex < numStaticObjects; otherColliderIndex++)
 		{
 			//check condition where the other collider is nullptr
 			if(m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex] == nullptr)
+			{
+				continue;
+			}
+
+			if (!m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex]->m_isAlive)
 			{
 				continue;
 			}
@@ -387,10 +397,20 @@ void PhysicsSystem::ResolveDynamicVsStaticCollisions(bool canResolve)
 			continue;
 		}
 
+		if (!m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_isAlive)
+		{
+			continue;
+		}
+
 		for(int otherColliderIndex = 0; otherColliderIndex < numStaticObjects; otherColliderIndex++)
 		{
 			//check condition where the other collider is nullptr
 			if(m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex] == nullptr)
+			{
+				continue;
+			}
+
+			if (!m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex]->m_isAlive)
 			{
 				continue;
 			}
@@ -495,10 +515,20 @@ void PhysicsSystem::ResolveDynamicVsDynamicCollisions(bool canResolve)
 			continue;
 		}
 
+		if (!m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_isAlive)
+		{
+			continue;
+		}
+
 		for(int otherColliderIndex = colliderIndex + 1; otherColliderIndex < numDynamicObjects; otherColliderIndex++)
 		{
 			//check condition where the other collider is nullptr
 			if(m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][otherColliderIndex] == nullptr)
+			{
+				continue;
+			}
+
+			if (!m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][otherColliderIndex]->m_isAlive)
 			{
 				continue;
 			}
