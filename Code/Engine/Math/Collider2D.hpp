@@ -7,6 +7,7 @@
 #include "Engine/Math/OBB2.hpp"
 
 class Rigidbody2D;
+class Trigger2D;
 struct Collision2D;
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -31,15 +32,25 @@ public:
 	virtual void				SetMomentForObject() = 0;
 	virtual bool				Contains(Vec2 worldPoint) = 0;
 
+	void						SetCollision(bool inCollision);
+	void						SetCollisionEvent(const std::string& eventString);
+	void						SetColliderType(eColliderType2D type);
+	void						Destroy();
+
 	bool						IsTouching(Collision2D* collision, Collider2D* otherCollider);
 	eColliderType2D				GetType();
-	void						SetCollision(bool inCollision);
+
+	void						FireCollisionEvent(EventArgs& args);
 
 public:
 	Rigidbody2D*				m_rigidbody = nullptr;
+	Trigger2D*					m_trigger = nullptr;
 	eColliderType2D				m_colliderType = COLLIDER_UNKOWN;
 
 	bool						m_inCollision = false;
+	bool						m_isAlive = true;
+
+	std::string					m_onCollisionEvent = "";
 };
 
 //------------------------------------------------------------------------------------------------------------------------------

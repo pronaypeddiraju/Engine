@@ -1,9 +1,12 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Math/Collider2D.hpp"
+#include "Engine/Core/EventSystems.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Math/CollisionHandler.hpp"
-#include "Engine/Math/Rigidbody2D.hpp"
 #include "Engine/Math/Disc2D.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Rigidbody2D.hpp"
+#include "Engine/Math/Trigger2D.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 bool Collider2D::IsTouching(Collision2D* collision, Collider2D* otherCollider )
@@ -18,9 +21,36 @@ eColliderType2D Collider2D::GetType()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void Collider2D::FireCollisionEvent(EventArgs& args)
+{
+	if (m_onCollisionEvent != "")
+	{
+		g_eventSystem->FireEvent(m_onCollisionEvent, args);
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void Collider2D::SetCollision( bool inCollision )
 {
 	m_inCollision = inCollision;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Collider2D::Destroy()
+{
+	m_isAlive = false;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Collider2D::SetCollisionEvent(const std::string& eventString)
+{
+	m_onCollisionEvent = eventString;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Collider2D::SetColliderType(eColliderType2D type)
+{
+	m_colliderType = type;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -146,7 +176,14 @@ OBB2 BoxCollider2D::GetLocalShape() const
 OBB2 BoxCollider2D::GetWorldShape() const
 {
 	OBB2 box = GetLocalShape();
-	box.Translate(m_rigidbody->GetPosition());
+	if (m_rigidbody != nullptr)
+	{
+		box.Translate(m_rigidbody->GetPosition());
+	}
+	else if (m_trigger != nullptr)
+	{
+		box.Translate(m_trigger->GetPosition());
+	}
 	return box;
 }
 

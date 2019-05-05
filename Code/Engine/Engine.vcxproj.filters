@@ -256,6 +256,15 @@
     <ClCompile Include="Core\NamedProperties.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Math\Trigger2D.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\TriggerBucket.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\TriggerTouch2D.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -475,5 +484,9 @@
     <ClInclude Include="Renderer\ObjectLoader.hpp" />
     <ClInclude Include="Core\StopWatch.hpp" />
     <ClInclude Include="Core\NamedProperties.hpp" />
+    <ClInclude Include="Math\Trigger2D.hpp" />
+    <ClInclude Include="Math\TriggerBucket.hpp" />
+    <ClInclude Include="Math\PhysicsTypes.hpp" />
+    <ClInclude Include="Math\TriggerTouch2D.hpp" />
   </ItemGroup>
 </Project>

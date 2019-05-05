@@ -122,13 +122,13 @@ public:
 		SetValue<T*>(key, ptr);
 	}
 
-	// Specializations
-	void				SetValue(std::string const &key, char const* defaultValue);
-	std::string			GetValue(std::string const &key, char const* defaultValue) const;
-	std::string			GetValue(const std::string& key, std::string defaultValue) const;
-	bool				GetValue(const std::string& key, bool defaultValue) const;
-	int					GetValue(const std::string& key, int defaultValue) const;
-	float				GetValue(const std::string& key, float defaultValue) const;
+// 	void				PopulateFromXmlElementAttributes(const XMLElement& element);
+// 	void				SetValue(std::string const &key, char const* defaultValue);
+// 	std::string			GetValue(std::string const &key, char const* defaultValue) const;
+// 	std::string			GetValue(const std::string& key, std::string defaultValue) const;
+// 	bool				GetValue(const std::string& key, bool defaultValue) const;
+// 	int					GetValue(const std::string& key, int defaultValue) const;
+// 	float				GetValue(const std::string& key, float defaultValue) const;
 
 private:
 	std::map<std::string, BaseProperty*> m_properties;

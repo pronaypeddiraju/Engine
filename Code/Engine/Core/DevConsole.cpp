@@ -284,6 +284,7 @@ void DevConsole::Startup()
 {
 	g_eventSystem->SubscribeEventCallBackFn( "Test", Command_Test );
 	g_eventSystem->SubscribeEventCallBackFn( "Help", Command_Help );
+	g_eventSystem->SubscribeEventCallBackFn( "Clear", Command_Clear );
 	m_currentInput.empty();
 }
 
@@ -491,5 +492,13 @@ STATIC bool	DevConsole::Command_Help( EventArgs& args )
 		std::string printString =  "   " + eventsAvailable[eventIndex];
 		g_devConsole->PrintString( CONSOLE_ECHO, printString );
 	}
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool DevConsole::Command_Clear(EventArgs& args)
+{
+	UNUSED(args);
+	g_devConsole->m_printLog.clear();
 	return true;
 }

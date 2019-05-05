@@ -1,11 +1,15 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Math/PhysicsSystem.hpp"
+#include "Engine/Core/EventSystems.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Math/Collider2D.hpp"
-#include "Engine/Renderer/Rgba.hpp"
 #include "Engine/Math/CollisionHandler.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/RigidBodyBucket.hpp"
 #include "Engine/Math/Rigidbody2D.hpp"
-#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Trigger2D.hpp"
+#include "Engine/Math/TriggerBucket.hpp"
+#include "Engine/Renderer/Rgba.hpp"
 
 PhysicsSystem* g_physicsSystem = nullptr;
 
@@ -13,6 +17,7 @@ PhysicsSystem* g_physicsSystem = nullptr;
 PhysicsSystem::PhysicsSystem()
 {
 	m_rbBucket = new RigidBodyBucket;
+	m_triggerBucket = new TriggerBucket;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -29,9 +34,22 @@ Rigidbody2D* PhysicsSystem::CreateRigidbody( eSimulationType simulationType )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+Trigger2D* PhysicsSystem::CreateTrigger(eSimulationType simulationType)
+{
+	Trigger2D *trigger = new Trigger2D(this, simulationType);
+	return trigger;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::AddRigidbodyToVector(Rigidbody2D* rigidbody)
 {
 	m_rbBucket->m_RbBucket[rigidbody->GetSimulationType()].push_back(rigidbody);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void PhysicsSystem::AddTriggerToVector(Trigger2D* trigger)
+{
+	m_triggerBucket->m_triggerBucket[trigger->GetSimulationType()].push_back(trigger);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -89,12 +107,9 @@ void PhysicsSystem::CopyTransformsToObjects()
 void PhysicsSystem::Update( float deltaTime )
 {
 	CopyTransformsFromObjects(); 
-	// debug: clear all frame information
-	// such as if they are currently touching another object; 
+
 	SetAllCollisionsToFalse();
 
-	// we'll eventually switch to fixed-step updates, so we'll call down immediately to a run_step to make
-	// that port easier; 
 	RunStep( deltaTime );
 
 	CopyTransformsToObjects();  
@@ -118,28 +133,87 @@ void PhysicsSystem::SetAllCollisionsToFalse()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void PhysicsSystem::UpdateAllCollisions()
+{	
+	//Check Static vs Static to mark as collided
+	CheckStaticVsStaticCollisions();
+
+	//Dynamic vs Static set 
+	ResolveDynamicVsStaticCollisions(true);
+
+	//Dynamic vs Dynamic set
+	ResolveDynamicVsDynamicCollisions(true);
+
+	//Dynamic vs static set with no resolution
+	ResolveDynamicVsStaticCollisions(false);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void PhysicsSystem::UpdateTriggers()
+{
+	//Check if any dynamic object has entered/exited trigger
+	int numTriggers = (int)m_triggerBucket->m_triggerBucket->size();
+	for (int triggerIndex = 0; triggerIndex < numTriggers; triggerIndex++)
+	{
+		m_triggerBucket->m_triggerBucket[STATIC_SIMULATION][triggerIndex]->Update(m_frameCount);
+	}
+	
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void PhysicsSystem::PurgeDeletedObjects()
+{
+	for (int rbTypes = 0; rbTypes < NUM_SIMULATION_TYPES; rbTypes++)
+	{
+		for (int rbIndex = 0; rbIndex < m_rbBucket->m_RbBucket[rbTypes].size(); rbIndex++)
+		{
+			if (!m_rbBucket->m_RbBucket[rbTypes][rbIndex]->m_isAlive)
+			{
+				delete m_rbBucket->m_RbBucket[rbTypes][rbIndex];
+				m_rbBucket->m_RbBucket[rbTypes][rbIndex] = nullptr;
+
+				m_rbBucket->m_RbBucket[rbTypes].erase(m_rbBucket->m_RbBucket[rbTypes].begin() + rbIndex);
+				rbIndex--;
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::DebugRender( RenderContext* renderContext ) const
+{
+	DebugRenderRigidBodies(renderContext);
+	DebugRenderTriggers(renderContext);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void PhysicsSystem::DebugRenderRigidBodies(RenderContext* renderContext) const
 {
 	for (int rbTypes = 0; rbTypes < NUM_SIMULATION_TYPES; rbTypes++)
 	{
 		int numRigidbodies = static_cast<int>(m_rbBucket->m_RbBucket[rbTypes].size());
-		for(int rbIndex = 0; rbIndex < numRigidbodies; rbIndex++)
+		for (int rbIndex = 0; rbIndex < numRigidbodies; rbIndex++)
 		{
 			//Nullptr check first
-			if(m_rbBucket->m_RbBucket[rbTypes][rbIndex] == nullptr)
+			if (m_rbBucket->m_RbBucket[rbTypes][rbIndex] == nullptr)
+			{
+				continue;
+			}
+
+			if (!m_rbBucket->m_RbBucket[rbTypes][rbIndex]->m_isAlive)
 			{
 				continue;
 			}
 
 			eSimulationType simType = m_rbBucket->m_RbBucket[rbTypes][rbIndex]->GetSimulationType();
 
-			switch( simType )
+			switch (simType)
 			{
 			case TYPE_UNKOWN:
-			break;
+				break;
 			case STATIC_SIMULATION:
 			{
-				if(m_rbBucket->m_RbBucket[rbTypes][rbIndex]->m_collider->m_inCollision)
+				if (m_rbBucket->m_RbBucket[rbTypes][rbIndex]->m_collider->m_inCollision)
 				{
 					m_rbBucket->m_RbBucket[rbTypes][rbIndex]->DebugRender(renderContext, Rgba::MAGENTA);
 				}
@@ -151,7 +225,7 @@ void PhysicsSystem::DebugRender( RenderContext* renderContext ) const
 			break;
 			case DYNAMIC_SIMULATION:
 			{
-				if(m_rbBucket->m_RbBucket[rbTypes][rbIndex]->m_collider->m_inCollision)
+				if (m_rbBucket->m_RbBucket[rbTypes][rbIndex]->m_collider->m_inCollision)
 				{
 					m_rbBucket->m_RbBucket[rbTypes][rbIndex]->DebugRender(renderContext, Rgba::RED);
 				}
@@ -162,9 +236,62 @@ void PhysicsSystem::DebugRender( RenderContext* renderContext ) const
 			}
 			break;
 			case NUM_SIMULATION_TYPES:
-			break;
+				break;
 			default:
+				break;
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void PhysicsSystem::DebugRenderTriggers(RenderContext* renderContext) const
+{
+	for (int triggerTypes = 0; triggerTypes < NUM_SIMULATION_TYPES; triggerTypes++)
+	{
+		int numTriggers = static_cast<int>(m_triggerBucket->m_triggerBucket[triggerTypes].size());
+		for (int triggerIndex = 0; triggerIndex < numTriggers; triggerIndex++)
+		{
+			//Nullptr check first
+			if (m_triggerBucket->m_triggerBucket[triggerTypes][triggerIndex] == nullptr)
+			{
+				continue;
+			}
+
+			eSimulationType simType = m_triggerBucket->m_triggerBucket[triggerTypes][triggerIndex]->GetSimulationType();
+
+			switch (simType)
+			{
+			case TYPE_UNKOWN:
+				break;
+			case STATIC_SIMULATION:
+			{
+				if (m_triggerBucket->m_triggerBucket[triggerTypes][triggerIndex]->m_collider->m_inCollision)
+				{
+					m_triggerBucket->m_triggerBucket[triggerTypes][triggerIndex]->DebugRender(renderContext, Rgba::WHITE);
+				}
+				else
+				{
+					m_triggerBucket->m_triggerBucket[triggerTypes][triggerIndex]->DebugRender(renderContext, Rgba::WHITE);
+				}
+			}
 			break;
+			case DYNAMIC_SIMULATION:
+			{
+				if (m_triggerBucket->m_triggerBucket[triggerTypes][triggerIndex]->m_collider->m_inCollision)
+				{
+					m_triggerBucket->m_triggerBucket[triggerTypes][triggerIndex]->DebugRender(renderContext, Rgba::WHITE);
+				}
+				else
+				{
+					m_triggerBucket->m_triggerBucket[triggerTypes][triggerIndex]->DebugRender(renderContext, Rgba::WHITE);
+				}
+			}
+			break;
+			case NUM_SIMULATION_TYPES:
+				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -179,21 +306,14 @@ const Vec2& PhysicsSystem::GetGravity() const
 //------------------------------------------------------------------------------------------------------------------------------
 void PhysicsSystem::RunStep( float deltaTime )
 {
+	m_frameCount++;
+
 	//First move all rigidbodies based on forces on them
 	MoveAllDynamicObjects(deltaTime);
 
-	//For A2
-	//Check Static vs Static to mark as collided
-	CheckStaticVsStaticCollisions();
+	UpdateAllCollisions();
 
-	//Dynamic vs Static set 
-	ResolveDynamicVsStaticCollisions(true);
-
-	//Dynamic vs Dynamic set
-	ResolveDynamicVsDynamicCollisions(true);
-
-	//Dynamic vs static set with no resolution
-	ResolveDynamicVsStaticCollisions(false);
+	UpdateTriggers();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -244,6 +364,10 @@ void PhysicsSystem::CheckStaticVsStaticCollisions()
 				//Set collision to true
 				m_rbBucket->m_RbBucket[STATIC_SIMULATION][colliderIndex]->m_collider->SetCollision(true);
 				m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex]->m_collider->SetCollision(true);
+
+				//Call required collision events
+				NamedProperties args;
+				m_rbBucket->m_RbBucket[STATIC_SIMULATION][colliderIndex]->m_collider->FireCollisionEvent(args);
 			}
 		}
 	}
@@ -277,6 +401,11 @@ void PhysicsSystem::ResolveDynamicVsStaticCollisions(bool canResolve)
 				//Set collision to true
 				m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_collider->SetCollision(true);
 				m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex]->m_collider->SetCollision(true);
+
+				//Call the collision event
+				NamedProperties args;
+				m_rbBucket->m_RbBucket[DYNAMIC_SIMULATION][colliderIndex]->m_collider->FireCollisionEvent(args);
+				m_rbBucket->m_RbBucket[STATIC_SIMULATION][otherColliderIndex]->m_collider->FireCollisionEvent(args);
 
 				//Push the object out based on the collision manifold
 				if(collision.m_manifold.m_normal != Vec2::ZERO)

@@ -38,8 +38,11 @@ Rigidbody2D::~Rigidbody2D()
 		}
 	}
 
-	delete m_collider;
-	m_collider = nullptr;
+	if (m_collider != nullptr)
+	{
+		delete m_collider;
+		m_collider = nullptr;
+	}
 
 	//delete m_object_transform;
 	//m_object_transform = nullptr;
@@ -196,6 +199,13 @@ void Rigidbody2D::SetConstraints(bool x, bool y, bool rotation)
 	(x) ? m_constraints.x = 1.f : m_constraints.x = 0.f;
 	(y) ? m_constraints.y = 1.f : m_constraints.y = 0.f;
 	(rotation) ? m_constraints.z = 1.f : m_constraints.z = 0.f;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Rigidbody2D::Destroy()
+{
+	m_isAlive = false;
+	m_collider->Destroy();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

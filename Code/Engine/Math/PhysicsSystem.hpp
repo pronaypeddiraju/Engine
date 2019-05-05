@@ -8,6 +8,8 @@
 class RenderContext;
 class Collider2D;
 class RigidBodyBucket;
+class Trigger2D;
+class TriggerBucket;
 struct Collision2D;
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -20,7 +22,9 @@ public:
 	~PhysicsSystem();
 
 	Rigidbody2D*			CreateRigidbody(eSimulationType simulationType);
+	Trigger2D*				CreateTrigger(eSimulationType simulationType);
 	void					AddRigidbodyToVector( Rigidbody2D* rigidbody );
+	void					AddTriggerToVector(Trigger2D* trigger);
 	void					DestroyRigidbody( Rigidbody2D* rigidbody );
 	void					SetGravity(const Vec2& gravity);
 
@@ -28,8 +32,14 @@ public:
 	void					CopyTransformsToObjects();
 	void					Update(float deltaTime);
 	void					SetAllCollisionsToFalse();
+	void					UpdateAllCollisions();
+	void					UpdateTriggers();
+
+	void					PurgeDeletedObjects();
 
 	void					DebugRender( RenderContext* renderContext ) const;
+	void					DebugRenderRigidBodies( RenderContext* renderContext ) const;
+	void					DebugRenderTriggers( RenderContext* renderContext ) const;
 
 	const Vec2&				GetGravity() const;
 
@@ -50,6 +60,9 @@ public:
 	//Way to store all rigidbodies
 	//std::vector<Rigidbody2D*>		m_rigidbodyVector;
 	RigidBodyBucket*				m_rbBucket;
+	TriggerBucket*					m_triggerBucket;
+	uint							m_frameCount = 0U;
+
 
 	//system info like gravity
 	Vec2							m_gravity = Vec2(0.0f, -9.8f);

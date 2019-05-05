@@ -2,23 +2,13 @@
 //------------------------------------------------------------------------------------------------------------------------------
 //Engine Systems
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Math/PhysicsTypes.hpp"
 #include "Engine/Math/Transform2.hpp"
 #include "Engine/Math/Vec3.hpp"
 
 class Collider2D;
 class RenderContext;
 struct Rgba;
-
-//------------------------------------------------------------------------------------------------------------------------------
-enum eSimulationType
-{
-	TYPE_UNKOWN = -1,
-
-	STATIC_SIMULATION,
-	DYNAMIC_SIMULATION,
-
-	NUM_SIMULATION_TYPES
-};
 
 //------------------------------------------------------------------------------------------------------------------------------
 struct PhysicsMaterialT
@@ -57,12 +47,14 @@ public:
 	void									SetObject(void* object, Transform2* objectTransform);
 	void									SetConstraints(const Vec3& constraints);
 	void									SetConstraints(bool x, bool y, bool rotation);
+	void									Destroy();
 
 	//Accessors
 	Vec2									GetPosition() const;
 	eSimulationType							GetSimulationType();
 	float									GetLinearDrag();
 	float									GetAngularDrag();
+
 
 public:
 	PhysicsSystem*							m_system = nullptr; 			// system this rigidbody belongs to; 
@@ -91,6 +83,7 @@ public:
 	float									m_angularDrag = 0.1f;
 
 	Vec3									m_constraints = Vec3(0.f, 1.f, 0.f);
+	bool									m_isAlive = true;
 
 private:
 	eSimulationType							m_simulationType = TYPE_UNKOWN;

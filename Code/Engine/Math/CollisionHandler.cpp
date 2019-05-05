@@ -1018,3 +1018,12 @@ bool CheckOBB2ByCapsule( Collision2D* out, Collider2D* a, Collider2D* b )
 		return false;
 	}
 }
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Collision2D::InvertCollision()
+{
+	Collider2D* col = m_Obj;
+	m_Obj = m_otherObj;
+	m_otherObj = col;
+	m_manifold.m_normal *= -1.f;
+}

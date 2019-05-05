@@ -56,9 +56,10 @@ public:
 	//Public Event Systems test
 	static bool		Command_Test(EventArgs& args);
 	static bool		Command_Help(EventArgs& args);
+	static bool		Command_Clear(EventArgs& args);
 	//Uses ExecuteCommandLine for now
 	static bool		Command_Exec(EventArgs& args);
-
+	
 
 
 public:

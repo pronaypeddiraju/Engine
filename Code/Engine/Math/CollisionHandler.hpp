@@ -23,6 +23,8 @@ struct Collision2D
 	Collider2D *m_Obj; 
 	Collider2D *m_otherObj; 
 	Manifold2D m_manifold; // may be referred to as a "contact"
+
+	void InvertCollision();
 };
 
 typedef std::function<bool(Collision2D* out, Collider2D* a, Collider2D* b)> CollisionCheck2DCallback ;
