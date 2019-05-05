@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
+#include <string>
 
 //------------------------------------------------------------------------------------------------------------------------------
 struct IntVec2
@@ -17,6 +18,7 @@ public:
 	void					SetIntVec2(IntVec2 inValue);
 	void					SetFromText(const char* asText);
 	IntVec2					GetIntVec2() const;
+	std::string				GetAsString() const;
 
 	//Static Vectors
 	const static IntVec2 ZERO;

@@ -18,6 +18,56 @@ public:
 };
 
 //------------------------------------------------------------------------------------------------------------------------------
+// Template functions to get from string
+//------------------------------------------------------------------------------------------------------------------------------
+template <typename T>
+T FromString(char const *str, T const &def)
+{
+	if (str != nullptr)
+	{
+		return T(str);
+	}
+	else
+	{
+		return def;
+	}
+}
+
+template <>
+float FromString(char const *str, float const &def);
+
+template <>
+bool FromString(char const* str, bool const &def);
+
+template <>
+int FromString(char const* str, int const &def);
+
+template <>
+std::string FromString(char const* str, std::string const &def);
+
+//------------------------------------------------------------------------------------------------------------------------------
+// Template functions to convert back to string
+//------------------------------------------------------------------------------------------------------------------------------
+template <typename T>
+std::string ToString(const T &value)
+{
+	return value.GetAsString();
+}
+
+template <>
+std::string ToString(float const &value);
+
+template <>
+std::string ToString(bool const &value);
+
+template <>
+std::string ToString(int const &value);
+
+template <>
+std::string ToString(std::string const &value);
+
+
+//------------------------------------------------------------------------------------------------------------------------------
 // Generic template typedProperty. This is used for type checking using RTTI (Run time type information) or using static memory
 // to create a unique identifier for types (This is I will  use because I can pass it void pointers)
 //------------------------------------------------------------------------------------------------------------------------------
@@ -50,9 +100,7 @@ public:
 
 public:
 
-	//------------------------------------------------------------------------------------------------------------------------------
 	// template interface functions
-	//------------------------------------------------------------------------------------------------------------------------------
 	template <typename T>
 	void SetValue(std::string const &key, T const &value)
 	{
@@ -83,16 +131,14 @@ public:
 		if (typedProp == nullptr) 
 		{
 			std::string str = prop->ToString();
-			return FromString(str, defaultValue);
+			return FromString(str.c_str(), defaultValue);
 		}
 		else {
 			return typedProp->m_value;
 		}
 	}
 
-	//------------------------------------------------------------------------------------------------------------------------------
 	//	Handling cases where pointers are passed to the GetValue and SetValue functions
-	//------------------------------------------------------------------------------------------------------------------------------
 	template <typename T>
 	T GetValue(std::string const &key, T *def)
 	{
@@ -101,17 +147,18 @@ public:
 		
 		if (value == m_properties.end()) 
 		{
-			return def;
+			return *def;
 		}
 
 		BaseProperty *prop = value->second;
 		TypedProperty<T*> *typedProp = dynamic_cast<TypedProperty<T*>*>(prop);
 		if (typedProp == nullptr) 
 		{
-			return def;
+			return *def;
 		}
-		else {
-			return typedProp->m_value;
+		else 
+		{
+			return *typedProp->m_value;
 		}
 	}
 
@@ -122,58 +169,8 @@ public:
 		SetValue<T*>(key, ptr);
 	}
 
-// 	void				PopulateFromXmlElementAttributes(const XMLElement& element);
-// 	void				SetValue(std::string const &key, char const* defaultValue);
-// 	std::string			GetValue(std::string const &key, char const* defaultValue) const;
-// 	std::string			GetValue(const std::string& key, std::string defaultValue) const;
-// 	bool				GetValue(const std::string& key, bool defaultValue) const;
-// 	int					GetValue(const std::string& key, int defaultValue) const;
-// 	float				GetValue(const std::string& key, float defaultValue) const;
-
 private:
 	std::map<std::string, BaseProperty*> m_properties;
 };
 
 inline std::string ToString(void const * ptr) { UNUSED(ptr);  return ""; }
-
-//------------------------------------------------------------------------------------------------------------------------------
-// Template functions to get from string
-//------------------------------------------------------------------------------------------------------------------------------
-template <typename T>
-T FromString(char const *str, T const &def)
-{
-	return T(str);
-}
-
-template <>
-float FromString(char const *str, float const &def);
-
-template <>
-bool FromString(char const* str, bool const &def);
-
-template <>
-int FromString(char const* str, int const &def);
-
-template <>
-std::string FromString(char const* str, std::string const &def);
-
-//------------------------------------------------------------------------------------------------------------------------------
-// Template functions to convert back to string
-//------------------------------------------------------------------------------------------------------------------------------
-template <typename T>
-std::string ToString( const T &value )
-{
-	return value.GetAsString();
-}
-
-template <>
-std::string ToString(float const &value);
-
-template <>
-std::string ToString(bool const &value);
-
-template <>
-std::string ToString(int const &value);
-
-template <>
-std::string ToString(std::string const &value);

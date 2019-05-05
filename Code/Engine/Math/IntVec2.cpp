@@ -72,6 +72,17 @@ IntVec2 IntVec2::GetIntVec2() const
 	return currectVec;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
+std::string IntVec2::GetAsString() const
+{
+	std::string string;
+	string = std::to_string(x);
+	string += ",";
+	string += std::to_string(y);
+
+	return string;
+}
+
 //-----------------------------------------------------------------------------------------------
 const IntVec2 IntVec2::operator + ( const IntVec2& vecToAdd ) const
 {

@@ -13,7 +13,6 @@ NamedProperties::~NamedProperties()
 
 }
 
-
 //------------------------------------------------------------------------------------------------------------------------------
 template <>
 float FromString(char const *str, float const &def)
