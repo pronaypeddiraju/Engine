@@ -21,7 +21,6 @@ public:
 	//Update
 	void									Update(uint frameNumber);
 	void									UpdateTouchesArray(Rigidbody2D* rb, uint frameNumber);
-	void									UpdateExitObjects(Rigidbody2D* rb, uint frameNumber);
 
 	//Render
 	void									DebugRender(RenderContext* renderContext, const Rgba& color) const;

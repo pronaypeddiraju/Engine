@@ -252,7 +252,14 @@ OBB2 CapsuleCollider2D::GetLocalShape() const
 OBB2 CapsuleCollider2D::GetWorldShape() const
 {
 	OBB2 box = GetLocalShape();
-	box.Translate(m_rigidbody->GetPosition());
+	if (m_rigidbody != nullptr)
+	{
+		box.Translate(m_rigidbody->GetPosition());
+	}
+	else if (m_trigger != nullptr)
+	{
+		box.Translate(m_trigger->GetPosition());
+	}
 	return box;
 }
 
