@@ -299,6 +299,72 @@ void CPUMeshAddUVSphere( CPUMesh *out, const Vec3& center, float radius, const R
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void CPUMeshAddUVCapsule(CPUMesh *out, const Vec3& start, const Vec3& end, float radius, const Rgba& color, uint wedges /*= 32*/, uint slices /*= 16 */)
+{
+	out->Clear();
+	out->SetStampColor(color);
+
+	int ustep = wedges + 1;
+	int vstep = slices + 1;
+
+	float phi;			//Angle along the j,k plane
+	float theta;		//Angle along the i,k plane
+
+	//Map out all the vertices
+	for (int vIndex = 0; vIndex < vstep; vIndex++)
+	{
+		float v = static_cast<float>(vIndex) / static_cast<float>(slices);
+		phi = RangeMapFloat(v, 0.f, 1.f, 90.f, 270.f);
+
+		for (int uIndex = 0; uIndex < ustep; uIndex++)
+		{
+			Vec3 center;
+
+			if (vIndex < vstep / 2.f)
+			{
+				center = start;
+			}
+			else
+			{
+				center = end;
+			}
+
+			float u = static_cast<float>(uIndex) / static_cast<float>(wedges);
+			theta = u * 360.f;
+			Vec3 position = GetSphericalToCartesian(radius, theta, phi) + center;
+
+			//Get the normal to the vertex
+			Vec3 norm = position - center;
+			norm = norm.GetNormalized();
+
+			//Get the tangent and bi tangent to the vertex
+			Vec3 tangent = Vec3(-1.f * CosDegrees(phi) * SinDegrees(theta), 0.f, CosDegrees(phi) * CosDegrees(theta));
+			Vec3 biTangent = GetCrossProduct(tangent, norm);
+
+			out->SetUV(Vec2(u, v));
+			out->SetNormal(norm);
+			out->SetTangent(tangent);
+			out->SetBiTangent(biTangent);
+			out->AddVertex(position);
+		}
+	}
+
+	//Map out all the Indices
+	for (int y = 0; y < static_cast<int>(slices); y++)
+	{
+		for (int x = 0; x < static_cast<int>(wedges); x++)
+		{
+			uint TL = y * ustep + x;
+			uint TR = TL + 1;
+			uint BL = TL + ustep;
+			uint BR = BL + 1;
+			out->AddIndexedQuad(TL, TR, BL, BR);
+		}
+	}
+
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void CPUMesh::AddIndexedTriangle( uint i0, uint i1, uint i2 )
 {
 	ASSERT_RECOVERABLE( i0 < m_vertices.size() , "Index is greater than the number of vertices");

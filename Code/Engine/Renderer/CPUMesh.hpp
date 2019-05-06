@@ -83,5 +83,6 @@ private:
 void			CPUMeshAddQuad( CPUMesh *out, const AABB2& quad, const Rgba& color = Rgba::WHITE);
 void			CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color = Rgba::WHITE, bool clearMesh = true );                                                           // A04
 void			CPUMeshAddUVSphere( CPUMesh *out, const Vec3& center, float radius, const Rgba& color = Rgba::WHITE, uint wedges = 32, uint slices = 16 );							// A04
+void			CPUMeshAddUVCapsule(CPUMesh *out, const Vec3& start, const Vec3& end, float radius, const Rgba& color, uint wedges = 32, uint slices = 16);
 void			CPUMeshAddBox2D( CPUMesh *out, const OBB2& obb, Rgba const &color = Rgba::WHITE);
 
