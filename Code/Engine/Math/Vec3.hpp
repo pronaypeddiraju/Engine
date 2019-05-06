@@ -19,6 +19,7 @@ public:
 	const static Vec3	ZERO;
 	const static Vec3	ONE;
 	const static Vec3	FRONT;
+	const static Vec3	FORWARD;
 	const static Vec3	BACK;
 	const static Vec3	LEFT;
 	const static Vec3	RIGHT;

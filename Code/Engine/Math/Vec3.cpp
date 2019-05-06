@@ -10,6 +10,7 @@
 const STATIC Vec3 Vec3::ZERO(0.f, 0.f, 0.f);
 const STATIC Vec3 Vec3::ONE(1.f, 1.f, 1.f);
 const STATIC Vec3 Vec3::FRONT(0.f, 0.f, 1.f);
+const STATIC Vec3 Vec3::FORWARD(0.f, 0.f, 1.f);
 const STATIC Vec3 Vec3::BACK(0.f, 0.f, -1.f);
 const STATIC Vec3 Vec3::LEFT(-1.f, 0.f, 0.f);
 const STATIC Vec3 Vec3::RIGHT(1.f, 0.f, 0.f);

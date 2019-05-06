@@ -56,7 +56,6 @@ Vec2			ReflectVectorOffSurfaceNormal( const Vec2& incomingVector, const Vec2& su
 
 Vec2			GetClosestPointOnAABB2(const Vec2& position, const AABB2& box);
 Vec2			GetClosestPointOnDisc2D( const Vec2& referencePos, const Vec2& discCenter, float discRadius );
-bool			DoesDiscOverlapLine2D( const Vec2& discCenter, float discRadius, const Vec2& pointOnLine, const Vec2& anotherPointOnLine );
 Vec2			GetClosestPointOnLine2D( const Vec2& referencePos, const Vec2& pointOnLine, const Vec2& anotherPointOnLine );
 Vec2			GetClosestPointOnLineSegment2D( const Vec2& referencePos, const Vec2& lineStart, const Vec2& lineEnd );
 Vec2			GetClosestPointOnCapsule2D( const Vec2& referencePos, const Vec2& capsuleStart, const Vec2& capsuleEnd, float capsuleRadius );
