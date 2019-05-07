@@ -118,8 +118,10 @@ public:
 	//------------------------------------------------------------------------------------------------------------------------------
 	void				DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration = 0.f, float size = DEFAULT_POINT_SIZE_3D, TextureView* texture = nullptr );
 	void				DebugRenderLine( DebugRenderOptionsT options, const Vec3& start, const Vec3& end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH_3D );
+	void				DebugRenderLine(const Vec3& start, const Vec3& end, float duration = 0.f);
 	void				DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration = 0.f, TextureView* texture = nullptr ); 
 	void				DebugRenderBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr ); 
+	void				DebugRenderBox( const AABB3& box, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr ); 
 	void				DebugRenderQuad( DebugRenderOptionsT options, const AABB2& quad, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr, bool billBoarded = true);
 	
 

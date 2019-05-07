@@ -9,6 +9,8 @@ class ColorTargetView;
 class DepthStencilTargetView;
 class RenderContext;
 class UniformBuffer;
+struct IntVec2;
+struct Ray3D;
 
 //------------------------------------------------------------------------------------------------------------------------------
 struct Camera
@@ -23,6 +25,7 @@ public:
 	void					SetOrthoView(const Vec2& bottomLeft, const Vec2& topRight, float minZ = -1.f, float maxZ = 1.f);
 	Vec2					GetOrthoBottomLeft() const;
 	Vec2					GetOrthoTopRight() const;
+	inline float			GetMaxViewDistance() const { return m_maxZ; }
 
 	//Targets
 	//Function to set the color target view that we are rendering to
@@ -41,6 +44,9 @@ public:
 
 	//Buffer functions
 	void					UpdateUniformBuffer(RenderContext* renderContext);
+
+	//Raycast utilities
+	Ray3D					ScreenPointToWorldRay(IntVec2 ScreenClickPosition, IntVec2 screenBounds);
 
 public:
 	//Variables

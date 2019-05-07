@@ -1,4 +1,8 @@
+//------------------------------------------------------------------------------------------------------------------------------
 #pragma once
+
+struct Matrix44;
+
 //------------------------------------------------------------------------------------------------------------------------------
 struct Vec4
 {
@@ -33,6 +37,7 @@ public:
 	bool						operator!=( const Vec4& compare ) const;					// vec2 != vec2
 
 	friend const Vec4			operator*( float uniformScale, const Vec4& vecToScale );	// float * vec2
+	void						operator*=(const Matrix44 matrix);
 
 public: 
 	float x;

@@ -145,8 +145,8 @@ Line3DProperties::Line3DProperties( eDebugRenderObject renderObject, const Vec3&
 	//Vec3 tangent = Vec3(tangentXZ.x, 0.f, tangentXZ.y).GetNormalized();
 	Vec3 center = m_endPos + norm * length * 0.5f;
 
-	Vec3 mins = Vec3(m_startPos.x, m_startPos.y - (Vec2(0.f, 1.f) * lineWidth * 0.5f).y, m_startPos.x);
-	Vec3 maxs = Vec3(m_endPos.x, m_endPos.y + (Vec2(0.f, 1.f) * lineWidth * 0.5f).y, m_endPos.x);
+	Vec3 mins = Vec3(m_startPos.x, m_startPos.y - (Vec2(0.f, 1.f) * lineWidth * 0.5f).y, m_startPos.z);
+	Vec3 maxs = Vec3(m_endPos.x, m_endPos.y + (Vec2(0.f, 1.f) * lineWidth * 0.5f).y, m_endPos.z);
 
 	m_line = AABB2(mins, maxs);
 	m_center = center;

@@ -1219,6 +1219,20 @@ void DebugRender::DebugRenderLine( DebugRenderOptionsT options, const Vec3& star
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderLine(const Vec3& start, const Vec3& end, float duration /*= 0.f*/)
+{
+	DebugRenderOptionsT options;
+	options.space = DEBUG_RENDER_WORLD;
+	options.beginColor = Rgba::GREEN;
+	options.endColor = Rgba::RED;
+	options.mode = DEBUG_RENDER_XRAY;
+
+	options.objectProperties = new Line3DProperties(DEBUG_RENDER_LINE3D, start, end, duration, DEFAULT_LINE_WIDTH_3D);
+
+	m_worldRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
 {
 	options.objectProperties = new SphereProperties(DEBUG_RENDER_SPHERE, center, radius, duration, texture);
@@ -1229,6 +1243,20 @@ void DebugRender::DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, f
 //------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
 {
+	options.objectProperties = new BoxProperties(DEBUG_RENDER_BOX, box, position, duration, texture);
+
+	m_worldRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderBox(const AABB3& box, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr */)
+{
+	DebugRenderOptionsT options;
+	options.space = DEBUG_RENDER_WORLD;
+	options.beginColor = Rgba::GREEN;
+	options.endColor = Rgba::RED;
+	options.mode = DEBUG_RENDER_XRAY;
+
 	options.objectProperties = new BoxProperties(DEBUG_RENDER_BOX, box, position, duration, texture);
 
 	m_worldRenderObjects.push_back(options);

@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/Vec4.hpp"
+#include "Engine/Math/Matrix44.hpp"
 #include <vector>
 #include <string>
 
@@ -66,6 +67,35 @@ const Vec4 Vec4::operator-( const Vec4& vecToSubtract ) const
 const Vec4 Vec4::operator*( float uniformScale ) const
 {
 	return Vec4( x * uniformScale, y * uniformScale, z * uniformScale, w * uniformScale ); 
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Vec4::operator*=(const Matrix44 matrix)
+{
+	float newX = x * matrix.m_values[Matrix44::Ix] 
+				+ y * matrix.m_values[Matrix44::Jx] 
+				+ z * matrix.m_values[Matrix44::Kx] 
+				+ w * matrix.m_values[Matrix44::Tx];
+
+	float newY = x * matrix.m_values[Matrix44::Iy] 
+				+ y * matrix.m_values[Matrix44::Jy] 
+				+ z * matrix.m_values[Matrix44::Ky] 
+				+ w * matrix.m_values[Matrix44::Ty];
+
+	float newZ = x * matrix.m_values[Matrix44::Iz] 
+				+ y * matrix.m_values[Matrix44::Jz] 
+				+ z * matrix.m_values[Matrix44::Kz]
+				+ w * matrix.m_values[Matrix44::Tz];
+
+	float newW = x * matrix.m_values[Matrix44::Iw]
+				+ y * matrix.m_values[Matrix44::Jw] 
+				+ z * matrix.m_values[Matrix44::Kw] 
+				+ w * matrix.m_values[Matrix44::Tw];
+
+	x = newX;
+	y = newY;
+	z = newZ;
+	w = newW;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

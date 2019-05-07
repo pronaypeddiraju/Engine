@@ -16,6 +16,8 @@ struct Ray3D
 	explicit Ray3D(Vec3 start, Vec3 direction);
 	~Ray3D();
 
+	Vec3	GetPointAtTime(float time);
+
 	Vec3 m_start = Vec3::ZERO;
 	Vec3 m_direction = Vec3::FORWARD;
 };

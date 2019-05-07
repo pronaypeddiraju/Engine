@@ -2,7 +2,9 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/UniformBuffer.hpp"
+#include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Ray3D.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 Camera::~Camera()
@@ -111,4 +113,37 @@ void Camera::UpdateUniformBuffer( RenderContext* renderContext )
 
 	// copy the cpu to the gpu (will create or update the buffer)
 	m_cameraUBO->CopyCPUToGPU( &cpuData, sizeof(cpuData) ); 
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+Ray3D Camera::ScreenPointToWorldRay(IntVec2 ScreenClickPosition, IntVec2 screenBounds)
+{
+	// step 1 convert from screen to NDC
+	float NDCx = RangeMapFloat((float)ScreenClickPosition.x, 0.f, (float)screenBounds.x, -1.f, 1.f);
+	float NDCy = RangeMapFloat((float)ScreenClickPosition.y, 0.f, (float)screenBounds.y, 1.f, -1.f);
+
+	// step 2 covert from NDC to clip
+	Vec4 start = Vec4(NDCx, NDCy, 0.f, 1.f);
+	Vec4 end = Vec4(NDCx, NDCy, 1.f, 1.f);
+
+	// step 3 convert from clip to view 
+	Matrix44 inverseProjection = m_projection;
+	inverseProjection.InverseMatrix();
+	
+	start *= inverseProjection;
+	end *= inverseProjection;
+	
+	// step 4 convert from view to world
+	Matrix44 inverseView = m_view;
+	inverseView.InverseMatrix();
+	 
+	start *= inverseView;
+	end *= inverseView;
+
+	Vec3 start3 = Vec3(start.x, start.y, start.z) / start.w;
+	Vec3 end3 = Vec3(end.x, end.y, end.z) / end.w;
+
+	Vec3 direction = (end3 - start3).GetNormalized();
+	Ray3D ray(start3, direction);
+	return ray;
 }
