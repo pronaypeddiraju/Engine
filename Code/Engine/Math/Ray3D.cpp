@@ -114,8 +114,8 @@ uint Raycast(float *out, Ray3D ray, Capsule3D const &capsule)
 	capsuleDirection.Normalize();
 
 	Vec3 x = GetDotProduct(ray.m_direction, capsuleDirection) * capsuleDirection - ray.m_direction;
-	Vec3 y = capsule.m_start + (GetDotProduct(ray.m_start, capsuleDirection) * capsuleDirection);
-	y -= GetDotProduct(capsule.m_start, capsuleDirection) * capsuleDirection - ray.m_start;
+	Vec3 y = capsule.m_start + (GetDotProduct(ray.m_start, capsuleDirection) * capsuleDirection)
+	- GetDotProduct(capsule.m_start, capsuleDirection) * capsuleDirection - ray.m_start;
 
 	// Now solving quadratic eqn for t with the following terms
 	// a = (x . x)
