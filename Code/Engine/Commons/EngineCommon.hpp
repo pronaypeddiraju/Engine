@@ -31,6 +31,7 @@
 #define KEY_LEFT 75
 #define KEY_RIGHT 77
 #define STATIC
+#define VIRTUAL
 #define BIT_FLAG(b)   (1 << (b))
 #define ASSERT_RETURN_VALUE(assertThis, returnValue) if(!(assertThis)) {return returnValue;}
 #define ASSERT(assertThis) if(!(assertThis)) {return false;}
@@ -139,3 +140,11 @@ constexpr float		 CONSOLE_LINE_SPACE = 0.05f;
 constexpr int		 COLLIDER2D_COUNT = 6;
 
 typedef unsigned int uint;
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool				IsBitSet(uint flags, uint bit);  // bit is 0 to 31
+bool				AreAllBitsSet(uint currentFlags, uint flagsToCheck);
+bool				AreAnyBitsSet(uint currentFlags, uint flagsToCheck);
+uint				SetBit(uint flags, uint bit);
+uint				ClearBit(uint flags, uint bit);
+uint				SetBitTo(uint flags, uint bit, bool set);
