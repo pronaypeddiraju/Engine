@@ -1387,7 +1387,7 @@ void DebugRender::DebugRenderCapsule(const Capsule3D& capsule, const Vec3& posit
 	options.space = DEBUG_RENDER_WORLD;
 	options.beginColor = Rgba::GREEN;
 	options.endColor = Rgba::RED;
-	options.mode = DEBUG_RENDER_USE_DEPTH;
+	options.mode = DEBUG_RENDER_XRAY;
 
 	options.objectProperties = new CapsuleProperties(DEBUG_RENDER_CAPSULE, capsule, position, duration, texture);
 

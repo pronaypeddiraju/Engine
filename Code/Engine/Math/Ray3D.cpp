@@ -55,8 +55,8 @@ uint Raycast(float *out, Ray3D ray, Sphere const &sphere)
 	hits[1] = hitCenter + hitCenterToHitPoint * ray.m_direction;
 
 	//out = new float[2];
-	out[0] = (hits[0] - hitCenter).GetLength();
-	out[1] = (hits[1] - hitCenter).GetLength();
+	out[0] = (hits[0] - ray.m_start).GetLength();
+	out[1] = (hits[1] - ray.m_start).GetLength();
 
 	return 2U;
 }
@@ -124,7 +124,10 @@ uint Raycast(float *out, Ray3D ray, Capsule3D const &capsule)
 
 	float a = GetDotProduct(x, x);
 	float b = 2 * (GetDotProduct(x, y));
-	float c = (GetDotProduct(y, y) - (capsule.m_radius * capsule.m_radius));
+
+	float ca = GetDotProduct(y, y);
+	float cb = (capsule.m_radius * capsule.m_radius);
+	float c = (ca - cb);
 
 	uint count = SolveQuadraticEquation(out, a, b, c);
 
@@ -134,7 +137,7 @@ uint Raycast(float *out, Ray3D ray, Capsule3D const &capsule)
 
 		return 0U;
 	}
-	
+
 	//------------------------------------------------------------------------------------------------------------------------------
 	// Step 2:
 	// Verify that the points are in the finite cylinder
