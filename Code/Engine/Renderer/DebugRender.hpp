@@ -10,6 +10,7 @@
 struct AABB2;
 struct AABB3;
 struct Camera;
+struct Capsule3D;
 struct IntVec2;
 
 class BitmapFont;
@@ -120,16 +121,20 @@ public:
 	void				DebugRenderLine( DebugRenderOptionsT options, const Vec3& start, const Vec3& end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH_3D );
 	void				DebugRenderLine(const Vec3& start, const Vec3& end, float duration = 0.f);
 	void				DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration = 0.f, TextureView* texture = nullptr ); 
+	void				DebugRenderSphere( Vec3 center, float radius, float duration = 0.f, TextureView* texture = nullptr ); 
 	void				DebugRenderBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr ); 
 	void				DebugRenderBox( const AABB3& box, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr ); 
 	void				DebugRenderQuad( DebugRenderOptionsT options, const AABB2& quad, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr, bool billBoarded = true);
-	
+	void				DebugRenderCapsule(DebugRenderOptionsT options, const Capsule3D& capsule, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr);
+	void				DebugRenderCapsule( const Capsule3D& capsule, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr);
+
 
 	// EXTRA (helps to be able to set raster fill mode to "wire")
 	// Also, better to use an ICOSphere if available, but UV sphere is fine; 
 	void				DebugRenderWireSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration = 0.f, TextureView* texture = nullptr ); 
 	void				DebugRenderWireBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr ); 
-
+	void				DebugRenderWireCapsule(DebugRenderOptionsT options, const Capsule3D& capsule, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr);
+	void				DebugRenderWireCapsule(const Capsule3D& capsule, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr);
 
 	// EXTRA (requires being able to render a cone/cylinder)
 	void				DebugRenderArrow( DebugRenderOptionsT options, Vec3 start, Vec3 end, float base_thickness, float head_thickness ); 
@@ -160,14 +165,16 @@ private:
 	void							DrawText2D		( const DebugRenderOptionsT* renderObject ) const;
 
 	//Draw methods 3D
-	void							DrawPoint3D		( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawQuad3D		( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawLine3D		( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawSphere		( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawWireSphere	( const DebugRenderOptionsT* renderObject )	const;
-	void							DrawBox			( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawWireBox		( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawText3D		( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawPoint3D			( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawQuad3D			( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawLine3D			( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawSphere			( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawWireSphere		( const DebugRenderOptionsT* renderObject )	const;
+	void							DrawBox				( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawWireBox			( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawText3D			( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawCapsule3D		(const DebugRenderOptionsT* renderObject) const;
+	void							DrawWireCapsule3D	(const DebugRenderOptionsT* renderObject) const;
 
 	//Destroy objects functions
 	void							DestroyAllScreenObjects();

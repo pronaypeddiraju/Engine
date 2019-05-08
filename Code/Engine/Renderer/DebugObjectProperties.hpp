@@ -4,6 +4,7 @@
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/AABB3.hpp"
+#include "Engine/Math/Capsule3D.hpp"
 #include "Engine/Math/Disc2D.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
@@ -36,6 +37,9 @@ enum eDebugRenderObject
 
 	DEBUG_RENDER_ARROW,
 	DEBUG_RENDER_ARROW3D,
+
+	DEBUG_RENDER_CAPSULE,
+	DEBUG_RENDER_WIRE_CAPSULE,
 
 	DEBUG_RENDER_BASIS,
 
@@ -210,6 +214,20 @@ public:
 	Vec3 m_center						= Vec3::ZERO;
 	float m_radius						= 0.f;
 	TextureView* m_texture				= nullptr;
+};
+
+class CapsuleProperties : public ObjectProperties
+{
+public:
+	explicit CapsuleProperties( eDebugRenderObject renderObject, const Capsule3D& capsule, const Vec3& position,
+		float durationSeconds = 0.f, TextureView* texture = nullptr);
+	virtual ~CapsuleProperties();
+
+public:
+	Vec3 m_position = Vec3::ZERO;
+	TextureView* m_texture = nullptr;
+
+	Capsule3D m_capsule;
 };
 
 // Box

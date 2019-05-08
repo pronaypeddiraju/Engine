@@ -740,6 +740,51 @@ Vec2 GetWorldPositionFromWorld2D( const Vec2& localPosition, const Vec2& iBasis,
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+uint SolveQuadraticEquation(float* out, float a, float b, float c)
+{
+	//For any a,b,c we are getting the possible results using out
+	// x = -b (+ or -) root(b*b - 4*a*c) / (2 * a);
+
+	float rootComponent = (b * b) - (4 * a * c);
+	float denominator = 2 * a;
+	if (rootComponent < 0)
+	{
+		//There is no solution to this
+		return 0U;
+	}
+	else if(denominator == 0)
+	{
+		//Again there 1 solution here which is -c/b
+		out[0] = (-c) / b;
+		return 1U;
+	}
+	else if (rootComponent == 0)
+	{
+		//We have only one possible solution
+		if (denominator != 0)
+		{
+			out[0] = (-b) / denominator;
+			return 1U;
+		}
+		else
+		{
+			return 0U;
+		}
+	}
+	else
+	{
+		//We have 2 possible solutions
+		float numerator = (-b) + sqrt((b*b) - (4 * a * c));
+		out[0] = numerator / denominator;
+		
+		numerator = (-b) - sqrt((b*b) - (4 * a * c));
+		out[1] = numerator / denominator;
+
+		return 2U;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 float SmoothStart2( float inputZeroToOne )
 {
 	float t2 = inputZeroToOne * inputZeroToOne;

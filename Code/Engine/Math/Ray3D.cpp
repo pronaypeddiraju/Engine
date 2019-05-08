@@ -1,4 +1,5 @@
 #include "Engine/Math/Ray3D.hpp"
+#include "Engine/Math/Capsule3D.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Plane3D.hpp"
 #include "Engine/Math/Sphere.hpp"
@@ -39,7 +40,7 @@ uint Raycast(float *out, Ray3D ray, Sphere const &sphere)
 	float projectedLengthToHitCenter = GetDotProduct(pointToCenter, ray.m_direction.GetNormalized());
 	Vec3 hitCenter = projectedLengthToHitCenter * ray.m_direction + ray.m_start;
 
-	float perpendicularToHitCenter = pointToCenter.GetLength();
+	float perpendicularToHitCenter = (hitCenter - sphere.m_point).GetLength();
 	float hitCenterToPointSquared = (sphere.m_radius * sphere.m_radius - perpendicularToHitCenter * perpendicularToHitCenter);
 
 	if (hitCenterToPointSquared <= 0.0000001f)
@@ -89,4 +90,134 @@ uint Raycast(float *out, Ray3D ray, Plane3D const &plane)
 		out[0] = numerator / denominator;
 		return 1U;
 	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+uint Raycast(float *out, Ray3D ray, Capsule3D const &capsule)
+{
+	//------------------------------------------------------------------------------------------------------------------------------
+	// Step 1: 
+	// Solve for an infinite cylinder
+	// | s + [(p-s).n]*n - p | = r
+	// s = start point for infinite cylinder
+	// p = hit point on infinite cylinder
+	// r = radius
+	// n = direction of cylinder (or normal of infinite cylinder)
+
+	// Substituting ray eqn into the above equation, we get to this form (It's now a quadratic eqn)
+	// t*t * (x . x) + t * (2 * x . y) + ((y . y) - (r * r)) = 0
+	// x = (v . n)*n - v
+	// y = s + (p.n)*n - (s.n)*n - p
+	// v = ray direction
+
+	Vec3 capsuleDirection = (capsule.m_end - capsule.m_start);
+	capsuleDirection.Normalize();
+
+	Vec3 x = GetDotProduct(ray.m_direction, capsuleDirection) * capsuleDirection - ray.m_direction;
+	Vec3 y = capsule.m_start + (GetDotProduct(ray.m_start, capsuleDirection) * capsuleDirection);
+	y -= GetDotProduct(capsule.m_start, capsuleDirection) * capsuleDirection - ray.m_start;
+
+	// Now solving quadratic eqn for t with the following terms
+	// a = (x . x)
+	// b = (2 * x . y)
+	// c = ((y . y) - (r * r))
+
+	float a = GetDotProduct(x, x);
+	float b = 2 * (GetDotProduct(x, y));
+	float c = (GetDotProduct(y, y) - (capsule.m_radius * capsule.m_radius));
+
+	uint count = SolveQuadraticEquation(out, a, b, c);
+
+	// We now have the 2 contact points (or no contact points) on the infinite cylinder
+	if (count == 0)
+	{
+
+		return 0U;
+	}
+	
+	//------------------------------------------------------------------------------------------------------------------------------
+	// Step 2:
+	// Verify that the points are in the finite cylinder
+	// Get displacement from the contact points to the start and see if the dot product along direction is > 0
+	//------------------------------------------------------------------------------------------------------------------------------
+	Vec3 directionCap = capsuleDirection;
+	
+	float netOuts[6];
+	int netOutIndex = 0;
+
+	float sphereOut[2];
+
+	for (int i = 0U; i < (int)count; i++)
+	{
+		Vec3 point = ray.GetPointAtTime(out[i]);
+		Vec3 dispStart = capsule.m_start - point;
+		Vec3 dispEnd = capsule.m_end - point;
+
+		float resultStart = GetDotProduct(directionCap, dispStart);
+		float resultEnd = GetDotProduct(directionCap, dispEnd);
+
+		if (resultStart <= 0)
+		{
+			if (resultEnd <= 0)
+			{
+				//return 0U;
+			}
+			else
+			{
+				//We are within the finite capsule
+				netOuts[netOutIndex] = out[i];
+				netOutIndex++;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------------------------------------
+	// Step 3:
+	// We can safely raycast to the sphere
+	for (int i = 0; i < 2; i++)
+	{
+		int sphereHitCount = 0;
+		Sphere* sphere = nullptr;
+		if (i == 0)
+		{
+			sphere = new Sphere(capsule.m_start, capsule.m_radius);
+		}
+		else
+		{
+			sphere = new Sphere(capsule.m_end, capsule.m_radius);
+		}
+
+		sphereHitCount = Raycast(sphereOut, ray, *sphere);
+		delete sphere;
+
+		for (int j = 0; j < sphereHitCount; j++)
+		{
+			netOuts[netOutIndex] = sphereOut[j];
+			netOutIndex++;
+		}
+	}
+
+
+	//------------------------------------------------------------------------------------------------------------------------------
+	// Step 4:
+	// Return the smallest and largest values in sphereHitIndex
+	float smallest = 100000.f;
+	float largest = -100000.f;
+	for (int i = 0U; i < (int)netOutIndex; i++)
+	{
+		smallest = GetLowerValue(smallest, netOuts[i]);
+		largest = GetHigherValue(largest, netOuts[i]);
+	}
+
+	if (netOutIndex == 0U)
+	{
+		return 0U;
+	}
+	else
+	{
+		out[0] = smallest;
+		out[1] = largest;
+	}
+
+	return 2U;
 }

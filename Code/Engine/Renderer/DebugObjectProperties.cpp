@@ -184,9 +184,6 @@ SphereProperties::SphereProperties( eDebugRenderObject renderObject, const Vec3&
 //------------------------------------------------------------------------------------------------------------------------------
 SphereProperties::~SphereProperties()
 {
-	delete m_texture;
-	m_texture = nullptr;
-
 	delete m_mesh;
 	m_mesh = nullptr;
 }
@@ -238,9 +235,6 @@ Quad3DProperties::Quad3DProperties( eDebugRenderObject renderObject, const AABB2
 //------------------------------------------------------------------------------------------------------------------------------
 Quad3DProperties::~Quad3DProperties()
 {
-	delete m_texture;
-	m_texture = nullptr;
-
 	delete m_mesh;
 	m_mesh = nullptr;
 }
@@ -333,4 +327,29 @@ Arrow2DProperties::~Arrow2DProperties()
 ObjectProperties::~ObjectProperties()
 {
 
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+CapsuleProperties::CapsuleProperties(eDebugRenderObject renderObject, const Capsule3D& capsule, const Vec3& position, float durationSeconds /*= 0.f*/, TextureView* texture /*= nullptr*/)
+{
+	//Base properties
+	m_durationSeconds = durationSeconds;
+	m_startDuration = m_durationSeconds;
+	m_renderObjectType = renderObject;
+
+	//Capsule properties
+	m_position = position;
+	m_capsule = capsule;
+	m_texture = texture;
+
+	m_mesh = new CPUMesh();
+	m_mesh->Clear();
+	CPUMeshAddUVCapsule(m_mesh, capsule.m_start, capsule.m_end, capsule.m_radius, Rgba::WHITE);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+CapsuleProperties::~CapsuleProperties()
+{
+	delete m_mesh;
+	m_mesh = nullptr;
 }

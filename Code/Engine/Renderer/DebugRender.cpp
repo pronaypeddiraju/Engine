@@ -278,14 +278,16 @@ void DebugRender::DebugRenderToCamera() const
 		const DebugRenderOptionsT* renderObject = &m_worldRenderObjects[objectIndex];
 		switch(renderObject->objectProperties->m_renderObjectType)
 		{
-		case DEBUG_RENDER_POINT3D:		{	DrawPoint3D(renderObject);		}	break;
-		case DEBUG_RENDER_LINE3D:		{	DrawLine3D(renderObject);		}	break;
-		case DEBUG_RENDER_SPHERE:		{	DrawSphere(renderObject);		}	break;
-		case DEBUG_RENDER_BOX:			{	DrawBox(renderObject);			}	break;
-		case DEBUG_RENDER_QUAD3D:		{	DrawQuad3D(renderObject);		}	break;
-		case DEBUG_RENDER_WIRE_SPHERE:	{	DrawWireSphere(renderObject);	}	break;
-		case DEBUG_RENDER_WIRE_BOX:		{	DrawWireBox(renderObject);		}	break;
-		case DEBUG_RENDER_TEXT3D:		{	DrawText3D(renderObject);		}	break;
+		case DEBUG_RENDER_POINT3D:		{	DrawPoint3D(renderObject);			}	break;
+		case DEBUG_RENDER_LINE3D:		{	DrawLine3D(renderObject);			}	break;
+		case DEBUG_RENDER_SPHERE:		{	DrawSphere(renderObject);			}	break;
+		case DEBUG_RENDER_BOX:			{	DrawBox(renderObject);				}	break;
+		case DEBUG_RENDER_QUAD3D:		{	DrawQuad3D(renderObject);			}	break;
+		case DEBUG_RENDER_WIRE_SPHERE:	{	DrawWireSphere(renderObject);		}	break;
+		case DEBUG_RENDER_WIRE_BOX:		{	DrawWireBox(renderObject);			}	break;
+		case DEBUG_RENDER_TEXT3D:		{	DrawText3D(renderObject);			}	break;
+		case DEBUG_RENDER_CAPSULE:		{	DrawCapsule3D(renderObject);		}	break;
+		case DEBUG_RENDER_WIRE_CAPSULE:	{	DrawWireCapsule3D(renderObject);	}	break;
 		default:						{	ERROR_AND_DIE("The debug object is not yet defined in DebugRenderToCamera");	}	break;
 		}
 	}
@@ -1021,6 +1023,92 @@ void DebugRender::DrawText3D( const DebugRenderOptionsT* renderObject ) const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DrawCapsule3D(const DebugRenderOptionsT* renderObject) const
+{
+	CapsuleProperties* objectProperties = reinterpret_cast<CapsuleProperties*>(renderObject->objectProperties);
+	if (objectProperties->m_renderObjectType != DEBUG_RENDER_CAPSULE)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a Capsule. Check inputs");
+	}
+
+	//Setup mesh here
+	GPUMesh capsule = GPUMesh(m_renderContext);
+	capsule.CreateFromCPUMesh<Vertex_PCU>(objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC);
+	SetObjectMatrixForPosition(objectProperties->m_position);
+
+	//Setup the textures on the render context
+	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture);
+
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+		m_renderContext->SetDepth(true);
+		m_renderContext->DrawMesh(&capsule);
+		break;
+	case DEBUG_RENDER_ALWAYS:
+		m_renderContext->SetDepth(false);
+		m_renderContext->DrawMesh(&capsule);
+		break;
+	case DEBUG_RENDER_XRAY:
+	{
+		//Make 2 draw calls here
+		//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+		m_renderContext->SetGlobalTint(Rgba::DARK_GREY);
+		m_xrayShader->SetDepth(eCompareOp::COMPARE_GREATER, false);
+		m_renderContext->BindShader(m_xrayShader);
+		m_renderContext->DrawMesh(&capsule);
+		m_renderContext->BindShader(m_defaultShader);
+		m_renderContext->DrawMesh(&capsule);
+	}
+	break;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DrawWireCapsule3D(const DebugRenderOptionsT* renderObject) const
+{
+	CapsuleProperties* objectProperties = reinterpret_cast<CapsuleProperties*>(renderObject->objectProperties);
+	if (objectProperties->m_renderObjectType != DEBUG_RENDER_WIRE_CAPSULE)
+	{
+		ERROR_AND_DIE("Object recieved in DebugRender was not a Capsule. Check inputs");
+	}
+
+	//Setup mesh here
+	GPUMesh capsule = GPUMesh(m_renderContext);
+	capsule.CreateFromCPUMesh<Vertex_PCU>(objectProperties->m_mesh, GPU_MEMORY_USAGE_STATIC);
+	SetObjectMatrixForPosition(objectProperties->m_position);
+
+	//Setup the textures on the render context
+	m_renderContext->BindTextureViewWithSampler(0U, objectProperties->m_texture);
+
+	m_renderContext->SetRasterStateWireFrame();
+	switch (renderObject->mode)
+	{
+	case DEBUG_RENDER_USE_DEPTH:
+		m_renderContext->SetDepth(true);
+		m_renderContext->DrawMesh(&capsule);
+		break;
+	case DEBUG_RENDER_ALWAYS:
+		m_renderContext->SetDepth(false);
+		m_renderContext->DrawMesh(&capsule);
+		break;
+	case DEBUG_RENDER_XRAY:
+	{
+		//Make 2 draw calls here
+		//One with compare op lequals and one with compare op greater than (edit alpha on that one)
+		m_renderContext->SetGlobalTint(Rgba::DARK_GREY);
+		m_xrayShader->SetDepth(eCompareOp::COMPARE_GREATER, false);
+		m_renderContext->BindShader(m_xrayShader);
+		m_renderContext->DrawMesh(&capsule);
+		m_renderContext->BindShader(m_defaultShader);
+		m_renderContext->DrawMesh(&capsule);
+	}
+	break;
+	}
+	m_renderContext->CreateAndSetDefaultRasterState();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DestroyAllScreenObjects()
 {
 	m_screenRenderObjects.clear();
@@ -1241,6 +1329,20 @@ void DebugRender::DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, f
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderSphere(Vec3 center, float radius, float duration /*= 0.f*/, TextureView* texture /*= nullptr */)
+{
+	DebugRenderOptionsT options;
+	options.space = DEBUG_RENDER_WORLD;
+	options.beginColor = Rgba::GREEN;
+	options.endColor = Rgba::RED;
+	options.mode = DEBUG_RENDER_USE_DEPTH;
+
+	options.objectProperties = new SphereProperties(DEBUG_RENDER_SPHERE, center, radius, duration, texture);
+
+	m_worldRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
 {
 	options.objectProperties = new BoxProperties(DEBUG_RENDER_BOX, box, position, duration, texture);
@@ -1271,6 +1373,28 @@ void DebugRender::DebugRenderQuad( DebugRenderOptionsT options, const AABB2& qua
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderCapsule(DebugRenderOptionsT options, const Capsule3D& capsule, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr*/)
+{
+	options.objectProperties = new CapsuleProperties(DEBUG_RENDER_CAPSULE, capsule, position, duration, texture);
+
+	m_worldRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderCapsule(const Capsule3D& capsule, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr*/)
+{
+	DebugRenderOptionsT options;
+	options.space = DEBUG_RENDER_WORLD;
+	options.beginColor = Rgba::GREEN;
+	options.endColor = Rgba::RED;
+	options.mode = DEBUG_RENDER_USE_DEPTH;
+
+	options.objectProperties = new CapsuleProperties(DEBUG_RENDER_CAPSULE, capsule, position, duration, texture);
+
+	m_worldRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderWireSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
 {
 	options.objectProperties = new SphereProperties(DEBUG_RENDER_WIRE_SPHERE, center, radius, duration, texture);
@@ -1282,6 +1406,28 @@ void DebugRender::DebugRenderWireSphere( DebugRenderOptionsT options, Vec3 cente
 void DebugRender::DebugRenderWireBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr */ )
 {
 	options.objectProperties = new BoxProperties(DEBUG_RENDER_WIRE_BOX, box, position, duration, texture);
+
+	m_worldRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderWireCapsule(DebugRenderOptionsT options, const Capsule3D& capsule, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr*/)
+{
+	options.objectProperties = new CapsuleProperties(DEBUG_RENDER_WIRE_CAPSULE, capsule, position, duration, texture);
+
+	m_worldRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderWireCapsule(const Capsule3D& capsule, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr*/)
+{
+	DebugRenderOptionsT options;
+	options.space = DEBUG_RENDER_WORLD;
+	options.beginColor = Rgba::GREEN;
+	options.endColor = Rgba::RED;
+	options.mode = DEBUG_RENDER_USE_DEPTH;
+
+	options.objectProperties = new CapsuleProperties(DEBUG_RENDER_WIRE_CAPSULE, capsule, position, duration, texture);
 
 	m_worldRenderObjects.push_back(options);
 }

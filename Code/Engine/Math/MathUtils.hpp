@@ -92,6 +92,9 @@ Vec2			GetLocalPositionFromWorld2D(const Vec2& worldPosition, const Vec2& iBasis
 Vec2			GetWorldVectorFromLocal2D(const Vec2& localVector, const Vec2& iBasis, const Vec2& jBasis);
 Vec2			GetWorldPositionFromWorld2D(const Vec2& localPosition, const Vec2& iBasis, const Vec2& jBasis, const Vec2& tBasis);
 
+//Equation solvers
+uint			SolveQuadraticEquation(float* out, float a, float b, float c);
+
 //Smoothing function
 float			SmoothStart2(float inputZeroToOne);
 float			SmoothStart3(float inputZeroToOne);
