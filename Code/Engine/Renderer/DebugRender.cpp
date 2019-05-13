@@ -1234,7 +1234,7 @@ void DebugRender::DebugRenderQuad2D(AABB2 const &quad, float duration /*= 0.f*/,
 	options.beginColor = Rgba::BLUE;
 	options.endColor = Rgba::RED;
 
-	options.objectProperties = new Quad2DProperties(DEBUG_RENDER_QUAD, quad, duration, DEFAULT_WIRE_WIDTH_2D, texture);
+	options.objectProperties = new Quad2DProperties(DEBUG_RENDER_QUAD, quad, duration, DEFAULT_WIRE_WIDTH_2D, view);
 
 	m_screenRenderObjects.push_back(options);
 }
