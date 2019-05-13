@@ -39,14 +39,14 @@ bool AreAnyBitsSet(uint currentFlags, uint flagsToCheck)
 //------------------------------------------------------------------------------------------------------------------------------
 uint SetBit(uint flags, uint bit)
 {
-	flags |= 1 << bit;
+	flags = flags | (1 << bit);
 	return flags;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 uint ClearBit(uint flags, uint bit)
 {
-	flags &= ~(1 << bit);
+	flags = flags & (~(1 << bit));
 	return flags;
 }
 

@@ -1176,12 +1176,46 @@ void DebugRender::DebugRenderPoint2D( DebugRenderOptionsT options, const Vec2& p
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderPoint2D(const Vec2& position, float duration /*= 0.f*/, float size /*= DEFAULT_POINT_SIZE */)
+{
+	DebugRenderOptionsT options;
+	options.mode = DEBUG_RENDER_ALWAYS;
+	options.beginColor = Rgba::BLUE;
+	options.endColor = Rgba::RED;
+
+	if (options.relativeCoordinates)
+	{
+		Vec2 newPosition = GetRelativePosInWorld2D(position);
+		options.objectProperties = new Point2DProperties(DEBUG_RENDER_POINT, newPosition, duration, size);
+	}
+	else
+	{
+		options.objectProperties = new Point2DProperties(DEBUG_RENDER_POINT, position, duration, size);
+	}
+
+	m_screenRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderLine2D(DebugRenderOptionsT options, const Vec2& start, const Vec2& end, float duration, float lineWidth)
 {
 	options.objectProperties = new Line2DProperties(DEBUG_RENDER_LINE, start, end, duration, lineWidth);
 
 	m_screenRenderObjects.push_back(options);
 
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderLine2D(const Vec2& start, const Vec2& end, float duration /*= 0.f*/, float lineWidth /*= DEFAULT_LINE_WIDTH */)
+{
+	DebugRenderOptionsT options;
+	options.mode = DEBUG_RENDER_ALWAYS;
+	options.beginColor = Rgba::BLUE;
+	options.endColor = Rgba::RED;
+
+	options.objectProperties = new Line2DProperties(DEBUG_RENDER_LINE, start, end, duration, lineWidth);
+
+	m_screenRenderObjects.push_back(options);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -1193,8 +1227,34 @@ void DebugRender::DebugRenderQuad2D( DebugRenderOptionsT options, AABB2 const & 
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderQuad2D(AABB2 const &quad, float duration /*= 0.f*/, TextureView *view /*= nullptr*/)
+{
+	DebugRenderOptionsT options;
+	options.mode = DEBUG_RENDER_ALWAYS;
+	options.beginColor = Rgba::BLUE;
+	options.endColor = Rgba::RED;
+
+	options.objectProperties = new Quad2DProperties(DEBUG_RENDER_QUAD, quad, duration, DEFAULT_WIRE_WIDTH_2D, texture);
+
+	m_screenRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderWireQuad2D( DebugRenderOptionsT options, AABB2 const &quad, float duration /*= 0.f*/, float thickness /*= DEFAULT_WIRE_WIDTH_2D */ )
 {
+	options.objectProperties = new Quad2DProperties(DEBUG_RENDER_WIRE_QUAD, quad, duration, thickness);
+
+	m_screenRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderWireQuad2D(AABB2 const &quad, float duration /*= 0.f*/, float thickness /*= DEFAULT_WIRE_WIDTH_2D */)
+{
+	DebugRenderOptionsT options;
+	options.mode = DEBUG_RENDER_ALWAYS;
+	options.beginColor = Rgba::BLUE;
+	options.endColor = Rgba::RED;
+
 	options.objectProperties = new Quad2DProperties(DEBUG_RENDER_WIRE_QUAD, quad, duration, thickness);
 
 	m_screenRenderObjects.push_back(options);
@@ -1230,8 +1290,34 @@ void DebugRender::DebugRenderDisc2D( DebugRenderOptionsT options, Disc2D const &
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderDisc2D(Disc2D const &disc, float duration /*= 0.f*/)
+{
+	DebugRenderOptionsT options;
+	options.mode = DEBUG_RENDER_ALWAYS;
+	options.beginColor = Rgba::BLUE;
+	options.endColor = Rgba::RED;
+
+	options.objectProperties = new Disc2DProperties(DEBUG_RENDER_DISC, disc, 0.f, duration);
+
+	m_screenRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderRing2D( DebugRenderOptionsT options, Disc2D const &disc, float duration /*= 0.f*/, float thickness /*= DEFAULT_DISC_THICKNESS */ )
 {
+	options.objectProperties = new Disc2DProperties(DEBUG_RENDER_RING, disc, thickness, duration);
+
+	m_screenRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderRing2D(Disc2D const &disc, float duration /*= 0.f*/, float thickness /*= DEFAULT_DISC_THICKNESS */)
+{
+	DebugRenderOptionsT options;
+	options.mode = DEBUG_RENDER_ALWAYS;
+	options.beginColor = Rgba::BLUE;
+	options.endColor = Rgba::RED;
+
 	options.objectProperties = new Disc2DProperties(DEBUG_RENDER_RING, disc, thickness, duration);
 
 	m_screenRenderObjects.push_back(options);
@@ -1256,9 +1342,54 @@ void DebugRender::DebugRenderText2D( DebugRenderOptionsT options, const Vec2& st
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderText2D(const Vec2& startPosition, const Vec2& endPosition, char const *format, float fontHeight /*= DEFAULT_TEXT_HEIGHT*/, float duration /*= 0.f*/, ...)
+{
+	DebugRenderOptionsT options;
+	options.mode = DEBUG_RENDER_ALWAYS;
+	options.beginColor = Rgba::BLUE;
+	options.endColor = Rgba::RED;
+
+	char buffer[1024];
+
+	va_list args;
+	va_start(args, format);
+	vsprintf_s(buffer, 1024, format, args);
+	va_end(args);
+
+	buffer[1024 - 1] = '\0'; // In case vsnprintf overran (doesn't auto-terminate)
+	std::string text = std::string(buffer);
+
+	options.objectProperties = new TextProperties(DEBUG_RENDER_TEXT, startPosition, endPosition, text, fontHeight, duration);
+
+	m_screenRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderArrow2D( DebugRenderOptionsT options, const Vec2& start, const Vec2& end, float duration /*= 0.f*/, float lineWidth /*= DEFAULT_LINE_WIDTH */ )
 {
 	if(options.relativeCoordinates)
+	{
+		Vec2 newStart = GetRelativePosInWorld2D(start);
+		Vec2 newEnd = GetRelativePosInWorld2D(end);
+		options.objectProperties = new Arrow2DProperties(DEBUG_RENDER_ARROW, newStart, newEnd, duration, lineWidth);
+	}
+	else
+	{
+		options.objectProperties = new Arrow2DProperties(DEBUG_RENDER_ARROW, start, end, duration, lineWidth);
+	}
+
+	m_screenRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderArrow2D(const Vec2& start, const Vec2& end, float duration /*= 0.f*/, float lineWidth /*= DEFAULT_LINE_WIDTH */)
+{
+	DebugRenderOptionsT options;
+	options.mode = DEBUG_RENDER_ALWAYS;
+	options.beginColor = Rgba::BLUE;
+	options.endColor = Rgba::RED;
+
+	if (options.relativeCoordinates)
 	{
 		Vec2 newStart = GetRelativePosInWorld2D(start);
 		Vec2 newEnd = GetRelativePosInWorld2D(end);
@@ -1291,13 +1422,50 @@ void DebugRender::DebugAddToLog( DebugRenderOptionsT options, char const* format
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugAddToLog(char const* format, const Rgba& color /*= Rgba::ORANGE*/, float duration /*= 0.f*/, ...)
+{
+	DebugRenderOptionsT options;
+	options.mode = DEBUG_RENDER_ALWAYS;
+	options.beginColor = Rgba::WHITE;
+	options.endColor = Rgba::YELLOW;
+
+	char buffer[1024];
+
+	va_list args;
+	va_start(args, duration);
+	vsprintf_s(buffer, 1024, format, args);
+	va_end(args);
+
+	buffer[1024 - 1] = '\0'; // In case vsnprintf overran (doesn't auto-terminate)
+	std::string text = std::string(buffer);
+
+	options.objectProperties = new LogProperties(DEBUG_RENDER_LOG, color, text, duration);
+
+	m_printLogObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration, float size, TextureView* texture )
 {
 	options.objectProperties = new Point3DProperties(DEBUG_RENDER_POINT3D, position, size, duration, texture);
 
 	m_worldRenderObjects.push_back(options);
 }
- 
+
+//------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderPoint(const Vec3& position, float duration /*= 0.f*/, float size /*= DEFAULT_POINT_SIZE_3D*/, TextureView* texture /*= nullptr */)
+{
+	DebugRenderOptionsT options;
+	options.space = DEBUG_RENDER_WORLD;
+	options.beginColor = Rgba::GREEN;
+	options.endColor = Rgba::RED;
+	options.mode = DEBUG_RENDER_XRAY;
+
+	options.objectProperties = new Point3DProperties(DEBUG_RENDER_POINT3D, position, size, duration, texture);
+
+	m_worldRenderObjects.push_back(options);
+}
+
 //------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderLine( DebugRenderOptionsT options, const Vec3& start, const Vec3& end, float duration, float lineWidth /*= DEFAULT_LINE_WIDTH */ )
 {

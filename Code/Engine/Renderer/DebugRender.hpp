@@ -106,34 +106,49 @@ public:
 	void				DebugRenderDisc2D( DebugRenderOptionsT options, Disc2D const &disc, float duration = 0.f); 
 	void				DebugRenderRing2D( DebugRenderOptionsT options, Disc2D const &disc, float duration = 0.f, float thickness = DEFAULT_DISC_THICKNESS ); 
 	void				DebugRenderText2D( DebugRenderOptionsT options, const Vec2& startPosition, const Vec2& endPosition, char const *format, float fontHeight = DEFAULT_TEXT_HEIGHT, float duration = 0.f, ... );
-	
 	void				DebugRenderArrow2D( DebugRenderOptionsT options, const Vec2& start, const Vec2& end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH ); 
+
+	// Helpers
+	void				DebugRenderPoint2D( const Vec2& position, float duration = 0.f, float size = DEFAULT_POINT_SIZE );
+	void				DebugRenderLine2D( const Vec2& start, const Vec2& end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH );
+	void				DebugRenderQuad2D( AABB2 const &quad, float duration = 0.f, TextureView *view = nullptr); 
+	void				DebugRenderWireQuad2D( AABB2 const &quad, float duration = 0.f, float thickness = DEFAULT_WIRE_WIDTH_2D ); 
+	void				DebugRenderDisc2D( Disc2D const &disc, float duration = 0.f); 
+	void				DebugRenderRing2D( Disc2D const &disc, float duration = 0.f, float thickness = DEFAULT_DISC_THICKNESS ); 
+	void				DebugRenderText2D( const Vec2& startPosition, const Vec2& endPosition, char const *format, float fontHeight = DEFAULT_TEXT_HEIGHT, float duration = 0.f, ... );
+	void				DebugRenderArrow2D( const Vec2& start, const Vec2& end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH ); 
+
 
 	//------------------------------------------------------------------------------------------------------------------------------
 	// Text Logs
 	//------------------------------------------------------------------------------------------------------------------------------
 	void				DebugAddToLog( DebugRenderOptionsT options, char const* format, const Rgba& color = Rgba::ORANGE, float duration = 0.f, ...);
+	void				DebugAddToLog( char const* format, const Rgba& color = Rgba::ORANGE, float duration = 0.f, ...);
 
 	//------------------------------------------------------------------------------------------------------------------------------
 	// 3D Rendering (will always default to WORLD)
 	//------------------------------------------------------------------------------------------------------------------------------
 	void				DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration = 0.f, float size = DEFAULT_POINT_SIZE_3D, TextureView* texture = nullptr );
 	void				DebugRenderLine( DebugRenderOptionsT options, const Vec3& start, const Vec3& end, float duration = 0.f, float lineWidth = DEFAULT_LINE_WIDTH_3D );
-	void				DebugRenderLine(const Vec3& start, const Vec3& end, float duration = 0.f);
 	void				DebugRenderSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration = 0.f, TextureView* texture = nullptr ); 
-	void				DebugRenderSphere( Vec3 center, float radius, float duration = 0.f, TextureView* texture = nullptr ); 
 	void				DebugRenderBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr ); 
-	void				DebugRenderBox( const AABB3& box, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr ); 
 	void				DebugRenderQuad( DebugRenderOptionsT options, const AABB2& quad, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr, bool billBoarded = true);
 	void				DebugRenderCapsule(DebugRenderOptionsT options, const Capsule3D& capsule, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr);
-	void				DebugRenderCapsule( const Capsule3D& capsule, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr);
 
+	// Helpers
+	void				DebugRenderPoint( const Vec3& position, float duration = 0.f, float size = DEFAULT_POINT_SIZE_3D, TextureView* texture = nullptr );
+	void				DebugRenderLine(const Vec3& start, const Vec3& end, float duration = 0.f);
+	void				DebugRenderSphere( Vec3 center, float radius, float duration = 0.f, TextureView* texture = nullptr ); 
+	void				DebugRenderBox( const AABB3& box, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr ); 
+	void				DebugRenderCapsule( const Capsule3D& capsule, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr);
 
 	// EXTRA (helps to be able to set raster fill mode to "wire")
 	// Also, better to use an ICOSphere if available, but UV sphere is fine; 
 	void				DebugRenderWireSphere( DebugRenderOptionsT options, Vec3 center, float radius, float duration = 0.f, TextureView* texture = nullptr ); 
 	void				DebugRenderWireBox( DebugRenderOptionsT options, const AABB3& box, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr ); 
 	void				DebugRenderWireCapsule(DebugRenderOptionsT options, const Capsule3D& capsule, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr);
+
+	// Helpers 
 	void				DebugRenderWireCapsule(const Capsule3D& capsule, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr);
 
 	// EXTRA (requires being able to render a cone/cylinder)
@@ -148,21 +163,21 @@ public:
 	void				DebugRenderText3D( DebugRenderOptionsT options, const Vec3& position, const Vec2& pivot, char const *format, float fontHeight = DEFAULT_TEXT_HEIGHT_3D, float duration = 0.f, bool isBillboarded = true, ... );
 
 private:
-	IntVec2							ConvertWorldToScreenPoint(Vec3 worldPoint);
-	Vec3							ConvertScreenToWorldPoint(Vec3 screenPoint);
+	IntVec2							ConvertWorldToScreenPoint(Vec3 worldPoint);	//Useless function here. Move this to Camera
+	Vec3							ConvertScreenToWorldPoint(Vec3 screenPoint); //Same for this too
 
 	
 	void							DebugRenderToLog() const;				//This renders all the debug logs to the screen
 	
-																	//Draw methods 2D
-	void							DrawPoint2D		( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawLine2D		( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawQuad2D		( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawWireQuad2D	( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawDisc2D		( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawRing2D		( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawArrow2D		( const DebugRenderOptionsT* renderObject ) const;
-	void							DrawText2D		( const DebugRenderOptionsT* renderObject ) const;
+	//Draw methods 2D
+	void							DrawPoint2D			( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawLine2D			( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawQuad2D			( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawWireQuad2D		( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawDisc2D			( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawRing2D			( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawArrow2D			( const DebugRenderOptionsT* renderObject ) const;
+	void							DrawText2D			( const DebugRenderOptionsT* renderObject ) const;
 
 	//Draw methods 3D
 	void							DrawPoint3D			( const DebugRenderOptionsT* renderObject ) const;
