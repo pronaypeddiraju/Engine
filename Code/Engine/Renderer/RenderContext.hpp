@@ -53,8 +53,6 @@ public:
 	explicit RenderContext(WindowContext* window);
 	~RenderContext();
 
-	void						Startup();
-	void						PremakeDefaults();
 	void						BeginFrame();
 
 	ColorTargetView*			GetFrameColorTarget();
@@ -79,6 +77,18 @@ public:
 
 	void						EnableDirectionalLight();
 	void						DisableDirectionalLight();
+
+	//Helper Functions for lighting
+	void						EnablePointLight(uint slot, const Vec3& position, const Vec3& direction,
+												 const Rgba& color = Rgba::WHITE, float intensity = 1.f,
+												 const Vec3& diffuseAttenuation = Vec3(1.f, 0.f, 0.f),
+												 const Vec3& specularAttenuation = Vec3(1.f, 0.f, 0.f)) const;
+
+	void						EnableDirectionalLight(const Vec3& position, const Vec3& direction,
+													   const Rgba& color = Rgba::WHITE, float intensity = 1.f,
+													   const Vec3& diffuseAttenuation = Vec3(1.f, 0.f, 0.f),
+													   const Vec3& specularAttenuation = Vec3(1.f, 0.f, 0.f)) const;
+
 
 	//Get resources
 	TextureView*				GetOrCreateTextureViewFromFile( std::string const &filename, bool isFont = false ); 
@@ -131,9 +141,7 @@ public:
 	//Utility for copying between Texture2Ds (For full screen FX)
 	void						CopyTexture(Texture2D *dst, Texture2D *src);   // A10
 
-	//Draw Calls
-	bool						PreDraw( GPUMesh *mesh );
-	
+	//Draw Calls	
 	void						Draw(uint vertexCount, uint byteOffset = 0U);
 	void						DrawIndexed( uint indexCount);                                 
 
@@ -158,7 +166,12 @@ private:
 	bool						D3D11Setup(void* hwnd);   // Creates required D3D Objects
 	void						D3D11Cleanup();          // Cleans up D3D11 Objects
 
+	void						Startup();
+	void						PremakeDefaults();
+
 	void						DemoRender();            // Does rendering for this demo
+
+	bool						PreDraw(GPUMesh *mesh);
 
 	// Private (internal) member functions will go here
 	BitmapFont*					CreateBitmapFontFromFile(const std::string& bitmapName);
@@ -182,17 +195,12 @@ private:
 
 	Camera*												m_currentCamera = nullptr;
 	Shader*												m_currentShader = nullptr;
-
-	void*												m_hwnd = nullptr;
-
-public:
-
-	VertexBuffer*										m_immediateVBO = nullptr; 
+	
+	VertexBuffer*										m_immediateVBO = nullptr;
 	UniformBuffer*										m_immediateUBO = nullptr;
-	Image*												m_whiteImage = nullptr;
-
+	
 	Texture2D*											m_defaultDepthTexture = nullptr;
-	DepthStencilTargetView*								m_defaultDepthStencilView = nullptr; 
+	DepthStencilTargetView*								m_defaultDepthStencilView = nullptr;
 	Texture2D*											m_defaultColorTexture = nullptr;
 	ColorTargetView*									m_defaultColorTargetView = nullptr;
 
@@ -200,25 +208,33 @@ public:
 	Texture2D*											m_FXTexture = nullptr;
 	ColorTargetView*									m_FXColorTargetView = nullptr;
 
-	UniformBuffer*										m_modelBuffer = nullptr;                      
+	UniformBuffer*										m_modelBuffer = nullptr;
 
 	// constant buffer storing lights; 
 	UniformBuffer*										m_gpuLightBuffer = nullptr;
-	// CPU copy of light data
-	LightBufferT										m_cpuLightBuffer;                   
-	// need to update the light buffer before a draw
-	bool												m_lightBufferDirty = true;                           
-	uint												m_lightSlot = 0U;
+	
 
-	Sampler*											m_cachedSamplers[SAMPLE_MODE_COUNT]; 
+	Sampler*											m_cachedSamplers[SAMPLE_MODE_COUNT];
 
-	unsigned int										m_frameCount = 0;
-
-	GPUMesh*											m_immediateMesh = nullptr;  
+	GPUMesh*											m_immediateMesh = nullptr;
 	ModelBufferT										m_cpuModelBuffer;
 
 	//Full screen effects
 	Camera*												m_FXCam = nullptr;
+
+	void*												m_hwnd = nullptr;
+
+public:
+
+	// CPU copy of light data
+	LightBufferT										m_cpuLightBuffer;
+	// need to update the light buffer before a draw
+	bool												m_lightBufferDirty = true;
+	uint												m_lightSlot = 0U;
+
+	unsigned int										m_frameCount = 0;
+
+	Image*												m_whiteImage = nullptr;
 };
 
 

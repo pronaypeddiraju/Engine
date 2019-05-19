@@ -369,10 +369,41 @@ void RenderContext::EnableDirectionalLight()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void RenderContext::EnableDirectionalLight(const Vec3& position, const Vec3& direction, const Rgba& color /*= Rgba::WHITE*/, float intensity /*= 1.f*/, const Vec3& diffuseAttenuation /*= Vec3(1.f, 0.f, 0.f)*/, const Vec3& specularAttenuation /*= Vec3(1.f, 0.f, 0.f)*/) const
+{
+	LightT directionalLight;
+
+	directionalLight.position = position;
+	directionalLight.color = color;
+	directionalLight.color.a = intensity;
+	directionalLight.direction = direction;
+	directionalLight.isDirection = 1.f;
+	directionalLight.diffuseAttenuation = diffuseAttenuation;
+	directionalLight.specularAttenuation = specularAttenuation;
+
+	g_renderContext->EnableLight(0U, directionalLight);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::DisableDirectionalLight()
 {
 	m_cpuLightBuffer.lights[0].color.a = 0.f;
 	m_lightBufferDirty = true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void RenderContext::EnablePointLight(uint slot, const Vec3& position, const Vec3& direction, const Rgba& color /*= Rgba::WHITE*/, float intensity /*= 1.f*/, const Vec3& diffuseAttenuation /*= Vec3(1.f, 0.f, 0.f)*/, const Vec3& specularAttenuation /*= Vec3(1.f, 0.f, 0.f)*/) const
+{
+	LightT pointLight;
+
+	pointLight.position = position;
+	pointLight.color = color;
+	pointLight.color.a = intensity;
+	pointLight.direction = direction;
+	pointLight.diffuseAttenuation = diffuseAttenuation;
+	pointLight.specularAttenuation = specularAttenuation;
+
+	g_renderContext->EnableLight(slot, pointLight);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -631,7 +662,6 @@ void RenderContext::Shutdown()
 	*/
 
 	D3D11Cleanup();
-
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

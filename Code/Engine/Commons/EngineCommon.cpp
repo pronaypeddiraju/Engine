@@ -13,27 +13,13 @@ bool IsBitSet(uint flags, uint bit)
 //------------------------------------------------------------------------------------------------------------------------------
 bool AreAllBitsSet(uint currentFlags, uint flagsToCheck)
 {
-	if (currentFlags & flagsToCheck)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return ((currentFlags & flagsToCheck) == flagsToCheck);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 bool AreAnyBitsSet(uint currentFlags, uint flagsToCheck)
 {
-	if (currentFlags | flagsToCheck)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return (currentFlags & flagsToCheck);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

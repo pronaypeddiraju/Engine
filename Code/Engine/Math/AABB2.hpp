@@ -13,6 +13,10 @@ public:
 	explicit AABB2(const Vec3& min3D, const Vec3& max3D);
 	explicit AABB2(const char* asText);
 
+	// C4 code review note; 
+	// static AABB2 ThatContains(Vec2 a, Vec2 b); 
+	// static AABB2 FromCenterAndSize(Vec2 center, Vec2 size); 
+
 	Vec2					m_minBounds;
 	Vec2					m_maxBounds;
 

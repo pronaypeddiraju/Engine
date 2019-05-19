@@ -133,7 +133,6 @@ bool Texture2D::LoadTextureFromImage( Image const &image )
 		// TODO later assigment, generate mips if option is set; 
 
 		return true; 
-
 	} 
 	else 
 	{

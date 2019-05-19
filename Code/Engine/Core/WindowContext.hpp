@@ -33,7 +33,7 @@ public:
 
 	IntVec2				GetClientMouseRelativeMovement(); 
 	const IntVec2&		GetClientBounds();
-	const IntVec2&		GetTureClientBounds();
+	const IntVec2&		GetTrueClientBounds();
 
 	void				LockMouse(); 
 	void				UnlockMouse(); 

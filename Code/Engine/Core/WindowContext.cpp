@@ -271,7 +271,7 @@ const IntVec2& WindowContext::GetClientBounds()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const IntVec2& WindowContext::GetTureClientBounds()
+const IntVec2& WindowContext::GetTrueClientBounds()
 {
 	return m_trueClientSize;
 }
