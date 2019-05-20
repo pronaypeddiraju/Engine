@@ -241,6 +241,7 @@
     <ClCompile Include="Renderer\DepthStencilTargetView.cpp" />
     <ClCompile Include="Renderer\GPUMesh.cpp" />
     <ClCompile Include="Renderer\HSL.cpp" />
+    <ClCompile Include="Renderer\ImGUISystem.cpp" />
     <ClCompile Include="Renderer\IndexBuffer.cpp" />
     <ClCompile Include="Renderer\Material.cpp" />
     <ClCompile Include="Renderer\Model.cpp" />
@@ -257,6 +258,12 @@
     <ClCompile Include="Renderer\TextureView.cpp" />
     <ClCompile Include="Renderer\UniformBuffer.cpp" />
     <ClCompile Include="Renderer\VertexBuffer.cpp" />
+    <ClCompile Include="ThirdParty\imGUI\imgui.cpp" />
+    <ClCompile Include="ThirdParty\imGUI\imgui_demo.cpp" />
+    <ClCompile Include="ThirdParty\imGUI\imgui_draw.cpp" />
+    <ClCompile Include="ThirdParty\imGUI\imgui_impl_dx11.cpp" />
+    <ClCompile Include="ThirdParty\imGUI\imgui_impl_win32.cpp" />
+    <ClCompile Include="ThirdParty\imGUI\imgui_widgets.cpp" />
     <ClCompile Include="ThirdParty\Mikkt\Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -338,6 +345,7 @@
     <ClInclude Include="Renderer\DepthStencilTargetView.hpp" />
     <ClInclude Include="Renderer\GPUMesh.hpp" />
     <ClInclude Include="Renderer\HSL.hpp" />
+    <ClInclude Include="Renderer\ImGUISystem.hpp" />
     <ClInclude Include="Renderer\IndexBuffer.hpp" />
     <ClInclude Include="Renderer\Material.hpp" />
     <ClInclude Include="Renderer\Model.hpp" />
@@ -355,6 +363,14 @@
     <ClInclude Include="Renderer\TextureView.hpp" />
     <ClInclude Include="Renderer\UniformBuffer.hpp" />
     <ClInclude Include="Renderer\VertexBuffer.hpp" />
+    <ClInclude Include="ThirdParty\imGUI\imconfig.h" />
+    <ClInclude Include="ThirdParty\imGUI\imgui.h" />
+    <ClInclude Include="ThirdParty\imGUI\imgui_impl_dx11.h" />
+    <ClInclude Include="ThirdParty\imGUI\imgui_impl_win32.h" />
+    <ClInclude Include="ThirdParty\imGUI\imgui_internal.h" />
+    <ClInclude Include="ThirdParty\imGUI\imstb_rectpack.h" />
+    <ClInclude Include="ThirdParty\imGUI\imstb_textedit.h" />
+    <ClInclude Include="ThirdParty\imGUI\imstb_truetype.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

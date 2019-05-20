@@ -56,23 +56,25 @@
 
 
 //------------------------------------------------------------------------------------------------------------------------------
+class DebugRender;
+class DevConsole;
+class EventSystems;
+class ImGUISystem;
 class NamedStrings;
 class NamedProperties;
-class EventSystems;
 class PhysicsSystem;
-class DevConsole;
-class WindowContext;
-class DebugRender;
 class RenderContext;
+class WindowContext;
 
 //------------------------------------------------------------------------------------------------------------------------------
+extern DebugRender*	g_debugRenderer;
 extern DevConsole* g_devConsole;
 extern EventSystems* g_eventSystem;
-extern PhysicsSystem* g_physicsSystem;
+extern ImGUISystem* g_ImGUI;
 extern NamedStrings g_gameConfigBlackboard; // declared in EngineCommon.hpp, defined in EngineCommon.cpp
-extern WindowContext* g_windowContext;
-extern DebugRender*	g_debugRenderer;
+extern PhysicsSystem* g_physicsSystem;
 extern RenderContext* g_renderContext;
+extern WindowContext* g_windowContext;
 
 typedef NamedProperties EventArgs;
 

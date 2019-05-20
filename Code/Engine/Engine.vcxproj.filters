@@ -277,6 +277,27 @@
     <ClCompile Include="Math\Plane3D.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="ThirdParty\imGUI\imgui.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\imGUI\imgui_demo.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\imGUI\imgui_draw.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\imGUI\imgui_impl_dx11.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\imGUI\imgui_impl_win32.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\imGUI\imgui_widgets.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\ImGUISystem.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -504,5 +525,14 @@
     <ClInclude Include="Math\Capsule3D.hpp" />
     <ClInclude Include="Math\Sphere.hpp" />
     <ClInclude Include="Math\Plane3D.hpp" />
+    <ClInclude Include="ThirdParty\imGUI\imconfig.h" />
+    <ClInclude Include="ThirdParty\imGUI\imgui.h" />
+    <ClInclude Include="ThirdParty\imGUI\imgui_impl_dx11.h" />
+    <ClInclude Include="ThirdParty\imGUI\imgui_impl_win32.h" />
+    <ClInclude Include="ThirdParty\imGUI\imgui_internal.h" />
+    <ClInclude Include="ThirdParty\imGUI\imstb_rectpack.h" />
+    <ClInclude Include="ThirdParty\imGUI\imstb_textedit.h" />
+    <ClInclude Include="ThirdParty\imGUI\imstb_truetype.h" />
+    <ClInclude Include="Renderer\ImGUISystem.hpp" />
   </ItemGroup>
 </Project>

@@ -165,6 +165,7 @@ RenderContext* g_renderContext = nullptr;
 //------------------------------------------------------------------------------------------------------------------------------
 RenderContext::RenderContext(WindowContext* window)
 {
+	m_hwnd = window->m_hwnd;
 	D3D11Setup(window->m_hwnd);
 	Startup();
 }
@@ -304,7 +305,7 @@ Shader* RenderContext::CreateShaderFromFile(const std::string& fileName)
 	bool isDataDriven = false;
 	if(strings.size() > 1)
 	{
-		for(int i = 0; i < strings.size(); i++)
+		for(int i = 0; i < (int)strings.size(); i++)
 		{
 			if(strings[i] == "xml")
 			{
@@ -662,6 +663,12 @@ void RenderContext::Shutdown()
 	*/
 
 	D3D11Cleanup();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+ID3D11DeviceContext* RenderContext::GetDXContext()
+{
+	return m_D3DContext;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

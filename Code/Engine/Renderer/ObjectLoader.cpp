@@ -122,7 +122,7 @@ void ObjectLoader::CreateFromString(const char* data)
 			//Read the vertex
 			std::vector<std::string> tokens = SplitStringOnDelimiter(lineString, ' ');
 
-			for (int i = 0; i < tokens.size(); i++)
+			for (int i = 0; i < (int)tokens.size(); i++)
 			{
 				if (tokens[i] == "" || tokens[i] == "v")
 				{
@@ -186,7 +186,7 @@ void ObjectLoader::CreateFromString(const char* data)
 			//Read index for the face
 			std::vector<std::string> tokens = SplitStringOnDelimiter(lineString, ' ');
 
-			for (int i = 0; i < tokens.size(); i++)
+			for (int i = 0; i < (int)tokens.size(); i++)
 			{
 				if (tokens[i] == "" || tokens[i] == "f")
 				{

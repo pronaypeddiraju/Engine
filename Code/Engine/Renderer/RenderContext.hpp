@@ -1,10 +1,11 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
-#include "Engine/Renderer/Rgba.hpp"
-#include "Engine/Renderer/Camera.hpp"
 #include "Engine/Math/Vertex_PCU.hpp"
-#include "Engine/Renderer/Sampler.hpp"
+#include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/ImGUISystem.hpp"
 #include "Engine/Renderer/RendererTypes.hpp"
+#include "Engine/Renderer/Rgba.hpp"
+#include "Engine/Renderer/Sampler.hpp"
 #include <vector>
 #include <map>
 
@@ -40,6 +41,7 @@ struct ID3D11RasterizerState;
 class RenderContext
 {
 	friend class DepthStencilTargetView;
+	friend class ImGUISystem;
 	friend class Material;
 	friend class RenderBuffer;
 	friend class Sampler;
@@ -68,6 +70,9 @@ public:
 	void						EndCamera();
 
 	void						Shutdown();
+
+	//Getters for DX
+	ID3D11DeviceContext*		GetDXContext();
 
 	//Lighting
 	void						SetAmbientLight( Rgba const &color, float intensity ); 
