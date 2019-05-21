@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Renderer/ImGUISystem.hpp"
+#include "Engine/Renderer/ColorTargetView.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 
 //Global pointer for use in Game Systems
@@ -23,13 +24,22 @@ ImGUISystem::~ImGUISystem()
 //------------------------------------------------------------------------------------------------------------------------------
 void ImGUISystem::BeginFrame()
 {
-
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 void ImGUISystem::Render()
 {
-	
+	ImGui::Render();
+	ImDrawData* data = ImGui::GetDrawData();
+
+	//Set RTV for imGUI
+	ID3D11RenderTargetView *dx_rtv = m_renderContext->GetFrameColorTarget()->m_renderTargetView;
+	ID3D11DeviceContext* context = m_renderContext->GetDXContext();
+	context->OMSetRenderTargets(1, &dx_rtv, NULL);
+
+	ImGui_ImplDX11_RenderDrawData(data);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
