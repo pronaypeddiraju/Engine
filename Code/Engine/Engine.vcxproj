@@ -243,6 +243,7 @@
     <ClCompile Include="Renderer\HSL.cpp" />
     <ClCompile Include="Renderer\ImGUISystem.cpp" />
     <ClCompile Include="Renderer\IndexBuffer.cpp" />
+    <ClCompile Include="Renderer\IsoSpriteDefenition.cpp" />
     <ClCompile Include="Renderer\Material.cpp" />
     <ClCompile Include="Renderer\Model.cpp" />
     <ClCompile Include="Renderer\ObjectLoader.cpp" />
@@ -335,6 +336,7 @@
     <ClInclude Include="Math\VertexMaster.hpp" />
     <ClInclude Include="Math\Vertex_Lit.hpp" />
     <ClInclude Include="Math\Vertex_PCU.hpp" />
+    <ClInclude Include="Renderer\AnimTypes.hpp" />
     <ClInclude Include="Renderer\BitmapFont.hpp" />
     <ClInclude Include="Renderer\BufferLayout.hpp" />
     <ClInclude Include="Renderer\Camera.hpp" />
@@ -347,6 +349,7 @@
     <ClInclude Include="Renderer\HSL.hpp" />
     <ClInclude Include="Renderer\ImGUISystem.hpp" />
     <ClInclude Include="Renderer\IndexBuffer.hpp" />
+    <ClInclude Include="Renderer\IsoSpriteDefenition.hpp" />
     <ClInclude Include="Renderer\Material.hpp" />
     <ClInclude Include="Renderer\Model.hpp" />
     <ClInclude Include="Renderer\ObjectLoader.hpp" />

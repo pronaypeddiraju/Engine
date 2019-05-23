@@ -12,13 +12,13 @@ class SpriteSheet
 {
 public: 
 	
-	explicit SpriteSheet(const TextureView* texture, const IntVec2 spriteGridDefenition);
-	
+	explicit SpriteSheet(TextureView* texture, const IntVec2 spriteGridDefenition);
+
 	//Accessors
 	const SpriteDefenition&				GetSpriteDef(int spriteIndex) const;
 	const SpriteDefenition&				GetSpriteDef( IntVec2 spriteCoords, int sheetWidth ) const;
 
 protected:
-	const TextureView*					m_spriteTexture = nullptr;
+	TextureView*						m_spriteTexture = nullptr;
 	std::vector<SpriteDefenition>		m_spriteDefs;
 };

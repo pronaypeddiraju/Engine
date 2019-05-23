@@ -3,7 +3,7 @@
 #include "Engine/Renderer/Texture.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
-SpriteSheet::SpriteSheet( const TextureView* texture, const IntVec2 spriteGridDefenition )
+SpriteSheet::SpriteSheet( TextureView* texture, const IntVec2 spriteGridDefenition )
 	: m_spriteTexture(texture)
 {
 
@@ -32,7 +32,7 @@ SpriteSheet::SpriteSheet( const TextureView* texture, const IntVec2 spriteGridDe
 		Vec2 UV_U = Vec2(uAtMinX, vAtMinV);
 		Vec2 UV_V = Vec2(uAtMaxX, vAtMaxV);
 
-		m_spriteDefs.push_back(SpriteDefenition(UV_U, UV_V));
+		m_spriteDefs.push_back(SpriteDefenition(texture, UV_U, UV_V));
 	}
 }
 

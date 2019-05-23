@@ -298,6 +298,9 @@
     <ClCompile Include="Renderer\ImGUISystem.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\IsoSpriteDefenition.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -534,5 +537,7 @@
     <ClInclude Include="ThirdParty\imGUI\imstb_textedit.h" />
     <ClInclude Include="ThirdParty\imGUI\imstb_truetype.h" />
     <ClInclude Include="Renderer\ImGUISystem.hpp" />
+    <ClInclude Include="Renderer\AnimTypes.hpp" />
+    <ClInclude Include="Renderer\IsoSpriteDefenition.hpp" />
   </ItemGroup>
 </Project>
