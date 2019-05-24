@@ -80,7 +80,7 @@ private:
 // as I like to pick and choose the ones I want instead of having them
 // all live in CPUMesh.hpp
 //------------------------------------------------------------------------------------------------------------------------------
-void			CPUMeshAddQuad( CPUMesh *out, const AABB2& quad, const Rgba& color = Rgba::WHITE);
+void			CPUMeshAddQuad( CPUMesh *out, const AABB2& quad, const Rgba& color = Rgba::WHITE, const Vec2& minUVs = Vec2::ZERO, const Vec2& maxUVs = Vec2::ONE);
 void			CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color = Rgba::WHITE, bool clearMesh = true );                                                           // A04
 void			CPUMeshAddUVSphere( CPUMesh *out, const Vec3& center, float radius, const Rgba& color = Rgba::WHITE, uint wedges = 32, uint slices = 16 );							// A04
 void			CPUMeshAddUVCapsule(CPUMesh *out, const Vec3& start, const Vec3& end, float radius, const Rgba& color, uint wedges = 32, uint slices = 16);

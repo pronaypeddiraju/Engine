@@ -5,12 +5,13 @@
 #include "Engine/Renderer/TextureView.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
-IsoSpriteDefenition::IsoSpriteDefenition(SpriteDefenition* spriteDefenitions, const Vec3 directions[], uint numDefenitions)
+IsoSpriteDefenition::IsoSpriteDefenition(const SpriteDefenition spriteDefenitions[], const Vec3 directions[], uint numDefenitions)
 {
 	//Populate all the spriteDefenitions into vector m_sprites
 	for (uint defIndex = 0; defIndex < numDefenitions; ++defIndex)
 	{
-		m_sprites.push_back(&spriteDefenitions[defIndex]);
+		SpriteDefenition* defenition = new SpriteDefenition(spriteDefenitions[defIndex]);
+		m_sprites.push_back(defenition);
 		m_directions.push_back(directions[defIndex]);
 	}
 }

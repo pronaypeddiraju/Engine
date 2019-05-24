@@ -13,7 +13,7 @@ CPUMesh::CPUMesh()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void CPUMeshAddQuad( CPUMesh *out, const AABB2& quad, const Rgba& color)
+void CPUMeshAddQuad( CPUMesh *out, const AABB2& quad, const Rgba& color, const Vec2& minUVs, const Vec2& maxUVs )
 {
 	out->Clear(); 
 
@@ -26,16 +26,16 @@ void CPUMeshAddQuad( CPUMesh *out, const AABB2& quad, const Rgba& color)
 	// |   / |
 	// | /   |
 	// 2 --- 3
-	out->SetUV( Vec2(0.0f, 0.0f) ); 
+	out->SetUV( minUVs ); 
 	out->AddVertex( quad.GetTopLeft() ); 
 
-	out->SetUV( Vec2(1.0f, 0.0f) ); 
+	out->SetUV( Vec2(maxUVs.x, minUVs.y) ); 
 	out->AddVertex( quad.GetTopRight() ); 
 
-	out->SetUV( Vec2(0.0f, 1.0f) ); 
+	out->SetUV( Vec2(minUVs.x, maxUVs.y) ); 
 	out->AddVertex( quad.GetBottomLeft() ); 
 
-	out->SetUV( Vec2(1.0f, 1.0f) ); 
+	out->SetUV( maxUVs ); 
 	out->AddVertex( quad.GetBottomRight() ); 
 
 	out->AddIndexedTriangle( 0, 2, 1 ); 

@@ -12,7 +12,7 @@ class TextureView;
 class IsoSpriteDefenition
 {
 public:
-	explicit IsoSpriteDefenition(SpriteDefenition* spriteDefenitions, const Vec3 directions[], uint numDefenitions);
+	explicit IsoSpriteDefenition(const SpriteDefenition spriteDefenitions[], const Vec3 directions[], uint numDefenitions);
 	~IsoSpriteDefenition();
 
 	SpriteDefenition* GetSpriteForLocalDirection(const Vec3& direction);
