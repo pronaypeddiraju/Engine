@@ -57,8 +57,7 @@ private:
 
 public:
 
-	//Way to store all rigidbodies
-	//std::vector<Rigidbody2D*>		m_rigidbodyVector;
+	//Way to store all rigid-bodies
 	RigidBodyBucket*				m_rbBucket;
 	TriggerBucket*					m_triggerBucket;
 	uint							m_frameCount = 0U;

@@ -147,7 +147,7 @@ void Material::SetTextureView( uint slot, char const *name )
 	}
 
 	//We have a valid name
-	TextureView* texture = m_renderContext->GetOrCreateTextureViewFromFile(name);
+	TextureView* texture = m_renderContext->CreateOrGetTextureViewFromFile(name);
 	SetTextureView(slot, texture);
 }
 

@@ -209,13 +209,13 @@ void RenderContext::PremakeDefaults()
 {
 	// premake defaults 
 	std::string name = "WHITE.png";
-	GetOrCreateTextureViewFromFile(name);
+	CreateOrGetTextureViewFromFile(name);
 	
 	name = "FLAT.png";
-	GetOrCreateTextureViewFromFile(name);
+	CreateOrGetTextureViewFromFile(name);
 
 	name = "BLACK.png";
-	GetOrCreateTextureViewFromFile(name);
+	CreateOrGetTextureViewFromFile(name);
 
 }
 
@@ -289,7 +289,7 @@ Sampler* RenderContext::GetSamplerOfType( const std::string& m_samplerType )
 BitmapFont* RenderContext::CreateBitmapFontFromFile(const std::string& bitmapName)
 {
 	//std::string filePath = "Data/Fonts/" + bitmapName + ".png";
-	TextureView* bitmapTexture = GetOrCreateTextureViewFromFile(bitmapName.c_str(), true);
+	TextureView* bitmapTexture = CreateOrGetTextureViewFromFile(bitmapName.c_str(), true);
 
 	BitmapFont* newFont = new BitmapFont(bitmapName, bitmapTexture);
 
@@ -851,7 +851,7 @@ void RenderContext::SetModelMatrix( Matrix44 const &modelMatrix )
 // (NOTE: This design is fairly different from my Engine, 
 // so while I'm fairly sure this should work, if it doesn't, please let me know)
 //------------------------------------------------------------------------------------------------------------------------------
-TextureView* RenderContext::GetOrCreateTextureViewFromFile( std::string const &filename, bool isFont )
+TextureView* RenderContext::CreateOrGetTextureViewFromFile( std::string const &filename, bool isFont )
 {
 	TextureView* view = nullptr; 
 

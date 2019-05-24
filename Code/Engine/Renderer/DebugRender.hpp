@@ -202,29 +202,29 @@ private:
 
 	const float								m_logFontHeight = DEFAULT_LOG_TEXT_HEIGHT;
 
-	RenderContext*		m_renderContext					= nullptr;
-	int					m_clientWidth					= 0;
-	int					m_clientHeight					= 0;
-	Camera*				m_debug3DCam					= nullptr;
-	Camera*				m_debug2DCam					= nullptr;
-	bool				m_canRender						= true;
+	RenderContext*							m_renderContext					= nullptr;
+	int										m_clientWidth					= 0;
+	int										m_clientHeight					= 0;
+	Camera*									m_debug3DCam					= nullptr;
+	Camera*									m_debug2DCam					= nullptr;
+	bool									m_canRender						= true;
 	
 	//2D world size
-	Vec2				m_worldMin2D					= Vec2::ZERO;
-	Vec2				m_worldMax2D					= Vec2::ZERO;
+	Vec2									m_worldMin2D					= Vec2::ZERO;
+	Vec2									m_worldMax2D					= Vec2::ZERO;
 
-	BitmapFont*			m_debugFont						= nullptr;
-	Shader*				m_xrayShader					= nullptr;
-	Shader*				m_defaultShader					= nullptr;
-	std::string			m_defaultShaderPath				= "default_unlit.xml";
-	std::string			m_xmlShaderPath					= "default_unlit_xray.xml";
+	BitmapFont*								m_debugFont						= nullptr;
+	Shader*									m_xrayShader					= nullptr;
+	Shader*									m_defaultShader					= nullptr;
+	std::string								m_defaultShaderPath				= "default_unlit.xml";
+	std::string								m_xmlShaderPath					= "default_unlit_xray.xml";
 
 	//Keep a reference to the DebugRender instance for use with event systems
-	static DebugRender*	s_debugRender;
+	static DebugRender*						s_debugRender;
 
 	//Store all debug objects with their render options and other data
-	std::vector<DebugRenderOptionsT>	m_worldRenderObjects;
-	std::vector<DebugRenderOptionsT>	m_screenRenderObjects;
+	std::vector<DebugRenderOptionsT>		m_worldRenderObjects;
+	std::vector<DebugRenderOptionsT>		m_screenRenderObjects;
 
-	std::vector<DebugRenderOptionsT>	m_printLogObjects;
+	std::vector<DebugRenderOptionsT>		m_printLogObjects;
 };

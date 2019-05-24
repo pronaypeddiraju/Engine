@@ -31,6 +31,14 @@ public:
 	virtual void				SetSoundPlaybackBalance( SoundPlaybackID soundPlaybackID, float balance );	// balance is in [-1,1], where 0 is L/R centered
 	virtual void				SetSoundPlaybackSpeed( SoundPlaybackID soundPlaybackID, float speed );		// speed is frequency multiplier (1.0 == normal)
 
+	//Proposed attenuation settings
+	//	Setup attenuation algorithms for use in the engine
+	//	Linear
+	//	Logarithmic 
+	//	Customized implementations 
+	//	Natural Sound (Look at UE's approach)
+
+	//FMOD Result validation
 	virtual void				ValidateResult( FMOD_RESULT result );
 
 protected:

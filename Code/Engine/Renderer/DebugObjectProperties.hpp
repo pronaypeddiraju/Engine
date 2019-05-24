@@ -216,6 +216,8 @@ public:
 	TextureView* m_texture				= nullptr;
 };
 
+// Capsule
+//------------------------------------------------------------------------------------------------------------------------------
 class CapsuleProperties : public ObjectProperties
 {
 public:
