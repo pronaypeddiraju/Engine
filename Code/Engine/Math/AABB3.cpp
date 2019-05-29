@@ -37,3 +37,25 @@ AABB3::~AABB3()
 
 //------------------------------------------------------------------------------------------------------------------------------
 const STATIC AABB3 AABB3::UNIT_CUBE(Vec3(-0.5f, -0.5f, -0.5f), Vec3(0.5f, 0.5f, 0.5f));
+
+//------------------------------------------------------------------------------------------------------------------------------
+void AABB3::GetCornersForAABB3(Vec3* corners)
+{
+	//	Order
+	//    5-----6
+	//   /|    /|
+	//  1-----2 |
+	//  | 4---|-7
+	//  |/    |/
+	//  0-----3
+
+	corners[0] = m_frontBottomLeft;
+	corners[1] = m_frontTopLeft;
+	corners[2] = m_frontTopRight;
+	corners[3] = m_frontBottomRight;
+
+	corners[4] = m_backBottomLeft;
+	corners[5] = m_backTopLeft;
+	corners[6] = m_backTopRight;
+	corners[7] = m_backBottomRight;
+}

@@ -206,6 +206,7 @@
     <ClCompile Include="Math\CollisionHandler.cpp" />
     <ClCompile Include="Math\Disc2D.cpp" />
     <ClCompile Include="Math\FloatRange.cpp" />
+    <ClCompile Include="Math\Frustum.cpp" />
     <ClCompile Include="Math\IntRange.cpp" />
     <ClCompile Include="Math\IntVec2.cpp" />
     <ClCompile Include="Math\Manifold.cpp" />
@@ -307,6 +308,7 @@
     <ClInclude Include="Math\CollisionHandler.hpp" />
     <ClInclude Include="Math\Disc2D.hpp" />
     <ClInclude Include="Math\FloatRange.hpp" />
+    <ClInclude Include="Math\Frustum.hpp" />
     <ClInclude Include="Math\IntRange.hpp" />
     <ClInclude Include="Math\IntVec2.hpp" />
     <ClInclude Include="Math\Manifold.hpp" />

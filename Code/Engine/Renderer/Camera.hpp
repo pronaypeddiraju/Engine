@@ -9,6 +9,8 @@ class ColorTargetView;
 class DepthStencilTargetView;
 class RenderContext;
 class UniformBuffer;
+struct AABB2;
+struct Frustum;
 struct IntVec2;
 struct Ray3D;
 
@@ -48,6 +50,11 @@ public:
 	//Raycast utilities
 	Ray3D					ScreenPointToWorldRay(IntVec2 ScreenClickPosition, IntVec2 screenBounds);
 
+	//Frustums
+	Frustum					GetWorldFrustum() const;
+	Frustum					GetWorldFrustumFromClientRegion(const AABB2& clientRegion);
+
+	Vec3					ClientToNDC(const Vec2& clientPos);
 public:
 	//Variables
 	Vec2						m_orthoBottomLeft;

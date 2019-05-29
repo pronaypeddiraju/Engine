@@ -301,6 +301,9 @@
     <ClCompile Include="Renderer\IsoSpriteDefenition.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Math\Frustum.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -539,5 +542,6 @@
     <ClInclude Include="Renderer\ImGUISystem.hpp" />
     <ClInclude Include="Renderer\AnimTypes.hpp" />
     <ClInclude Include="Renderer\IsoSpriteDefenition.hpp" />
+    <ClInclude Include="Math\Frustum.hpp" />
   </ItemGroup>
 </Project>

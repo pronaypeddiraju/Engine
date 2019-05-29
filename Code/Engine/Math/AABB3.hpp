@@ -14,6 +14,8 @@ public:
 
 	const static AABB3 UNIT_CUBE;
 
+	void		GetCornersForAABB3(Vec3* corners);
+
 public:
 	//Front face
 	Vec3					m_frontTopLeft		= Vec3::ZERO;

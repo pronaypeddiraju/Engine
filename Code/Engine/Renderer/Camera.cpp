@@ -1,7 +1,10 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Core/WindowContext.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/UniformBuffer.hpp"
+#include "Engine/Math/AABB3.hpp"
+#include "Engine/Math/Frustum.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Ray3D.hpp"
@@ -146,4 +149,100 @@ Ray3D Camera::ScreenPointToWorldRay(IntVec2 ScreenClickPosition, IntVec2 screenB
 	Vec3 direction = (end3 - start3).GetNormalized();
 	Ray3D ray(start3, direction);
 	return ray;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+Frustum Camera::GetWorldFrustum() const
+{
+	AABB3 ndc = AABB3(Vec3(-1, -1, 0), Vec3(1, 1, 1));
+	
+	Matrix44 worldtoNDC = GetViewMatrix();
+	worldtoNDC = worldtoNDC.AppendMatrix(GetProjectionMatrix());
+	
+	Matrix44 NDCtoWorld = worldtoNDC;
+	NDCtoWorld.InverseMatrix();
+
+	//	Order
+	//    5-----6
+	//   /|    /|
+	//  1-----2 |
+	//  | 4---|-7
+	//  |/    |/
+	//  0-----3
+	Vec3 corners[8];
+	
+	ndc.GetCornersForAABB3(&corners[0]);
+	for (int cornerIndex = 0; cornerIndex < 8; cornerIndex++)
+	{
+		NDCtoWorld.TransformPosition3D(corners[cornerIndex]);
+	}
+
+	Frustum viewFrustum;
+
+	// LH for left-handed basis - hence left handed winding order
+	viewFrustum.planes[FRUSTUM_LEFT] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[4], corners[5]);
+	viewFrustum.planes[FRUSTUM_RIGHT] = Plane3D::MakeFromTriangleLHRule(corners[3], corners[6], corners[7]);
+	viewFrustum.planes[FRUSTUM_TOP] = Plane3D::MakeFromTriangleLHRule(corners[1], corners[5], corners[6]);
+	viewFrustum.planes[FRUSTUM_BOTTOM] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[7], corners[4]);
+	viewFrustum.planes[FRUSTUM_FRONT] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[1], corners[2]);
+	viewFrustum.planes[FRUSTUM_BACK] = Plane3D::MakeFromTriangleLHRule(corners[4], corners[7], corners[6]);	
+
+	return viewFrustum;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+Frustum Camera::GetWorldFrustumFromClientRegion(const AABB2& clientRegion)
+{
+	Vec3 min = ClientToNDC(clientRegion.m_minBounds);
+	Vec3 max = ClientToNDC(clientRegion.m_maxBounds);
+	
+	AABB3 subNDC = AABB3(min, max);
+
+	Matrix44 worldtoNDC = GetViewMatrix();
+	worldtoNDC = worldtoNDC.AppendMatrix(GetProjectionMatrix());
+
+	Matrix44 NDCtoWorld = worldtoNDC;
+	NDCtoWorld.InverseMatrix();
+
+	//	Order
+	//    5-----6
+	//   /|    /|
+	//  1-----2 |
+	//  | 4---|-7
+	//  |/    |/
+	//  0-----3
+	Vec3 corners[8];
+
+	subNDC.GetCornersForAABB3(&corners[0]);
+	for (int cornerIndex = 0; cornerIndex < 8; cornerIndex++)
+	{
+		NDCtoWorld.TransformPosition3D(corners[cornerIndex]);
+	}
+
+	Frustum viewFrustum;
+
+	// LH for left-handed basis - hence left handed winding order
+	viewFrustum.planes[FRUSTUM_LEFT] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[4], corners[5]);
+	viewFrustum.planes[FRUSTUM_RIGHT] = Plane3D::MakeFromTriangleLHRule(corners[3], corners[6], corners[7]);
+	viewFrustum.planes[FRUSTUM_TOP] = Plane3D::MakeFromTriangleLHRule(corners[1], corners[5], corners[6]);
+	viewFrustum.planes[FRUSTUM_BOTTOM] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[7], corners[4]);
+	viewFrustum.planes[FRUSTUM_FRONT] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[1], corners[2]);
+	viewFrustum.planes[FRUSTUM_BACK] = Plane3D::MakeFromTriangleLHRule(corners[4], corners[7], corners[6]);
+
+	return viewFrustum;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+Vec3 Camera::ClientToNDC(const Vec2& clientPos)
+{
+	Vec3 ndcPos = Vec3::ZERO;
+
+	IntVec2 screenBounds = g_windowContext->GetTrueClientBounds();
+	float NDCx = RangeMapFloat(clientPos.x, 0.f, (float)screenBounds.x, -1.f, 1.f);
+	float NDCy = RangeMapFloat(clientPos.y, 0.f, (float)screenBounds.y, 1.f, -1.f);
+
+	ndcPos.x = NDCx;
+	ndcPos.y = NDCy;
+
+	return ndcPos;
 }
