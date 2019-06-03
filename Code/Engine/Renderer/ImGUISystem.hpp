@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
-#include "Engine/ThirdParty/imGUI/imgui.h"
-#include "Engine/ThirdParty/imGUI/imgui_impl_dx11.h"
-#include "Engine/ThirdParty/imGUI/imgui_impl_win32.h"
+#include "ThirdParty/imGUI/imgui.h"
+#include "ThirdParty/imGUI/imgui_impl_dx11.h"
+#include "ThirdParty/imGUI/imgui_impl_win32.h"
 
 class RenderContext;
 

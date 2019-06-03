@@ -175,6 +175,12 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ThirdParty\imGUI\imgui.cpp" />
+    <ClCompile Include="..\ThirdParty\imGUI\imgui_demo.cpp" />
+    <ClCompile Include="..\ThirdParty\imGUI\imgui_draw.cpp" />
+    <ClCompile Include="..\ThirdParty\imGUI\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\ThirdParty\imGUI\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\ThirdParty\imGUI\imgui_widgets.cpp" />
     <ClCompile Include="..\ThirdParty\TinyXML2\tinyxml2.cpp" />
     <ClCompile Include="Audio\AudioSystem.cpp" />
     <ClCompile Include="Commons\EngineCommon.cpp" />
@@ -260,13 +266,6 @@
     <ClCompile Include="Renderer\TextureView.cpp" />
     <ClCompile Include="Renderer\UniformBuffer.cpp" />
     <ClCompile Include="Renderer\VertexBuffer.cpp" />
-    <ClCompile Include="ThirdParty\imGUI\imgui.cpp" />
-    <ClCompile Include="ThirdParty\imGUI\imgui_demo.cpp" />
-    <ClCompile Include="ThirdParty\imGUI\imgui_draw.cpp" />
-    <ClCompile Include="ThirdParty\imGUI\imgui_impl_dx11.cpp" />
-    <ClCompile Include="ThirdParty\imGUI\imgui_impl_win32.cpp" />
-    <ClCompile Include="ThirdParty\imGUI\imgui_widgets.cpp" />
-    <ClCompile Include="ThirdParty\Mikkt\Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirdParty\fmod\fmod.h" />
@@ -277,6 +276,14 @@
     <ClInclude Include="..\ThirdParty\fmod\fmod_dsp_effects.h" />
     <ClInclude Include="..\ThirdParty\fmod\fmod_errors.h" />
     <ClInclude Include="..\ThirdParty\fmod\fmod_output.h" />
+    <ClInclude Include="..\ThirdParty\imGUI\imconfig.h" />
+    <ClInclude Include="..\ThirdParty\imGUI\imgui.h" />
+    <ClInclude Include="..\ThirdParty\imGUI\imgui_impl_dx11.h" />
+    <ClInclude Include="..\ThirdParty\imGUI\imgui_impl_win32.h" />
+    <ClInclude Include="..\ThirdParty\imGUI\imgui_internal.h" />
+    <ClInclude Include="..\ThirdParty\imGUI\imstb_rectpack.h" />
+    <ClInclude Include="..\ThirdParty\imGUI\imstb_textedit.h" />
+    <ClInclude Include="..\ThirdParty\imGUI\imstb_truetype.h" />
     <ClInclude Include="..\ThirdParty\TinyXML2\tinyxml2.h" />
     <ClInclude Include="Audio\AudioSystem.hpp" />
     <ClInclude Include="Commons\EngineCommon.hpp" />

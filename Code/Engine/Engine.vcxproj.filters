@@ -26,6 +26,9 @@
     <Filter Include="Math\Noise">
       <UniqueIdentifier>{baefe1d7-4dc2-4de3-b7a5-3e4a44cb3996}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ImGUI">
+      <UniqueIdentifier>{3886718a-b0c4-441b-a0df-7a2c501f7527}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vec2.cpp">
@@ -244,9 +247,6 @@
     <ClCompile Include="Renderer\ObjectLoader.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="ThirdParty\Mikkt\Source.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Core\StopWatch.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -277,24 +277,6 @@
     <ClCompile Include="Math\Plane3D.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="ThirdParty\imGUI\imgui.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\imGUI\imgui_demo.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\imGUI\imgui_draw.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\imGUI\imgui_impl_dx11.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\imGUI\imgui_impl_win32.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\imGUI\imgui_widgets.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer\ImGUISystem.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -303,6 +285,24 @@
     </ClCompile>
     <ClCompile Include="Math\Frustum.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imGUI\imgui.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imGUI\imgui_demo.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imGUI\imgui_draw.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imGUI\imgui_impl_dx11.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imGUI\imgui_impl_win32.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imGUI\imgui_widgets.cpp">
+      <Filter>ImGUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -543,5 +543,29 @@
     <ClInclude Include="Renderer\AnimTypes.hpp" />
     <ClInclude Include="Renderer\IsoSpriteDefenition.hpp" />
     <ClInclude Include="Math\Frustum.hpp" />
+    <ClInclude Include="..\ThirdParty\imGUI\imconfig.h">
+      <Filter>ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imGUI\imgui.h">
+      <Filter>ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imGUI\imgui_impl_dx11.h">
+      <Filter>ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imGUI\imgui_impl_win32.h">
+      <Filter>ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imGUI\imgui_internal.h">
+      <Filter>ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imGUI\imstb_rectpack.h">
+      <Filter>ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imGUI\imstb_textedit.h">
+      <Filter>ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imGUI\imstb_truetype.h">
+      <Filter>ImGUI</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
