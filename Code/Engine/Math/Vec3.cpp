@@ -285,16 +285,11 @@ void Vec3::SetLengthXY( float setLength )
 //------------------------------------------------------------------------------------------------------------------------------
 void Vec3::Normalize()
 {
-	if(GetLength() == NULL)
-	{
-		x = 1.f;
-		y = 1.f; 
-		z = 1.f;
-	}
+	float invLength = 1 / sqrtf(x*x + y * y + z * z);
 
-	x = x / sqrtf(x*x + y*y + z*z);
-	y = y / sqrtf(x*x + y*y + z*z);
-	z = z / sqrtf(x*x + y*y + z*z);
+	x = x * invLength;
+	y = y * invLength;
+	z = z * invLength;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

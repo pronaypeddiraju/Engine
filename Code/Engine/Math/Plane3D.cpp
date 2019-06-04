@@ -31,6 +31,7 @@ STATIC Plane3D Plane3D::MakeFromTriangleLHRule(const Vec3& point1, const Vec3& p
 
 	//Get cross product between them as plane normal
 	Vec3 normal = GetCrossProduct(dir1, dir2);
+	normal.Normalize();
 
 	float signedDistance = GetDistance3D(point1, Vec3::ZERO);
 	return Plane3D(normal, signedDistance);

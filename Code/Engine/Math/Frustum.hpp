@@ -23,5 +23,5 @@ public:
 	bool ContainsPoint(const Vec3& pos) const;
 
 public:
-	Plane3D planes[FRUSTUM_SIDE_COUNT];
+	Plane3D m_planes[FRUSTUM_SIDE_COUNT];
 };

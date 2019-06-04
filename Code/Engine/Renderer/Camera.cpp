@@ -156,11 +156,13 @@ Frustum Camera::GetWorldFrustum() const
 {
 	AABB3 ndc = AABB3(Vec3(-1, -1, 0), Vec3(1, 1, 1));
 	
-	Matrix44 worldtoNDC = GetViewMatrix();
-	worldtoNDC = worldtoNDC.AppendMatrix(GetProjectionMatrix());
-	
-	Matrix44 NDCtoWorld = worldtoNDC;
-	NDCtoWorld.InverseMatrix();
+	Vec4 min4 = Vec4(-1.f, -1.f, 0.f, 1.f);
+	Vec4 max4 = Vec4(1.f, 1.f, 1.f, 1.f);
+
+	Matrix44 inverseProjection = GetProjectionMatrix();
+	inverseProjection.InverseMatrix();
+	Matrix44 inverseView = GetViewMatrix();
+	inverseView.InverseMatrix();
 
 	//	Order
 	//    5-----6
@@ -169,23 +171,37 @@ Frustum Camera::GetWorldFrustum() const
 	//  | 4---|-7
 	//  |/    |/
 	//  0-----3
+
 	Vec3 corners[8];
-	
+	Vec4 corners4D[8];
+
 	ndc.GetCornersForAABB3(&corners[0]);
 	for (int cornerIndex = 0; cornerIndex < 8; cornerIndex++)
 	{
-		NDCtoWorld.TransformPosition3D(corners[cornerIndex]);
+		corners4D[cornerIndex] = Vec4(corners[cornerIndex].x, corners[cornerIndex].y, corners[cornerIndex].z, 1.f);
+		corners4D[cornerIndex] = inverseProjection.TransformHomogeneousPoint3D(corners4D[cornerIndex]);
+		corners4D[cornerIndex] = inverseView.TransformHomogeneousPoint3D(corners4D[cornerIndex]);
+
+		//Div by w
+		float invertW = 1 / corners4D[cornerIndex].w;
+		corners4D[cornerIndex].x *= invertW;
+		corners4D[cornerIndex].y *= invertW;
+		corners4D[cornerIndex].z *= invertW;
+		corners4D[cornerIndex].w = 1.f;
+
+		//Store in the Vec3 array
+		corners[cornerIndex] = Vec3(corners4D[cornerIndex].x, corners4D[cornerIndex].y, corners4D[cornerIndex].z);
 	}
 
 	Frustum viewFrustum;
 
 	// LH for left-handed basis - hence left handed winding order
-	viewFrustum.planes[FRUSTUM_LEFT] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[4], corners[5]);
-	viewFrustum.planes[FRUSTUM_RIGHT] = Plane3D::MakeFromTriangleLHRule(corners[3], corners[6], corners[7]);
-	viewFrustum.planes[FRUSTUM_TOP] = Plane3D::MakeFromTriangleLHRule(corners[1], corners[5], corners[6]);
-	viewFrustum.planes[FRUSTUM_BOTTOM] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[7], corners[4]);
-	viewFrustum.planes[FRUSTUM_FRONT] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[1], corners[2]);
-	viewFrustum.planes[FRUSTUM_BACK] = Plane3D::MakeFromTriangleLHRule(corners[4], corners[7], corners[6]);	
+	viewFrustum.m_planes[FRUSTUM_LEFT] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[4], corners[5]);
+	viewFrustum.m_planes[FRUSTUM_RIGHT] = Plane3D::MakeFromTriangleLHRule(corners[3], corners[6], corners[7]);
+	viewFrustum.m_planes[FRUSTUM_TOP] = Plane3D::MakeFromTriangleLHRule(corners[1], corners[5], corners[6]);
+	viewFrustum.m_planes[FRUSTUM_BOTTOM] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[7], corners[4]);
+	viewFrustum.m_planes[FRUSTUM_FRONT] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[1], corners[2]);
+	viewFrustum.m_planes[FRUSTUM_BACK] = Plane3D::MakeFromTriangleLHRule(corners[4], corners[7], corners[6]);	
 
 	return viewFrustum;
 }
@@ -195,7 +211,17 @@ Frustum Camera::GetWorldFrustumFromClientRegion(const AABB2& clientRegion)
 {
 	Vec3 min = ClientToNDC(clientRegion.m_minBounds);
 	Vec3 max = ClientToNDC(clientRegion.m_maxBounds);
-	
+	max.z = 1.f;
+
+	/*
+	Vec3 newMin = GetComponentMin(min, max);
+	Vec3 newMax = GetComponentMax(min, max);
+	*/
+
+	// step 2 covert from NDC to clip
+	Vec4 min4 = Vec4(min.x, min.y, 0.f, 1.f);
+	Vec4 max4 = Vec4(max.x, max.y, 1.f, 1.f);
+
 	AABB3 subNDC = AABB3(min, max);
 
 	Matrix44 worldtoNDC = GetViewMatrix();
@@ -203,6 +229,11 @@ Frustum Camera::GetWorldFrustumFromClientRegion(const AABB2& clientRegion)
 
 	Matrix44 NDCtoWorld = worldtoNDC;
 	NDCtoWorld.InverseMatrix();
+
+	Matrix44 inverseProjection = GetProjectionMatrix();
+	inverseProjection.InverseMatrix();
+	Matrix44 inverseView = GetViewMatrix();
+	inverseView.InverseMatrix();
 
 	//	Order
 	//    5-----6
@@ -212,22 +243,35 @@ Frustum Camera::GetWorldFrustumFromClientRegion(const AABB2& clientRegion)
 	//  |/    |/
 	//  0-----3
 	Vec3 corners[8];
+	Vec4 corners4D[8];
 
 	subNDC.GetCornersForAABB3(&corners[0]);
 	for (int cornerIndex = 0; cornerIndex < 8; cornerIndex++)
 	{
-		NDCtoWorld.TransformPosition3D(corners[cornerIndex]);
+		corners4D[cornerIndex] = Vec4(corners[cornerIndex].x, corners[cornerIndex].y, corners[cornerIndex].z, 1.f);
+		corners4D[cornerIndex] = inverseProjection.TransformHomogeneousPoint3D(corners4D[cornerIndex]);
+		corners4D[cornerIndex] = inverseView.TransformHomogeneousPoint3D(corners4D[cornerIndex]);
+		
+		//Div by w
+		float invertW = 1 / corners4D[cornerIndex].w;
+		corners4D[cornerIndex].x *= invertW;
+		corners4D[cornerIndex].y *= invertW;
+		corners4D[cornerIndex].z *= invertW;
+		corners4D[cornerIndex].w = 1.f;
+
+		//Store in the Vec3 array
+		corners[cornerIndex] = Vec3(corners4D[cornerIndex].x, corners4D[cornerIndex].y, corners4D[cornerIndex].z);
 	}
 
 	Frustum viewFrustum;
 
 	// LH for left-handed basis - hence left handed winding order
-	viewFrustum.planes[FRUSTUM_LEFT] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[4], corners[5]);
-	viewFrustum.planes[FRUSTUM_RIGHT] = Plane3D::MakeFromTriangleLHRule(corners[3], corners[6], corners[7]);
-	viewFrustum.planes[FRUSTUM_TOP] = Plane3D::MakeFromTriangleLHRule(corners[1], corners[5], corners[6]);
-	viewFrustum.planes[FRUSTUM_BOTTOM] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[7], corners[4]);
-	viewFrustum.planes[FRUSTUM_FRONT] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[1], corners[2]);
-	viewFrustum.planes[FRUSTUM_BACK] = Plane3D::MakeFromTriangleLHRule(corners[4], corners[7], corners[6]);
+	viewFrustum.m_planes[FRUSTUM_LEFT] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[4], corners[5]);
+	viewFrustum.m_planes[FRUSTUM_RIGHT] = Plane3D::MakeFromTriangleLHRule(corners[3], corners[6], corners[7]);
+	viewFrustum.m_planes[FRUSTUM_TOP] = Plane3D::MakeFromTriangleLHRule(corners[1], corners[5], corners[6]);
+	viewFrustum.m_planes[FRUSTUM_BOTTOM] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[7], corners[4]);
+	viewFrustum.m_planes[FRUSTUM_FRONT] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[1], corners[2]);
+	viewFrustum.m_planes[FRUSTUM_BACK] = Plane3D::MakeFromTriangleLHRule(corners[4], corners[7], corners[6]);
 
 	return viewFrustum;
 }
@@ -238,8 +282,8 @@ Vec3 Camera::ClientToNDC(const Vec2& clientPos)
 	Vec3 ndcPos = Vec3::ZERO;
 
 	IntVec2 screenBounds = g_windowContext->GetTrueClientBounds();
-	float NDCx = RangeMapFloat(clientPos.x, 0.f, (float)screenBounds.x, -1.f, 1.f);
-	float NDCy = RangeMapFloat(clientPos.y, 0.f, (float)screenBounds.y, 1.f, -1.f);
+	float NDCx = RangeMapFloat((float)clientPos.x, 0.f, (float)screenBounds.x, -1.f, 1.f);
+	float NDCy = RangeMapFloat((float)clientPos.y, 0.f, (float)screenBounds.y, 1.f, -1.f);
 
 	ndcPos.x = NDCx;
 	ndcPos.y = NDCy;

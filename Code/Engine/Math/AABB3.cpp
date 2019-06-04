@@ -21,10 +21,10 @@ AABB3::AABB3( const Vec3& minBounds, const Vec3& maxBounds)
 	Vec3 depthVec = Vec3(0.f, 0.f, (maxBounds.z - minBounds.z));
 
 	//Setup the Back Face
-	m_backBottomLeft = m_frontBottomRight + depthVec;
-	m_backBottomRight = m_frontBottomLeft + depthVec;
-	m_backTopLeft = m_frontTopRight + depthVec;
-	m_backTopRight = m_frontTopLeft + depthVec;	
+	m_backBottomLeft = m_frontBottomLeft + depthVec;
+	m_backBottomRight = m_frontBottomRight + depthVec;
+	m_backTopLeft = m_frontTopLeft + depthVec;
+	m_backTopRight = m_frontTopRight + depthVec;	
 
 	m_center = Vec3(m_frontTopLeft.x + (m_frontTopRight.x - m_frontTopLeft.x) * 0.5f, m_frontBottomLeft.y + (m_frontTopLeft.y - m_frontBottomLeft.y) * 0.5f, m_frontBottomLeft.z + (m_backBottomLeft.z - m_frontBottomLeft.z) * 0.5f);
 }
