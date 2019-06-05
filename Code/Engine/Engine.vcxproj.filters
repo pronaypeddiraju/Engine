@@ -211,13 +211,7 @@
     <ClCompile Include="Renderer\DebugRender.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Math\Plane2D.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Math\Capsule2D.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\Segment2D.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\DebugObjectProperties.cpp">
@@ -262,19 +256,7 @@
     <ClCompile Include="Math\TriggerTouch2D.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Math\Ray3D.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\OBB2.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Math\Capsule3D.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\Sphere.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\Plane3D.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\ImGUISystem.cpp">
@@ -306,6 +288,24 @@
     </ClCompile>
     <ClCompile Include="Renderer\CPUMesh.cpp">
       <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Plane3D.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Plane2D.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Ray3D.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Segment2D.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Sphere.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\OBB2.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,7 @@
 #include "Engine/Core/WindowContext.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/UniformBuffer.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/Frustum.hpp"
 #include "Engine/Math/IntVec2.hpp"
@@ -264,6 +265,12 @@ Frustum Camera::GetWorldFrustumFromClientRegion(const AABB2& clientRegion)
 	}
 
 	Frustum viewFrustum;
+
+	g_debugRenderer->DebugRenderLine(corners[0], corners[4], 5.f);
+	g_debugRenderer->DebugRenderLine(corners[3], corners[7], 5.f);
+	g_debugRenderer->DebugRenderLine(corners[1], corners[5], 5.f);
+	g_debugRenderer->DebugRenderLine(corners[2], corners[6], 5.f);
+
 
 	// LH for left-handed basis - hence left handed winding order
 	viewFrustum.m_planes[FRUSTUM_LEFT] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[4], corners[5]);

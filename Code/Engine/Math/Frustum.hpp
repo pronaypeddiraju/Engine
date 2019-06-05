@@ -21,6 +21,7 @@ struct Frustum
 {
 public:
 	bool ContainsPoint(const Vec3& pos) const;
+	void MakeFromAABB3(AABB3* box);
 
 public:
 	Plane3D m_planes[FRUSTUM_SIDE_COUNT];

@@ -23,6 +23,34 @@ Plane3D::~Plane3D()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+bool Plane3D::IsPointInFrontOfPlane(const Vec3& position) const
+{
+	float dotResult = GetDotProduct(m_normal, position);
+	dotResult = dotResult - m_signedDistance;
+	if (dotResult > 0.f)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool Plane3D::IsPointBehindPlane(const Vec3& position) const
+{
+	if (!IsPointInFrontOfPlane(position))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC Plane3D Plane3D::MakeFromTriangleLHRule(const Vec3& point1, const Vec3& point2, const Vec3& point3) 
 {
 	//Create 2 vectors from a point to the others
@@ -33,7 +61,8 @@ STATIC Plane3D Plane3D::MakeFromTriangleLHRule(const Vec3& point1, const Vec3& p
 	Vec3 normal = GetCrossProduct(dir1, dir2);
 	normal.Normalize();
 
-	float signedDistance = GetDistance3D(point1, Vec3::ZERO);
+	//float signedDistance = GetDistance3D(point1, Vec3::ZERO);
+	float signedDistance = GetDotProduct(point1, normal);
 	return Plane3D(normal, signedDistance);
 }
 
