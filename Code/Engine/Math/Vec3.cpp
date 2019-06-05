@@ -217,6 +217,52 @@ std::string Vec3::GetAsString() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+STATIC const Vec3 Vec3::GetComponentMin(const Vec3& min, const Vec3& max)
+{
+	Vec3 newMin;
+
+	newMin.x = GetLowerValue(min.x, max.x);
+	newMin.y = GetLowerValue(min.y, max.y);
+	newMin.z = GetLowerValue(min.z, max.z);
+
+	return newMin;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC const Vec3 Vec3::GetComponentMinXY(const Vec3& min, const Vec3& max)
+{
+	Vec3 newMin;
+
+	newMin.x = GetLowerValue(min.x, max.x);
+	newMin.y = GetLowerValue(min.y, max.y);
+
+	return newMin;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC const Vec3 Vec3::GetComponentMax(const Vec3& min, const Vec3& max)
+{
+	Vec3 newMax;
+
+	newMax.x = GetHigherValue(min.x, max.x);
+	newMax.y = GetHigherValue(min.y, max.y);
+	newMax.z = GetHigherValue(min.z, max.z);
+
+	return newMax;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC const Vec3 Vec3::GetComponentMaxXY(const Vec3& min, const Vec3& max)
+{
+	Vec3 newMax;
+
+	newMax.x = GetHigherValue(min.x, max.x);
+	newMax.y = GetHigherValue(min.y, max.y);
+
+	return newMax;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec3::SetFromText( const char* asText )
 {
 	//Read the data, break using the delimiter and save each block to it's respective Vec2 component

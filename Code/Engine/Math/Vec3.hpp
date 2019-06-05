@@ -26,6 +26,11 @@ public:
 	const static Vec3	UP;
 	const static Vec3	DOWN;
 
+	static const Vec3			GetComponentMin(const Vec3& min, const Vec3& max);
+	static const Vec3			GetComponentMinXY(const Vec3& min, const Vec3& max);
+	static const Vec3			GetComponentMax(const Vec3& min, const Vec3& max);
+	static const Vec3			GetComponentMaxXY(const Vec3& min, const Vec3& max);
+
 	//Access Methods
 	float				GetLength() const;
 	float				GetLengthXY() const;

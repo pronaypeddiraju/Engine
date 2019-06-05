@@ -214,16 +214,14 @@ Frustum Camera::GetWorldFrustumFromClientRegion(const AABB2& clientRegion)
 	Vec3 max = ClientToNDC(clientRegion.m_maxBounds);
 	max.z = 1.f;
 
-	/*
-	Vec3 newMin = GetComponentMin(min, max);
-	Vec3 newMax = GetComponentMax(min, max);
-	*/
+	Vec3 newMin = Vec3::GetComponentMin(min, max);
+	Vec3 newMax = Vec3::GetComponentMax(min, max);
 
 	// step 2 covert from NDC to clip
-	Vec4 min4 = Vec4(min.x, min.y, 0.f, 1.f);
-	Vec4 max4 = Vec4(max.x, max.y, 1.f, 1.f);
+	Vec4 min4 = Vec4(newMin.x, newMin.y, 0.f, 1.f);
+	Vec4 max4 = Vec4(newMax.x, newMax.y, 1.f, 1.f);
 
-	AABB3 subNDC = AABB3(min, max);
+	AABB3 subNDC = AABB3(newMin, newMax);
 
 	Matrix44 worldtoNDC = GetViewMatrix();
 	worldtoNDC = worldtoNDC.AppendMatrix(GetProjectionMatrix());
@@ -265,12 +263,6 @@ Frustum Camera::GetWorldFrustumFromClientRegion(const AABB2& clientRegion)
 	}
 
 	Frustum viewFrustum;
-
-	g_debugRenderer->DebugRenderLine(corners[0], corners[4], 5.f);
-	g_debugRenderer->DebugRenderLine(corners[3], corners[7], 5.f);
-	g_debugRenderer->DebugRenderLine(corners[1], corners[5], 5.f);
-	g_debugRenderer->DebugRenderLine(corners[2], corners[6], 5.f);
-
 
 	// LH for left-handed basis - hence left handed winding order
 	viewFrustum.m_planes[FRUSTUM_LEFT] = Plane3D::MakeFromTriangleLHRule(corners[0], corners[4], corners[5]);
