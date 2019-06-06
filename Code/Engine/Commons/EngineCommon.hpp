@@ -129,6 +129,7 @@ const unsigned short NUM_0  = 58;
 const unsigned short TILDY_KEY = 192;
 const unsigned short TAB_KEY = 9;
 const unsigned short LCTRL_KEY = 17;
+const unsigned short LSHIFT_KEY = 16;
 
 //------------------------------------------------------------------------------------------------------------------------------
 constexpr char SHADER_PATH[] = "Data/Shaders/"; 
