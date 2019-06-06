@@ -64,9 +64,6 @@ Quad2DProperties::~Quad2DProperties()
 {
 	delete m_texture;
 	m_texture = nullptr;
-
-	delete m_mesh;
-	m_mesh = nullptr;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
