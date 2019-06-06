@@ -9,21 +9,30 @@
 IsoSpriteDefenition::IsoSpriteDefenition(const SpriteDefenition spriteDefenitions[], uint numDefenitions)
 {
 	m_directions.clear();
-
-	m_directions.push_back(Vec3(0.f, 0.f, -1.f));
-	m_directions.push_back(Vec3(-1.f, 0.f, -1.f).GetNormalized());
-	m_directions.push_back(Vec3(-1.f, 0.f, 0.f));
-	m_directions.push_back(Vec3(-1.f, 0.f, 1.f).GetNormalized());
-	m_directions.push_back(Vec3(0.f, 0.f, 1.f));
-	m_directions.push_back(Vec3(1.f, 0.f, 1.f).GetNormalized());
+	
+	m_directions.push_back(Vec3(0.f, 1.f, 0.f));
+	m_directions.push_back(Vec3(1.f, 1.f, 0.f).GetNormalized());
 	m_directions.push_back(Vec3(1.f, 0.f, 0.f));
-	m_directions.push_back(Vec3(1.f, 0.f, -1.f).GetNormalized());
+	m_directions.push_back(Vec3(1.f, -1.f, 0.f).GetNormalized());
+	m_directions.push_back(Vec3(0.f, -1.f, 0.f));
+	m_directions.push_back(Vec3(-1.f, -1.f, 0.f).GetNormalized());
+	m_directions.push_back(Vec3(-1.f, 0.f, 0.f));
+	m_directions.push_back(Vec3(-1.f, 1.f, 0.f).GetNormalized());
 
 	//Populate all the spriteDefenitions into vector m_sprites
-	for (uint defIndex = 0; defIndex < numDefenitions; ++defIndex)
+	for (uint defIndex = 0; defIndex < 8; ++defIndex)
 	{
-		SpriteDefenition* defenition = new SpriteDefenition(spriteDefenitions[defIndex]);
-		m_sprites.push_back(defenition);
+		if (defIndex < numDefenitions)
+		{
+			SpriteDefenition* defenition = new SpriteDefenition(spriteDefenitions[defIndex]);
+			m_sprites.push_back(defenition);
+		}
+		else
+		{
+			//For case where we only have 1 frame. Example: idle state has only 1 frame but needs 8 directions still
+			SpriteDefenition* defenition = new SpriteDefenition(spriteDefenitions[0]);
+			m_sprites.push_back(defenition);
+		}
 	}
 }
 
