@@ -15,8 +15,9 @@ public:
 
 	void					SetPivot(const Vec2& pivot);
 
-	void					GetUVs(Vec2& minUVs, Vec2& maxUVs);
-	TextureView*			GetTexture();
+	void					GetUVs(Vec2& minUVs, Vec2& maxUVs) const;
+	TextureView*			GetTexture() const;
+	inline const Vec2& 		GetPivot() const { return m_pivot; }
 
 private:
 	TextureView*		m_texture = nullptr;

@@ -289,3 +289,15 @@ Vec3 Camera::ClientToNDC(const Vec2& clientPos)
 
 	return ndcPos;
 }
+
+//------------------------------------------------------------------------------------------------------------------------------
+const Vec3 Camera::GetCameraRight() const
+{
+	return m_cameraModel.GetIVector();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const Vec3 Camera::GetCameraUp() const
+{
+	return m_cameraModel.GetJVector();
+}

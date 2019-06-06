@@ -2,6 +2,7 @@
 #include "Engine/Renderer/IsoSpriteDefenition.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/SpriteDefenition.hpp"
+#include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/TextureView.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -17,13 +18,19 @@ IsoSpriteDefenition::IsoSpriteDefenition(const SpriteDefenition spriteDefenition
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+IsoSpriteDefenition::IsoSpriteDefenition()
+{
+
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 IsoSpriteDefenition::~IsoSpriteDefenition()
 {
 
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-SpriteDefenition* IsoSpriteDefenition::GetSpriteForLocalDirection(const Vec3& direction)
+SpriteDefenition& IsoSpriteDefenition::GetSpriteForLocalDirection(const Vec3& direction) const
 {
 	uint bestIndex = 0;
 	float bestValue = GetDotProduct(direction, m_directions[0]);
@@ -40,5 +47,5 @@ SpriteDefenition* IsoSpriteDefenition::GetSpriteForLocalDirection(const Vec3& di
 	}
 
 	//Return the sprite corresponding to the direction facing we received
-	return m_sprites[bestIndex];
+	return *m_sprites[bestIndex];
 }

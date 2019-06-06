@@ -31,14 +31,14 @@ void SpriteDefenition::SetPivot(const Vec2& pivot)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void SpriteDefenition::GetUVs( Vec2& minUVs, Vec2& maxUVs )
+void SpriteDefenition::GetUVs( Vec2& minUVs, Vec2& maxUVs ) const
 {
 	minUVs = m_minUVs;
 	maxUVs = m_maxUVs;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-TextureView* SpriteDefenition::GetTexture()
+TextureView* SpriteDefenition::GetTexture() const
 {
 	return m_texture;
 }

@@ -46,10 +46,10 @@ public:
 	const Vec4			TransformHomogeneousPoint3D ( const Vec4& homogeneousVec ) const; //assumes nothing; 
 
 	//Get axis methods
-	const Vec3			GetIVector();
-	const Vec3			GetJVector();
-	const Vec3			GetKVector();
-	const Vec3			GetTVector();		
+	const Vec3			GetIVector() const;
+	const Vec3			GetJVector() const;
+	const Vec3			GetKVector() const;
+	const Vec3			GetTVector() const;		
 
 	void				SetIVector( const Vec3& i );
 	void				SetJVector( const Vec3& j );

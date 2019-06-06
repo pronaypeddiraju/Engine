@@ -108,7 +108,7 @@ const Vec4 Matrix44::TransformHomogeneousPoint3D( const Vec4& homogeneousVec ) c
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const Vec3 Matrix44::GetIVector()
+const Vec3 Matrix44::GetIVector() const
 {
 	Vec3 iVector = Vec3(m_values[Ix], m_values[Iy], m_values[Iz]);
 	iVector = iVector.GetNormalized();
@@ -117,7 +117,7 @@ const Vec3 Matrix44::GetIVector()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const Vec3 Matrix44::GetJVector()
+const Vec3 Matrix44::GetJVector() const
 {
 	Vec3 jVector = Vec3(m_values[Jx], m_values[Jy], m_values[Jz]);
 	jVector = jVector.GetNormalized();
@@ -126,7 +126,7 @@ const Vec3 Matrix44::GetJVector()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const Vec3 Matrix44::GetKVector()
+const Vec3 Matrix44::GetKVector() const
 {
 	Vec3 kVector = Vec3(m_values[Kx], m_values[Ky], m_values[Kz]);
 	kVector = kVector.GetNormalized();
@@ -135,7 +135,7 @@ const Vec3 Matrix44::GetKVector()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const Vec3 Matrix44::GetTVector()
+const Vec3 Matrix44::GetTVector() const
 {
 	Vec3 tVector = Vec3(m_values[Tx], m_values[Ty], m_values[Tz]);
 

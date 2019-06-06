@@ -6,16 +6,18 @@
 typedef unsigned int uint;
 
 class SpriteDefenition;
+class SpriteSheet;
 class TextureView;
 
 //------------------------------------------------------------------------------------------------------------------------------
 class IsoSpriteDefenition
 {
 public:
+	IsoSpriteDefenition();
 	explicit IsoSpriteDefenition(const SpriteDefenition spriteDefenitions[], const Vec3 directions[], uint numDefenitions);
 	~IsoSpriteDefenition();
 
-	SpriteDefenition* GetSpriteForLocalDirection(const Vec3& direction);
+	SpriteDefenition&				GetSpriteForLocalDirection(const Vec3& direction) const;
 
 private:
 	std::vector<SpriteDefenition*> m_sprites;

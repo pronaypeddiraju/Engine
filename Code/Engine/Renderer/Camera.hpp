@@ -55,6 +55,11 @@ public:
 	Frustum					GetWorldFrustumFromClientRegion(const AABB2& clientRegion);
 
 	Vec3					ClientToNDC(const Vec2& clientPos);
+
+	//Camera Directions
+	const Vec3				GetCameraRight() const;
+	const Vec3				GetCameraUp() const;
+
 public:
 	//Variables
 	Vec2						m_orthoBottomLeft;
