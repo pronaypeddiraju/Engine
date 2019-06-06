@@ -14,7 +14,7 @@ class IsoSpriteDefenition
 {
 public:
 	IsoSpriteDefenition();
-	explicit IsoSpriteDefenition(const SpriteDefenition spriteDefenitions[], const Vec3 directions[], uint numDefenitions);
+	explicit IsoSpriteDefenition(const SpriteDefenition spriteDefenitions[], uint numDefenitions);
 	~IsoSpriteDefenition();
 
 	SpriteDefenition&				GetSpriteForLocalDirection(const Vec3& direction) const;

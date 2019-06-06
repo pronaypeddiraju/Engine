@@ -6,14 +6,24 @@
 #include "Engine/Renderer/TextureView.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
-IsoSpriteDefenition::IsoSpriteDefenition(const SpriteDefenition spriteDefenitions[], const Vec3 directions[], uint numDefenitions)
+IsoSpriteDefenition::IsoSpriteDefenition(const SpriteDefenition spriteDefenitions[], uint numDefenitions)
 {
+	m_directions.clear();
+
+	m_directions.push_back(Vec3(0.f, 0.f, -1.f));
+	m_directions.push_back(Vec3(-1.f, 0.f, -1.f).GetNormalized());
+	m_directions.push_back(Vec3(-1.f, 0.f, 0.f));
+	m_directions.push_back(Vec3(-1.f, 0.f, 1.f).GetNormalized());
+	m_directions.push_back(Vec3(0.f, 0.f, 1.f));
+	m_directions.push_back(Vec3(1.f, 0.f, 1.f).GetNormalized());
+	m_directions.push_back(Vec3(1.f, 0.f, 0.f));
+	m_directions.push_back(Vec3(1.f, 0.f, -1.f).GetNormalized());
+
 	//Populate all the spriteDefenitions into vector m_sprites
 	for (uint defIndex = 0; defIndex < numDefenitions; ++defIndex)
 	{
 		SpriteDefenition* defenition = new SpriteDefenition(spriteDefenitions[defIndex]);
 		m_sprites.push_back(defenition);
-		m_directions.push_back(directions[defIndex]);
 	}
 }
 
