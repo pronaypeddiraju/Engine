@@ -28,6 +28,12 @@ ColorTargetView::~ColorTargetView()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+ID3D11RenderTargetView* ColorTargetView::GetAsDXResource() const
+{
+	return m_renderTargetView;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 // this is an internally used method - not called outside the of the render system; 
 // update the internal handle; 
 //------------------------------------------------------------------------------------------------------------------------------

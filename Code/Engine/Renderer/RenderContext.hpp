@@ -72,7 +72,8 @@ public:
 	void						Shutdown();
 
 	//Getters for DX
-	ID3D11DeviceContext*		GetDXContext();
+	ID3D11DeviceContext*		GetDXContext() const;
+	ID3D11Device*				GetDXDevice() const;
 
 	//Lighting
 	void						SetAmbientLight( Rgba const &color, float intensity ); 
