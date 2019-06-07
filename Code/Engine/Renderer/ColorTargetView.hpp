@@ -21,6 +21,8 @@ public:
 	//float			GetWidth() const;
 	//float			GetHeight() const;
 
+	ID3D11RenderTargetView*	GetAsDXResource() const;
+
 public:
 	//Renderable view of a texture
 	ID3D11RenderTargetView	*m_renderTargetView = nullptr;

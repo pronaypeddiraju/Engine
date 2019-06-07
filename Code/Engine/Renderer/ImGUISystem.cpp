@@ -35,7 +35,7 @@ void ImGUISystem::Render()
 	ImDrawData* data = ImGui::GetDrawData();
 
 	//Set RTV for imGUI
-	ID3D11RenderTargetView *dx_rtv = m_renderContext->GetFrameColorTarget()->m_renderTargetView;
+	ID3D11RenderTargetView *dx_rtv = m_renderContext->GetFrameColorTarget()->GetAsDXResource();
 	ID3D11DeviceContext* context = m_renderContext->GetDXContext();
 	context->OMSetRenderTargets(1, &dx_rtv, NULL);
 
@@ -56,7 +56,7 @@ void ImGUISystem::Startup()
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	ImGui_ImplWin32_Init(m_renderContext->m_hwnd);
-	ImGui_ImplDX11_Init(m_renderContext->m_D3DDevice, m_renderContext->m_D3DContext);
+	ImGui_ImplDX11_Init(m_renderContext->GetDXDevice(), m_renderContext->GetDXContext());
 	ImGui::StyleColorsDark();
 }
 

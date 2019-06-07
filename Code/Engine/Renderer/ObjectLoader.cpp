@@ -30,9 +30,6 @@ ObjectLoader* ObjectLoader::CreateMeshFromFile(RenderContext* renderContext, con
 	}
 	else
 	{
-		//bufferSize = CreateFileTextBuffer(fileName, &outData);
-		//object->CreateFromString(outData);
-
 		object->CreateFromString(fileName.c_str());
 	}
 
@@ -48,12 +45,7 @@ void ObjectLoader::LoadFromXML(const std::string& fileName)
 
 	if (meshDoc.ErrorID() != tinyxml2::XML_SUCCESS)
 	{
-		
-// 		DebuggerPrintf("\n >> Error loading XML file from %s ", fileName);
-// 		DebuggerPrintf("\n >> Error ID : %i ", meshDoc.ErrorID());
-// 		DebuggerPrintf("\n >> Error line number is : %i", meshDoc.ErrorLineNum());
-// 		DebuggerPrintf("\n >> Error name : %s", meshDoc.ErrorName());
-// 		
+	
 		ERROR_AND_DIE(">> Error loading Mesh XML file ");
 		return;
 	}
@@ -139,9 +131,6 @@ void ObjectLoader::CreateFromString(const char* data)
 			valueString += std::string(tokens[2]);
 
 			value.SetFromText(valueString.c_str());
-			DebuggerPrintf(std::to_string(value.x).c_str());
-			DebuggerPrintf(std::to_string(value.y).c_str());
-			DebuggerPrintf(std::to_string(value.z).c_str());
 
 			m_positions.push_back(value);
 		}
@@ -158,9 +147,6 @@ void ObjectLoader::CreateFromString(const char* data)
 			valueString += std::string(tokens[3]);
 
 			value.SetFromText(valueString.c_str());
-			DebuggerPrintf(std::to_string(value.x).c_str());
-			DebuggerPrintf(std::to_string(value.y).c_str());
-			DebuggerPrintf(std::to_string(value.z).c_str());
 
 			m_normals.push_back(value);
 		}
@@ -176,8 +162,6 @@ void ObjectLoader::CreateFromString(const char* data)
 
 			value.SetFromText(valueString.c_str());
 			value.y = 1 - value.y;
-			DebuggerPrintf(std::to_string(value.x).c_str());
-			DebuggerPrintf(std::to_string(value.y).c_str());
 
 			m_uvs.push_back(value);
 		}
@@ -246,104 +230,6 @@ void ObjectLoader::CreateFromString(const char* data)
 
 	}
 
-	/*
-	for (int lineIndex = 0; lineIndex < (int)lines.size(); lineIndex++)
-	{
-		//Ignore all comments
-		if (lines[lineIndex].size() == 0 || lines[lineIndex][0] == '#')
-		{
-			continue;
-		}
-		else if (lines[lineIndex][0] == 'v' && lines[lineIndex][1] == ' ')
-		{
-			//Read the vertex
-			std::vector<std::string> tokens = SplitStringOnDelimiter(lines[lineIndex], ' ');
-
-			Vec3 value;
-			std::string valueString(tokens[2]);
-			valueString += ",";
-			valueString += std::string(tokens[3]);
-			valueString += ",";
-			valueString += std::string(tokens[4]);
-
-			value.SetFromText(valueString.c_str());
-			DebuggerPrintf(std::to_string(value.x).c_str());
-			DebuggerPrintf(std::to_string(value.y).c_str());
-			DebuggerPrintf(std::to_string(value.z).c_str());
-			
-			m_positions.push_back(value);
-		}
-		else if(lines[lineIndex][0] == 'v' && lines[lineIndex][1] == 'n')
-		{
-			// read the normal
-			std::vector<std::string> tokens = SplitStringOnDelimiter(lines[lineIndex], ' ');
-
-			Vec3 value;
-			std::string valueString(tokens[1]);
-			valueString += ",";
-			valueString += std::string(tokens[2]);
-			valueString += ",";
-			valueString += std::string(tokens[3]);
-
-			value.SetFromText(valueString.c_str());
-			DebuggerPrintf(std::to_string(value.x).c_str());
-			DebuggerPrintf(std::to_string(value.y).c_str());
-			DebuggerPrintf(std::to_string(value.z).c_str());
-
-			m_normals.push_back(value);
-		}
-		else if (lines[lineIndex][0] == 'v' && lines[lineIndex][1] == 't')
-		{
-			//Read the uv
-			std::vector<std::string> tokens = SplitStringOnDelimiter(lines[lineIndex], ' ');
-
-			Vec2 value;
-			std::string valueString(tokens[1]);
-			valueString += ",";
-			valueString += std::string(tokens[2]);
-
-			value.SetFromText(valueString.c_str());
-			value.y = 1 - value.y;
-			DebuggerPrintf(std::to_string(value.x).c_str());
-			DebuggerPrintf(std::to_string(value.y).c_str());
-
-			m_uvs.push_back(value);
-		}
-		else if (lines[lineIndex][0] == 'f')
-		{
-			//Read index for the face
-			std::vector<std::string> tokens = SplitStringOnDelimiter(lines[lineIndex], ' ');
-
-			int numIndices = (int)tokens.size() - 2;
-
-			if (numIndices == 3)
-			{
-				//We have a tri so this is EZ
-				this->AddIndexForMesh(tokens[1]);
-				this->AddIndexForMesh(tokens[3]);
-				this->AddIndexForMesh(tokens[2]);
-			}
-			else if (numIndices == 4)
-			{
-				//Bruh we have quad so better plit into tris
-				this->AddIndexForMesh(tokens[1]);
-				this->AddIndexForMesh(tokens[2]);
-				this->AddIndexForMesh(tokens[3]);
-
-				this->AddIndexForMesh(tokens[1]);
-				this->AddIndexForMesh(tokens[3]);
-				this->AddIndexForMesh(tokens[4]);
-			}
-			else
-			{
-				ERROR_AND_DIE("Obj file contains an n-gon");
-			}
-
-
-		}
-	}
-	*/
-
 	CreateGPUMesh();
 
 }
@@ -360,12 +246,6 @@ void ObjectLoader::AddIndexForMesh(const std::string& indices)
 
 	m_indices.push_back(idx);
 
-	/*
-	for (int i = 0; i < 3; i++)
-	{
-		
-	}
-	*/
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
