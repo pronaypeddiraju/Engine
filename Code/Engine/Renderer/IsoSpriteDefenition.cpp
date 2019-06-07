@@ -10,14 +10,14 @@ IsoSpriteDefenition::IsoSpriteDefenition(const SpriteDefenition spriteDefenition
 {
 	m_directions.clear();
 	
-	m_directions.push_back(Vec3(0.f, 1.f, 0.f));
-	m_directions.push_back(Vec3(1.f, 1.f, 0.f).GetNormalized());
-	m_directions.push_back(Vec3(1.f, 0.f, 0.f));
-	m_directions.push_back(Vec3(1.f, -1.f, 0.f).GetNormalized());
-	m_directions.push_back(Vec3(0.f, -1.f, 0.f));
-	m_directions.push_back(Vec3(-1.f, -1.f, 0.f).GetNormalized());
+	m_directions.push_back(Vec3(0.f, 0.f, -1.f));
+	m_directions.push_back(Vec3(-1.f, 0.f, -1.f).GetNormalized());
 	m_directions.push_back(Vec3(-1.f, 0.f, 0.f));
-	m_directions.push_back(Vec3(-1.f, 1.f, 0.f).GetNormalized());
+	m_directions.push_back(Vec3(-1.f, 0.f, 1.f).GetNormalized());
+	m_directions.push_back(Vec3(0.f, 0.f, 1.f));
+	m_directions.push_back(Vec3(1.f, 0.f, 1.f).GetNormalized());
+	m_directions.push_back(Vec3(1.f, 0.f, 0.f));
+	m_directions.push_back(Vec3(1.f, 0.f, -1.f).GetNormalized());
 
 	//Populate all the spriteDefenitions into vector m_sprites
 	for (uint defIndex = 0; defIndex < 8; ++defIndex)

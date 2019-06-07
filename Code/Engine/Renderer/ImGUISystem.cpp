@@ -58,5 +58,6 @@ void ImGUISystem::Startup()
 	ImGui_ImplWin32_Init(m_renderContext->m_hwnd);
 	ImGui_ImplDX11_Init(m_renderContext->m_D3DDevice, m_renderContext->m_D3DContext);
 	ImGui::StyleColorsDark();
+	UNUSED(io);
 }
 
