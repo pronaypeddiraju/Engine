@@ -45,11 +45,18 @@ public:
 	const Vec3			TransformVector3D( const Vec3& vecQuantity ) const;				 //assumes w = 0;
 	const Vec4			TransformHomogeneousPoint3D ( const Vec4& homogeneousVec ) const; //assumes nothing; 
 
+	//Quaternions
+	const Vec4			GetQuaternion() const;
+
 	//Get axis methods
 	const Vec3			GetIVector() const;
+	const Vec4			GetIVector4() const;
 	const Vec3			GetJVector() const;
+	const Vec4			GetJVector4() const;
 	const Vec3			GetKVector() const;
+	const Vec4			GetKVector4() const;
 	const Vec3			GetTVector() const;		
+	const Vec4			GetTVector4() const;		
 
 	void				SetIVector( const Vec3& i );
 	void				SetIVector(const Vec4& i);

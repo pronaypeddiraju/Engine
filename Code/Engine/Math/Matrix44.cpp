@@ -108,9 +108,25 @@ const Vec4 Matrix44::TransformHomogeneousPoint3D( const Vec4& homogeneousVec ) c
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+const Vec4 Matrix44::GetQuaternion() const
+{
+	UNIMPLEMENTED("Need to implement Get Quaternion code");
+	return Vec4();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Matrix44::GetIVector() const
 {
 	Vec3 iVector = Vec3(m_values[Ix], m_values[Iy], m_values[Iz]);
+	iVector = iVector.GetNormalized();
+
+	return iVector;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const Vec4 Matrix44::GetIVector4() const
+{
+	Vec4 iVector = Vec4(m_values[Ix], m_values[Iy], m_values[Iz], m_values[Iw]);
 	iVector = iVector.GetNormalized();
 
 	return iVector;
@@ -126,6 +142,15 @@ const Vec3 Matrix44::GetJVector() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+const Vec4 Matrix44::GetJVector4() const
+{
+	Vec4 jVector = Vec4(m_values[Jx], m_values[Jy], m_values[Jz], m_values[Jw]);
+	jVector = jVector.GetNormalized();
+
+	return jVector;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Matrix44::GetKVector() const
 {
 	Vec3 kVector = Vec3(m_values[Kx], m_values[Ky], m_values[Kz]);
@@ -135,9 +160,26 @@ const Vec3 Matrix44::GetKVector() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+const Vec4 Matrix44::GetKVector4() const
+{
+	Vec4 kVector = Vec4(m_values[Kx], m_values[Ky], m_values[Kz], m_values[Kw]);
+	kVector = kVector.GetNormalized();
+
+	return kVector;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Matrix44::GetTVector() const
 {
 	Vec3 tVector = Vec3(m_values[Tx], m_values[Ty], m_values[Tz]);
+
+	return tVector;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const Vec4 Matrix44::GetTVector4() const
+{
+	Vec4 tVector = Vec4(m_values[Tx], m_values[Ty], m_values[Tz], m_values[Tw]);
 
 	return tVector;
 }

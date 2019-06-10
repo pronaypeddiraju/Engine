@@ -10,6 +10,28 @@ const STATIC Vec4 Vec4::ZERO(0.f, 0.f, 0.f, 0.f);
 const STATIC Vec4 Vec4::ONE(1.f, 1.f, 1.f, 1.f);
 
 //------------------------------------------------------------------------------------------------------------------------------
+float Vec4::GetLength() const
+{
+	return sqrtf(x*x + y * y + z * z + w * w);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const Vec4 Vec4::GetNormalized() const
+{
+	if (GetLength() == NULL)
+	{
+		return Vec4(0.0f, 0.0f, 0.0f, 0.f);
+	}
+
+	float xNorm = x / sqrtf(x*x + y * y + z * z + w * w);
+	float yNorm = y / sqrtf(x*x + y * y + z * z + w * w);
+	float zNorm = z / sqrtf(x*x + y * y + z * z + w * w);
+	float wNorm = w / sqrtf(x*x + y * y + z * z + w * w);
+
+	return Vec4(xNorm, yNorm, zNorm, wNorm);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 Vec4::Vec4( const Vec4& copy )
 	: x( copy.x )
 	, y( copy.y )

@@ -19,7 +19,9 @@ public:
 	const static Vec4	ONE;
 
 	//Access Methods
-	
+	float						GetLength() const;
+	const Vec4					GetNormalized() const;
+
 	//Mutator methods
 	void						SetFromText(const char* asText);
 	
