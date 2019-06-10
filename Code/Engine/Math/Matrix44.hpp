@@ -52,9 +52,13 @@ public:
 	const Vec3			GetTVector() const;		
 
 	void				SetIVector( const Vec3& i );
-	void				SetJVector( const Vec3& j );
+	void				SetIVector(const Vec4& i);
+	void				SetJVector(const Vec3& j);
+	void				SetJVector(const Vec4& j);
 	void				SetKVector( const Vec3& k );
+	void				SetKVector( const Vec4& k );
 	void				SetTVector( const Vec3& t );
+	void				SetTVector( const Vec4& t );
 
 	Matrix44			AppendMatrix( const Matrix44& matrix);
 
