@@ -242,6 +242,7 @@
     <ClCompile Include="Math\Vec4.cpp" />
     <ClCompile Include="Math\Vertex_Lit.cpp" />
     <ClCompile Include="Math\Vertex_PCU.cpp" />
+    <ClCompile Include="PhysXSystem\PhysXSystem.cpp" />
     <ClCompile Include="Renderer\BitmapFont.cpp" />
     <ClCompile Include="Renderer\BufferLayout.cpp" />
     <ClCompile Include="Renderer\Camera.cpp" />
@@ -536,6 +537,7 @@
     <ClInclude Include="Math\VertexMaster.hpp" />
     <ClInclude Include="Math\Vertex_Lit.hpp" />
     <ClInclude Include="Math\Vertex_PCU.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXSystem.hpp" />
     <ClInclude Include="Renderer\AnimTypes.hpp" />
     <ClInclude Include="Renderer\BitmapFont.hpp" />
     <ClInclude Include="Renderer\BufferLayout.hpp" />

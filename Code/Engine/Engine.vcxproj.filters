@@ -32,6 +32,9 @@
     <Filter Include="PhysX">
       <UniqueIdentifier>{d05e8324-7dd0-48d4-97eb-7fbb007ed4d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PhysXSystem">
+      <UniqueIdentifier>{6e59e153-06dc-4424-a67a-083f4bda3201}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vec2.cpp">
@@ -306,6 +309,9 @@
     </ClCompile>
     <ClCompile Include="Math\OBB2.cpp">
       <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysXSystem\PhysXSystem.cpp">
+      <Filter>PhysXSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1165,5 +1171,8 @@
     <ClInclude Include="Math\Trigger2D.hpp" />
     <ClInclude Include="Math\TriggerTouch2D.hpp" />
     <ClInclude Include="Math\TriggerBucket.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXSystem.hpp">
+      <Filter>PhysXSystem</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
