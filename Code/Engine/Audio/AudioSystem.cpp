@@ -3,6 +3,7 @@
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Commons/StringUtils.hpp"
+#include "Engine/Math/Vec3.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 // To disable audio entirely (and remove requirement for fmod.dll / fmod64.dll) for any game,
@@ -63,7 +64,7 @@ void AudioSystem::EndFrame()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-SoundID AudioSystem::CreateOrGetSound( const std::string& soundFilePath )
+VIRTUAL SoundID AudioSystem::CreateOrGetSound( const std::string& soundFilePath )
 {
 	std::map< std::string, SoundID >::iterator found = m_registeredSoundIDs.find( soundFilePath );
 	if( found != m_registeredSoundIDs.end() )
@@ -79,6 +80,30 @@ SoundID AudioSystem::CreateOrGetSound( const std::string& soundFilePath )
 			SoundID newSoundID = m_registeredSounds.size();
 			m_registeredSoundIDs[ soundFilePath ] = newSoundID;
 			m_registeredSounds.push_back( newSound );
+			return newSoundID;
+		}
+	}
+
+	return MISSING_SOUND_ID;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+VIRTUAL SoundID AudioSystem::CreateOrGetSound3D(const std::string& soundFilePath, bool isLooped, bool isStreaming)
+{
+	std::map< std::string, SoundID >::iterator found = m_registered3DSoundIDs.find(soundFilePath);
+	if (found != m_registered3DSoundIDs.end())
+	{
+		return found->second;
+	}
+	else
+	{
+		FMOD::Sound* newSound = nullptr;
+		m_fmodSystem->createSound(soundFilePath.c_str(), FMOD_3D, nullptr, &newSound);
+		if (newSound)
+		{
+			SoundID newSoundID = m_registered3DSounds.size();
+			m_registered3DSoundIDs[soundFilePath] = newSoundID;
+			m_registered3DSounds.push_back(newSound);
 			return newSoundID;
 		}
 	}
@@ -181,6 +206,33 @@ void AudioSystem::SetSoundPlaybackSpeed( SoundPlaybackID soundPlaybackID, float 
 	int ignored = 0;
 	currentSound->getDefaults( &frequency, &ignored );
 	channelAssignedToSound->setFrequency( frequency * speed );
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void AudioSystem::SetAudioListener( const Vec3& position, const Vec3& forward, const Vec3& up)
+{
+	FMOD_VECTOR fpos;
+	fpos.x = position.x;
+	fpos.y = position.y;
+	fpos.z = position.z;
+
+	FMOD_VECTOR fforward;
+	fforward.x = forward.x;
+	fforward.y = forward.y;
+	fforward.z = forward.z;
+
+	FMOD_VECTOR fup;
+	fup.x = up.x;
+	fup.y = up.y;
+	fup.z = up.z;
+
+	FMOD_VECTOR zero;
+	zero.x = 0;
+	zero.y = 0;
+	zero.z = 0;
+
+	//We are assuming we only have 1 listener for our system
+	m_fmodSystem->set3DListenerAttributes(0, &fpos, &zero, &fforward, &fup);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
