@@ -141,7 +141,7 @@ VIRTUAL SoundPlaybackID AudioSystem::PlaySound( SoundID soundID, bool isLooped, 
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-VIRTUAL SoundPlaybackID AudioSystem::Play3DSound(SoundID soundID, bool isLooped/*=false*/, float volume/*=1.f*/, float balance/*=0.0f*/, float speed/*=1.0f*/, bool isPaused/*=false */)
+VIRTUAL SoundPlaybackID AudioSystem::Play3DSound(SoundID soundID, const Vec3& position, bool isLooped/*=false*/, float volume/*=1.f*/, float balance/*=0.0f*/, float speed/*=1.0f*/, bool isPaused/*=false */)
 {
 	size_t numSounds = m_registered3DSounds.size();
 	if (soundID < 0 || soundID >= numSounds)
@@ -152,7 +152,14 @@ VIRTUAL SoundPlaybackID AudioSystem::Play3DSound(SoundID soundID, bool isLooped/
 		return MISSING_SOUND_ID;
 
 	FMOD::Channel* channelAssignedToSound = nullptr;
+
+	FMOD_VECTOR fpos;
+	fpos.x = position.x;
+	fpos.y = position.y;
+	fpos.z = position.z;
+
 	m_fmodSystem->playSound(sound, nullptr, isPaused, &channelAssignedToSound);
+	channelAssignedToSound->set3DAttributes(&fpos, nullptr);
 	if (channelAssignedToSound)
 	{
 		int loopCount = isLooped ? -1 : 0;
