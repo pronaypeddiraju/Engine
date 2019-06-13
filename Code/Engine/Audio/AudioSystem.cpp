@@ -112,7 +112,7 @@ VIRTUAL SoundID AudioSystem::CreateOrGetSound3D(const std::string& soundFilePath
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-SoundPlaybackID AudioSystem::PlaySound( SoundID soundID, bool isLooped, float volume, float balance, float speed, bool isPaused )
+VIRTUAL SoundPlaybackID AudioSystem::PlaySound( SoundID soundID, bool isLooped, float volume, float balance, float speed, bool isPaused )
 {
 	size_t numSounds = m_registeredSounds.size();
 	if( soundID < 0 || soundID >= numSounds )
@@ -138,6 +138,35 @@ SoundPlaybackID AudioSystem::PlaySound( SoundID soundID, bool isLooped, float vo
 	}
 
 	return (SoundPlaybackID) channelAssignedToSound;	
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+VIRTUAL SoundPlaybackID AudioSystem::Play3DSound(SoundID soundID, bool isLooped/*=false*/, float volume/*=1.f*/, float balance/*=0.0f*/, float speed/*=1.0f*/, bool isPaused/*=false */)
+{
+	size_t numSounds = m_registered3DSounds.size();
+	if (soundID < 0 || soundID >= numSounds)
+		return MISSING_SOUND_ID;
+
+	FMOD::Sound* sound = m_registered3DSounds[soundID];
+	if (!sound)
+		return MISSING_SOUND_ID;
+
+	FMOD::Channel* channelAssignedToSound = nullptr;
+	m_fmodSystem->playSound(sound, nullptr, isPaused, &channelAssignedToSound);
+	if (channelAssignedToSound)
+	{
+		int loopCount = isLooped ? -1 : 0;
+		unsigned int playbackMode = isLooped ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF;
+		float frequency;
+		channelAssignedToSound->setMode(playbackMode);
+		channelAssignedToSound->getFrequency(&frequency);
+		channelAssignedToSound->setFrequency(frequency * speed);
+		channelAssignedToSound->setVolume(volume);
+		channelAssignedToSound->setPan(balance);
+		channelAssignedToSound->setLoopCount(loopCount);
+	}
+
+	return (SoundPlaybackID)channelAssignedToSound;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

@@ -28,6 +28,7 @@ public:
 	virtual SoundID				CreateOrGetSound( const std::string& soundFilePath );
 	virtual SoundID				CreateOrGetSound3D(const std::string& soundFilePath, bool isLooped, bool isStreaming);
 	virtual SoundPlaybackID		PlaySound( SoundID soundID, bool isLooped=false, float volume=1.f, float balance=0.0f, float speed=1.0f, bool isPaused=false );
+	virtual SoundPlaybackID		Play3DSound( SoundID soundID, bool isLooped=false, float volume=1.f, float balance=0.0f, float speed=1.0f, bool isPaused=false );
 	virtual void				StopSound( SoundPlaybackID soundPlaybackID );
 	virtual void				SetSoundPlaybackVolume( SoundPlaybackID soundPlaybackID, float volume );	// volume is in [0,1]
 	virtual void				SetSoundPlaybackBalance( SoundPlaybackID soundPlaybackID, float balance );	// balance is in [-1,1], where 0 is L/R centered
