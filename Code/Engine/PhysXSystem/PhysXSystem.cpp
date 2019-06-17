@@ -1,5 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/PhysXSystem/PhysXSystem.hpp"
+#include "Engine/Math/Vec3.hpp"
+#include "Engine/Math/Vec4.hpp"
 #include "ThirdParty/PhysX/include/PxPhysicsAPI.h"
 
 //PhysX Pragma Comments
@@ -113,6 +115,61 @@ physx::PxScene* PhysXSystem::GetPhysXScene() const
 physx::PxPhysics* PhysXSystem::GetPhysXSDK() const
 {
 	return m_PhysX;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+physx::PxRigidDynamic* PhysXSystem::CreateDynamicObject(const PxGeometry& pxGeometry, const Vec3& velocity, const Vec3& position)
+{
+	PxPhysics* physX = g_PxPhysXSystem->GetPhysXSDK();
+	PxScene* pxScene = g_PxPhysXSystem->GetPhysXScene();
+	PxMaterial* pxMaterial = physX->createMaterial(0.5f, 0.5f, 0.6f);
+
+	PxVec3 pxVelocity = PxVec3(velocity.x, velocity.y, velocity.z);
+	PxVec3 pxPosition = PxVec3(position.x, position.y, position.z);
+
+	PxTransform pxTransform(pxPosition);
+
+	PxRigidDynamic* dynamic = PxCreateDynamic(*physX, pxTransform, pxGeometry, *pxMaterial, 10.0f);
+	dynamic->setAngularDamping(0.5f);
+	dynamic->setLinearVelocity(pxVelocity);
+	pxScene->addActor(*dynamic);
+
+	return dynamic;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+Vec3 PhysXSystem::PxVectorToVec(const PxVec3& pxVector) const
+{
+	Vec3 vector;
+	vector.x = pxVector.x;
+	vector.y = pxVector.y;
+	vector.z = pxVector.z;
+	return vector;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+Vec4 PhysXSystem::PxVectorToVec(const PxVec4& pxVector) const
+{
+	Vec4 vector;
+	vector.x = pxVector.x;
+	vector.y = pxVector.y;
+	vector.z = pxVector.z;
+	vector.w = pxVector.w;
+	return vector;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+physx::PxVec3 PhysXSystem::VecToPxVector(const Vec3& vector) const
+{
+	PxVec3 pxVector(vector.x, vector.y, vector.z);
+	return pxVector;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+physx::PxVec4 PhysXSystem::VecToPxVector(const Vec4& vector) const
+{
+	PxVec4 pxVector(vector.x, vector.y, vector.z, vector.w);
+	return pxVector;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

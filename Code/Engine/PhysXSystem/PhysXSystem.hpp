@@ -9,11 +9,12 @@
 using namespace physx;
 
 class RenderContext;
+struct Vec3;
+struct Vec4;
 
 //------------------------------------------------------------------------------------------------------------------------------
 class PhysXSystem
 {
-	//Functions
 public:
 	PhysXSystem();
 	~PhysXSystem();
@@ -27,6 +28,15 @@ public:
 
 	PxScene*			GetPhysXScene() const;
 	PxPhysics*			GetPhysXSDK() const;
+
+	//Rigibody Functions
+	PxRigidDynamic*		CreateDynamicObject(const PxGeometry& pxGeometry, const Vec3& velocity, const Vec3& position);
+
+	//Math Functions
+	Vec3				PxVectorToVec(const PxVec3& pxVector) const;
+	Vec4				PxVectorToVec(const PxVec4& pxVector) const;
+	PxVec3				VecToPxVector(const Vec3& vector) const;
+	PxVec4				VecToPxVector(const Vec4& vector) const;
 
 	void				ShutDown();
 
