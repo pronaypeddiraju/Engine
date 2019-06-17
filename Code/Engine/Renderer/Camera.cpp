@@ -301,3 +301,9 @@ const Vec3 Camera::GetCameraUp() const
 {
 	return m_cameraModel.GetJVector();
 }
+
+//------------------------------------------------------------------------------------------------------------------------------
+const Vec3 Camera::GetCameraForward() const
+{
+	return m_cameraModel.GetKVector();
+}
