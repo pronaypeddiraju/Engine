@@ -101,16 +101,6 @@ void GPUMesh::CreateFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem )
 
 	layout->m_copyFromMaster(vertices.data(), mesh->GetVertices(), vcount);
 
-	/*
-	for ( uint vIdx = 0; vIdx < vcount; ++vIdx ) 
-	{
-		VertexType vert(mesh->m_vertices[vIdx]); 
-
-		
-		vertices.push_back(vert); 
-	}
-	*/
-
 	m_vertexBuffer->CreateStaticForBuffer(vertices.data(), layout->m_stride, vcount);
 	m_indexBuffer->CreateStaticFor( mesh->GetIndices(), mesh->GetIndexCount() ); 
 
