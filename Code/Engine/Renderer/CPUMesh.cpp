@@ -151,8 +151,8 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
 	out->AddVertex( box.m_backBottomRight ); 
 
-	out->AddIndexedTriangle( 4, 6, 5 ); 
-	out->AddIndexedTriangle( 6, 7, 5 ); 
+	out->AddIndexedTriangle( 4, 5, 6 ); 
+	out->AddIndexedTriangle( 6, 5, 7 ); 
 
 	//Add top face
 	// 8 --- 9
@@ -165,9 +165,9 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	out->SetBiTangent( Vec3::FRONT );
 
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
-	out->AddVertex( box.m_backTopRight); 
+	out->AddVertex( box.m_backTopLeft);
 	out->SetUV( Vec2(1.0f, 0.0f) ); 
-	out->AddVertex( box.m_backTopLeft ); 
+	out->AddVertex( box.m_backTopRight ); 
 	out->SetUV( Vec2(0.0f, 1.0f) ); 
 	out->AddVertex( box.m_frontTopLeft ); 
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
@@ -191,9 +191,9 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	out->SetUV( Vec2(1.0f, 0.0f) ); 
 	out->AddVertex( box.m_frontBottomRight ); 
 	out->SetUV( Vec2(0.0f, 1.0f) ); 
-	out->AddVertex( box.m_backBottomRight ); 
+	out->AddVertex( box.m_backBottomLeft);
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
-	out->AddVertex( box.m_backBottomLeft ); 
+	out->AddVertex( box.m_backBottomRight);
 
 	out->AddIndexedTriangle( 12, 14, 13 ); 
 	out->AddIndexedTriangle( 14, 15, 13 );
@@ -209,11 +209,11 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	out->SetBiTangent( Vec3::UP );
 
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
-	out->AddVertex( box.m_backTopRight); 
+	out->AddVertex( box.m_backTopLeft); 
 	out->SetUV( Vec2(1.0f, 0.0f) ); 
 	out->AddVertex( box.m_frontTopLeft); 
 	out->SetUV( Vec2(0.0f, 1.0f) ); 
-	out->AddVertex( box.m_backBottomRight ); 
+	out->AddVertex( box.m_backBottomLeft ); 
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
 	out->AddVertex( box.m_frontBottomLeft ); 
 
@@ -233,11 +233,11 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	out->SetUV( Vec2(0.0f, 0.0f) ); 
 	out->AddVertex( box.m_frontTopRight); 
 	out->SetUV( Vec2(1.0f, 0.0f) ); 
-	out->AddVertex( box.m_backTopLeft); 
+	out->AddVertex( box.m_backTopRight); 
 	out->SetUV( Vec2(0.0f, 1.0f) ); 
 	out->AddVertex( box.m_frontBottomRight ); 
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
-	out->AddVertex( box.m_backBottomLeft ); 
+	out->AddVertex( box.m_backBottomRight ); 
 
 	out->AddIndexedTriangle( 20, 22, 21 ); 
 	out->AddIndexedTriangle( 22, 23, 21 );

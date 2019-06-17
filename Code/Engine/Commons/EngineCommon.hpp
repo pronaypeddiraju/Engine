@@ -65,16 +65,18 @@ class NamedProperties;
 class PhysicsSystem;
 class RenderContext;
 class WindowContext;
+class PhysXSystem;
 
 //------------------------------------------------------------------------------------------------------------------------------
 extern DebugRender*	g_debugRenderer;
 extern DevConsole* g_devConsole;
 extern EventSystems* g_eventSystem;
 extern ImGUISystem* g_ImGUI;
-extern NamedStrings g_gameConfigBlackboard; // declared in EngineCommon.hpp, defined in EngineCommon.cpp
+extern NamedStrings g_gameConfigBlackboard; 
 extern PhysicsSystem* g_physicsSystem;
 extern RenderContext* g_renderContext;
 extern WindowContext* g_windowContext;
+extern PhysXSystem* g_PxPhysXSystem;
 
 typedef NamedProperties EventArgs;
 

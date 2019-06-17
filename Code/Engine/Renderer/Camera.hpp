@@ -59,6 +59,7 @@ public:
 	//Camera Directions
 	const Vec3				GetCameraRight() const;
 	const Vec3				GetCameraUp() const;
+	const Vec3				GetCameraForward() const;
 
 public:
 	//Variables
