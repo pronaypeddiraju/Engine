@@ -1357,8 +1357,9 @@ GPUMesh* RenderContext::CreateOrGetMeshFromFile(const std::string& fileName)
 			model->m_mesh->m_defaultMaterial = filePath;
 		}
 
-		m_modelDatabase[fileName] = model->m_mesh;
-		return m_modelDatabase[fileName];
+		filePath = MODEL_PATH + fileName;
+		m_modelDatabase[filePath] = model->m_mesh;
+		return m_modelDatabase[filePath];
 	}
 }
 
