@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 typedef size_t SoundID;
 typedef size_t SoundPlaybackID;
+typedef size_t ChannelGroupID;
 constexpr size_t MISSING_SOUND_ID = (size_t)(-1); // for bad SoundIDs and SoundPlaybackIDs
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -26,9 +27,10 @@ public:
 	virtual void				EndFrame();
 
 	virtual SoundID				CreateOrGetSound( const std::string& soundFilePath );
-	virtual SoundID				CreateOrGetSound3D(const std::string& soundFilePath, bool isLooped, bool isStreaming);
-	virtual SoundPlaybackID		PlaySound( SoundID soundID, bool isLooped=false, float volume=1.f, float balance=0.0f, float speed=1.0f, bool isPaused=false );
-	virtual SoundPlaybackID		Play3DSound( SoundID soundID, const Vec3& position, bool isLooped=false, float volume=1.f, float balance=0.0f, float speed=1.0f, bool isPaused=false );
+	virtual SoundID				CreateOrGetSound3D(const std::string& soundFilePath);
+	virtual ChannelGroupID		CreateOrGetChannelGroup(const std::string& channelName);
+	virtual SoundPlaybackID		PlaySound(SoundID soundID, bool isLooped = false, float volume = 1.f, float balance = 0.0f, float speed = 1.0f, bool isPaused = false);
+	virtual SoundPlaybackID		Play3DSound( SoundID soundID, const Vec3& position, ChannelGroupID channelID, bool isLooped=false, float volume=1.f, float balance=0.0f, float speed=1.0f, bool isPaused=false );
 	virtual void				StopSound( SoundPlaybackID soundPlaybackID );
 	virtual void				SetSoundPlaybackVolume( SoundPlaybackID soundPlaybackID, float volume );	// volume is in [0,1]
 	virtual void				SetSoundPlaybackBalance( SoundPlaybackID soundPlaybackID, float balance );	// balance is in [-1,1], where 0 is L/R centered
@@ -47,4 +49,8 @@ protected:
 	//3D audio
 	std::map< std::string, SoundID >	m_registered3DSoundIDs;
 	std::vector< FMOD::Sound* >			m_registered3DSounds;
+	//Channel Groups (Mixers)
+	std::map< std::string, ChannelGroupID >		m_registeredChannelIDs;
+	std::vector< FMOD::ChannelGroup* >			m_registeredChannels;
+
 };

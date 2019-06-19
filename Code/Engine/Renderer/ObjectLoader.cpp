@@ -22,6 +22,8 @@ ObjectLoader* ObjectLoader::CreateMeshFromFile(RenderContext* renderContext, con
 	ObjectLoader* object = new ObjectLoader();
 	object->m_renderContext = renderContext;
 
+	DebuggerPrintf("Loading: %s\n", fileName.c_str());
+
 	//Open file and see what it says
 	if (isDataDriven)
 	{
@@ -91,17 +93,8 @@ void ObjectLoader::CreateFromString(const char* data)
 {
 	std::ifstream fileStream;
 	fileStream.open(data, std::ios::beg);
-	//unsigned long fileSize = (unsigned long)fileStream.tellg();
-	//Get the cursor back to the start of the file so we read the whole thing as opposed to reading nothing lol
-	//fileStream.seekg(std::ios::beg);
-
-	//char* outData = new char[fileSize];
-	//fileStream.read(outData, fileSize);
 
 	std::string lineString;
-	
-	
-	//std::vector<std::string> lines = SplitStringOnDelimiter(std::string(data), '\n');
 	
 	while (std::getline(fileStream, lineString))
 	{
