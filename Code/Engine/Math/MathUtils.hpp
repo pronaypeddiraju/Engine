@@ -70,6 +70,7 @@ Vec3			TransformPosition3D( const Vec3& position, float uniformScale, float rota
 
 void			PushDiscsIfOverlapping(Vec2 &discAPos, float discAradius, Vec2 &discBPos, float discBradius );
 void			PushDiscsApart(Vec2& positionA, float radiusA, Vec2& positionB, float radiusB);
+void			PushDiscOutOfDisc(Vec2& positionA, float radiusA, Vec2& positionB, float radiusB);
 void			PushDiscOutOfAABB2(Vec2& position, float radius, const AABB2& tileBounds );
 void			PushDiscOutOfPoint(Vec2& discPosition, float radius, const Vec2& pushOutOfPoint);
 
