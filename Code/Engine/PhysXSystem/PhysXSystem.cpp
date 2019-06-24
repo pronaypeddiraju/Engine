@@ -158,7 +158,7 @@ physx::PxRigidDynamic* PhysXSystem::CreateDynamicObject(const PxGeometry& pxGeom
 	pxTransform.q = PxQuat(x, y, z, w);
 
 	PxRigidDynamic* dynamic = PxCreateDynamic(*physX, pxTransform, pxGeometry, *pxMaterial, 10.0f);
-   	dynamic->setAngularDamping(0.5f);
+    dynamic->setAngularDamping(0.5f);
 	dynamic->setLinearVelocity(pxVelocity);
 	pxScene->addActor(*dynamic);
 

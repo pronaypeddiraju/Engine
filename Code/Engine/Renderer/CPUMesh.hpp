@@ -57,7 +57,7 @@ public:
 	// adds two triangles (bl, tr, tl) and (bl, br, tr)
 	void						AddIndexedQuad( uint topLeft, uint topRight, uint bottomLeft, uint bottomRight );    
 	
-
+	void						TransformVerticesInRange(int startIndex, int endIndex, const Matrix44& transform);
 
 	// Helpers
 	uint		GetVertexCount() const;                 

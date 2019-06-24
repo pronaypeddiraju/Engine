@@ -244,7 +244,8 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color)
 //------------------------------------------------------------------------------------------------------------------------------
 void CPUMeshAddUVSphere( CPUMesh *out, const Vec3& center, float radius, const Rgba& color, uint wedges /*= 32*/, uint slices /*= 16 */ )
 {
-	out->Clear();
+	int lastIndex = out->GetVertexCount();
+
 	out->SetStampColor( color ); 
 
 	int ustep = wedges + 1;
@@ -290,7 +291,7 @@ void CPUMeshAddUVSphere( CPUMesh *out, const Vec3& center, float radius, const R
 			uint TR = TL + 1;
 			uint BL = TL + ustep;
 			uint BR = BL + 1;
-			out->AddIndexedQuad(TL, TR, BL, BR);
+			out->AddIndexedQuad(TL + lastIndex, TR + lastIndex, BL + lastIndex, BR + lastIndex);
 		}
 	}
 }
@@ -510,4 +511,13 @@ void CPUMesh::AddIndex( uint index )
 uint* CPUMesh::GetIndicesEditable()
 {
 	return &m_indices[0];
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void CPUMesh::TransformVerticesInRange(int startIndex, int endIndex, const Matrix44& transform)
+{
+	for (int index = startIndex; index < endIndex; index++)
+	{
+		m_vertices[index].m_position = transform.TransformPosition3D(m_vertices[index].m_position);
+	}
 }
