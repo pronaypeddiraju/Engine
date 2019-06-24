@@ -28,14 +28,10 @@ public:
 
 	virtual SoundID				CreateOrGetSound( const std::string& soundFilePath );
 	virtual SoundID				CreateOrGetSound3D(const std::string& soundFilePath);
-<<<<<<< HEAD
 	virtual SoundPlaybackID		PlaySound( SoundID soundID, bool isLooped=false, float volume=1.f, float balance=0.0f, float speed=1.0f, bool isPaused=false );
-	virtual SoundPlaybackID		Play3DSound( SoundID soundID, const Vec3& position, bool isLooped=false, float volume=1.f, float balance=0.0f, float speed=1.0f, bool isPaused=false );
-=======
 	virtual ChannelGroupID		CreateOrGetChannelGroup(const std::string& channelName);
-	virtual SoundPlaybackID		PlaySound(SoundID soundID, bool isLooped = false, float volume = 1.f, float balance = 0.0f, float speed = 1.0f, bool isPaused = false);
 	virtual SoundPlaybackID		Play3DSound( SoundID soundID, const Vec3& position, ChannelGroupID channelID, bool isLooped=false, float volume=1.f, float balance=0.0f, float speed=1.0f, bool isPaused=false );
->>>>>>> 8111e725a052de0af141f8defa493fc88dc28934
+
 	virtual void				StopSound( SoundPlaybackID soundPlaybackID );
 	virtual void				SetSoundPlaybackVolume( SoundPlaybackID soundPlaybackID, float volume );	// volume is in [0,1]
 	virtual void				SetSoundPlaybackBalance( SoundPlaybackID soundPlaybackID, float balance );	// balance is in [-1,1], where 0 is L/R centered
