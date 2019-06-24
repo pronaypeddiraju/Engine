@@ -112,6 +112,40 @@ VIRTUAL SoundID AudioSystem::CreateOrGetSound3D(const std::string& soundFilePath
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+VIRTUAL ChannelGroupID AudioSystem::CreateOrGetChannelGroup(const std::string& channelName)
+{
+	std::map<std::string, ChannelGroupID>::iterator itr;
+	itr = m_registeredChannelIDs.find(channelName);
+
+	if (itr != m_registeredChannelIDs.end())
+	{
+		return itr->second;
+	}
+	else
+	{
+		//Channel needs to be created
+		FMOD::ChannelGroup* newChannelGroup = nullptr;
+		m_fmodSystem->createChannelGroup(channelName.c_str(), &newChannelGroup);
+		if (newChannelGroup)
+		{
+			FMOD::ChannelGroup* master = nullptr;
+			m_fmodSystem->getMasterChannelGroup(&master);
+			master->addGroup(newChannelGroup);
+
+			ChannelGroupID channelID = m_registeredChannelIDs.size();
+			m_registeredChannelIDs[channelName] = channelID;
+			m_registeredChannels.push_back(newChannelGroup);
+			return channelID;
+		}
+		else
+		{
+			ASSERT("Channel group not created in FMOD");
+			return (ChannelGroupID)-1;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 VIRTUAL SoundPlaybackID AudioSystem::PlaySound( SoundID soundID, bool isLooped, float volume, float balance, float speed, bool isPaused )
 {
 	size_t numSounds = m_registeredSounds.size();
@@ -141,7 +175,7 @@ VIRTUAL SoundPlaybackID AudioSystem::PlaySound( SoundID soundID, bool isLooped, 
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-VIRTUAL SoundPlaybackID AudioSystem::Play3DSound(SoundID soundID, const Vec3& position, bool isLooped/*=false*/, float volume/*=1.f*/, float balance/*=0.0f*/, float speed/*=1.0f*/, bool isPaused/*=false */)
+VIRTUAL SoundPlaybackID AudioSystem::Play3DSound(SoundID soundID, const Vec3& position, ChannelGroupID channelID, bool isLooped/*=false*/, float volume/*=1.f*/, float balance/*=0.0f*/, float speed/*=1.0f*/, bool isPaused/*=false */)
 {
 	size_t numSounds = m_registered3DSounds.size();
 	if (soundID < 0 || soundID >= numSounds)
@@ -158,7 +192,9 @@ VIRTUAL SoundPlaybackID AudioSystem::Play3DSound(SoundID soundID, const Vec3& po
 	fpos.y = position.y;
 	fpos.z = position.z;
 
-	m_fmodSystem->playSound(sound, nullptr, isPaused, &channelAssignedToSound);
+	FMOD::ChannelGroup* channelGroup = m_registeredChannels[channelID];
+
+	m_fmodSystem->playSound(sound, channelGroup, isPaused, &channelAssignedToSound);
 	channelAssignedToSound->set3DAttributes(&fpos, nullptr);
 	if (channelAssignedToSound)
 	{

@@ -207,6 +207,26 @@ void PushDiscsApart(Vec2& positionA, float radiusA, Vec2& positionB, float radiu
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+// Logic to push one disc out of the other (Keep other disc at same position)
+//------------------------------------------------------------------------------------------------------------------------------
+void PushDiscOutOfDisc(Vec2& positionA, float radiusA, Vec2& positionB, float radiusB)
+{
+	//Push disc 1 out of disc 2
+	Vec2 distVecBetweenPoints = positionA - positionB;
+	float distBetweenPoints = distVecBetweenPoints.GetLength();
+
+	//Get the normal to push out to
+	Vec2 normalForDiscA = distVecBetweenPoints.GetNormalized();
+	Vec2 normalForDiscB = normalForDiscA * -1.f;
+
+	//Set the normal Vectors to the length we want to push by
+	float distToPush = radiusA + radiusB - distBetweenPoints;
+	normalForDiscA.SetLength(distToPush);
+
+	positionA += normalForDiscA;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 // Is point witing a sector
 //------------------------------------------------------------------------------------------------------------------------------
 bool IsPointInSector2D( const Vec2& point, const Vec2& origin, float orientationDegrees, float maxDistance, float apertureDegrees )
