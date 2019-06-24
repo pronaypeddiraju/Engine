@@ -12,6 +12,7 @@ using namespace physx;
 class RenderContext;
 struct Vec3;
 struct Vec4;
+struct Matrix44;
 
 //------------------------------------------------------------------------------------------------------------------------------
 class PhysXSystem
@@ -33,7 +34,7 @@ public:
 	PxFoundation*		GetPhysXFoundationModule();
 
 	//Rigibody Functions
-	PxRigidDynamic*		CreateDynamicObject(const PxGeometry& pxGeometry, const Vec3& velocity, const Vec3& position);
+	PxRigidDynamic*		CreateDynamicObject(const PxGeometry& pxGeometry, const Vec3& velocity, const Matrix44& matrix);
 
 	//Convex Hull
 	PxConvexMeshCookingType::Enum	GetPxConvexMeshCookingType(PhysXConvexMeshCookingTypesT meshType);

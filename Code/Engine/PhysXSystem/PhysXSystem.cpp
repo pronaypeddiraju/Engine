@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/PhysXSystem/PhysXSystem.hpp"
 #include "Engine/Commons/ErrorWarningAssert.hpp"
+#include "Engine/Math/Matrix44.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Vec4.hpp"
 #include "ThirdParty/PhysX/include/PxPhysicsAPI.h"
@@ -134,19 +135,29 @@ physx::PxFoundation* PhysXSystem::GetPhysXFoundationModule()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-physx::PxRigidDynamic* PhysXSystem::CreateDynamicObject(const PxGeometry& pxGeometry, const Vec3& velocity, const Vec3& position)
+physx::PxRigidDynamic* PhysXSystem::CreateDynamicObject(const PxGeometry& pxGeometry, const Vec3& velocity, const Matrix44& matrix)
 {
 	PxPhysics* physX = g_PxPhysXSystem->GetPhysXSDK();
 	PxScene* pxScene = g_PxPhysXSystem->GetPhysXScene();
 	PxMaterial* pxMaterial = physX->createMaterial(0.5f, 0.5f, 0.6f);
 
 	PxVec3 pxVelocity = PxVec3(velocity.x, velocity.y, velocity.z);
-	PxVec3 pxPosition = PxVec3(position.x, position.y, position.z);
+	Vec3 position = matrix.GetTVector();
+	PxVec3 pxPosition = VecToPxVector(position);
 
 	PxTransform pxTransform(pxPosition);
 
+	//Quaternion
+	float w = sqrt(1.0f + matrix.m_values[Matrix44::Ix] + matrix.m_values[Matrix44::Jy] + matrix.m_values[Matrix44::Kz]) / 2.0f;
+	float w4 = (4.0f * w);
+	float x = (matrix.m_values[Matrix44::Ky] - matrix.m_values[Matrix44::Jz]) / w4;
+	float y = (matrix.m_values[Matrix44::Iz] - matrix.m_values[Matrix44::Kx]) / w4;
+	float z = (matrix.m_values[Matrix44::Jx] - matrix.m_values[Matrix44::Iy]) / w4;
+
+	pxTransform.q = PxQuat(x, y, z, w);
+
 	PxRigidDynamic* dynamic = PxCreateDynamic(*physX, pxTransform, pxGeometry, *pxMaterial, 10.0f);
-	dynamic->setAngularDamping(0.5f);
+   	dynamic->setAngularDamping(0.5f);
 	dynamic->setLinearVelocity(pxVelocity);
 	pxScene->addActor(*dynamic);
 
