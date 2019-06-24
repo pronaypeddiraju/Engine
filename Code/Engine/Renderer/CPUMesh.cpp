@@ -101,15 +101,10 @@ void CPUMeshAddBoxFace(CPUMesh *out, const AABB2& quad)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool clearMesh, int meshLastIndex )
+void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color)
 {
-	if(clearMesh)
-	{
-		out->Clear();
-	}
-
 	//we want to set meshLastIndex to whatever number we recieved * number of indices
-	meshLastIndex *= 24;
+	int meshLastIndex = out->GetVertexCount();
 
 	out->SetStampColor( color ); 
 	out->SetNormal( Vec3::BACK );
@@ -298,7 +293,6 @@ void CPUMeshAddUVSphere( CPUMesh *out, const Vec3& center, float radius, const R
 			out->AddIndexedQuad(TL, TR, BL, BR);
 		}
 	}
-
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
