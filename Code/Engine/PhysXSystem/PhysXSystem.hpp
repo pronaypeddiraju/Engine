@@ -48,6 +48,8 @@ public:
 	PxVec3				VecToPxVector(const Vec3& vector) const;
 	PxVec4				VecToPxVector(const Vec4& vector) const;
 
+	Vec3				QuaternionToEulerAngles(const PxQuat& quat, Vec3& eulerAngles);
+
 	void				ShutDown();
 
 private:

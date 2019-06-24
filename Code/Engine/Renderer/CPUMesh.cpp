@@ -101,12 +101,15 @@ void CPUMeshAddBoxFace(CPUMesh *out, const AABB2& quad)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool clearMesh )
+void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool clearMesh, int meshLastIndex )
 {
 	if(clearMesh)
 	{
 		out->Clear();
 	}
+
+	//we want to set meshLastIndex to whatever number we recieved * number of indices
+	meshLastIndex *= 24;
 
 	out->SetStampColor( color ); 
 	out->SetNormal( Vec3::BACK );
@@ -129,8 +132,8 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
 	out->AddVertex( box.m_frontBottomRight ); 
 
-	out->AddIndexedTriangle( 0, 2, 1 ); 
-	out->AddIndexedTriangle( 2, 3, 1 ); 
+	out->AddIndexedTriangle( meshLastIndex + 0, meshLastIndex + 2, meshLastIndex + 1 );
+	out->AddIndexedTriangle( meshLastIndex + 2, meshLastIndex + 3, meshLastIndex + 1 );
 
 	//Add back face
 	// 4 --- 5
@@ -151,8 +154,8 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
 	out->AddVertex( box.m_backBottomRight ); 
 
-	out->AddIndexedTriangle( 4, 5, 6 ); 
-	out->AddIndexedTriangle( 6, 5, 7 ); 
+	out->AddIndexedTriangle( meshLastIndex + 4, meshLastIndex + 5, meshLastIndex + 6 );
+	out->AddIndexedTriangle( meshLastIndex + 6, meshLastIndex + 5, meshLastIndex + 7 );
 
 	//Add top face
 	// 8 --- 9
@@ -173,8 +176,8 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
 	out->AddVertex( box.m_frontTopRight ); 
 
-	out->AddIndexedTriangle( 8, 10, 9 ); 
-	out->AddIndexedTriangle( 10, 11, 9 );
+	out->AddIndexedTriangle( meshLastIndex + 8, meshLastIndex + 10, meshLastIndex + 9 );
+	out->AddIndexedTriangle( meshLastIndex + 10, meshLastIndex + 11, meshLastIndex + 9 );
 
 	//Add bottom face
 	// 12 --- 13
@@ -195,8 +198,8 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
 	out->AddVertex( box.m_backBottomRight);
 
-	out->AddIndexedTriangle( 12, 14, 13 ); 
-	out->AddIndexedTriangle( 14, 15, 13 );
+	out->AddIndexedTriangle( meshLastIndex + 12, meshLastIndex + 14, meshLastIndex + 13 );
+	out->AddIndexedTriangle( meshLastIndex + 14, meshLastIndex + 15, meshLastIndex + 13 );
 
 	//Add left face
 	// 16 --- 17
@@ -217,8 +220,8 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
 	out->AddVertex( box.m_frontBottomLeft ); 
 
-	out->AddIndexedTriangle( 16, 18, 17 ); 
-	out->AddIndexedTriangle( 18, 19, 17 );
+	out->AddIndexedTriangle( meshLastIndex + 16, meshLastIndex + 18, meshLastIndex + 17 );
+	out->AddIndexedTriangle( meshLastIndex + 18, meshLastIndex + 19, meshLastIndex + 17 );
 
 	//Add right face
 	// 20 --- 21
@@ -239,8 +242,8 @@ void CPUMeshAddCube( CPUMesh *out, const AABB3& box, const Rgba& color, bool cle
 	out->SetUV( Vec2(1.0f, 1.0f) ); 
 	out->AddVertex( box.m_backBottomRight ); 
 
-	out->AddIndexedTriangle( 20, 22, 21 ); 
-	out->AddIndexedTriangle( 22, 23, 21 );
+	out->AddIndexedTriangle( meshLastIndex + 20, meshLastIndex + 22, meshLastIndex + 21 );
+	out->AddIndexedTriangle( meshLastIndex + 22, meshLastIndex + 23, meshLastIndex + 21 );
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 #include "Engine/PhysXSystem/PhysXSystem.hpp"
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Math/Matrix44.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Vec4.hpp"
 #include "ThirdParty/PhysX/include/PxPhysicsAPI.h"
@@ -221,6 +222,27 @@ physx::PxVec4 PhysXSystem::VecToPxVector(const Vec4& vector) const
 {
 	PxVec4 pxVector(vector.x, vector.y, vector.z, vector.w);
 	return pxVector;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+Vec3 PhysXSystem::QuaternionToEulerAngles(const PxQuat& quat, Vec3& eulerAngles)
+{
+	// roll (x-axis rotation)
+	float sinr_cosp = 2.0f * (quat.w * quat.x + quat.y * quat.z);
+	float cosr_cosp = 1.0f - 2.0f * (quat.x * quat.x + quat.y * quat.y);
+	eulerAngles.x = atan2f(sinr_cosp, cosr_cosp);
+
+	// pitch (y-axis rotation)
+	float sinp = +2.0 * (quat.w * quat.y - quat.z * quat.x);
+	if (fabs(sinp) >= 1)
+		eulerAngles.y = copysign(PI / 2, sinp); // use 90 degrees if out of range
+	else
+		eulerAngles.y = asin(sinp);
+
+	// yaw (z-axis rotation)
+	float siny_cosp = 2.0f * (quat.w * quat.z + quat.x * quat.y);
+	float cosy_cosp = 1.0f - 2.0f * (quat.y * quat.y + quat.z * quat.z);
+	eulerAngles.z = atan2(siny_cosp, cosy_cosp);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

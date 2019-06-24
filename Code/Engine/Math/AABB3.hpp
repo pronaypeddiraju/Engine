@@ -4,6 +4,8 @@
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/AABB2.hpp"
 
+struct Matrix44;
+
 //------------------------------------------------------------------------------------------------------------------------------
 struct AABB3
 {
@@ -15,6 +17,9 @@ public:
 	const static AABB3 UNIT_CUBE;
 
 	void		GetCornersForAABB3(Vec3* corners);
+
+	void		TranslatePointsBy(const Vec3& translation);
+	void		TransfromUsingMatrix(const Matrix44& translation);
 
 public:
 	//Front face

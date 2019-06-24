@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/Matrix44.hpp"
 #include "Engine/Commons/EngineCommon.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -58,4 +59,32 @@ void AABB3::GetCornersForAABB3(Vec3* corners)
 	corners[5] = m_backTopLeft;
 	corners[6] = m_backTopRight;
 	corners[7] = m_backBottomRight;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void AABB3::TranslatePointsBy(const Vec3& translation)
+{
+	m_frontBottomLeft += translation;
+	m_frontTopLeft += translation;
+	m_frontTopRight += translation;
+	m_frontBottomRight += translation;
+
+	m_backBottomLeft += translation;
+	m_backBottomRight += translation;
+	m_backTopLeft += translation;
+	m_backTopRight += translation;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void AABB3::TransfromUsingMatrix(const Matrix44& translation)
+{
+	m_frontBottomLeft = translation.TransformPosition3D(m_frontBottomLeft);
+	m_frontTopLeft = translation.TransformPosition3D(m_frontTopLeft);
+	m_frontTopRight = translation.TransformPosition3D(m_frontTopRight);
+	m_frontBottomRight = translation.TransformPosition3D(m_frontBottomRight);
+
+	m_backBottomLeft = translation.TransformPosition3D(m_backBottomLeft);
+	m_backBottomRight = translation.TransformPosition3D(m_backBottomRight);
+	m_backTopLeft = translation.TransformPosition3D(m_backTopLeft);
+	m_backTopRight = translation.TransformPosition3D(m_backTopRight);
 }
