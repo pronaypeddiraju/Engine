@@ -11,6 +11,7 @@ class OBB2;
 struct AABB2;
 struct Rgba;
 struct Vertex_PCU;
+struct Vertex_Lit;
 
 //------------------------------------------------------------------------------------------------------------------------------
 //Vertex Utils
@@ -25,6 +26,8 @@ void			AddVertsForWireCapsule2D( std::vector<Vertex_PCU>& vertexArray, const OBB
 
 void			AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba& color, float thickness);
 void			AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const OBB2& box, const Rgba& color, float thickness);
+
+//void			AddVertsForConvexHull(std::vector<Vertex_Lit>& vertexArray);
 
 //Transform Utils
 void			TransformVertex2D( Vertex_PCU& vertex, float uniformScale, float rotationDegreesOnZ, const Vec2& translateXY);

@@ -3,6 +3,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include "ThirdParty/PhysX/include/PxPhysicsAPI.h"
+#include "Engine/PhysXSystem/PhysXTypes.hpp"
 
 #define PX_RELEASE(x)	if(x)	{ x->release(); x = NULL;	}
 
@@ -28,9 +29,17 @@ public:
 
 	PxScene*			GetPhysXScene() const;
 	PxPhysics*			GetPhysXSDK() const;
+	PxCooking*			GetPhysXCookingModule();
+	PxFoundation*		GetPhysXFoundationModule();
 
 	//Rigibody Functions
 	PxRigidDynamic*		CreateDynamicObject(const PxGeometry& pxGeometry, const Vec3& velocity, const Vec3& position);
+
+	//Convex Hull
+	PxConvexMeshCookingType::Enum	GetPxConvexMeshCookingType(PhysXConvexMeshCookingTypesT meshType);
+
+	//PhysX Materials
+	PxMaterial*			GetDefaultPxMaterial() const;
 
 	//Math Functions
 	Vec3				PxVectorToVec(const PxVec3& pxVector) const;
@@ -49,6 +58,7 @@ private:
 	PxDefaultErrorCallback				m_PXErrorCallback;
 
 	PxFoundation*						m_PxFoundation = NULL;
+	PxCooking*							m_PxCooking = NULL;
 	PxPhysics*							m_PhysX = NULL;
 
 	PxDefaultCpuDispatcher*				m_PxDispatcher = NULL;

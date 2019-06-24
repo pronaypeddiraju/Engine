@@ -88,7 +88,7 @@ VIRTUAL SoundID AudioSystem::CreateOrGetSound( const std::string& soundFilePath 
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-VIRTUAL SoundID AudioSystem::CreateOrGetSound3D(const std::string& soundFilePath, bool isLooped, bool isStreaming)
+VIRTUAL SoundID AudioSystem::CreateOrGetSound3D(const std::string& soundFilePath)
 {
 	std::map< std::string, SoundID >::iterator found = m_registered3DSoundIDs.find(soundFilePath);
 	if (found != m_registered3DSoundIDs.end())

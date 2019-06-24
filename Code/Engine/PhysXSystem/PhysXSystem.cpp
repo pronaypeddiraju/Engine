@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/PhysXSystem/PhysXSystem.hpp"
+#include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Vec4.hpp"
 #include "ThirdParty/PhysX/include/PxPhysicsAPI.h"
@@ -54,6 +55,9 @@ void PhysXSystem::StartUp()
 {
 	//PhysX starts off by setting up a Physics Foundation
 	m_PxFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_PxAllocator, m_PXErrorCallback);
+
+	//Setup PhysX cooking if you need convex hull cooking support
+	m_PxCooking = PxCreateCooking(PX_PHYSICS_VERSION, *m_PxFoundation, PxCookingParams(PxTolerancesScale()));
 
 	//Create the PhysX Visual Debugger by giving it the current foundation
 	m_Pvd = PxCreatePvd(*m_PxFoundation);
@@ -118,6 +122,18 @@ physx::PxPhysics* PhysXSystem::GetPhysXSDK() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+physx::PxCooking* PhysXSystem::GetPhysXCookingModule()
+{
+	return m_PxCooking;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+physx::PxFoundation* PhysXSystem::GetPhysXFoundationModule()
+{
+	return m_PxFoundation; 
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 physx::PxRigidDynamic* PhysXSystem::CreateDynamicObject(const PxGeometry& pxGeometry, const Vec3& velocity, const Vec3& position)
 {
 	PxPhysics* physX = g_PxPhysXSystem->GetPhysXSDK();
@@ -135,6 +151,30 @@ physx::PxRigidDynamic* PhysXSystem::CreateDynamicObject(const PxGeometry& pxGeom
 	pxScene->addActor(*dynamic);
 
 	return dynamic;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+physx::PxConvexMeshCookingType::Enum PhysXSystem::GetPxConvexMeshCookingType(PhysXConvexMeshCookingTypesT meshType)
+{
+	switch (meshType)
+	{
+	case QUICKHULL:
+	{
+		return PxConvexMeshCookingType::eQUICKHULL;
+	}
+		break;
+	default:
+	{
+		ERROR_AND_DIE("Mesh Type is not supported by PhysX");
+	}
+		break;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+physx::PxMaterial* PhysXSystem::GetDefaultPxMaterial() const
+{
+	return m_PxMaterial;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

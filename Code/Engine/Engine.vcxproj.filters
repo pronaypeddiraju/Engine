@@ -1174,5 +1174,8 @@
     <ClInclude Include="PhysXSystem\PhysXSystem.hpp">
       <Filter>PhysXSystem</Filter>
     </ClInclude>
+    <ClInclude Include="PhysXSystem\PhysXTypes.hpp">
+      <Filter>PhysXSystem</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

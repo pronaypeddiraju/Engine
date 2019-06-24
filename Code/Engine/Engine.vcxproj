@@ -538,6 +538,7 @@
     <ClInclude Include="Math\Vertex_Lit.hpp" />
     <ClInclude Include="Math\Vertex_PCU.hpp" />
     <ClInclude Include="PhysXSystem\PhysXSystem.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXTypes.hpp" />
     <ClInclude Include="Renderer\AnimTypes.hpp" />
     <ClInclude Include="Renderer\BitmapFont.hpp" />
     <ClInclude Include="Renderer\BufferLayout.hpp" />

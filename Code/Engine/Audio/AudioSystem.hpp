@@ -26,7 +26,7 @@ public:
 	virtual void				EndFrame();
 
 	virtual SoundID				CreateOrGetSound( const std::string& soundFilePath );
-	virtual SoundID				CreateOrGetSound3D(const std::string& soundFilePath, bool isLooped, bool isStreaming);
+	virtual SoundID				CreateOrGetSound3D(const std::string& soundFilePath);
 	virtual SoundPlaybackID		PlaySound( SoundID soundID, bool isLooped=false, float volume=1.f, float balance=0.0f, float speed=1.0f, bool isPaused=false );
 	virtual SoundPlaybackID		Play3DSound( SoundID soundID, const Vec3& position, bool isLooped=false, float volume=1.f, float balance=0.0f, float speed=1.0f, bool isPaused=false );
 	virtual void				StopSound( SoundPlaybackID soundPlaybackID );

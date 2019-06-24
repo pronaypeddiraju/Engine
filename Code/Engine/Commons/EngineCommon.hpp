@@ -66,6 +66,7 @@ class PhysicsSystem;
 class RenderContext;
 class WindowContext;
 class PhysXSystem;
+class RandomNumberGenerator;
 
 //------------------------------------------------------------------------------------------------------------------------------
 extern DebugRender*	g_debugRenderer;
@@ -77,6 +78,7 @@ extern PhysicsSystem* g_physicsSystem;
 extern RenderContext* g_renderContext;
 extern WindowContext* g_windowContext;
 extern PhysXSystem* g_PxPhysXSystem;
+extern RandomNumberGenerator* g_RNG;
 
 typedef NamedProperties EventArgs;
 
