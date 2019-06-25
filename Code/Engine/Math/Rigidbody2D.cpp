@@ -128,40 +128,40 @@ void Rigidbody2D::DebugRender( RenderContext* renderContext, const Rgba& color )
 	switch( type )
 	{
 	case COLLIDER_UNKOWN:
-	break;
+		break;
 	case COLLIDER_AABB2:
 	{
 		AABB2Collider* collider = reinterpret_cast<AABB2Collider*>(m_collider);
 
 		AddVertsForBoundingBox(verts, collider->GetWorldShape(), color, 0.5f);
+		break;
 	}
-	break;
 	case COLLIDER_DISC:
 	{
 		Disc2DCollider* collider = reinterpret_cast<Disc2DCollider*>(m_collider);
 
 		AddVertsForRing2D(verts, collider->GetWorldShape().GetCentre(), collider->GetWorldShape().GetRadius(), 0.5f, color);
+		break;
 	}
-	break;
 	case COLLIDER_BOX:
 	{
 		BoxCollider2D* collider = reinterpret_cast<BoxCollider2D*>(m_collider);
 
 		AddVertsForBoundingBox(verts, collider->GetWorldShape(), color, 0.5f);
+		break;
 	}
-	break;
 	case COLLIDER_CAPSULE:
 	{
 		CapsuleCollider2D* collider = reinterpret_cast<CapsuleCollider2D*>(m_collider);
 
 		AddVertsForWireCapsule2D(verts, collider->GetWorldShape(), collider->GetCapsuleRadius(), color, 0.5f);
 		AddVertsForLine2D(verts, collider->GetWorldShape().m_center, collider->GetWorldShape().m_center + collider->GetCapsuleRadius() * Vec2(0.f, 1.f).GetRotatedDegrees(m_rotation), 0.2f, Rgba::WHITE);
+		break;
 	}
-	break;
 	case NUM_COLLIDER_TYPES:
-	break;
+		break;
 	default:
-	break;
+		break;
 	}
 
 	renderContext->DrawVertexArray(verts);

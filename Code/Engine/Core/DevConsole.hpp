@@ -67,7 +67,7 @@ public:
  	const static Rgba						CONSOLE_INFO;
  	const static Rgba						CONSOLE_ERROR;
  	const static Rgba						CONSOLE_ERROR_DESC;
- 	const static Rgba						CONSOLE_ECHO;
+ 	const static Rgba						CONSOLE_ECHO_COLOR;
 	const static Rgba						CONSOLE_BG_COLOR;
 	const static Rgba						CONSOLE_INPUT;
 

@@ -4,6 +4,7 @@
 #pragma once
 #include "ThirdParty/PhysX/include/PxPhysicsAPI.h"
 #include "Engine/PhysXSystem/PhysXTypes.hpp"
+#include <vector>
 
 #define PX_RELEASE(x)	if(x)	{ x->release(); x = NULL;	}
 
@@ -21,22 +22,23 @@ public:
 	PhysXSystem();
 	~PhysXSystem();
 
+	//System
 	void				StartUp();
 	void				BeginFrame();
 	void				Update(float deltaTime);
 	void				EndFrame();
-
-	void				DebugRender(RenderContext* renderContext) const;
+	void				ShutDown();
 
 	PxScene*			GetPhysXScene() const;
 	PxPhysics*			GetPhysXSDK() const;
 	PxCooking*			GetPhysXCookingModule();
 	PxFoundation*		GetPhysXFoundationModule();
 
-	//Rigibody Functions
+	//Rigid body Functions
 	PxRigidDynamic*		CreateDynamicObject(const PxGeometry& pxGeometry, const Vec3& velocity, const Matrix44& matrix);
 
 	//Convex Hull
+	void				CreateRandomConvexHull(std::vector<Vec3>& vertexArray, int gaussMapLimit, bool directInsertion);
 	PxConvexMeshCookingType::Enum	GetPxConvexMeshCookingType(PhysXConvexMeshCookingTypesT meshType);
 
 	//PhysX Materials
@@ -47,10 +49,7 @@ public:
 	Vec4				PxVectorToVec(const PxVec4& pxVector) const;
 	PxVec3				VecToPxVector(const Vec3& vector) const;
 	PxVec4				VecToPxVector(const Vec4& vector) const;
-
 	Vec3				QuaternionToEulerAngles(const PxQuat& quat);
-
-	void				ShutDown();
 
 private:
 
@@ -60,7 +59,7 @@ private:
 	PxDefaultAllocator					m_PxAllocator;
 	PxDefaultErrorCallback				m_PXErrorCallback;
 
-	PxFoundation*						m_PxFoundation = NULL;
+	PxFoundation*						m_PxFoundation = nullptr;
 	PxCooking*							m_PxCooking = NULL;
 	PxPhysics*							m_PhysX = NULL;
 
@@ -71,5 +70,5 @@ private:
 
 	PxPvd*								m_Pvd = NULL;
 
-	PxReal								stackZ = 10.0f;
+	PxReal								m_tempHackStackZ = 10.0f;
 };

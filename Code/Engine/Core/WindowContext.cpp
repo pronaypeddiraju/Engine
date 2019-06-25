@@ -6,8 +6,6 @@
 #include <Windows.h>
 
 static constexpr const TCHAR* GAME_WINDOW_CLASS_NAME = TEXT("GameWindowClass");
-//The WndProc function for imGUI third party tool
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 //------------------------------------------------------------------------------------------------------------------------------
 static void LockMouseToWindow( HWND hwnd )
@@ -33,14 +31,6 @@ static void LockMouseToWindow( HWND hwnd )
 static LRESULT CALLBACK GameCommonWindowProc( HWND windowHandle, UINT wmMessageCode, WPARAM wParam, LPARAM lParam )
 {
 	WindowContext *windowContext = (WindowContext*) GetWindowLongPtr( windowHandle, GWLP_USERDATA );
-
-	
-	if (ImGui_ImplWin32_WndProcHandler(windowHandle, wmMessageCode, wParam, lParam))
-	{
-		//ImGUI has handled our input, don't bleed it into our input handler. Return true instead
-		return true;
-	}
-	
 
 	// do Engine level message handling
 	switch (wmMessageCode) {

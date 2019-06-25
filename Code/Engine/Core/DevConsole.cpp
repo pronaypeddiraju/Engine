@@ -53,7 +53,7 @@ bool DevConsole::ExecuteCommandLine( const std::string& commandLine )
 			{
 				//Print the data we read
 				printS = " Action: " + KeyValSplit[0] + " = " + KeyValSplit[1];
-				g_devConsole->PrintString(CONSOLE_ECHO, printS);
+				g_devConsole->PrintString(CONSOLE_ECHO_COLOR, printS);
 
 				args.SetValue(KeyValSplit[0], KeyValSplit[1]);
 			}
@@ -265,7 +265,7 @@ void DevConsole::HandleCharacter( unsigned char charCode )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const STATIC Rgba DevConsole::CONSOLE_ECHO		=	Rgba(0.255f, 0.450f, 1.0f, 1.0f);
+const STATIC Rgba DevConsole::CONSOLE_ECHO_COLOR		=	Rgba(0.255f, 0.450f, 1.0f, 1.0f);
 
 //------------------------------------------------------------------------------------------------------------------------------
 DevConsole::DevConsole()
@@ -340,6 +340,7 @@ void DevConsole::PrintString( const Rgba& textColor, const std::string& devConso
 	float time = static_cast<float>(GetCurrentTimeSeconds());
 	time -= m_timeAtStart;
 	ConsoleEntry consoleEntry = ConsoleEntry(textColor, devConsolePrintString, m_frameCount, time);
+	// #ToDo: make this thread-safe
 	m_printLog.push_back(consoleEntry);
 }
 
@@ -393,7 +394,7 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 		//Decrement the iterator
 		vecIterator--;
 
-		textVerts.empty();
+//		textVerts.empty();
 
 		//Get length of string
 		std::string printString = "[ T:" + Stringf("%03f", vecIterator->m_calledTime) + " Frame:" + std::to_string(vecIterator->m_frameNum) + " ] " + vecIterator->m_printString;
@@ -490,7 +491,7 @@ STATIC bool	DevConsole::Command_Help( EventArgs& args )
 	for(int eventIndex = 0; eventIndex < static_cast<int>(eventsAvailable.size()); eventIndex++)
 	{
 		std::string printString =  "   " + eventsAvailable[eventIndex];
-		g_devConsole->PrintString( CONSOLE_ECHO, printString );
+		g_devConsole->PrintString( CONSOLE_ECHO_COLOR, printString );
 	}
 	return true;
 }

@@ -150,10 +150,10 @@ physx::PxRigidDynamic* PhysXSystem::CreateDynamicObject(const PxGeometry& pxGeom
 
 	//Quaternion
 	float w = sqrt(1.0f + matrix.m_values[Matrix44::Ix] + matrix.m_values[Matrix44::Jy] + matrix.m_values[Matrix44::Kz]) / 2.0f;
-	float w4 = (4.0f * w);
-	float x = (matrix.m_values[Matrix44::Ky] - matrix.m_values[Matrix44::Jz]) / w4;
-	float y = (matrix.m_values[Matrix44::Iz] - matrix.m_values[Matrix44::Kx]) / w4;
-	float z = (matrix.m_values[Matrix44::Jx] - matrix.m_values[Matrix44::Iy]) / w4;
+	float one_over_w4 = 1.f / (4.0f * w);
+	float x = (matrix.m_values[Matrix44::Ky] - matrix.m_values[Matrix44::Jz]) * one_over_w4;
+	float y = (matrix.m_values[Matrix44::Iz] - matrix.m_values[Matrix44::Kx]) * one_over_w4;
+	float z = (matrix.m_values[Matrix44::Jx] - matrix.m_values[Matrix44::Iy]) * one_over_w4;
 
 	pxTransform.q = PxQuat(x, y, z, w);
 
@@ -163,6 +163,81 @@ physx::PxRigidDynamic* PhysXSystem::CreateDynamicObject(const PxGeometry& pxGeom
 	pxScene->addActor(*dynamic);
 
 	return dynamic;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void PhysXSystem::CreateRandomConvexHull(std::vector<Vec3>& vertexArray, int gaussMapLimit, bool directInsertion)
+{
+	PxCooking* pxCookingModule = g_PxPhysXSystem->GetPhysXCookingModule();
+	PxPhysics* pxPhysics = g_PxPhysXSystem->GetPhysXSDK();
+	PxScene* pxScene = g_PxPhysXSystem->GetPhysXScene();
+	PxCookingParams params = pxCookingModule->getParams();
+
+	// Use the new (default) PxConvexMeshCookingType::eQUICKHULL
+	params.convexMeshCookingType = g_PxPhysXSystem->GetPxConvexMeshCookingType(QUICKHULL);
+
+	// If the gaussMapLimit is chosen higher than the number of output vertices, no gauss map is added to the convex mesh data (here 256).
+	// If the gaussMapLimit is chosen lower than the number of output vertices, a gauss map is added to the convex mesh data (here 16).
+	params.gaussMapLimit = gaussMapLimit;
+	pxCookingModule->setParams(params);
+
+	// Setup the convex mesh descriptor
+	PxConvexMeshDesc desc;
+	PxConvexMesh* pxConvexMesh;
+
+	std::vector<PxVec3> pxVecArray;
+	pxVecArray.reserve(vertexArray.size());
+
+	int numVerts = (int)vertexArray.size();
+	for (int vecIndex = 0; vecIndex < numVerts; vecIndex++)
+	{
+		pxVecArray.push_back(g_PxPhysXSystem->VecToPxVector(vertexArray[vecIndex]));
+	}
+
+	// We provide points only, therefore the PxConvexFlag::eCOMPUTE_CONVEX flag must be specified
+	desc.points.data = &pxVecArray[0];
+	desc.points.count = numVerts;
+	desc.points.stride = sizeof(PxVec3);
+	desc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
+
+	PxU32 meshSize = 0;
+
+	if (directInsertion)
+	{
+		// Directly insert mesh into PhysX
+		pxConvexMesh = pxCookingModule->createConvexMesh(desc, pxPhysics->getPhysicsInsertionCallback());
+		PX_ASSERT(convex);
+	}
+	else
+	{
+		// Serialize the cooked mesh into a stream.
+		PxFoundation* pxFoundation = g_PxPhysXSystem->GetPhysXFoundationModule();
+		PxDefaultMemoryOutputStream outStream(pxFoundation->getAllocatorCallback());
+		bool res = pxCookingModule->cookConvexMesh(desc, outStream);
+		PX_UNUSED(res);
+		PX_ASSERT(res);
+		meshSize = outStream.getSize();
+
+		// Create the mesh from a stream.
+		PxDefaultMemoryInputData inStream(outStream.getData(), outStream.getSize());
+		pxConvexMesh = pxPhysics->createConvexMesh(inStream);
+
+		//Make the geometrue
+		PxConvexMeshGeometry geometry = PxConvexMeshGeometry(pxConvexMesh);
+		const PxMaterial* material = g_PxPhysXSystem->GetDefaultPxMaterial();
+
+		PxShape* shape = pxPhysics->createShape(geometry, *material);
+
+		PxTransform localTm(PxVec3(0, 50.f, 0));
+		PxRigidDynamic* body = pxPhysics->createRigidDynamic(localTm);
+		body->attachShape(*shape);
+		PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
+		pxScene->addActor(*body);
+
+		PX_ASSERT(convex);
+	}
+
+	pxConvexMesh->release();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -237,7 +312,7 @@ Vec3 PhysXSystem::QuaternionToEulerAngles(const PxQuat& quat)
 	// pitch (y-axis rotation)
 	float sinp = +2.0f * (quat.w * quat.y - quat.z * quat.x);
 	if (fabs(sinp) >= 1)
-		eulerAngles.y = copysign(PI / 2, sinp); // use 90 degrees if out of range
+		eulerAngles.y = copysign(PI / 2.f, sinp); // use 90 degrees if out of range
 	else
 		eulerAngles.y = asin(sinp);
 
