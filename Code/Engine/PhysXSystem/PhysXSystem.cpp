@@ -101,7 +101,7 @@ void PhysXSystem::BeginFrame()
 //------------------------------------------------------------------------------------------------------------------------------
 void PhysXSystem::Update(float deltaTime)
 {
-	m_PxScene->simulate(deltaTime * 2.f);
+	m_PxScene->simulate(deltaTime);
 	m_PxScene->fetchResults(true);
 }
 
