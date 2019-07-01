@@ -299,7 +299,9 @@ void CPUMeshAddUVSphere( CPUMesh *out, const Vec3& center, float radius, const R
 //------------------------------------------------------------------------------------------------------------------------------
 void CPUMeshAddUVCapsule(CPUMesh *out, const Vec3& start, const Vec3& end, float radius, const Rgba& color, uint wedges /*= 32*/, uint slices /*= 16 */)
 {
-	out->Clear();
+	//out->Clear();
+	int lastIndex = out->GetVertexCount();
+
 	out->SetStampColor(color);
 
 	int ustep = wedges + 1;
@@ -356,7 +358,7 @@ void CPUMeshAddUVCapsule(CPUMesh *out, const Vec3& start, const Vec3& end, float
 			uint TR = TL + 1;
 			uint BL = TL + ustep;
 			uint BR = BL + 1;
-			out->AddIndexedQuad(TL, TR, BL, BR);
+			out->AddIndexedQuad(TL + lastIndex, TR + lastIndex, BL + lastIndex, BR + lastIndex);
 		}
 	}
 

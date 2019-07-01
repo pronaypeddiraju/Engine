@@ -70,6 +70,8 @@ void PhysXSystem::StartUp()
 	//Create Physics! This creates an instance of the PhysX SDK
 	m_PhysX = PxCreatePhysics(PX_PHYSICS_VERSION, *m_PxFoundation, PxTolerancesScale(), true, m_Pvd);
 
+	bool result = PxInitExtensions(*m_PhysX, m_Pvd);
+
 	//What is the description of this PhysX scene?
 	PxSceneDesc sceneDesc(m_PhysX->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);

@@ -98,7 +98,7 @@ private:
 	//PhysX Visual Debugger
 	PxPvd*								m_Pvd = nullptr;
 	std::string							m_pvdIPAddress = "127.0.0.1";
-	int									m_pvdPortNumber;
+	int									m_pvdPortNumber = 5425;
 	uint								m_pvdTimeOutSeconds = 10;
 
 	//Default values for PhysX properties to use
