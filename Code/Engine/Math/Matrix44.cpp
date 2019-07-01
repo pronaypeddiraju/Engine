@@ -108,7 +108,7 @@ const Vec4 Matrix44::TransformHomogeneousPoint3D( const Vec4& homogeneousVec ) c
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const Vec3 Matrix44::GetIVector() const
+const Vec3 Matrix44::GetIBasis() const
 {
 	Vec3 iVector = Vec3(m_values[Ix], m_values[Iy], m_values[Iz]);
 	iVector = iVector.GetNormalized();
@@ -117,7 +117,7 @@ const Vec3 Matrix44::GetIVector() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const Vec4 Matrix44::GetIVector4() const
+const Vec4 Matrix44::GetIBasis4() const
 {
 	Vec4 iVector = Vec4(m_values[Ix], m_values[Iy], m_values[Iz], m_values[Iw]);
 	iVector = iVector.GetNormalized();
@@ -126,7 +126,7 @@ const Vec4 Matrix44::GetIVector4() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const Vec3 Matrix44::GetJVector() const
+const Vec3 Matrix44::GetJBasis() const
 {
 	Vec3 jVector = Vec3(m_values[Jx], m_values[Jy], m_values[Jz]);
 	jVector = jVector.GetNormalized();
@@ -135,7 +135,7 @@ const Vec3 Matrix44::GetJVector() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const Vec4 Matrix44::GetJVector4() const
+const Vec4 Matrix44::GetJBasis4() const
 {
 	Vec4 jVector = Vec4(m_values[Jx], m_values[Jy], m_values[Jz], m_values[Jw]);
 	jVector = jVector.GetNormalized();
@@ -144,7 +144,7 @@ const Vec4 Matrix44::GetJVector4() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const Vec3 Matrix44::GetKVector() const
+const Vec3 Matrix44::GetKBasis() const
 {
 	Vec3 kVector = Vec3(m_values[Kx], m_values[Ky], m_values[Kz]);
 	kVector = kVector.GetNormalized();
@@ -153,7 +153,7 @@ const Vec3 Matrix44::GetKVector() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const Vec4 Matrix44::GetKVector4() const
+const Vec4 Matrix44::GetKBasis4() const
 {
 	Vec4 kVector = Vec4(m_values[Kx], m_values[Ky], m_values[Kz], m_values[Kw]);
 	kVector = kVector.GetNormalized();
@@ -162,7 +162,7 @@ const Vec4 Matrix44::GetKVector4() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const Vec3 Matrix44::GetTVector() const
+const Vec3 Matrix44::GetTBasis() const
 {
 	Vec3 tVector = Vec3(m_values[Tx], m_values[Ty], m_values[Tz]);
 
@@ -170,7 +170,7 @@ const Vec3 Matrix44::GetTVector() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const Vec4 Matrix44::GetTVector4() const
+const Vec4 Matrix44::GetTBasis4() const
 {
 	Vec4 tVector = Vec4(m_values[Tx], m_values[Ty], m_values[Tz], m_values[Tw]);
 
@@ -178,7 +178,7 @@ const Vec4 Matrix44::GetTVector4() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void Matrix44::SetIVector( const Vec3& i )
+void Matrix44::SetIBasis( const Vec3& i )
 {
 	m_values[Ix] = i.x;
 	m_values[Iy] = i.y;
@@ -186,7 +186,7 @@ void Matrix44::SetIVector( const Vec3& i )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void Matrix44::SetIVector(const Vec4& i)
+void Matrix44::SetIBasis(const Vec4& i)
 {
 	m_values[Ix] = i.x;
 	m_values[Iy] = i.y;
@@ -195,7 +195,7 @@ void Matrix44::SetIVector(const Vec4& i)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void Matrix44::SetJVector( const Vec3& j )
+void Matrix44::SetJBasis( const Vec3& j )
 {
 	m_values[Jx] = j.x;
 	m_values[Jy] = j.y;
@@ -203,7 +203,7 @@ void Matrix44::SetJVector( const Vec3& j )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void Matrix44::SetJVector(const Vec4& j)
+void Matrix44::SetJBasis(const Vec4& j)
 {
 	m_values[Jx] = j.x;
 	m_values[Jy] = j.y;
@@ -212,7 +212,7 @@ void Matrix44::SetJVector(const Vec4& j)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void Matrix44::SetKVector( const Vec3& k )
+void Matrix44::SetKBasis( const Vec3& k )
 {
 	m_values[Kx] = k.x;
 	m_values[Ky] = k.y;
@@ -220,7 +220,7 @@ void Matrix44::SetKVector( const Vec3& k )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void Matrix44::SetKVector(const Vec4& k)
+void Matrix44::SetKBasis(const Vec4& k)
 {
 	m_values[Kx] = k.x;
 	m_values[Ky] = k.y;
@@ -229,7 +229,7 @@ void Matrix44::SetKVector(const Vec4& k)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void Matrix44::SetTVector( const Vec3& t )
+void Matrix44::SetTBasis( const Vec3& t )
 {
 	m_values[Tx] = t.x;
 	m_values[Ty] = t.y;
@@ -237,7 +237,7 @@ void Matrix44::SetTVector( const Vec3& t )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void Matrix44::SetTVector(const Vec4& t)
+void Matrix44::SetTBasis(const Vec4& t)
 {
 	m_values[Tx] = t.x;
 	m_values[Ty] = t.y;
@@ -751,9 +751,9 @@ STATIC const Matrix44 Matrix44::LookAt( const Vec3& position, const Vec3& focalP
 
 	Matrix44 lookAtMat = Matrix44::IDENTITY;
 	
-	lookAtMat.SetIVector(right);
-	lookAtMat.SetJVector(up);
-	lookAtMat.SetKVector(forward);
+	lookAtMat.SetIBasis(right);
+	lookAtMat.SetJBasis(up);
+	lookAtMat.SetKBasis(forward);
 
 	lookAtMat.SetTranslation3D(translation, lookAtMat);
 

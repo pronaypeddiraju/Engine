@@ -113,7 +113,7 @@ void Camera::UpdateUniformBuffer( RenderContext* renderContext )
 	CameraBufferT cpuData;
 	cpuData.ViewMatrix = m_view; 
 	cpuData.ProjectionMatrix = m_projection; 
-	cpuData.CameraPosition = m_cameraModel.GetTVector();
+	cpuData.CameraPosition = m_cameraModel.GetTBasis();
 
 	// copy the cpu to the gpu (will create or update the buffer)
 	m_cameraUBO->CopyCPUToGPU( &cpuData, sizeof(cpuData) ); 
@@ -293,17 +293,17 @@ Vec3 Camera::ClientToNDC(const Vec2& clientPos)
 //------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Camera::GetCameraRight() const
 {
-	return m_cameraModel.GetIVector();
+	return m_cameraModel.GetIBasis();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Camera::GetCameraUp() const
 {
-	return m_cameraModel.GetJVector();
+	return m_cameraModel.GetJBasis();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Camera::GetCameraForward() const
 {
-	return m_cameraModel.GetKVector();
+	return m_cameraModel.GetKBasis();
 }

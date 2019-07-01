@@ -299,9 +299,9 @@ void ObjectLoader::CreateGPUMesh()
 			}
 		}
 
-		mat.SetIVector(vectors[0]);
-		mat.SetJVector(vectors[1]);
-		mat.SetKVector(vectors[2]);
+		mat.SetIBasis(vectors[0]);
+		mat.SetJBasis(vectors[1]);
+		mat.SetKBasis(vectors[2]);
 
 		for (int vertexIndex = 0; vertexIndex < (int)vertices.size(); vertexIndex++)
 		{

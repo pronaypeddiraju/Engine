@@ -5,6 +5,7 @@
 #include "ThirdParty/PhysX/include/PxPhysicsAPI.h"
 #include "Engine/PhysXSystem/PhysXTypes.hpp"
 #include <vector>
+#include <functional>
 
 #define PX_RELEASE(x)	if(x)	{ x->release(); x = NULL;	}
 
@@ -14,6 +15,9 @@ class RenderContext;
 struct Vec3;
 struct Vec4;
 struct Matrix44;
+
+typedef unsigned int uint;
+typedef PxJoint* (*JointCreateFunction)(PxRigidActor* actorA, const Vec3& positionA, PxRigidActor* actorB, const Vec3& positionB);
 
 //------------------------------------------------------------------------------------------------------------------------------
 class PhysXSystem
@@ -31,44 +35,76 @@ public:
 
 	PxScene*			GetPhysXScene() const;
 	PxPhysics*			GetPhysXSDK() const;
-	PxCooking*			GetPhysXCookingModule();
-	PxFoundation*		GetPhysXFoundationModule();
+	PxCooking*			GetPhysXCookingModule() const;
+	PxFoundation*		GetPhysXFoundationModule() const;
 
 	//Rigid body Functions
-	PxRigidDynamic*		CreateDynamicObject(const PxGeometry& pxGeometry, const Vec3& velocity, const Matrix44& matrix);
+	PxRigidDynamic*		CreateDynamicObject(const PxGeometry& pxGeometry, const Vec3& velocity, const Matrix44& matrix, float materialDensity = -1.f);
 
 	//Convex Hull
 	void				CreateRandomConvexHull(std::vector<Vec3>& vertexArray, int gaussMapLimit, bool directInsertion);
-	PxConvexMeshCookingType::Enum	GetPxConvexMeshCookingType(PhysXConvexMeshCookingTypesT meshType);
+	PxConvexMeshCookingType::Enum	GetPxConvexMeshCookingType(PhysXConvexMeshCookingTypes_T meshType);
+
+	//PhysX Joints
+	PxJoint*			CreateJointSimpleSpherical(PxRigidActor* actorA, const Vec3& positionA, PxRigidActor* actorB, const Vec3& positionB);
+	PxJoint*			CreateJointLimitedSpherical(PxRigidActor* actorA, const Vec3& positionA, PxRigidActor* actorB, const Vec3& positionB
+												, float yAngleLimit, float zAngleLimit, float contactDistance = -1.f);
+
+	PxJoint*			CreateJointSimpleFixed(PxRigidActor* actorA, const Vec3& positionA, PxRigidActor* actorB, const Vec3& positionB);
+	PxJoint*			CreateJointBreakableFixed(PxRigidActor* actorA, const Vec3& positionA, PxRigidActor* actorB, const Vec3& positionB
+												, float breakForce = FLT_MAX, float breakTorque = FLT_MAX);
+
+	PxJoint*			CreateJointDampedD6(PxRigidActor* actorA, const Vec3& positionA, PxRigidActor* actorB, const Vec3& positionB
+												, float driveStiffness, float driveDamping, float driveForceLimit = FLT_MAX, bool isDriveAcceleration = false);
+
+	//PhysX Chains
+	void				CreateSimpleSphericalChain(const Vec3& position, int length, const PxGeometry& geometry, float separation);
+	void				CreateLimitedSphericalChain(const Vec3& position, int length, const PxGeometry& geometry, float separation
+												, float yConeAngleLimit, float zConeAngleLimit, float coneContactDistance = -1.f);
+
+	void				CreateSimpleFixedChain(const Vec3& position, int length, const PxGeometry& geometry, float separation);
+	void				CreateBreakableFixedChain(const Vec3& position, int length, const PxGeometry& geometry, float separation
+												, float breakForce = FLT_MAX, float breakTorque = FLT_MAX);
+
+	void				CreateDampedD6Chain(const Vec3& position, int length, const PxGeometry& geometry, float separation
+												, float driveStiffness, float driveDamping, float driveForceLimit = FLT_MAX, bool isDriveAcceleration = false);
 
 	//PhysX Materials
 	PxMaterial*			GetDefaultPxMaterial() const;
 
 	//Math Functions
-	Vec3				PxVectorToVec(const PxVec3& pxVector) const;
-	Vec4				PxVectorToVec(const PxVec4& pxVector) const;
-	PxVec3				VecToPxVector(const Vec3& vector) const;
-	PxVec4				VecToPxVector(const Vec4& vector) const;
-	Vec3				QuaternionToEulerAngles(const PxQuat& quat);
+	static Vec3			PxVectorToVec(const PxVec3& pxVector);
+	static Vec4			PxVectorToVec(const PxVec4& pxVector);
+	static PxVec3		VecToPxVector(const Vec3& vector);
+	static PxVec4		VecToPxVector(const Vec4& vector);
+	static Vec3			QuaternionToEulerAngles(const PxQuat& quat);
+	static PxQuat		MakeQuaternionFromMatrix(const Matrix44& matrix);
 
 private:
 
-
-	//Data
 private:
 	PxDefaultAllocator					m_PxAllocator;
 	PxDefaultErrorCallback				m_PXErrorCallback;
 
 	PxFoundation*						m_PxFoundation = nullptr;
-	PxCooking*							m_PxCooking = NULL;
-	PxPhysics*							m_PhysX = NULL;
+	PxCooking*							m_PxCooking = nullptr;
+	PxPhysics*							m_PhysX = nullptr;
 
-	PxDefaultCpuDispatcher*				m_PxDispatcher = NULL;
-	PxScene*							m_PxScene = NULL;
+	PxDefaultCpuDispatcher*				m_PxDispatcher = nullptr;
+	PxScene*							m_PxScene = nullptr;
 
-	PxMaterial*							m_PxMaterial = NULL;
+	PxMaterial*							m_PxDefaultMaterial = nullptr;
 
-	PxPvd*								m_Pvd = NULL;
+	//PhysX Visual Debugger
+	PxPvd*								m_Pvd = nullptr;
+	std::string							m_pvdIPAddress = "127.0.0.1";
+	int									m_pvdPortNumber;
+	uint								m_pvdTimeOutSeconds = 10;
 
-	PxReal								m_tempHackStackZ = 10.0f;
+	//Default values for PhysX properties to use
+	float								m_defaultStaticFriction = 0.5f;
+	float								m_defaultDynamicFriction = 0.5f;
+	float								m_defaultRestitution = 0.6f;
+	float								m_defaultDensity = 10.f;
+	float								m_defaultAngularDamping = 0.5f;
 };

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/PhysXSystem/PhysXSystem.hpp"
-#include "Engine/Commons/ErrorWarningAssert.hpp"
+#include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/Matrix44.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vec3.hpp"
@@ -64,7 +64,7 @@ void PhysXSystem::StartUp()
 	//Create the PhysX Visual Debugger by giving it the current foundation
 	m_Pvd = PxCreatePvd(*m_PxFoundation);
 	//The PVD needs connection via a socket. It will run on the Address defined, in our case it's our machine
-	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
+	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(m_pvdIPAddress.c_str(), m_pvdPortNumber, m_pvdTimeOutSeconds);
 	m_Pvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
 
 	//Create Physics! This creates an instance of the PhysX SDK
@@ -89,7 +89,7 @@ void PhysXSystem::StartUp()
 		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
 
-	m_PxMaterial = m_PhysX->createMaterial(0.5f, 0.5f, 0.6f);
+	m_PxDefaultMaterial = m_PhysX->createMaterial(m_defaultStaticFriction, m_defaultDynamicFriction, m_defaultRestitution);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -124,41 +124,37 @@ physx::PxPhysics* PhysXSystem::GetPhysXSDK() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-physx::PxCooking* PhysXSystem::GetPhysXCookingModule()
+physx::PxCooking* PhysXSystem::GetPhysXCookingModule() const
 {
 	return m_PxCooking;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-physx::PxFoundation* PhysXSystem::GetPhysXFoundationModule()
+physx::PxFoundation* PhysXSystem::GetPhysXFoundationModule() const
 {
 	return m_PxFoundation; 
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-physx::PxRigidDynamic* PhysXSystem::CreateDynamicObject(const PxGeometry& pxGeometry, const Vec3& velocity, const Matrix44& matrix)
+physx::PxRigidDynamic* PhysXSystem::CreateDynamicObject(const PxGeometry& pxGeometry, const Vec3& velocity, const Matrix44& matrix, float materialDensity)
 {
+	if (materialDensity < 0.f)
+	{
+		materialDensity = m_defaultDensity;
+	}
+
 	PxPhysics* physX = g_PxPhysXSystem->GetPhysXSDK();
 	PxScene* pxScene = g_PxPhysXSystem->GetPhysXScene();
-	PxMaterial* pxMaterial = physX->createMaterial(0.5f, 0.5f, 0.6f);
 
 	PxVec3 pxVelocity = PxVec3(velocity.x, velocity.y, velocity.z);
-	Vec3 position = matrix.GetTVector();
+	Vec3 position = matrix.GetTBasis();
 	PxVec3 pxPosition = VecToPxVector(position);
 
 	PxTransform pxTransform(pxPosition);
+	pxTransform.q = MakeQuaternionFromMatrix(matrix);
 
-	//Quaternion
-	float w = sqrt(1.0f + matrix.m_values[Matrix44::Ix] + matrix.m_values[Matrix44::Jy] + matrix.m_values[Matrix44::Kz]) / 2.0f;
-	float one_over_w4 = 1.f / (4.0f * w);
-	float x = (matrix.m_values[Matrix44::Ky] - matrix.m_values[Matrix44::Jz]) * one_over_w4;
-	float y = (matrix.m_values[Matrix44::Iz] - matrix.m_values[Matrix44::Kx]) * one_over_w4;
-	float z = (matrix.m_values[Matrix44::Jx] - matrix.m_values[Matrix44::Iy]) * one_over_w4;
-
-	pxTransform.q = PxQuat(x, y, z, w);
-
-	PxRigidDynamic* dynamic = PxCreateDynamic(*physX, pxTransform, pxGeometry, *pxMaterial, 10.0f);
-    dynamic->setAngularDamping(0.5f);
+	PxRigidDynamic* dynamic = PxCreateDynamic(*physX, pxTransform, pxGeometry, *m_PxDefaultMaterial, materialDensity);
+    dynamic->setAngularDamping(m_defaultAngularDamping);
 	dynamic->setLinearVelocity(pxVelocity);
 	pxScene->addActor(*dynamic);
 
@@ -241,7 +237,7 @@ void PhysXSystem::CreateRandomConvexHull(std::vector<Vec3>& vertexArray, int gau
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-physx::PxConvexMeshCookingType::Enum PhysXSystem::GetPxConvexMeshCookingType(PhysXConvexMeshCookingTypesT meshType)
+physx::PxConvexMeshCookingType::Enum PhysXSystem::GetPxConvexMeshCookingType(PhysXConvexMeshCookingTypes_T meshType)
 {
 	switch (meshType)
 	{
@@ -259,13 +255,248 @@ physx::PxConvexMeshCookingType::Enum PhysXSystem::GetPxConvexMeshCookingType(Phy
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-physx::PxMaterial* PhysXSystem::GetDefaultPxMaterial() const
+// NOTE: Interface asks for angles in degrees but PhysX needs angles in Radians
+//------------------------------------------------------------------------------------------------------------------------------
+physx::PxJoint* PhysXSystem::CreateJointLimitedSpherical(PxRigidActor* actorA, const Vec3& positionA, PxRigidActor* actorB, const Vec3& positionB, float yAngleLimit, float zAngleLimit, float contactDistance)
 {
-	return m_PxMaterial;
+	PxTransform transformA(VecToPxVector(positionA));
+	PxTransform transformB(VecToPxVector(positionB));
+
+	PxSphericalJoint* joint = PxSphericalJointCreate(*m_PhysX, actorA, transformA, actorB, transformB);
+	joint->setLimitCone(PxJointLimitCone(DegreesToRadians(yAngleLimit), DegreesToRadians(zAngleLimit), contactDistance));
+	joint->setSphericalJointFlag(PxSphericalJointFlag::eLIMIT_ENABLED, true);
+	return joint;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-Vec3 PhysXSystem::PxVectorToVec(const PxVec3& pxVector) const
+// Unbreakable Fixed Joint
+//------------------------------------------------------------------------------------------------------------------------------
+physx::PxJoint* PhysXSystem::CreateJointSimpleFixed(PxRigidActor* actorA, const Vec3& positionA, PxRigidActor* actorB, const Vec3& positionB)
+{
+	PxTransform transformA(VecToPxVector(positionA));
+	PxTransform transformB(VecToPxVector(positionB));
+
+	PxFixedJoint* joint = PxFixedJointCreate(*m_PhysX, actorA, transformA, actorB, transformB);
+	joint->setBreakForce(FLT_MAX, FLT_MAX);
+	joint->setConstraintFlag(PxConstraintFlag::eDRIVE_LIMITS_ARE_FORCES, true);
+	joint->setConstraintFlag(PxConstraintFlag::eDISABLE_PREPROCESSING, true);
+	return joint;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+// Unrestricted Spherical Joint (Rotation permitted to 180 degrees in y and z)
+// NOTE: PhysX needs the angles in Radians, in the simple case we pass it PxHalfPi for y and z cone limits
+//------------------------------------------------------------------------------------------------------------------------------
+physx::PxJoint* PhysXSystem::CreateJointSimpleSpherical(PxRigidActor* actorA, const Vec3& positionA, PxRigidActor* actorB, const Vec3& positionB)
+{
+	PxTransform transformA(VecToPxVector(positionA));
+	PxTransform transformB(VecToPxVector(positionB));
+
+	PxSphericalJoint* joint = PxSphericalJointCreate(*m_PhysX, actorA, transformA, actorB, transformB);
+	joint->setLimitCone(PxJointLimitCone(PxHalfPi, PxHalfPi));
+	joint->setSphericalJointFlag(PxSphericalJointFlag::eLIMIT_ENABLED, true);
+	return joint;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+// NOTE: This creates a fixed joint which we set a break force to.
+// By default the breakable joint is unbreakable(max float for break force)
+//------------------------------------------------------------------------------------------------------------------------------
+physx::PxJoint* PhysXSystem::CreateJointBreakableFixed(PxRigidActor* actorA, const Vec3& positionA, PxRigidActor* actorB, const Vec3& positionB, float breakForce, float breakTorque)
+{
+	PxTransform transformA(VecToPxVector(positionA));
+	PxTransform transformB(VecToPxVector(positionB));
+
+	PxFixedJoint* joint = PxFixedJointCreate(*m_PhysX, actorA, transformA, actorB, transformB);
+	joint->setBreakForce(breakForce, breakTorque);
+	joint->setConstraintFlag(PxConstraintFlag::eDRIVE_LIMITS_ARE_FORCES, true);
+	joint->setConstraintFlag(PxConstraintFlag::eDISABLE_PREPROCESSING, true);
+	return joint;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+// NOTE: By default the max drive force limit is set to FLT_MAX and the drive is force dependent (Not acceleration dependent)
+//------------------------------------------------------------------------------------------------------------------------------
+physx::PxJoint* PhysXSystem::CreateJointDampedD6(PxRigidActor* actorA, const Vec3& positionA, PxRigidActor* actorB, const Vec3& positionB, float driveStiffness, float driveDamping, float driveForceLimit, bool isDriveAcceleration)
+{
+	PxTransform transformA(VecToPxVector(positionA));
+	PxTransform transformB(VecToPxVector(positionB));
+
+	PxD6Joint* joint = PxD6JointCreate(*m_PhysX, actorA, transformA, actorB, transformB);
+	joint->setMotion(PxD6Axis::eSWING1, PxD6Motion::eFREE);
+	joint->setMotion(PxD6Axis::eSWING2, PxD6Motion::eFREE);
+	joint->setMotion(PxD6Axis::eTWIST, PxD6Motion::eFREE);
+	joint->setDrive(PxD6Drive::eSLERP, PxD6JointDrive(driveStiffness, driveDamping, driveForceLimit, isDriveAcceleration));
+	return joint;
+}
+
+void PhysXSystem::CreateSimpleSphericalChain(const Vec3& position, int length, const PxGeometry& geometry, float separation)
+{
+	PxTransform transform(PhysXSystem::VecToPxVector(position));
+	PxPhysics* physX = g_PxPhysXSystem->GetPhysXSDK();
+	PxScene* pxScene = g_PxPhysXSystem->GetPhysXScene();
+	PxMaterial* pxMat = g_PxPhysXSystem->GetDefaultPxMaterial();
+
+	PxVec3 offsetPx(separation / 2.f, 0, 0);
+	Vec3 offset(separation / 2.f, 0.f, 0.f);
+	PxTransform localTm(offsetPx);
+	PxRigidDynamic* prev = nullptr;
+
+	for (int i = 0; i < length; i++)
+	{
+		PxRigidDynamic* current = PxCreateDynamic(*physX, transform * localTm, geometry, *pxMat, 1.0f);
+
+		if (prev == nullptr)
+		{
+			CreateJointSimpleSpherical(prev, position, current, offset * -1.f);
+		}
+		else
+		{
+			CreateJointSimpleSpherical(prev, offset, current, offset * -1.f);
+		}
+
+		pxScene->addActor(*current);
+		prev = current;
+		localTm.p.x += separation;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void PhysXSystem::CreateSimpleFixedChain(const Vec3& position, int length, const PxGeometry& geometry, float separation)
+{
+	PxTransform transform(PhysXSystem::VecToPxVector(position));
+	PxPhysics* physX = g_PxPhysXSystem->GetPhysXSDK();
+	PxScene* pxScene = g_PxPhysXSystem->GetPhysXScene();
+	PxMaterial* pxMat = g_PxPhysXSystem->GetDefaultPxMaterial();
+
+	PxVec3 offsetPx(separation / 2.f, 0, 0);
+	Vec3 offset(separation / 2.f, 0.f, 0.f);
+	PxTransform localTm(offsetPx);
+	PxRigidDynamic* prev = nullptr;
+
+	for (int i = 0; i < length; i++)
+	{
+		PxRigidDynamic* current = PxCreateDynamic(*physX, transform * localTm, geometry, *pxMat, 1.0f);
+
+		if (prev == nullptr)
+		{
+			CreateJointSimpleFixed(prev, position, current, offset * -1.f);
+		}
+		else
+		{
+			CreateJointSimpleFixed(prev, offset, current, offset * -1.f);
+		}
+
+		pxScene->addActor(*current);
+		prev = current;
+		localTm.p.x += separation;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void PhysXSystem::CreateLimitedSphericalChain(const Vec3& position, int length, const PxGeometry& geometry, float separation, float yConeAngleLimit, float zConeAngleLimit, float coneContactDistance /*= -1.f*/)
+{
+	PxTransform transform(PhysXSystem::VecToPxVector(position));
+	PxPhysics* physX = g_PxPhysXSystem->GetPhysXSDK();
+	PxScene* pxScene = g_PxPhysXSystem->GetPhysXScene();
+	PxMaterial* pxMat = g_PxPhysXSystem->GetDefaultPxMaterial();
+
+	PxVec3 offsetPx(separation / 2.f, 0, 0);
+	Vec3 offset(separation / 2.f, 0.f, 0.f);
+	PxTransform localTm(offsetPx);
+	PxRigidDynamic* prev = nullptr;
+
+	for (int i = 0; i < length; i++)
+	{
+		PxRigidDynamic* current = PxCreateDynamic(*physX, transform * localTm, geometry, *pxMat, 1.0f);
+
+		if (prev == nullptr)
+		{
+			CreateJointLimitedSpherical(prev, position, current, offset * -1.f, yConeAngleLimit, zConeAngleLimit, coneContactDistance);
+		}
+		else
+		{
+			CreateJointLimitedSpherical(prev, offset, current, offset * -1.f, yConeAngleLimit, zConeAngleLimit, coneContactDistance);
+		}
+
+		pxScene->addActor(*current);
+		prev = current;
+		localTm.p.x += separation;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void PhysXSystem::CreateBreakableFixedChain(const Vec3& position, int length, const PxGeometry& geometry, float separation, float breakForce /*= FLT_MAX*/, float breakTorque /*= FLT_MAX*/)
+{
+	PxTransform transform(PhysXSystem::VecToPxVector(position));
+	PxPhysics* physX = g_PxPhysXSystem->GetPhysXSDK();
+	PxScene* pxScene = g_PxPhysXSystem->GetPhysXScene();
+	PxMaterial* pxMat = g_PxPhysXSystem->GetDefaultPxMaterial();
+
+	PxVec3 offsetPx(separation / 2.f, 0, 0);
+	Vec3 offset(separation / 2.f, 0.f, 0.f);
+	PxTransform localTm(offsetPx);
+	PxRigidDynamic* prev = nullptr;
+
+	for (int i = 0; i < length; i++)
+	{
+		PxRigidDynamic* current = PxCreateDynamic(*physX, transform * localTm, geometry, *pxMat, 1.0f);
+
+		if (prev == nullptr)
+		{
+			CreateJointBreakableFixed(prev, position, current, offset * -1.f, breakForce, breakTorque);
+		}
+		else
+		{
+			CreateJointBreakableFixed(prev, offset, current, offset * -1.f, breakForce, breakTorque);
+		}
+
+		pxScene->addActor(*current);
+		prev = current;
+		localTm.p.x += separation;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void PhysXSystem::CreateDampedD6Chain(const Vec3& position, int length, const PxGeometry& geometry, float separation, float driveStiffness, float driveDamping, float driveForceLimit /*= FLT_MAX*/, bool isDriveAcceleration /*= false*/)
+{
+	PxTransform transform(PhysXSystem::VecToPxVector(position));
+	PxPhysics* physX = g_PxPhysXSystem->GetPhysXSDK();
+	PxScene* pxScene = g_PxPhysXSystem->GetPhysXScene();
+	PxMaterial* pxMat = g_PxPhysXSystem->GetDefaultPxMaterial();
+
+	PxVec3 offsetPx(separation / 2.f, 0, 0);
+	Vec3 offset(separation / 2.f, 0.f, 0.f);
+	PxTransform localTm(offsetPx);
+	PxRigidDynamic* prev = nullptr;
+
+	for (int i = 0; i < length; i++)
+	{
+		PxRigidDynamic* current = PxCreateDynamic(*physX, transform * localTm, geometry, *pxMat, 1.0f);
+
+		if (prev == nullptr)
+		{
+			CreateJointDampedD6(prev, position, current, offset * -1.f, driveStiffness, driveDamping, driveForceLimit, isDriveAcceleration);
+		}
+		else
+		{
+			CreateJointDampedD6(prev, offset, current, offset * -1.f, driveStiffness, driveDamping, driveForceLimit, isDriveAcceleration);
+		}
+
+		pxScene->addActor(*current);
+		prev = current;
+		localTm.p.x += separation;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+physx::PxMaterial* PhysXSystem::GetDefaultPxMaterial() const
+{
+	return m_PxDefaultMaterial;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC Vec3 PhysXSystem::PxVectorToVec(const PxVec3& pxVector)
 {
 	Vec3 vector;
 	vector.x = pxVector.x;
@@ -275,7 +506,7 @@ Vec3 PhysXSystem::PxVectorToVec(const PxVec3& pxVector) const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-Vec4 PhysXSystem::PxVectorToVec(const PxVec4& pxVector) const
+STATIC Vec4 PhysXSystem::PxVectorToVec(const PxVec4& pxVector) 
 {
 	Vec4 vector;
 	vector.x = pxVector.x;
@@ -286,21 +517,21 @@ Vec4 PhysXSystem::PxVectorToVec(const PxVec4& pxVector) const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-physx::PxVec3 PhysXSystem::VecToPxVector(const Vec3& vector) const
+STATIC physx::PxVec3 PhysXSystem::VecToPxVector(const Vec3& vector)
 {
 	PxVec3 pxVector(vector.x, vector.y, vector.z);
 	return pxVector;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-physx::PxVec4 PhysXSystem::VecToPxVector(const Vec4& vector) const
+STATIC physx::PxVec4 PhysXSystem::VecToPxVector(const Vec4& vector)
 {
 	PxVec4 pxVector(vector.x, vector.y, vector.z, vector.w);
 	return pxVector;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-Vec3 PhysXSystem::QuaternionToEulerAngles(const PxQuat& quat)
+STATIC Vec3 PhysXSystem::QuaternionToEulerAngles(const PxQuat& quat) 
 {
 	Vec3 eulerAngles;
 
@@ -314,14 +545,28 @@ Vec3 PhysXSystem::QuaternionToEulerAngles(const PxQuat& quat)
 	if (fabs(sinp) >= 1)
 		eulerAngles.y = copysign(PI / 2.f, sinp); // use 90 degrees if out of range
 	else
-		eulerAngles.y = asin(sinp);
+		eulerAngles.y = asinf(sinp);
 
 	// yaw (z-axis rotation)
 	float siny_cosp = 2.0f * (quat.w * quat.z + quat.x * quat.y);
 	float cosy_cosp = 1.0f - 2.0f * (quat.y * quat.y + quat.z * quat.z);
-	eulerAngles.z = atan2(siny_cosp, cosy_cosp);
+	eulerAngles.z = atan2f(siny_cosp, cosy_cosp);
 
 	return eulerAngles;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC PxQuat PhysXSystem::MakeQuaternionFromMatrix(const Matrix44& matrix)
+{
+	//Quaternion
+	float w = sqrt(1.0f + matrix.m_values[Matrix44::Ix] + matrix.m_values[Matrix44::Jy] + matrix.m_values[Matrix44::Kz]) / 2.0f;
+	float one_over_w4 = 1.f / (4.0f * w);
+	float x = (matrix.m_values[Matrix44::Ky] - matrix.m_values[Matrix44::Jz]) * one_over_w4;
+	float y = (matrix.m_values[Matrix44::Iz] - matrix.m_values[Matrix44::Kx]) * one_over_w4;
+	float z = (matrix.m_values[Matrix44::Jx] - matrix.m_values[Matrix44::Iy]) * one_over_w4;
+
+	PxQuat quaternion = PxQuat(x, y, z, w);
+	return quaternion;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -331,6 +576,7 @@ void PhysXSystem::ShutDown()
 	PX_RELEASE(m_PxScene);
 	PX_RELEASE(m_PxDispatcher);
 	PX_RELEASE(m_PhysX);
+	PX_RELEASE(m_PxCooking);
 	if (m_Pvd)
 	{
 		PxPvdTransport* transport = m_Pvd->getTransport();

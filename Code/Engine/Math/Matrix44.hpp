@@ -46,23 +46,23 @@ public:
 	const Vec4			TransformHomogeneousPoint3D ( const Vec4& homogeneousVec ) const; //assumes nothing; 
 
 	//Get axis methods
-	const Vec3			GetIVector() const;
-	const Vec4			GetIVector4() const;
-	const Vec3			GetJVector() const;
-	const Vec4			GetJVector4() const;
-	const Vec3			GetKVector() const;
-	const Vec4			GetKVector4() const;
-	const Vec3			GetTVector() const;		
-	const Vec4			GetTVector4() const;		
+	const Vec3			GetIBasis() const;
+	const Vec3			GetJBasis() const;
+	const Vec3			GetKBasis() const;
+	const Vec3			GetTBasis() const;		
+	const Vec4			GetIBasis4() const;
+	const Vec4			GetJBasis4() const;
+	const Vec4			GetKBasis4() const;
+	const Vec4			GetTBasis4() const;		
 
-	void				SetIVector( const Vec3& i );
-	void				SetIVector(const Vec4& i);
-	void				SetJVector(const Vec3& j);
-	void				SetJVector(const Vec4& j);
-	void				SetKVector( const Vec3& k );
-	void				SetKVector( const Vec4& k );
-	void				SetTVector( const Vec3& t );
-	void				SetTVector( const Vec4& t );
+	void				SetIBasis( const Vec3& i );
+	void				SetIBasis( const Vec4& i );
+	void				SetJBasis( const Vec3& j );
+	void				SetJBasis( const Vec4& j );
+	void				SetKBasis( const Vec3& k );
+	void				SetKBasis( const Vec4& k );
+	void				SetTBasis( const Vec3& t );
+	void				SetTBasis( const Vec4& t );
 
 	Matrix44			AppendMatrix( const Matrix44& matrix);
 
