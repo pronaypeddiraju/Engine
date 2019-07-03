@@ -28,3 +28,20 @@ double GetCurrentTimeSeconds()
 	double currentSeconds = static_cast< double >( elapsedCountsSinceInitialTime ) * secondsPerCount;
 	return currentSeconds;
 }
+
+//------------------------------------------------------------------------------------------------------------------------------
+uint64_t GetCurrentTimeHPC()
+{
+	LARGE_INTEGER li;
+	::QueryPerformanceCounter(&li);
+	return *(uint64_t*)&li;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+double GetHPCToSeconds(uint64_t hpc)
+{
+	static LARGE_INTEGER initialTime;
+	static double secondsPerCount = InitializeTime(initialTime);
+
+	return (double)hpc * secondsPerCount;
+}
