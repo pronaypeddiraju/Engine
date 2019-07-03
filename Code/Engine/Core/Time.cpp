@@ -33,7 +33,7 @@ double GetCurrentTimeSeconds()
 uint64_t GetCurrentTimeHPC()
 {
 	LARGE_INTEGER li;
-	::QueryPerformanceCounter(&li);
+	QueryPerformanceCounter(&li);
 	return *(uint64_t*)&li;
 }
 
