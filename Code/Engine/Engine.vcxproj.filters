@@ -316,6 +316,9 @@
     <ClCompile Include="Core\Profiler.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Async\AsyncQueue.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -1181,6 +1184,9 @@
       <Filter>PhysXSystem</Filter>
     </ClInclude>
     <ClInclude Include="Core\Profiler.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Async\AsyncQueue.hpp">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>

@@ -13,6 +13,7 @@ public:
 	//Use stbi load from the third party image thing we added to our engine (refer to getTextureFromFile in render context)
 	explicit Image(const char* imagePath);
 	explicit Image(const Rgba& color, const int width = 1, const int height = 1);
+	Image();
 	~Image();
 
 	//Accessors
@@ -27,6 +28,8 @@ public:
 	//Mutators
 	void				SetTexelColor(int xCoord, int yCoord, const Rgba& setColor);
 	void				SetTexelColor(const IntVec2& texelCoordinates, const Rgba& setColor);
+
+	//void				operator=(const Image& copyFrom);				
 
 private:
 	std::string			m_imageFilePath = "";

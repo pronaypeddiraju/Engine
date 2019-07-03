@@ -9,6 +9,9 @@
 //------------------------------------------------------------------------------------------------------------------------------
 Image::Image( const char* imageFilePath )
 {
+	m_imageFilePath = imageFilePath;
+	m_imageRawData = nullptr;
+
 	int imageTexelSizeX = 0; // Filled in for us to indicate image width
 	int imageTexelSizeY = 0; // Filled in for us to indicate image height
 	int numComponents = 0; // Filled in for us to indicate how many color components the image had (e.g. 3=RGB=24bit, 4=RGBA=32bit)
@@ -92,6 +95,12 @@ Image::Image( const Rgba& color, const int width /*= 1*/, const int height /*= 1
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+Image::Image()
+{
+
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 Image::~Image()
 {
 	stbi_image_free(m_imageRawData);
@@ -151,3 +160,13 @@ void Image::SetTexelColor( const IntVec2& texelCoordinates, const Rgba& setColor
 	int texelIndex = texelCoordinates.x + texelCoordinates.y * m_dimensions.x;
 	m_texelRepository[texelIndex] = setColor;
 }
+
+/*
+void Image::operator=(const Image& copyFrom)
+{
+	m_imageFilePath = copyFrom.m_imageFilePath;
+	m_dimensions = copyFrom.m_dimensions;
+	m_texelRepository = copyFrom.m_texelRepository;
+	m_imageRawData = copyFrom.m_imageRawData;
+}
+*/

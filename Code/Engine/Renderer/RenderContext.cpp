@@ -898,6 +898,20 @@ TextureView* RenderContext::CreateOrGetTextureViewFromFile( std::string const &f
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void RenderContext::RegisterTextureView(std::string const &fileName, TextureView const *view)
+{ 
+	std::map<std::string, TextureView*>::iterator item = m_cachedTextureViews.find(fileName);
+	if (item != m_cachedTextureViews.end())
+	{
+		return;
+	}
+	else
+	{
+		m_cachedTextureViews[fileName] = (TextureView*)view;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::Draw( uint vertexCount, uint byteOffset )
 {
 	// **NEW** - before a draw can happen, 

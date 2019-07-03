@@ -98,7 +98,8 @@ public:
 
 	//Get resources
 	TextureView*				CreateOrGetTextureViewFromFile( std::string const &filename, bool isFont = false ); 
-	BitmapFont*					CreateOrGetBitmapFontFromFile( const std::string& bitmapName );
+	void						RegisterTextureView(std::string const &fileName, TextureView const *view);
+	BitmapFont*					CreateOrGetBitmapFontFromFile(const std::string& bitmapName);
 	Shader*						CreateOrGetShaderFromFile( const std::string& fileName );
 	Material*					CreateOrGetMaterialFromFile( const std::string& fileName );
 	GPUMesh*					CreateOrGetMeshFromFile( const std::string& fileName );
