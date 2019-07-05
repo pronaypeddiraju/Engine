@@ -22,11 +22,14 @@ public:
 	~LogProfileScope()
 	{
 		uint64_t duration = GetCurrentTimeHPC() - m_start_time;
-		DebuggerPrintf("%s took %s (%llu HPC Units) \n", m_name, GetProfileTimeString((double)duration).c_str(), (double)duration);
+		DebuggerPrintf("%s took %s (%llu HPC Units) \n", m_name, GetProfileTimeString((double)duration).c_str(), (uint64_t)duration);
 	}
 
 	uint64_t m_start_time;
 	char const* m_name;
 };
 
-#define PROFILE_LOG_SCOPE( tag )  LogProfileScope _____scopeLog ## __LINE__ ## ( tag )
+#define COMBINE1(X,Y) X##Y  // helper macro
+#define COMBINE(X,Y) COMBINE1(X,Y)
+
+#define PROFILE_LOG_SCOPE( tag )  LogProfileScope COMBINE(__scopeLog, __LINE__) ## ( tag )
