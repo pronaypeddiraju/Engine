@@ -108,16 +108,14 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 	//------------------------------------------------------------------------------------------------------------------------------
 	m_vehicleKitEnabled = true;
 
-	/*
 	m_PxScene->release();
 	m_PxScene = nullptr;
 	PxSceneDesc sceneDesc(m_PhysX->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 	m_PxDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = m_PxDispatcher;
-	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+	sceneDesc.filterShader = VehicleFilterShader;
 	m_PxScene = m_PhysX->createScene(sceneDesc);
-	*/
 	
 	PxInitVehicleSDK(*m_PhysX);
 	PxVehicleSetBasisVectors(PxVec3(0, 1, 0), PxVec3(0, 0, 1));
