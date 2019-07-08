@@ -313,6 +313,21 @@
     <ClCompile Include="PhysXSystem\PhysXSystem.cpp">
       <Filter>PhysXSystem</Filter>
     </ClCompile>
+    <ClCompile Include="PhysXSystem\PhysXVehicleFilterShader.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysXSystem\PhysXVehicleSceneQuery.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysXSystem\PhysXVehicleTireFriction.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysXSystem\PhysXVehicleCreate.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysXSystem\PhysXVehicleCreate4W.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -1177,5 +1192,9 @@
     <ClInclude Include="PhysXSystem\PhysXTypes.hpp">
       <Filter>PhysXSystem</Filter>
     </ClInclude>
+    <ClInclude Include="PhysXSystem\PhysXVehicleFilterShader.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXVehicleSceneQuery.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXVehicleTireFriction.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXVehicleCreate.hpp" />
   </ItemGroup>
 </Project>

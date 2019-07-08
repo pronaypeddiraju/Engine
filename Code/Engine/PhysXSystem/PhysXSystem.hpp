@@ -4,12 +4,15 @@
 #pragma once
 #include "ThirdParty/PhysX/include/PxPhysicsAPI.h"
 #include "Engine/PhysXSystem/PhysXTypes.hpp"
+#include "Engine/PhysXSystem/PhysXVehicleSceneQuery.hpp"
+#include "Engine/PhysXSystem/PhysXVehicleCreate.hpp"
 #include <vector>
 #include <functional>
 
 #define PX_RELEASE(x)	if(x)	{ x->release(); x = NULL;	}
 
 using namespace physx;
+using namespace vehicle;
 
 class RenderContext;
 struct Vec3;
@@ -28,6 +31,8 @@ public:
 
 	//System
 	void				StartUp();
+	PxVehicleDrive4W*	StartUpVehicleSDK();
+	VehicleDesc			InitializeVehicleDescription();
 	void				BeginFrame();
 	void				Update(float deltaTime);
 	void				EndFrame();
@@ -37,6 +42,11 @@ public:
 	PxPhysics*			GetPhysXSDK() const;
 	PxCooking*			GetPhysXCookingModule() const;
 	PxFoundation*		GetPhysXFoundationModule() const;
+	PxBatchQuery*		GetPhysXBatchQuery() const;
+	
+	//Getters for Vehicle SDK
+	VehicleSceneQueryData*	GetVehicleSceneQueryData() const;
+	PxVehicleDrivableSurfaceToTireFrictionPairs* GetVehicleTireFrictionPairs() const;
 
 	//Rigid body Functions
 	PxRigidDynamic*		CreateDynamicObject(const PxGeometry& pxGeometry, const Vec3& velocity, const Matrix44& matrix, float materialDensity = -1.f);
@@ -107,4 +117,10 @@ private:
 	float								m_defaultRestitution = 0.6f;
 	float								m_defaultDensity = 10.f;
 	float								m_defaultAngularDamping = 0.5f;
+
+	//Vehicle SDK
+	VehicleSceneQueryData*				m_vehicleSceneQueryData = nullptr;
+	PxBatchQuery*						m_batchQuery = nullptr;
+	PxVehicleDrivableSurfaceToTireFrictionPairs* m_frictionPairs = nullptr;
+	PxRigidStatic*						m_drivableGroundPlane = nullptr;
 };

@@ -6,6 +6,9 @@
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Vec4.hpp"
 #include "ThirdParty/PhysX/include/PxPhysicsAPI.h"
+#include "Engine/PhysXSystem/PhysXVehicleFilterShader.hpp"
+#include "Engine/PhysXSystem/PhysXVehicleTireFriction.hpp"
+#include "Engine/PhysXSystem/PhysXVehicleCreate.hpp"
 
 //PhysX Pragma Comments
 #if ( defined( _WIN64 ) & defined( _DEBUG ) )
@@ -15,6 +18,7 @@
 #pragma comment( lib, "ThirdParty/PhysX/lib/debug_x64/PhysXExtensions_static_64.lib" )
 #pragma comment( lib, "ThirdParty/PhysX/lib/debug_x64/PhysXFoundation_64.lib" )
 #pragma comment( lib, "ThirdParty/PhysX/lib/debug_x64/PhysXPvdSDK_static_64.lib" )
+#pragma comment( lib, "ThirdParty/PhysX/lib/debug_x64/PhysXVehicle_static_64.lib" )
 #elif ( defined ( _WIN64 ) & defined( NDEBUG ) )
 #pragma comment( lib, "ThirdParty/PhysX/lib/release_x64/PhysX_64.lib" )
 #pragma comment( lib, "ThirdParty/PhysX/lib/release_x64/PhysXCommon_64.lib" )
@@ -22,6 +26,7 @@
 #pragma comment( lib, "ThirdParty/PhysX/lib/release_x64/PhysXExtensions_static_64.lib" )
 #pragma comment( lib, "ThirdParty/PhysX/lib/release_x64/PhysXFoundation_64.lib" )
 #pragma comment( lib, "ThirdParty/PhysX/lib/release_x64/PhysXPvdSDK_static_64.lib" )
+#pragma comment( lib, "ThirdParty/PhysX/lib/release_x64/PhysXVehicle_static_64.lib" )
 #elif ( defined( _WIN32 ) & defined( _DEBUG ) )
 #pragma comment( lib, "ThirdParty/PhysX/lib/debug_x86/PhysX_32.lib" )
 #pragma comment( lib, "ThirdParty/PhysX/lib/debug_x86/PhysXCommon_32.lib" )
@@ -29,6 +34,7 @@
 #pragma comment( lib, "ThirdParty/PhysX/lib/debug_x86/PhysXExtensions_static_32.lib" )
 #pragma comment( lib, "ThirdParty/PhysX/lib/debug_x86/PhysXFoundation_32.lib" )
 #pragma comment( lib, "ThirdParty/PhysX/lib/debug_x86/PhysXPvdSDK_static_32.lib" )
+#pragma comment( lib, "ThirdParty/PhysX/lib/debug_x86/PhysXVehicle_static_32.lib" )
 #elif ( defined( _WIN32 ) & defined( NDEBUG ) )
 #pragma comment( lib, "ThirdParty/PhysX/lib/release_x86/PhysX_32.lib" )
 #pragma comment( lib, "ThirdParty/PhysX/lib/release_x86/PhysXCommon_32.lib" )
@@ -36,6 +42,7 @@
 #pragma comment( lib, "ThirdParty/PhysX/lib/release_x86/PhysXExtensions_static_32.lib" )
 #pragma comment( lib, "ThirdParty/PhysX/lib/release_x86/PhysXFoundation_32.lib" )
 #pragma comment( lib, "ThirdParty/PhysX/lib/release_x86/PhysXPvdSDK_static_32.lib" )
+#pragma comment( lib, "ThirdParty/PhysX/lib/release_x86/PhysXVehicle_static_32.lib" )
 #endif
 
 PhysXSystem* g_PxPhysXSystem = nullptr;
@@ -94,6 +101,90 @@ void PhysXSystem::StartUp()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
+{
+	//------------------------------------------------------------------------------------------------------------------------------
+	// Vehicle SDK Setup
+	//------------------------------------------------------------------------------------------------------------------------------
+
+	PxInitVehicleSDK(*m_PhysX);
+	PxVehicleSetBasisVectors(PxVec3(0, 1, 0), PxVec3(0, 0, 1));
+	PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
+
+	//Create the batched scene queries for the suspension raycasts.
+	m_vehicleSceneQueryData = VehicleSceneQueryData::allocate(1, PX_MAX_NB_WHEELS, 1, 1, WheelSceneQueryPreFilterBlocking, nullptr, m_PxAllocator);
+	m_batchQuery = VehicleSceneQueryData::setUpBatchedSceneQuery(0, *m_vehicleSceneQueryData, m_PxScene);
+
+	//Create the friction table for each combination of tire and surface type.
+	m_frictionPairs = createFrictionPairs(m_PxDefaultMaterial);
+
+	//Create a plane to drive on.
+	PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0);
+	m_drivableGroundPlane = createDrivablePlane(groundPlaneSimFilterData, m_PxDefaultMaterial, m_PhysX);
+	m_PxScene->addActor(*m_drivableGroundPlane);
+	
+	//Create a vehicle that will drive on the plane.
+	VehicleDesc vehicleDesc = InitializeVehicleDescription();
+	PxVehicleDrive4W* vehicleReference = createVehicle4W(vehicleDesc, m_PhysX, m_PxCooking);
+	PxTransform startTransform(PxVec3(0, (vehicleDesc.chassisDims.y*0.5f + vehicleDesc.wheelRadius + 1.0f), 0), PxQuat(PxIdentity));
+	vehicleReference->getRigidDynamicActor()->setGlobalPose(startTransform);
+	m_PxScene->addActor(*vehicleReference->getRigidDynamicActor());
+
+	//Set the vehicle to rest in first gear.
+	//Set the vehicle to use auto-gears.
+	vehicleReference->setToRestState();
+	vehicleReference->mDriveDynData.forceGearChange(PxVehicleGearsData::eFIRST);
+	vehicleReference->mDriveDynData.setUseAutoGears(true);
+
+	//Return the reference to the car that was created
+	return vehicleReference;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+VehicleDesc PhysXSystem::InitializeVehicleDescription()
+{
+	TODO("Clean this up and make sensible defaults initialized in the header. Wtf is 1500? instead m_chassisMass")
+
+	//Set up the chassis mass, dimensions, moment of inertia, and center of mass offset.
+	//The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
+	//Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
+	const PxF32 chassisMass = 1500.0f;
+	const PxVec3 chassisDims(2.5f, 2.0f, 5.0f);
+	const PxVec3 chassisMOI
+	((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 12.0f,
+		(chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*0.8f*chassisMass / 12.0f,
+		(chassisDims.x*chassisDims.x + chassisDims.y*chassisDims.y)*chassisMass / 12.0f);
+	const PxVec3 chassisCMOffset(0.0f, -chassisDims.y*0.5f + 0.65f, 0.25f);
+
+	//Set up the wheel mass, radius, width, moment of inertia, and number of wheels.
+	//Moment of inertia is just the moment of inertia of a cylinder.
+	const PxF32 wheelMass = 20.0f;
+	const PxF32 wheelRadius = 0.5f;
+	const PxF32 wheelWidth = 0.4f;
+	const PxF32 wheelMOI = 0.5f*wheelMass*wheelRadius*wheelRadius;
+	const PxU32 nbWheels = 6;
+
+	VehicleDesc vehicleDesc;
+
+	vehicleDesc.chassisMass = chassisMass;
+	vehicleDesc.chassisDims = chassisDims;
+	vehicleDesc.chassisMOI = chassisMOI;
+	vehicleDesc.chassisCMOffset = chassisCMOffset;
+	vehicleDesc.chassisMaterial = m_PxDefaultMaterial;
+	vehicleDesc.chassisSimFilterData = PxFilterData(COLLISION_FLAG_CHASSIS, COLLISION_FLAG_CHASSIS_AGAINST, 0, 0);
+
+	vehicleDesc.wheelMass = wheelMass;
+	vehicleDesc.wheelRadius = wheelRadius;
+	vehicleDesc.wheelWidth = wheelWidth;
+	vehicleDesc.wheelMOI = wheelMOI;
+	vehicleDesc.numWheels = nbWheels;
+	vehicleDesc.wheelMaterial = m_PxDefaultMaterial;
+	vehicleDesc.chassisSimFilterData = PxFilterData(COLLISION_FLAG_WHEEL, COLLISION_FLAG_WHEEL_AGAINST, 0, 0);
+
+	return vehicleDesc;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void PhysXSystem::BeginFrame()
 {
 
@@ -134,6 +225,24 @@ physx::PxCooking* PhysXSystem::GetPhysXCookingModule() const
 physx::PxFoundation* PhysXSystem::GetPhysXFoundationModule() const
 {
 	return m_PxFoundation; 
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+vehicle::VehicleSceneQueryData* PhysXSystem::GetVehicleSceneQueryData() const
+{
+	return m_vehicleSceneQueryData;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+physx::PxVehicleDrivableSurfaceToTireFrictionPairs* PhysXSystem::GetVehicleTireFrictionPairs() const
+{
+	return m_frictionPairs;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+physx::PxBatchQuery* PhysXSystem::GetPhysXBatchQuery() const
+{
+	return m_batchQuery;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -266,6 +375,7 @@ physx::PxJoint* PhysXSystem::CreateJointLimitedSpherical(PxRigidActor* actorA, c
 	PxSphericalJoint* joint = PxSphericalJointCreate(*m_PhysX, actorA, transformA, actorB, transformB);
 	joint->setLimitCone(PxJointLimitCone(DegreesToRadians(yAngleLimit), DegreesToRadians(zAngleLimit), contactDistance));
 	joint->setSphericalJointFlag(PxSphericalJointFlag::eLIMIT_ENABLED, true);
+	joint->setConstraintFlag(PxConstraintFlag::ePROJECTION, true);
 	return joint;
 }
 
@@ -573,6 +683,10 @@ STATIC PxQuat PhysXSystem::MakeQuaternionFromMatrix(const Matrix44& matrix)
 //------------------------------------------------------------------------------------------------------------------------------
 void PhysXSystem::ShutDown()
 {
+#ifdef PHYSX_VEHICLE_ENABLED
+	PxCloseVehicleSDK();
+#endif // PHYSX_VEHICLE_ENABLED
+
 	//Handle all shutdown code here for Nvidia PhysX
 	PX_RELEASE(m_PxScene);
 	PX_RELEASE(m_PxDispatcher);
