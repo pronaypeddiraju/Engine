@@ -119,6 +119,7 @@ private:
 	float								m_defaultAngularDamping = 0.5f;
 
 	//Vehicle SDK
+	bool								m_vehicleKitEnabled = false;
 	VehicleSceneQueryData*				m_vehicleSceneQueryData = nullptr;
 	PxBatchQuery*						m_batchQuery = nullptr;
 	PxVehicleDrivableSurfaceToTireFrictionPairs* m_frictionPairs = nullptr;

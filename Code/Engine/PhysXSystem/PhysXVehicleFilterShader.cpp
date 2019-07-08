@@ -46,6 +46,39 @@ namespace vehicle
 		PX_UNUSED(constantBlock);
 		PX_UNUSED(constantBlockSize);
 
+		/*
+		// let triggers through
+		if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
+		{
+			pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+			return PxFilterFlags();
+		}
+		*/
+
+		if ((0 == (filterData0.word0 & filterData1.word1)) && (0 == (filterData1.word0 & filterData0.word1)))
+			return PxFilterFlag::eSUPPRESS;
+
+		pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+		pairFlags |= PxPairFlags(PxU16(filterData0.word2 | filterData1.word2));
+
+		return PxFilterFlags();
+	}
+
+	PxFilterFlags VehicleStandardCollisionsFilterShader
+	(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
+		PxFilterObjectAttributes attributes1, PxFilterData filterData1,
+		PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+	{
+		PX_UNUSED(constantBlock);
+		PX_UNUSED(constantBlockSize);
+
+		// let triggers through
+		if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
+		{
+			pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+			return PxFilterFlags();
+		}
+
 		if ((0 == (filterData0.word0 & filterData1.word1)) && (0 == (filterData1.word0 & filterData0.word1)))
 			return PxFilterFlag::eSUPPRESS;
 

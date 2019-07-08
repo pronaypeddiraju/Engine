@@ -106,7 +106,19 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 	//------------------------------------------------------------------------------------------------------------------------------
 	// Vehicle SDK Setup
 	//------------------------------------------------------------------------------------------------------------------------------
+	m_vehicleKitEnabled = true;
 
+	/*
+	m_PxScene->release();
+	m_PxScene = nullptr;
+	PxSceneDesc sceneDesc(m_PhysX->getTolerancesScale());
+	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+	m_PxDispatcher = PxDefaultCpuDispatcherCreate(2);
+	sceneDesc.cpuDispatcher = m_PxDispatcher;
+	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+	m_PxScene = m_PhysX->createScene(sceneDesc);
+	*/
+	
 	PxInitVehicleSDK(*m_PhysX);
 	PxVehicleSetBasisVectors(PxVec3(0, 1, 0), PxVec3(0, 0, 1));
 	PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
@@ -162,7 +174,7 @@ VehicleDesc PhysXSystem::InitializeVehicleDescription()
 	const PxF32 wheelRadius = 0.5f;
 	const PxF32 wheelWidth = 0.4f;
 	const PxF32 wheelMOI = 0.5f*wheelMass*wheelRadius*wheelRadius;
-	const PxU32 nbWheels = 6;
+	const PxU32 nbWheels = 4;
 
 	VehicleDesc vehicleDesc;
 
@@ -683,9 +695,10 @@ STATIC PxQuat PhysXSystem::MakeQuaternionFromMatrix(const Matrix44& matrix)
 //------------------------------------------------------------------------------------------------------------------------------
 void PhysXSystem::ShutDown()
 {
-#ifdef PHYSX_VEHICLE_ENABLED
-	PxCloseVehicleSDK();
-#endif // PHYSX_VEHICLE_ENABLED
+	if (m_vehicleKitEnabled)
+	{
+		PxCloseVehicleSDK();
+	}
 
 	//Handle all shutdown code here for Nvidia PhysX
 	PX_RELEASE(m_PxScene);
