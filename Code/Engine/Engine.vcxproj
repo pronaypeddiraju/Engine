@@ -505,6 +505,7 @@
     <ClInclude Include="Input\XboxController.hpp" />
     <ClInclude Include="Math\AABB2.hpp" />
     <ClInclude Include="Math\AABB3.hpp" />
+    <ClInclude Include="Math\Array2D.hpp" />
     <ClInclude Include="Math\Capsule2D.hpp" />
     <ClInclude Include="Math\Capsule3D.hpp" />
     <ClInclude Include="Math\Collider2D.hpp" />
@@ -581,6 +582,9 @@
     <ClInclude Include="ThirdParty\imGUI\imstb_rectpack.h" />
     <ClInclude Include="ThirdParty\imGUI\imstb_textedit.h" />
     <ClInclude Include="ThirdParty\imGUI\imstb_truetype.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Math\Array2D.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

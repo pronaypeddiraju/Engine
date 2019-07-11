@@ -1189,5 +1189,13 @@
     <ClInclude Include="Core\Async\AsyncQueue.hpp">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Math\Array2D.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Math\Array2D.inl">
+      <Filter>Math</Filter>
+    </None>
   </ItemGroup>
 </Project>

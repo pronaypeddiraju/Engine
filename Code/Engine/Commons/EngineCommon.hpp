@@ -3,6 +3,7 @@
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Commons/StringUtils.hpp"
 #include "Engine/Math/Vec2.hpp"
+#include <atomic>
 
 #pragma warning( error: 4172) // Returning address of local variable or temporary variable
 #pragma warning( error: 4172) //Not all control paths return a value
@@ -155,3 +156,12 @@ bool				AreAnyBitsSet(uint currentFlags, uint flagsToCheck);
 uint				SetBit(uint flags, uint bit);
 uint				ClearBit(uint flags, uint bit);
 uint				SetBitTo(uint flags, uint bit, bool set);
+
+//------------------------------------------------------------------------------------------------------------------------------
+// For overloaded operators new and delete
+//------------------------------------------------------------------------------------------------------------------------------
+
+extern std::atomic<size_t> gAllocatedThisFrame;
+extern std::atomic<size_t> gAllocatedBytesThisFrame;
+extern std::atomic<size_t> gTotalAllocations;
+extern std::atomic<size_t> gTotalBytesAllocated;
