@@ -31,7 +31,7 @@ Array2D<T>::Array2D(const IntVec2& size, const T& data)
 template <typename T>
 void Array2D<T>::Set(const IntVec2& cell, const T& value)
 {
-	int index = cell.x * cell.y;
+	int index = cell.x + (cell.y * m_size.y);
 	m_data[index] = value;
 }
 
@@ -50,7 +50,7 @@ void Array2D<T>::SetAll(const T& value)
 template <typename T>
 T& Array2D<T>::Get(const IntVec2& cell)
 {
-	int index = cell.x * cell.y;
+	int index = cell.x + (cell.y * m_size.y);
 	return m_data[index];
 }
 
@@ -58,7 +58,7 @@ T& Array2D<T>::Get(const IntVec2& cell)
 template <typename T>
 T Array2D<T>::TryGet(const IntVec2& cell, const T& defaultValue)
 {
-	int index = cell.x * cell.y;
+	int index = cell.x + (cell.y * m_size.y);
 
 	if ((int)m_data.size() > index)
 	{
@@ -74,7 +74,7 @@ T Array2D<T>::TryGet(const IntVec2& cell, const T& defaultValue)
 template <typename T>
 const T& Array2D<T>::Get(const IntVec2& cell) const
 {
-	int index = cell.x * cell.y;
+	int index = cell.x + (cell.y * m_size.y);
 	return m_data[index];
 }
 
@@ -90,7 +90,7 @@ uint Array2D<T>::GetIndex(const IntVec2& cell) const
 template <typename T>
 bool Array2D<T>::ContainsCell(const IntVec2& cell)
 {
-	int index = cell.x * cell.y;
+	int index = cell.x + (cell.y * m_size.y);
 	if ((int)m_data.size() > index)
 	{
 		return true;
