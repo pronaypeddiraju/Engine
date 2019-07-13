@@ -94,16 +94,9 @@ std::string IntVec2::GetAsString() const
 //------------------------------------------------------------------------------------------------------------------------------
 bool IntVec2::IsInBounds(const IntVec2& bounds) const
 {
-	if (x >= 0 && x < bounds.x)
+	if (x >= 0 && x < bounds.x && y >= 0 && y < bounds.y)
 	{
-		if (y >= 0 && y < bounds.y)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return true;
 	}
 	else
 	{
