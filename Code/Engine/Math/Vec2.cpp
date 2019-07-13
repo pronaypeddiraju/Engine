@@ -9,17 +9,15 @@
 //------------------------------------------------------------------------------------------------------------------------------
 const STATIC Vec2 Vec2::ZERO(0.f,0.f);
 const STATIC Vec2 Vec2::ONE(1.f, 1.f);
+const STATIC Vec2 Vec2::NEGATIVE_ONE(-1.f, -1.f);
 
 const STATIC Vec2 Vec2::ALIGN_CENTERED(0.5f, 0.5f);
-
 const STATIC Vec2 Vec2::ALIGN_LEFT_BOTTOM(0.0f, 0.0f);
 const STATIC Vec2 Vec2::ALIGN_LEFT_CENTERED(0.0f, 0.5f);
 const STATIC Vec2 Vec2::ALIGN_LEFT_TOP(0.0f, 1.0f);
-
 const STATIC Vec2 Vec2::ALIGN_RIGHT_BOTTOM(1.0f, 0.0f);
 const STATIC Vec2 Vec2::ALIGN_RIGHT_CENTERED(1.f, 0.5f);
 const STATIC Vec2 Vec2::ALIGN_RIGHT_TOP(1.f, 1.f);
-
 const STATIC Vec2 Vec2::ALIGN_TOP_CENTERED(0.5f, 1.f);
 const STATIC Vec2 Vec2::ALIGN_BOTTOM_CENTERED(0.5f, 0.f);
 
