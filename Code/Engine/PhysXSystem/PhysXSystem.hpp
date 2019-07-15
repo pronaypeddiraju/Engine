@@ -32,7 +32,7 @@ public:
 	//System
 	void				StartUp();
 	PxVehicleDrive4W*	StartUpVehicleSDK();
-	VehicleDesc			InitializeVehicleDescription();
+	VehicleDesc			InitializeVehicleDescription(const PxFilterData& chassisSimFilterData, const PxFilterData& wheelSimFilterData);
 	void				BeginFrame();
 	void				Update(float deltaTime);
 	void				EndFrame();
@@ -124,4 +124,8 @@ private:
 	PxBatchQuery*						m_batchQuery = nullptr;
 	PxVehicleDrivableSurfaceToTireFrictionPairs* m_frictionPairs = nullptr;
 	PxRigidStatic*						m_drivableGroundPlane = nullptr;
+
+	int									m_numberOfVehicles = 1;
+	ActorUserData						m_actorUserData;
+	ShapeUserData						m_shapeUserData[PX_MAX_NB_WHEELS];
 };

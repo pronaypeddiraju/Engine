@@ -1196,5 +1196,7 @@
     <ClInclude Include="PhysXSystem\PhysXVehicleSceneQuery.hpp" />
     <ClInclude Include="PhysXSystem\PhysXVehicleTireFriction.hpp" />
     <ClInclude Include="PhysXSystem\PhysXVehicleCreate.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXWheelContactModifyCallback.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXWheelCCFContactModifyCallback.hpp" />
   </ItemGroup>
 </Project>

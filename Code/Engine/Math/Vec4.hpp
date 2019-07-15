@@ -2,6 +2,7 @@
 #pragma once
 
 struct Matrix44;
+struct Vec3;
 
 //------------------------------------------------------------------------------------------------------------------------------
 struct Vec4
@@ -11,6 +12,7 @@ public:
 	~Vec4() {}
 
 	Vec4( const Vec4& copyFrom );											// copy constructor (from another vec4)
+	Vec4( const Vec3& copyFrom );
 	explicit Vec4( float initialX, float initialY, float initialZ, float initialW );		// explicit constructor (from x, y, z, w)
 	explicit Vec4(const char* asText);
 

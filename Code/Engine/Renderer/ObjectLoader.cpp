@@ -194,7 +194,7 @@ void ObjectLoader::CreateFromString(const char* data)
 			{
 				if (!m_invert)
 				{
-					//Bruh we have quad so better plit into tris
+					//We have quad so better plit into tris
 					this->AddIndexForMesh(tokens[0]);
 					this->AddIndexForMesh(tokens[1]);
 					this->AddIndexForMesh(tokens[2]);
@@ -205,7 +205,7 @@ void ObjectLoader::CreateFromString(const char* data)
 				}
 				else
 				{
-					//Bruh we have quad so better plit into tris
+					//We have quad so better plit into tris
 					this->AddIndexForMesh(tokens[0]);
 					this->AddIndexForMesh(tokens[2]);
 					this->AddIndexForMesh(tokens[1]);
@@ -217,7 +217,37 @@ void ObjectLoader::CreateFromString(const char* data)
 			}
 			else
 			{
-				ERROR_AND_DIE("Obj file contains an n-gon");
+				DebuggerPrintf("Obj file contains an n-gon \n");
+				if (!m_invert)
+				{
+					//We have 5 face so better plit into tris
+					this->AddIndexForMesh(tokens[0]);
+					this->AddIndexForMesh(tokens[1]);
+					this->AddIndexForMesh(tokens[2]);
+
+					this->AddIndexForMesh(tokens[0]);
+					this->AddIndexForMesh(tokens[2]);
+					this->AddIndexForMesh(tokens[3]);
+
+					this->AddIndexForMesh(tokens[0]);
+					this->AddIndexForMesh(tokens[3]);
+					this->AddIndexForMesh(tokens[4]);
+				}
+				else
+				{
+					//We have 5 face so better plit into tris
+					this->AddIndexForMesh(tokens[0]);
+					this->AddIndexForMesh(tokens[2]);
+					this->AddIndexForMesh(tokens[1]);
+
+					this->AddIndexForMesh(tokens[0]);
+					this->AddIndexForMesh(tokens[3]);
+					this->AddIndexForMesh(tokens[2]);
+
+					this->AddIndexForMesh(tokens[0]);
+					this->AddIndexForMesh(tokens[4]);
+					this->AddIndexForMesh(tokens[3]);
+				}
 			}
 		}
 

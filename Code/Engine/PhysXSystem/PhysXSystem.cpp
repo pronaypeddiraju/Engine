@@ -5,10 +5,14 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Vec4.hpp"
+//PhysX API
 #include "ThirdParty/PhysX/include/PxPhysicsAPI.h"
+//Vehicle Includes
 #include "Engine/PhysXSystem/PhysXVehicleFilterShader.hpp"
 #include "Engine/PhysXSystem/PhysXVehicleTireFriction.hpp"
 #include "Engine/PhysXSystem/PhysXVehicleCreate.hpp"
+#include "Engine/PhysXSystem/PhysXWheelContactModifyCallback.hpp"
+#include "Engine/PhysXSystem/PhysXWheelCCFContactModifyCallback.hpp"
 
 //PhysX Pragma Comments
 #if ( defined( _WIN64 ) & defined( _DEBUG ) )
@@ -44,6 +48,29 @@
 #pragma comment( lib, "ThirdParty/PhysX/lib/release_x86/PhysXPvdSDK_static_32.lib" )
 #pragma comment( lib, "ThirdParty/PhysX/lib/release_x86/PhysXVehicle_static_32.lib" )
 #endif
+
+//Angle thresholds used to categorize contacts as suspension contacts or rigid body contacts
+//Anything above this threshold cannot be a suspension contact
+#define POINT_REJECT_ANGLE PxPi/4.0f
+#define NORMAL_REJECT_ANGLE PxPi/4.0f
+
+//PhysX Vehicles support blocking and non-blocking sweeps
+//Switching this will result in the number of hit queries recieved by wheel to change
+//	based on how we set it up
+#define BLOCKING_SWEEPS 1
+
+//Define the maximum acceleration for dynamic bodies under the wheel
+#define MAX_ACCELERATION 50.0f
+
+//Blocking sweeps require sweep hit buffers for just 1 hit per wheel
+//Non-blocking sweeps require more hits per wheel because they return all touches 
+//	on the swept shape
+#if BLOCKING_SWEEPS
+short					gNumQueryHitsPerWheel = 1;
+#else
+short					gNumQueryHitsPerWheel = 8;
+#endif
+
 
 PhysXSystem* g_PxPhysXSystem = nullptr;
 
@@ -112,17 +139,35 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 	m_PxScene = nullptr;
 	PxSceneDesc sceneDesc(m_PhysX->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
-	m_PxDispatcher = PxDefaultCpuDispatcherCreate(2);
+	m_PxDispatcher = PxDefaultCpuDispatcherCreate(1);
 	sceneDesc.cpuDispatcher = m_PxDispatcher;
+	//sceneDesc.filterShader = PxDefaultSimulationFilterShader;
 	sceneDesc.filterShader = VehicleFilterShader;
+	sceneDesc.contactModifyCallback = &gWheelContactModifyCallback;			//Enable contact modification
+	sceneDesc.ccdContactModifyCallback = &gWheelCCDContactModifyCallback;	//Enable ccd contact modification
+	sceneDesc.flags |= PxSceneFlag::eENABLE_CCD;							//Enable ccd
 	m_PxScene = m_PhysX->createScene(sceneDesc);
-	
+
 	PxInitVehicleSDK(*m_PhysX);
 	PxVehicleSetBasisVectors(PxVec3(0, 1, 0), PxVec3(0, 0, 1));
 	PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
+	PxVehicleSetSweepHitRejectionAngles(POINT_REJECT_ANGLE, NORMAL_REJECT_ANGLE);
+	PxVehicleSetMaxHitActorAcceleration(MAX_ACCELERATION);
+
+	//Create the batched scene queries for the suspension sweeps.
+	//Use the post-filter shader to reject hit shapes that overlap the swept wheel at the start pose of the sweep.
+	PxQueryHitType::Enum(*sceneQueryPreFilter)(PxFilterData, PxFilterData, const void*, PxU32, PxHitFlags&);
+	PxQueryHitType::Enum(*sceneQueryPostFilter)(PxFilterData, PxFilterData, const void*, PxU32, const PxQueryHit&);
+#if BLOCKING_SWEEPS
+	sceneQueryPreFilter = &WheelSceneQueryPreFilterBlocking;
+	sceneQueryPostFilter = &WheelSceneQueryPostFilterBlocking;
+#else
+	sceneQueryPreFilter = &WheelSceneQueryPreFilterNonBlocking;
+	sceneQueryPostFilter = &WheelSceneQueryPostFilterNonBlocking;
+#endif 
 
 	//Create the batched scene queries for the suspension raycasts.
-	m_vehicleSceneQueryData = VehicleSceneQueryData::allocate(1, PX_MAX_NB_WHEELS, 1, 1, WheelSceneQueryPreFilterBlocking, nullptr, m_PxAllocator);
+	m_vehicleSceneQueryData = VehicleSceneQueryData::allocate(m_numberOfVehicles, PX_MAX_NB_WHEELS, gNumQueryHitsPerWheel, m_numberOfVehicles, sceneQueryPreFilter, sceneQueryPostFilter, m_PxAllocator);
 	m_batchQuery = VehicleSceneQueryData::setUpBatchedSceneQuery(0, *m_vehicleSceneQueryData, m_PxScene);
 
 	//Create the friction table for each combination of tire and surface type.
@@ -134,10 +179,13 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 	m_PxScene->addActor(*m_drivableGroundPlane);
 	
 	//Create a vehicle that will drive on the plane.
-	VehicleDesc vehicleDesc = InitializeVehicleDescription();
+	PxFilterData chassisSimFilterData(COLLISION_FLAG_CHASSIS, COLLISION_FLAG_GROUND, 0, 0);
+	PxFilterData wheelSimFilterData(COLLISION_FLAG_WHEEL, COLLISION_FLAG_WHEEL, PxPairFlag::eDETECT_CCD_CONTACT | PxPairFlag::eMODIFY_CONTACTS, 0);
+	VehicleDesc vehicleDesc = InitializeVehicleDescription(chassisSimFilterData, wheelSimFilterData);
 	PxVehicleDrive4W* vehicleReference = createVehicle4W(vehicleDesc, m_PhysX, m_PxCooking);
 	PxTransform startTransform(PxVec3(0, (vehicleDesc.chassisDims.y*0.5f + vehicleDesc.wheelRadius + 1.0f), 0), PxQuat(PxIdentity));
 	vehicleReference->getRigidDynamicActor()->setGlobalPose(startTransform);
+	vehicleReference->getRigidDynamicActor()->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
 	m_PxScene->addActor(*vehicleReference->getRigidDynamicActor());
 
 	//Set the vehicle to rest in first gear.
@@ -151,7 +199,7 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-VehicleDesc PhysXSystem::InitializeVehicleDescription()
+VehicleDesc PhysXSystem::InitializeVehicleDescription(const PxFilterData& chassisSimFilterData, const PxFilterData& wheelSimFilterData)
 {
 	TODO("Clean this up and make sensible defaults initialized in the header. Wtf is 1500? instead m_chassisMass")
 
@@ -181,7 +229,7 @@ VehicleDesc PhysXSystem::InitializeVehicleDescription()
 	vehicleDesc.chassisMOI = chassisMOI;
 	vehicleDesc.chassisCMOffset = chassisCMOffset;
 	vehicleDesc.chassisMaterial = m_PxDefaultMaterial;
-	vehicleDesc.chassisSimFilterData = PxFilterData(COLLISION_FLAG_CHASSIS, COLLISION_FLAG_CHASSIS_AGAINST, 0, 0);
+	vehicleDesc.chassisSimFilterData = chassisSimFilterData;
 
 	vehicleDesc.wheelMass = wheelMass;
 	vehicleDesc.wheelRadius = wheelRadius;
@@ -189,7 +237,10 @@ VehicleDesc PhysXSystem::InitializeVehicleDescription()
 	vehicleDesc.wheelMOI = wheelMOI;
 	vehicleDesc.numWheels = nbWheels;
 	vehicleDesc.wheelMaterial = m_PxDefaultMaterial;
-	vehicleDesc.chassisSimFilterData = PxFilterData(COLLISION_FLAG_WHEEL, COLLISION_FLAG_WHEEL_AGAINST, 0, 0);
+	vehicleDesc.chassisSimFilterData = wheelSimFilterData;
+
+	vehicleDesc.actorUserData = &m_actorUserData;
+	vehicleDesc.shapeUserDatas = m_shapeUserData;
 
 	return vehicleDesc;
 }
@@ -343,6 +394,14 @@ void PhysXSystem::CreateRandomConvexHull(std::vector<Vec3>& vertexArray, int gau
 		const PxMaterial* material = g_PxPhysXSystem->GetDefaultPxMaterial();
 
 		PxShape* shape = pxPhysics->createShape(geometry, *material);
+
+		/*
+		PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0);
+		PxFilterData qryFilterData;
+		setupDrivableSurface(qryFilterData);
+		shape->setQueryFilterData(qryFilterData);
+		shape->setSimulationFilterData(groundPlaneSimFilterData);
+		*/
 
 		PxTransform localTm(PxVec3(0, 50.f, 0));
 		PxRigidDynamic* body = pxPhysics->createRigidDynamic(localTm);

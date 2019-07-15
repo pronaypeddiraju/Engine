@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Vec4.hpp"
 #include "Engine/Math/Matrix44.hpp"
 #include <vector>
@@ -53,6 +54,15 @@ Vec4::Vec4( float initialX, float initialY, float initialZ, float initialW )
 Vec4::Vec4( const char* asText )
 {
 	SetFromText(asText);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+Vec4::Vec4(const Vec3& copyFrom)
+{
+	x = copyFrom.x;
+	y = copyFrom.y;
+	z = copyFrom.z;
+	w = 0.f;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
