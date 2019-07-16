@@ -670,6 +670,85 @@ void PhysXSystem::CreateDampedD6Chain(const Vec3& position, int length, const Px
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+PxConvexMesh* PhysXSystem::CreateConvexMesh(const PxVec3* verts, const PxU32 numVerts, PxPhysics& physics, PxCooking& cooking)
+{
+	// Create descriptor for convex mesh
+	PxConvexMeshDesc convexDesc;
+	convexDesc.points.count = numVerts;
+	convexDesc.points.stride = sizeof(PxVec3);
+	convexDesc.points.data = verts;
+	convexDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
+
+	PxConvexMesh* convexMesh = NULL;
+	PxDefaultMemoryOutputStream buf;
+	if (cooking.cookConvexMesh(convexDesc, buf))
+	{
+		PxDefaultMemoryInputData id(buf.getData(), buf.getSize());
+		convexMesh = physics.createConvexMesh(id);
+	}
+
+	return convexMesh;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+PxConvexMesh* PhysXSystem::CreateWedgeConvexMesh(const PxVec3& halfExtents, PxPhysics& physics, PxCooking& cooking)
+{
+	PxVec3 verts[6] =
+	{
+		PxVec3(-halfExtents.x, -halfExtents.y, -halfExtents.z),
+		PxVec3(-halfExtents.x, -halfExtents.y, +halfExtents.z),
+		PxVec3(-halfExtents.x, +halfExtents.y, -halfExtents.z),
+		PxVec3(+halfExtents.x, -halfExtents.y, -halfExtents.z),
+		PxVec3(+halfExtents.x, -halfExtents.y, +halfExtents.z),
+		PxVec3(+halfExtents.x, +halfExtents.y, -halfExtents.z)
+	};
+	PxU32 numVerts = 6;
+
+	return CreateConvexMesh(verts, numVerts, physics, cooking);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+PxConvexMesh* PhysXSystem::CreateCuboidConvexMesh(const PxVec3& halfExtents, PxPhysics& physics, PxCooking& cooking)
+{
+	PxVec3 verts[8] =
+	{
+		PxVec3(-halfExtents.x, -halfExtents.y, -halfExtents.z),
+		PxVec3(-halfExtents.x, -halfExtents.y, +halfExtents.z),
+		PxVec3(-halfExtents.x, +halfExtents.y, -halfExtents.z),
+		PxVec3(-halfExtents.x, +halfExtents.y, +halfExtents.z),
+		PxVec3(+halfExtents.x, -halfExtents.y, -halfExtents.z),
+		PxVec3(+halfExtents.x, -halfExtents.y, +halfExtents.z),
+		PxVec3(+halfExtents.x, +halfExtents.y, -halfExtents.z),
+		PxVec3(+halfExtents.x, +halfExtents.y, +halfExtents.z)
+	};
+	PxU32 numVerts = 8;
+
+	return CreateConvexMesh(verts, numVerts, physics, cooking);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+PxRigidStatic* PhysXSystem::AddStaticObstacle
+(const PxTransform& transform, const PxU32 numShapes, PxTransform* shapeTransforms, PxGeometry** shapeGeometries, PxMaterial** shapeMaterials)
+{
+	PxFilterData simFilterData;
+	simFilterData.word0 = COLLISION_FLAG_GROUND;
+	simFilterData.word1 = COLLISION_FLAG_GROUND_AGAINST;
+	PxFilterData qryFilterData;
+	setupDrivableSurface(qryFilterData);
+
+	PxRigidStatic* actor = m_PhysX->createRigidStatic(transform);
+	for (PxU32 i = 0; i < numShapes; i++)
+	{
+		PxShape* shape = PxRigidActorExt::createExclusiveShape(*actor, *shapeGeometries[i], *shapeMaterials[i]);
+		shape->setLocalPose(shapeTransforms[i]);
+		shape->setSimulationFilterData(simFilterData);
+		shape->setQueryFilterData(qryFilterData);
+	}
+	m_PxScene->addActor(*actor);
+	return actor;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 physx::PxMaterial* PhysXSystem::GetDefaultPxMaterial() const
 {
 	return m_PxDefaultMaterial;
@@ -740,6 +819,12 @@ STATIC PxQuat PhysXSystem::MakeQuaternionFromMatrix(const Matrix44& matrix)
 {
 	//Quaternion
 	float w = sqrt(1.0f + matrix.m_values[Matrix44::Ix] + matrix.m_values[Matrix44::Jy] + matrix.m_values[Matrix44::Kz]) / 2.0f;
+
+	if (w == 0)
+	{
+		w = 1.f;
+	}
+
 	float one_over_w4 = 1.f / (4.0f * w);
 	float x = (matrix.m_values[Matrix44::Ky] - matrix.m_values[Matrix44::Jz]) * one_over_w4;
 	float y = (matrix.m_values[Matrix44::Iz] - matrix.m_values[Matrix44::Kx]) * one_over_w4;

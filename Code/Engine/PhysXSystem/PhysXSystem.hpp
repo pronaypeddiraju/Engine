@@ -53,6 +53,9 @@ public:
 
 	//Convex Hull
 	void				CreateRandomConvexHull(std::vector<Vec3>& vertexArray, int gaussMapLimit, bool directInsertion);
+	PxConvexMesh*		CreateConvexMesh(const PxVec3* verts, const PxU32 numVerts, PxPhysics& physics, PxCooking& cooking);
+	PxConvexMesh*		CreateWedgeConvexMesh(const PxVec3& halfExtents, PxPhysics& physics, PxCooking& cooking);
+	PxConvexMesh*		CreateCuboidConvexMesh(const PxVec3& halfExtents, PxPhysics& physics, PxCooking& cooking);
 	PxConvexMeshCookingType::Enum	GetPxConvexMeshCookingType(PhysXConvexMeshCookingTypes_T meshType);
 
 	//PhysX Joints
@@ -78,6 +81,9 @@ public:
 
 	void				CreateDampedD6Chain(const Vec3& position, int length, const PxGeometry& geometry, float separation
 												, float driveStiffness, float driveDamping, float driveForceLimit = FLT_MAX, bool isDriveAcceleration = false);
+	
+	//PhysX Vehicle Utils
+	PxRigidStatic*		AddStaticObstacle(const PxTransform& transform, const PxU32 numShapes, PxTransform* shapeTransforms, PxGeometry** shapeGeometries, PxMaterial** shapeMaterials);
 
 	//PhysX Materials
 	PxMaterial*			GetDefaultPxMaterial() const;

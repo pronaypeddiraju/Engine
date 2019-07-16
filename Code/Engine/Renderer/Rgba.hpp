@@ -24,6 +24,21 @@ public:
 	const static Rgba MAGENTA;
 	const static Rgba CLEAR;
 
+	const static Rgba ORGANIC_RED;
+	const static Rgba ORGANIC_ORANGE;
+	const static Rgba ORGANIC_YELLOW;
+	const static Rgba ORGANIC_GREEN;
+	const static Rgba ORGANIC_BLUE;
+	const static Rgba ORGANIC_PURPLE;
+	const static Rgba ORGANIC_GREY;
+	const static Rgba ORGANIC_BROWN;
+	
+	const static Rgba ORGANIC_DIM_RED;
+	const static Rgba ORGANIC_DIM_YELLOW;
+	const static Rgba ORGANIC_DIM_GREEN;
+	const static Rgba ORGANIC_DIM_BLUE;
+	const static Rgba ORGANIC_DIM_PURPLE;
+
 private:
 	//private variables
 
