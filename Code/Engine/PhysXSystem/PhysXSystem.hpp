@@ -84,7 +84,8 @@ public:
 	
 	//PhysX Vehicle Utils
 	PxRigidStatic*		AddStaticObstacle(const PxTransform& transform, const PxU32 numShapes, PxTransform* shapeTransforms, PxGeometry** shapeGeometries, PxMaterial** shapeMaterials);
-
+	PxRigidDynamic*		AddDynamicObstacle(const PxTransform& transform, const PxF32 mass, const PxU32 numShapes, PxTransform* shapeTransforms, PxGeometry** shapeGeometries, PxMaterial** shapeMaterials);
+	
 	//PhysX Materials
 	PxMaterial*			GetDefaultPxMaterial() const;
 

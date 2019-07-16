@@ -201,8 +201,6 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 //------------------------------------------------------------------------------------------------------------------------------
 VehicleDesc PhysXSystem::InitializeVehicleDescription(const PxFilterData& chassisSimFilterData, const PxFilterData& wheelSimFilterData)
 {
-	TODO("Clean this up and make sensible defaults initialized in the header. Wtf is 1500? instead m_chassisMass")
-
 	//Set up the chassis mass, dimensions, moment of inertia, and center of mass offset.
 	//The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
 	//Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
@@ -744,6 +742,30 @@ PxRigidStatic* PhysXSystem::AddStaticObstacle
 		shape->setSimulationFilterData(simFilterData);
 		shape->setQueryFilterData(qryFilterData);
 	}
+	m_PxScene->addActor(*actor);
+	return actor;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+PxRigidDynamic* PhysXSystem::AddDynamicObstacle
+(const PxTransform& transform, const PxF32 mass, const PxU32 numShapes, PxTransform* shapeTransforms, PxGeometry** shapeGeometries, PxMaterial** shapeMaterials)
+{
+	PxFilterData simFilterData;
+	simFilterData.word0 = COLLISION_FLAG_OBSTACLE;
+	simFilterData.word1 = COLLISION_FLAG_OBSTACLE_AGAINST;
+	PxFilterData qryFilterData;
+	setupNonDrivableSurface(qryFilterData);
+
+	PxRigidDynamic* actor = m_PhysX->createRigidDynamic(transform);
+	for (PxU32 i = 0; i < numShapes; i++)
+	{
+		PxShape* shape = PxRigidActorExt::createExclusiveShape(*actor, *shapeGeometries[i], *shapeMaterials[i]);
+		shape->setLocalPose(shapeTransforms[i]);
+		shape->setSimulationFilterData(simFilterData);
+		shape->setQueryFilterData(qryFilterData);
+	}
+
+	PxRigidBodyExt::setMassAndUpdateInertia(*actor, mass);
 	m_PxScene->addActor(*actor);
 	return actor;
 }
