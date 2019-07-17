@@ -20,7 +20,6 @@ struct Vec4;
 struct Matrix44;
 
 typedef unsigned int uint;
-typedef PxJoint* (*JointCreateFunction)(PxRigidActor* actorA, const Vec3& positionA, PxRigidActor* actorB, const Vec3& positionB);
 
 //------------------------------------------------------------------------------------------------------------------------------
 class PhysXSystem

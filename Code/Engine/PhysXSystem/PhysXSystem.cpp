@@ -12,7 +12,7 @@
 #include "Engine/PhysXSystem/PhysXVehicleTireFriction.hpp"
 #include "Engine/PhysXSystem/PhysXVehicleCreate.hpp"
 #include "Engine/PhysXSystem/PhysXWheelContactModifyCallback.hpp"
-#include "Engine/PhysXSystem/PhysXWheelCCFContactModifyCallback.hpp"
+#include "Engine/PhysXSystem/PhysXWheelCCDContactModifyCallback.hpp"
 
 //PhysX Pragma Comments
 #if ( defined( _WIN64 ) & defined( _DEBUG ) )
