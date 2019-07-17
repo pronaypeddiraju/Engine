@@ -1541,6 +1541,20 @@ void DebugRender::DebugRenderQuad( DebugRenderOptionsT options, const AABB2& qua
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void DebugRender::DebugRenderQuad(const AABB2& quad, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr*/, bool billBoarded /*= true*/)
+{
+	DebugRenderOptionsT options;
+	options.space = DEBUG_RENDER_WORLD;
+	options.beginColor = Rgba::GREEN;
+	options.endColor = Rgba::RED;
+	options.mode = DEBUG_RENDER_XRAY;
+
+	options.objectProperties = new Quad3DProperties(DEBUG_RENDER_QUAD3D, quad, position, duration, texture, billBoarded);
+
+	m_worldRenderObjects.push_back(options);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderCapsule(DebugRenderOptionsT options, const Capsule3D& capsule, const Vec3& position, float duration /*= 0.f*/, TextureView* texture /*= nullptr*/)
 {
 	options.objectProperties = new CapsuleProperties(DEBUG_RENDER_CAPSULE, capsule, position, duration, texture);
