@@ -37,6 +37,19 @@
 #define ASSERT_RETURN_VALUE(assertThis, returnValue) if(!(assertThis)) {return returnValue;}
 #define ASSERT(assertThis) if(!(assertThis)) {return false;}
 
+/*
+#define DEBUG_ASSERT(condition)
+{
+  if (!(condition))
+  {
+	  std::cerr << "Assertion failed at " << __FILE__ << ":" << __LINE__;
+	  std::cerr << " inside " << __FUNCTION__ << std::endl;
+	  std::cerr << "Condition: " << #condition;
+	  abort();
+  }
+}
+*/
+
 //To do Info
 #define _QUOTE(x) # x
 #define QUOTE(x) _QUOTE(x)
@@ -55,6 +68,8 @@
 
 #define UNIMPLEMENTED()  TODO( "IMPLEMENT: " QUOTE(__FILE__) " (" QUOTE(__LINE__) ")" );// ASSERT_RECOVERABLE(0, "")
 
+#define MACRO_COMBINE1(X,Y) X##Y  // helper macro
+#define MACRO_COMBINE(X,Y) MACRO_COMBINE1(X,Y)
 
 //------------------------------------------------------------------------------------------------------------------------------
 class DebugRender;
@@ -66,8 +81,12 @@ class NamedProperties;
 class PhysicsSystem;
 class RenderContext;
 class WindowContext;
+<<<<<<< HEAD
 class PhysXSystem;
 class RandomNumberGenerator;
+=======
+class UnitTest;
+>>>>>>> fixBranch
 
 //------------------------------------------------------------------------------------------------------------------------------
 extern DebugRender*	g_debugRenderer;
@@ -78,8 +97,12 @@ extern NamedStrings g_gameConfigBlackboard;
 extern PhysicsSystem* g_physicsSystem;
 extern RenderContext* g_renderContext;
 extern WindowContext* g_windowContext;
+<<<<<<< HEAD
 extern PhysXSystem* g_PxPhysXSystem;
 extern RandomNumberGenerator* g_RNG;
+=======
+extern UnitTest* g_allUnitTests;
+>>>>>>> fixBranch
 
 typedef NamedProperties EventArgs;
 

@@ -310,6 +310,7 @@
     <ClCompile Include="Math\OBB2.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="PhysXSystem\PhysXSystem.cpp">
       <Filter>PhysXSystem</Filter>
     </ClCompile>
@@ -318,6 +319,10 @@
     </ClCompile>
     <ClCompile Include="Core\Async\AsyncQueue.cpp">
       <Filter>Core</Filter>
+=======
+    <ClCompile Include="Commons\UnitTest.cpp">
+      <Filter>Commons</Filter>
+>>>>>>> fixBranch
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1177,6 +1182,7 @@
     <ClInclude Include="Math\Trigger2D.hpp" />
     <ClInclude Include="Math\TriggerTouch2D.hpp" />
     <ClInclude Include="Math\TriggerBucket.hpp" />
+<<<<<<< HEAD
     <ClInclude Include="PhysXSystem\PhysXSystem.hpp">
       <Filter>PhysXSystem</Filter>
     </ClInclude>
@@ -1197,5 +1203,10 @@
     <None Include="Math\Array2D.inl">
       <Filter>Math</Filter>
     </None>
+=======
+    <ClInclude Include="Commons\UnitTest.hpp">
+      <Filter>Commons</Filter>
+    </ClInclude>
+>>>>>>> fixBranch
   </ItemGroup>
 </Project>
