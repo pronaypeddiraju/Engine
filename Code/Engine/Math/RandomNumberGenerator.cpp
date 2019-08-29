@@ -3,7 +3,7 @@
 #include "Engine/Math/Noise/RawNoise.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
-RandomNumberGenerator* g_RNG;
+RandomNumberGenerator* g_RNG = nullptr;
 
 //------------------------------------------------------------------------------------------------------------------------------
 RandomNumberGenerator::RandomNumberGenerator(unsigned int seed)

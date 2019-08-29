@@ -1,38 +1,7 @@
-#include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Commons/UnitTest.hpp"
 
-typedef bool(*UnitTestCallBack)();
-
-#define MAX_TESTS 1024
 uint gTestCount = 0;
-
-//------------------------------------------------------------------------------------------------------------------------------
-class UnitTest
-{
-	UnitTest(char const* name, char const* category, uint priority, UnitTestCallBack unitTestCallback)
-		: m_name(name)
-		, m_category(category)
-		, m_priority(priority)
-		, m_callBack(unitTestCallback)
-	{
-		ASSERT_OR_DIE(gTestCount < MAX_TESTS, "The number of tests is greater than the max tests allowed");
-
-		m_nextTest = g_allUnitTests;
-		g_allUnitTests = this;
-	}
-
-	UnitTestCallBack m_callBack;
-	char const* m_name;
-	char const* m_category;
-	uint m_priority;
-
-	UnitTest* m_nextTest = nullptr;
-
-public:
-	inline UnitTest*	GetNextTest() { return m_nextTest; }
-	inline uint			GetPriority() { return m_priority; }
-	const char*			GetTestName() { return m_name; }
-	inline bool			RunTest() { return m_callBack(); }
-};
+UnitTest* g_allUnitTests = nullptr;
 
 //------------------------------------------------------------------------------------------------------------------------------
 void UnitTestRunAllCategories(uint priority /*= UINT_MAX*/)
@@ -50,17 +19,17 @@ void UnitTestRunAllCategories(uint priority /*= UINT_MAX*/)
 			bool result = testIterator->RunTest();
 			if (result)
 			{
-				DebuggerPrintf("The test %s passed successfully", testIterator->GetTestName());
+				DebuggerPrintf("\n\n The test %s passed successfully \n", testIterator->GetTestName());
 				++passed;
 			}
 			else
 			{
-				DebuggerPrintf("The test %s failed", testIterator->GetTestName());
+				DebuggerPrintf("\n\n The test %s failed \n", testIterator->GetTestName());
 			}
 		}
 		else
 		{
-			DebuggerPrintf("The test %s was of low priority", testIterator->GetTestName());
+			DebuggerPrintf("\n\n The test %s was of low priority \n", testIterator->GetTestName());
 		}
 
 		testIterator = testIterator->GetNextTest();
@@ -70,8 +39,20 @@ void UnitTestRunAllCategories(uint priority /*= UINT_MAX*/)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-#define UNITTEST( name, category, priority ) 	\
-	static bool MACRO_COMBINE(__UnitTest_, __LINE__)(); 	\
-	static UnitTest MACRO_COMBINE(__UnitTestObj_, __LINE__)(name, category, priority, MACRO_COMBINE(__UnitTest_, __LINE__)); \
-	static bool MACRO_COMBINE(__UnitTest_, __LINE__)() 	\
-	
+UnitTest::UnitTest(char const* name, char const* category, uint priority, UnitTestCallBack unitTestCallback)
+	: m_name(name)
+	, m_category(category)
+	, m_priority(priority)
+	, m_callBack(unitTestCallback)
+{
+	ASSERT_OR_DIE(gTestCount < MAX_TESTS, "The number of tests is greater than the max tests allowed");
+
+	m_nextTest = g_allUnitTests;
+	g_allUnitTests = this;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool UnitTest::RunTest()
+{
+	return m_callBack();
+}
