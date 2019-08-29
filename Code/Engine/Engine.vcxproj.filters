@@ -307,6 +307,9 @@
     <ClCompile Include="Math\OBB2.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="Commons\UnitTest.cpp">
+      <Filter>Commons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -1165,5 +1168,8 @@
     <ClInclude Include="Math\Trigger2D.hpp" />
     <ClInclude Include="Math\TriggerTouch2D.hpp" />
     <ClInclude Include="Math\TriggerBucket.hpp" />
+    <ClInclude Include="Commons\UnitTest.hpp">
+      <Filter>Commons</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

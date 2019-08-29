@@ -50,3 +50,4 @@ uint SetBitTo(uint flags, uint bit, bool set)
 	return flags;
 }
 
+
