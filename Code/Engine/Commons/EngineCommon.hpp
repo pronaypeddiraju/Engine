@@ -81,12 +81,9 @@ class NamedProperties;
 class PhysicsSystem;
 class RenderContext;
 class WindowContext;
-<<<<<<< HEAD
 class PhysXSystem;
 class RandomNumberGenerator;
-=======
 class UnitTest;
->>>>>>> fixBranch
 
 //------------------------------------------------------------------------------------------------------------------------------
 extern DebugRender*	g_debugRenderer;
@@ -97,12 +94,9 @@ extern NamedStrings g_gameConfigBlackboard;
 extern PhysicsSystem* g_physicsSystem;
 extern RenderContext* g_renderContext;
 extern WindowContext* g_windowContext;
-<<<<<<< HEAD
 extern PhysXSystem* g_PxPhysXSystem;
 extern RandomNumberGenerator* g_RNG;
-=======
 extern UnitTest* g_allUnitTests;
->>>>>>> fixBranch
 
 typedef NamedProperties EventArgs;
 

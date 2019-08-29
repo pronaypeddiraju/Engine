@@ -55,7 +55,6 @@ uint SetBitTo(uint flags, uint bit, bool set)
 	return flags;
 }
 
-<<<<<<< HEAD
 //------------------------------------------------------------------------------------------------------------------------------
 // OVERLOADING NEW AND DELETE
 //------------------------------------------------------------------------------------------------------------------------------
@@ -95,6 +94,4 @@ void operator delete(void* ptr)
 	//Now that we removed the meta data of size_t, we can now free the memeory allocated
 	return ::free(size_ptr);
 }
-=======
 
->>>>>>> fixBranch

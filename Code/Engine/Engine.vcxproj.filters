@@ -32,9 +32,6 @@
     <Filter Include="PhysX">
       <UniqueIdentifier>{d05e8324-7dd0-48d4-97eb-7fbb007ed4d5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PhysXSystem">
-      <UniqueIdentifier>{6e59e153-06dc-4424-a67a-083f4bda3201}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vec2.cpp">
@@ -310,19 +307,8 @@
     <ClCompile Include="Math\OBB2.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="PhysXSystem\PhysXSystem.cpp">
-      <Filter>PhysXSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Profiler.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Async\AsyncQueue.cpp">
-      <Filter>Core</Filter>
-=======
     <ClCompile Include="Commons\UnitTest.cpp">
       <Filter>Commons</Filter>
->>>>>>> fixBranch
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1182,31 +1168,8 @@
     <ClInclude Include="Math\Trigger2D.hpp" />
     <ClInclude Include="Math\TriggerTouch2D.hpp" />
     <ClInclude Include="Math\TriggerBucket.hpp" />
-<<<<<<< HEAD
-    <ClInclude Include="PhysXSystem\PhysXSystem.hpp">
-      <Filter>PhysXSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysXSystem\PhysXTypes.hpp">
-      <Filter>PhysXSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Profiler.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Async\AsyncQueue.hpp">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\Array2D.hpp">
-      <Filter>Math</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Math\Array2D.inl">
-      <Filter>Math</Filter>
-    </None>
-=======
     <ClInclude Include="Commons\UnitTest.hpp">
       <Filter>Commons</Filter>
     </ClInclude>
->>>>>>> fixBranch
   </ItemGroup>
 </Project>

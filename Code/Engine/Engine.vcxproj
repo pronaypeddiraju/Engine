@@ -190,11 +190,8 @@
     <ClCompile Include="Commons\EngineCommon.cpp" />
     <ClCompile Include="Commons\ErrorWarningAssert.cpp" />
     <ClCompile Include="Commons\StringUtils.cpp" />
-<<<<<<< HEAD
     <ClCompile Include="Core\Async\AsyncQueue.cpp" />
-=======
     <ClCompile Include="Commons\UnitTest.cpp" />
->>>>>>> fixBranch
     <ClCompile Include="Core\Clock.cpp" />
     <ClCompile Include="Core\DevConsole.cpp" />
     <ClCompile Include="Core\EventSystems.cpp" />
@@ -487,11 +484,8 @@
     <ClInclude Include="Commons\EngineCommon.hpp" />
     <ClInclude Include="Commons\ErrorWarningAssert.hpp" />
     <ClInclude Include="Commons\StringUtils.hpp" />
-<<<<<<< HEAD
     <ClInclude Include="Core\Async\AsyncQueue.hpp" />
-=======
     <ClInclude Include="Commons\UnitTest.hpp" />
->>>>>>> fixBranch
     <ClInclude Include="Core\Clock.hpp" />
     <ClInclude Include="Core\DevConsole.hpp" />
     <ClInclude Include="Core\EventSystems.hpp" />
