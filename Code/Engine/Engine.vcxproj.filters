@@ -310,6 +310,18 @@
     <ClCompile Include="Commons\UnitTest.cpp">
       <Filter>Commons</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Async\AsyncQueue.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Profiler.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysXSystem\PhysXSystem.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Commons\Callstack.cpp">
+      <Filter>Commons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -1171,5 +1183,16 @@
     <ClInclude Include="Commons\UnitTest.hpp">
       <Filter>Commons</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Async\AsyncQueue.hpp" />
+    <ClInclude Include="Core\Profiler.hpp" />
+    <ClInclude Include="Math\Array2D.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXSystem.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXTypes.hpp" />
+    <ClInclude Include="Commons\Callstack.hpp">
+      <Filter>Commons</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Math\Array2D.inl" />
   </ItemGroup>
 </Project>

@@ -19,23 +19,24 @@ void UnitTestRunAllCategories(uint priority /*= UINT_MAX*/)
 			bool result = testIterator->RunTest();
 			if (result)
 			{
-				DebuggerPrintf("\n\n The test %s passed successfully \n", testIterator->GetTestName());
+				DebuggerPrintf("\n The test %s passed successfully \n", testIterator->GetTestName());
 				++passed;
 			}
 			else
 			{
-				DebuggerPrintf("\n\n The test %s failed \n", testIterator->GetTestName());
+				DebuggerPrintf("\n The test %s failed \n", testIterator->GetTestName());
 			}
 		}
 		else
 		{
-			DebuggerPrintf("\n\n The test %s was of low priority \n", testIterator->GetTestName());
+			DebuggerPrintf("\n The test %s was of low priority \n", testIterator->GetTestName());
 		}
 
 		testIterator = testIterator->GetNextTest();
 	}
 
-	ASSERT_OR_DIE(total == passed, "The number of tests that passed are not the total number of tests");
+	ASSERT_OR_DIE(total == passed, "\n The number of tests that passed are not the total number of tests \n");
+	DebuggerPrintf("\n Tests passed : %d / %d \n", passed, total);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

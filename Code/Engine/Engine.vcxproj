@@ -127,7 +127,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/PhysX/lib/debug_x64;$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/WinDbg;$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/PhysX/lib/debug_x64;$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -175,7 +175,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/PhysX/lib/release_x64;$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/WinDbg;$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/PhysX/lib/release_x64;$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -187,6 +187,7 @@
     <ClCompile Include="..\ThirdParty\imGUI\imgui_widgets.cpp" />
     <ClCompile Include="..\ThirdParty\TinyXML2\tinyxml2.cpp" />
     <ClCompile Include="Audio\AudioSystem.cpp" />
+    <ClCompile Include="Commons\Callstack.cpp" />
     <ClCompile Include="Commons\EngineCommon.cpp" />
     <ClCompile Include="Commons\ErrorWarningAssert.cpp" />
     <ClCompile Include="Commons\StringUtils.cpp" />
@@ -481,6 +482,7 @@
     <ClInclude Include="..\ThirdParty\PhysX\include\vehicle\PxVehicleWheels.h" />
     <ClInclude Include="..\ThirdParty\TinyXML2\tinyxml2.h" />
     <ClInclude Include="Audio\AudioSystem.hpp" />
+    <ClInclude Include="Commons\Callstack.hpp" />
     <ClInclude Include="Commons\EngineCommon.hpp" />
     <ClInclude Include="Commons\ErrorWarningAssert.hpp" />
     <ClInclude Include="Commons\StringUtils.hpp" />
