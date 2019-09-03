@@ -40,7 +40,7 @@ std::vector<std::string> CallstackToString(Callstack const& callStack)
 	memset(line, 0, sizeof(IMAGEHLP_LINE64));
 	line->SizeOfStruct = sizeof(IMAGEHLP_LINE64);
 
-	for (uint stackTraceIndex = 0; stackTraceIndex < callStack.m_depth; ++stackTraceIndex)
+	for (uint stackTraceIndex = 0; stackTraceIndex < callStack.m_depth - 2; ++stackTraceIndex)
 	{
 		bool symResult = SymGetSymFromAddr64(pHandle, (DWORD64)callStack.m_trace[stackTraceIndex], displacement, (PIMAGEHLP_SYMBOL64)symbol);
 		if (symResult)
@@ -49,7 +49,7 @@ std::vector<std::string> CallstackToString(Callstack const& callStack)
 			bool lineResult = SymGetLineFromAddr64(pHandle, (DWORD64)callStack.m_trace[stackTraceIndex], &pdwDisplacement, line);
 			if (lineResult)
 			{
-				DebuggerPrintf("Caught Exception at %s in %s, address 0x%0X\n", symbol->Name, line->FileName, (uint)symbol->Address);
+				DebuggerPrintf("CallStack Function at index %d is %s in %s, address 0x%0X\n", stackTraceIndex, symbol->Name, line->FileName, (uint)symbol->Address);
 				callStackStrings.push_back(line->FileName);
 			}
 			else
