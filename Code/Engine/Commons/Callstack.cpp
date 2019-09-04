@@ -25,10 +25,7 @@ std::vector<std::string> CallstackToString(Callstack const& callStack)
 {
 	HANDLE pHandle = GetCurrentProcess();
 
-	bool result = SymInitialize(pHandle, nullptr, true);
-
-	ASSERT_RECOVERABLE(result == true, "Could not initialize WinDbg in CallStack.cpp");
-
+	SymInitialize(pHandle, nullptr, true);
 	std::vector<std::string> callStackStrings;
 	
 	PIMAGEHLP_SYMBOL64 symbol = (PIMAGEHLP_SYMBOL64)malloc(sizeof(PIMAGEHLP_SYMBOL64) + (TRACE_MAX_FUNCTION_NAME_LENGTH - 1) * sizeof(TCHAR));

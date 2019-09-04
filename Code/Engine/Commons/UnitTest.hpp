@@ -24,6 +24,7 @@ public:
 	inline UnitTest*	GetNextTest() { return m_nextTest; }
 	inline uint			GetPriority() { return m_priority; }
 	const char*			GetTestName() { return m_name; }
+	const char*			GetCategory() { return m_category; }
 	bool				RunTest(); 
 };
 
