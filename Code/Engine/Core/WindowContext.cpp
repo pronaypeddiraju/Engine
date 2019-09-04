@@ -3,14 +3,10 @@
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Commons/EngineCommon.hpp"
 
-#include "ThirdParty/imGUI/imgui.h"
-
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
 static constexpr const TCHAR* GAME_WINDOW_CLASS_NAME = TEXT("GameWindowClass");
-//The WndProc function for imGUI third party tool
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 //------------------------------------------------------------------------------------------------------------------------------
 static void LockMouseToWindow( HWND hwnd )
@@ -37,26 +33,6 @@ static LRESULT CALLBACK GameCommonWindowProc( HWND windowHandle, UINT wmMessageC
 {
 	WindowContext *windowContext = (WindowContext*) GetWindowLongPtr( windowHandle, GWLP_USERDATA );
 
-	/*
-	Danny's Suggestion
-	if (g_ImGUI != nullptr)
-	{
-		bool imguiHandled = ImGui_ImplWin32_WndProcHandler(windowHandle, wmMessageCode, wParam, lParam);
-		const ImGuiIO& io = ImGui::GetIO();
-
-		if (imguiHandled || io.WantCaptureMouse)
-		{
-			return false; // ImGui WILL handle it later.. maybe during NewFrame???
-		}
-	}
-	*/
-
-	if (ImGui_ImplWin32_WndProcHandler(windowHandle, wmMessageCode, wParam, lParam))
-	{
-		//ImGUI has handled our input, don't bleed it into our input handler. Return true instead
-		return true;
-	}
-	
 	// do Engine level message handling
 	switch (wmMessageCode) {
 	case WM_ACTIVATE: {
