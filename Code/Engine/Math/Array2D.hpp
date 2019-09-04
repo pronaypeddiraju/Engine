@@ -14,6 +14,7 @@ public:
 	void			Init(const IntVec2& size, const T& data);
 	void			Set(const IntVec2& cell, const T& value);
 	void			SetAll(const T& value);
+	void		    SetAtIndex(const uint index, const T& value);
 
 	T&				Get(const IntVec2& cell);
 	T				TryGet(const IntVec2& cell, const T& defaultValue);
@@ -29,7 +30,6 @@ public:
 
 private:
 	uint			GetIndex(const IntVec2& cell) const;
-
 private:
 	IntVec2			m_size;
 	std::vector<T>	m_data;

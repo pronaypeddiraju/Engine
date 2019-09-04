@@ -88,6 +88,17 @@ uint Array2D<T>::GetIndex(const IntVec2& cell) const
 
 //------------------------------------------------------------------------------------------------------------------------------
 template <typename T>
+void Array2D<T>::SetAtIndex(const uint index, const T& value)
+{
+	IntVec2 cell;
+	cell.x = index % m_size.x;
+	cell.y = index / m_size.x;
+
+	Set(cell, value);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+template <typename T>
 bool Array2D<T>::ContainsCell(const IntVec2& cell)
 {
 	int index = cell.x + (cell.y * m_size.y);
