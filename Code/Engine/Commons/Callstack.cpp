@@ -46,7 +46,8 @@ std::vector<std::string> CallstackToString(Callstack const& callStack)
 			bool lineResult = SymGetLineFromAddr64(pHandle, (DWORD64)callStack.m_trace[stackTraceIndex], &pdwDisplacement, line);
 			if (lineResult)
 			{
-				DebuggerPrintf("CallStack Function at index %d is %s in %s, address 0x%0X\n", stackTraceIndex, symbol->Name, line->FileName, (uint)symbol->Address);
+				//DebuggerPrintf("CallStack Function at index %d is %s in %s, address 0x%0X\n", stackTraceIndex, symbol->Name, line->FileName, (uint)symbol->Address);
+				DebuggerPrintf("%s(%d):%s \n", line->FileName, line->LineNumber, symbol->Name);
 				callStackStrings.push_back(line->FileName);
 			}
 			else
