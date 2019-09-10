@@ -1,6 +1,9 @@
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
 //------------------------------------------------------------------------------------------------------------------------------
 NamedStrings g_gameConfigBlackboard;
 

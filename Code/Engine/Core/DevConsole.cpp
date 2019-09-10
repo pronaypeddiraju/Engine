@@ -285,7 +285,7 @@ void DevConsole::Startup()
 	g_eventSystem->SubscribeEventCallBackFn( "Test", Command_Test );
 	g_eventSystem->SubscribeEventCallBackFn( "Help", Command_Help );
 	g_eventSystem->SubscribeEventCallBackFn( "Clear", Command_Clear );
-	m_currentInput.empty();
+	m_currentInput.clear();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -393,7 +393,7 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 		//Decrement the iterator
 		vecIterator--;
 
-		textVerts.empty();
+		textVerts.clear();
 
 		//Get length of string
 		std::string printString = "[ T:" + Stringf("%03f", vecIterator->m_calledTime) + " Frame:" + std::to_string(vecIterator->m_frameNum) + " ] " + vecIterator->m_printString;

@@ -48,6 +48,12 @@ int RandomNumberGenerator::GetRandomIntInRange( int minInt, int maxInt )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+uint RandomNumberGenerator::GetCurrentSeed()
+{
+	return m_currentSeed;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 // Returns a float between 0 and 1
 //------------------------------------------------------------------------------------------------------------------------------
 float RandomNumberGenerator::GetRandomFloatZeroToOne()

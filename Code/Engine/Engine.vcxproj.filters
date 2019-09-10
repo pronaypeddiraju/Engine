@@ -1191,6 +1191,7 @@
     <ClInclude Include="Commons\Callstack.hpp">
       <Filter>Commons</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\stb\stb_image_write.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Math\Array2D.inl" />

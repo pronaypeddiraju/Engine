@@ -4,7 +4,9 @@
 
 #pragma warning( disable: 4100) //Unreferenced formal parameter
 #define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "ThirdParty/stb/stb_image.h"
+#include "ThirdParty/stb/stb_image_write.h"
 
 //------------------------------------------------------------------------------------------------------------------------------
 Image::Image( const char* imageFilePath )

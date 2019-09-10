@@ -481,6 +481,7 @@
     <ClInclude Include="..\ThirdParty\PhysX\include\vehicle\PxVehicleUtilSetup.h" />
     <ClInclude Include="..\ThirdParty\PhysX\include\vehicle\PxVehicleUtilTelemetry.h" />
     <ClInclude Include="..\ThirdParty\PhysX\include\vehicle\PxVehicleWheels.h" />
+    <ClInclude Include="..\ThirdParty\stb\stb_image_write.h" />
     <ClInclude Include="..\ThirdParty\TinyXML2\tinyxml2.h" />
     <ClInclude Include="Audio\AudioSystem.hpp" />
     <ClInclude Include="Commons\Callstack.hpp" />
