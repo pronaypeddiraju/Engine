@@ -4,6 +4,13 @@
 #include "Game/EngineBuildPreferences.hpp"
 #include <malloc.h>
 #include <algorithm>
+#include "Async/AsyncQueue.hpp"
+#include "Engine/Math/RandomNumberGenerator.hpp"
+#include "Engine/Commons/UnitTest.hpp"
+#include "Engine/Core/Profiler.hpp"
+#include <chrono>
+#include <thread>
+#include <map>
 
 std::mutex gTrackerLock;
 
@@ -180,6 +187,9 @@ void MemTrackLogLiveAllocations()
 		std::map<unsigned long, LogTrackInfo_T, std::less<unsigned long>, UntrackedAllocator<std::pair<unsigned long const, LogTrackInfo_T>>>::iterator memLoggerIterator;
 		std::map<void*, MemTrackInfo_T, std::less<void*>, UntrackedAllocator<std::pair<void* const, MemTrackInfo_T>>>::iterator memTrackerIterator;
 
+		size_t totalAllocationSize = 0;
+		uint totalAllocations = 0;
+
 		memTrackerIterator = gMemTrackers.begin();
 		{
 			std::scoped_lock lock(gTrackerLock);
@@ -203,6 +213,8 @@ void MemTrackLogLiveAllocations()
 					++memLoggerIterator->second.m_numAllocations;
 				}
 
+				totalAllocationSize += memTrackerIterator->second.m_byteSize;
+				totalAllocations++;
 				memTrackerIterator++;
 			}
 		}
@@ -213,15 +225,23 @@ void MemTrackLogLiveAllocations()
 		TODO("Ask Forseth about Map sort using std::sort and custom sort comparator");
 
 		//Log all the elements in the map
+		DebuggerPrintf("===== BEGIN MEMORY LOG =====");
+		DebuggerPrintf("\n Total Allocations live: %u", totalAllocations);
+		std::string bytesAllocated = GetSizeString(totalAllocationSize);
+		DebuggerPrintf("\n %s \n", bytesAllocated);
+		
 		memLoggerIterator = memLoggerMap.begin();
 		while (memLoggerIterator != memLoggerMap.end())
 		{
-			std::vector<std::string> callStackString = CallstackToString(memLoggerIterator->second.m_callstack);
 			DebuggerPrintf("\n Num allocations for hash: %u", memLoggerIterator->second.m_numAllocations);
-			std::string bytesAllocated = GetSizeString(memLoggerIterator->second.m_allocationSizeInBytes);
+			bytesAllocated = GetSizeString(memLoggerIterator->second.m_allocationSizeInBytes);
 			DebuggerPrintf("\n %s \n", bytesAllocated.c_str());
+			std::vector<std::string> callStackString = CallstackToString(memLoggerIterator->second.m_callstack);
+
 			memLoggerIterator++;
 		}
+
+		DebuggerPrintf("===== END MEMORY LOG =====");
 
 	#endif
 #endif
@@ -238,3 +258,84 @@ void operator delete(void* ptr)
 {
 	TrackedFree(ptr);
 }
+
+/*
+
+//------------------------------------------------------------------------------------------------------------------------------
+// UNIT TEST
+//------------------------------------------------------------------------------------------------------------------------------
+#if defined(MEM_TRACKING)
+#define MEMTEST_ITER_PER_THREAD 1'000'000
+#define MEMTEST_ALLOC_BYTE_SIZE 128
+
+static void AllocTest(AsyncQueue<void*>& mem_queue, std::atomic<uint>& running_count)
+{
+	for (uint i = 0; i < MEMTEST_ITER_PER_THREAD; ++i) 
+	{
+		// (Random01() > .5f) or however your random functions look
+		if (g_RNG->GetRandomFloatZeroToOne() > 0.5f)
+		{
+			byte* ptr = (byte*)TrackedAlloc(MEMTEST_ALLOC_BYTE_SIZE);
+
+			// just doing this to slow it down
+			// (and later, to confirm memory didn't get currupted)
+			for (uint i = 0; i < MEMTEST_ALLOC_BYTE_SIZE; ++i) {
+				ptr[i] = (byte)i;
+			}
+
+			mem_queue.enqueue(ptr);
+		}
+		else {
+			void* ptr;
+			if (mem_queue.dequeue(&ptr)) {
+				TrackedFree(ptr);
+			}
+		}
+	}
+
+	// we're done; 
+	--running_count;
+}
+
+// This test will only work if memory tracking is enabled
+// otherwise the memory tracking just return 0;
+UNITTEST("A02", nullptr, 0)
+{
+	// unittest assumes 
+	uint pre_allocations = MemTrackGetLiveAllocationCount();
+
+	{
+		PROFILE_LOG_SCOPE("A02 Test");
+		// scope so queue goes out of scope and we
+		// get those allocations back; 
+		AsyncQueue<void*> mem_queue;
+		std::atomic<uint> live_count = core_count;
+
+		// wpin up that many threads; 
+		uint core_count = std::thread::hardware_concurrency();
+		for (uint i = 0; i < core_count; ++i) {
+			std::thread test_thread(AllocTest, mem_queue, count);
+		}
+
+		while (live_count.load() > 0) {
+			// "ms" is a C++ custom literal equivalent 
+			// for std::chrono::milliseconds(100)
+			// https://en.cppreference.com/w/cpp/chrono/operator%22%22ms
+			std::this_thread::sleep_for(1s);
+		}
+
+		void* ptr;
+		while (mem_queue.dequeue(&ptr)) {
+			TrackedFree(ptr);
+		}
+	}
+
+	// check we're back to where we started; 
+	uint post_allocations = MemTrackGetLiveAllocationCount();
+
+	// if done right, allocations at the start
+	// should be allocations at the end; 
+	return (pre_allocations == post_allocations);
+}
+#endif
+*/
