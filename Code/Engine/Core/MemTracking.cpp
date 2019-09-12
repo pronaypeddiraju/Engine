@@ -169,9 +169,9 @@ size_t MemTrackGetLiveByteCount()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-bool MapSortFunction(std::pair<void*, LogTrackInfo_T> const& a, std::pair<void*, LogTrackInfo_T> const& b)
+bool MemVecSortFunction(LogTrackInfo_T const& a, LogTrackInfo_T const& b)
 {
-	return (a.second.m_numAllocations < b.second.m_numAllocations);
+	return (a.m_numAllocations < b.m_numAllocations);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -222,23 +222,35 @@ void MemTrackLogLiveAllocations()
 
 		//Sort Map
 		//std::sort(memLoggerMap.begin(), memLoggerMap.end(), MapSortFunction);
+		std::vector<LogTrackInfo_T> logVector;
+
+		std::map<unsigned long, LogTrackInfo_T, std::less<unsigned long>, UntrackedAllocator<std::pair<unsigned long const, LogTrackInfo_T>>>::iterator logMapItr;
+		logMapItr = memLoggerMap.begin();
+
+		while (logMapItr != memLoggerMap.end())
+		{
+			logVector.emplace_back(logMapItr->second);
+		}
+
+		std::sort(logVector.begin(), logVector.end(), MemVecSortFunction);
+
 		TODO("Ask Forseth about Map sort using std::sort and custom sort comparator");
 
 		//Log all the elements in the map
 		DebuggerPrintf("===== BEGIN MEMORY LOG =====");
 		DebuggerPrintf("\n Total Allocations live: %u", totalAllocations);
 		std::string bytesAllocated = GetSizeString(totalAllocationSize);
-		DebuggerPrintf("\n %s \n", bytesAllocated);
+		DebuggerPrintf("\n %s \n", bytesAllocated.c_str());
 		
-		memLoggerIterator = memLoggerMap.begin();
-		while (memLoggerIterator != memLoggerMap.end())
+		std::vector<LogTrackInfo_T>::iterator logVecItr = logVector.begin();
+		while (logVecItr != logVector.end())
 		{
-			DebuggerPrintf("\n Num allocations for hash: %u", memLoggerIterator->second.m_numAllocations);
-			bytesAllocated = GetSizeString(memLoggerIterator->second.m_allocationSizeInBytes);
+			DebuggerPrintf("\n Num allocations for hash: %u", logVecItr->m_numAllocations);
+			bytesAllocated = GetSizeString(logVecItr->m_allocationSizeInBytes);
 			DebuggerPrintf("\n %s \n", bytesAllocated.c_str());
-			std::vector<std::string> callStackString = CallstackToString(memLoggerIterator->second.m_callstack);
+			std::vector<std::string> callStackString = CallstackToString(logVecItr->m_callstack);
 
-			memLoggerIterator++;
+			logVecItr++;
 		}
 
 		DebuggerPrintf("===== END MEMORY LOG =====");
@@ -277,8 +289,8 @@ static void AllocTest(AsyncQueue<void*>& mem_queue, std::atomic<uint>& running_c
 
 			// just doing this to slow it down
 			// (and later, to confirm memory didn't get currupted)
-			for (uint i = 0; i < MEMTEST_ALLOC_BYTE_SIZE; ++i) {
-				ptr[i] = (char)i;
+			for (uint j = 0; j < MEMTEST_ALLOC_BYTE_SIZE; ++j) {
+				ptr[j] = (char)j;
 			}
 
 			mem_queue.enqueue(ptr);
@@ -300,7 +312,7 @@ static void AllocTest(AsyncQueue<void*>& mem_queue, std::atomic<uint>& running_c
 UNITTEST("A02", nullptr, 0)
 {
 	// unittest assumes 
-	uint pre_allocations = MemTrackGetLiveAllocationCount();
+	uint pre_allocations = (uint)MemTrackGetLiveAllocationCount();
 
 	{
 		PROFILE_LOG_SCOPE("A02 Test");
@@ -330,7 +342,7 @@ UNITTEST("A02", nullptr, 0)
 	}
 
 	// check we're back to where we started; 
-	uint post_allocations = MemTrackGetLiveAllocationCount();
+	uint post_allocations = (uint)MemTrackGetLiveAllocationCount();
 
 	// if done right, allocations at the start
 	// should be allocations at the end; 
