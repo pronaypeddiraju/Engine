@@ -7,7 +7,9 @@
 
 class BitmapFont;
 class RenderContext;
+struct AABB2;
 struct Camera;
+struct Vertex_PCU;
 
 //------------------------------------------------------------------------------------------------------------------------------
 struct ConsoleEntry
@@ -33,9 +35,11 @@ public:
 	void			Shutdown();
 
 	void			SetBitmapFont(BitmapFont& bitmapFont);
+	void			GetVertsForDevConsoleMemTracker(std::vector<Vertex_PCU>& textVerts, AABB2& memTrackingBox, float lineHeight) const;
 
 	void			PrintString( const Rgba& textColor, const std::string& devConsolePrintString );
 	void			Render( RenderContext& renderer, Camera& camera, float lineHeight ) const;
+	void			RenderMemTrackingInfo(RenderContext& renderer, Camera& camera, float lineHeight) const;
 
 	void			ToggleOpenFull();
 	bool			IsOpen() const;
@@ -57,9 +61,9 @@ public:
 	static bool		Command_Test(EventArgs& args);
 	static bool		Command_Help(EventArgs& args);
 	static bool		Command_Clear(EventArgs& args);
+	static bool		Command_MemTracking(EventArgs& args);
 	//Uses ExecuteCommandLine for now
 	static bool		Command_Exec(EventArgs& args);
-	
 
 
 public:
@@ -87,4 +91,7 @@ private:
 	bool									m_carotActive = true;
 
 	unsigned int							m_lastCommandIndex = 0;
+
+	bool									m_memTrackingEnabled = true;
+	Vec2									m_memTrackingBoxSize = Vec2(80.f,10.f);
 };

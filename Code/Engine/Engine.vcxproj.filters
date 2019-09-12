@@ -322,6 +322,9 @@
     <ClCompile Include="Commons\Callstack.cpp">
       <Filter>Commons</Filter>
     </ClCompile>
+    <ClCompile Include="Core\MemTracking.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -1192,6 +1195,8 @@
       <Filter>Commons</Filter>
     </ClInclude>
     <ClInclude Include="..\ThirdParty\stb\stb_image_write.h" />
+    <ClInclude Include="Core\MemTracking.hpp" />
+    <ClInclude Include="Core\UntrackedAllocator.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Math\Array2D.inl" />

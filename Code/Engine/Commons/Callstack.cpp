@@ -13,9 +13,7 @@
 Callstack CallstackGet(uint skip_frames /*= 0*/)
 {
 	Callstack stackTraceObject;
-	stackTraceObject.m_depth = CaptureStackBackTrace(skip_frames, MAX_TRACE, stackTraceObject.m_trace, NULL);
-
-	CallstackToString(stackTraceObject);
+	stackTraceObject.m_depth = CaptureStackBackTrace(skip_frames, MAX_TRACE, stackTraceObject.m_trace, (PDWORD)stackTraceObject.m_hash);
 
 	return stackTraceObject;
 }
