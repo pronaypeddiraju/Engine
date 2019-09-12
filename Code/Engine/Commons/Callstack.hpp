@@ -11,7 +11,7 @@ class Callstack
 public:
 	void* m_trace[MAX_TRACE];	// execution pointers representing where we are in code; 
 	uint m_depth = 0;			// how full is the above array
-	void* m_hash = nullptr;
+	unsigned long m_hash = 0;
 };
 
 // skip frames is the number of frames from where we are to skip (ie, ignore)

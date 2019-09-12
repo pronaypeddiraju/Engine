@@ -62,6 +62,7 @@ public:
 	static bool		Command_Help(EventArgs& args);
 	static bool		Command_Clear(EventArgs& args);
 	static bool		Command_MemTracking(EventArgs& args);
+	static bool		Command_MemLog(EventArgs& args);
 	//Uses ExecuteCommandLine for now
 	static bool		Command_Exec(EventArgs& args);
 

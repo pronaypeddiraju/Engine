@@ -291,6 +291,7 @@ void DevConsole::Startup()
 	g_eventSystem->SubscribeEventCallBackFn( "Help", Command_Help );
 	g_eventSystem->SubscribeEventCallBackFn( "Clear", Command_Clear );
 	g_eventSystem->SubscribeEventCallBackFn( "TrackMemory", Command_MemTracking);
+	g_eventSystem->SubscribeEventCallBackFn( "LogMemory", Command_MemLog);
 	m_currentInput.clear();
 }
 
@@ -591,5 +592,13 @@ STATIC bool DevConsole::Command_MemTracking(EventArgs& args)
 {
 	UNUSED(args);
 	g_devConsole->m_memTrackingEnabled = !g_devConsole->m_memTrackingEnabled;
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_MemLog(EventArgs& args)
+{
+	UNUSED(args);
+	MemTrackLogLiveAllocations();
 	return true;
 }

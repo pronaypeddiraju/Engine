@@ -3,6 +3,7 @@
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Game/EngineBuildPreferences.hpp"
 #include <malloc.h>
+#include <algorithm>
 
 std::mutex gTrackerLock;
 
@@ -160,12 +161,68 @@ size_t MemTrackGetLiveByteCount()
 #endif
 }
 
-//------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
+bool MapSortFunction(std::pair<void*, LogTrackInfo_T> const& a, std::pair<void*, LogTrackInfo_T> const& b)
+{
+	return (a.second.m_numAllocations < b.second.m_numAllocations);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void MemTrackLogLiveAllocations()
 {
 #if defined(MEM_TRACKING)
 	#if (MEM_TRACKING == MEM_TRACK_VERBOSE)
 		TODO("Log your allocation data here");
+		//Create a thread safe copy of the map but use callstack as key and pair of num allocations and alloc size as value
+
+		std::map<unsigned long, LogTrackInfo_T, std::less<unsigned long>, UntrackedAllocator<std::pair<unsigned long const, LogTrackInfo_T>>> memLoggerMap;
+
+		std::map<unsigned long, LogTrackInfo_T, std::less<unsigned long>, UntrackedAllocator<std::pair<unsigned long const, LogTrackInfo_T>>>::iterator memLoggerIterator;
+		std::map<void*, MemTrackInfo_T, std::less<void*>, UntrackedAllocator<std::pair<void* const, MemTrackInfo_T>>>::iterator memTrackerIterator;
+
+		memTrackerIterator = gMemTrackers.begin();
+		{
+			std::scoped_lock lock(gTrackerLock);
+			while (memTrackerIterator != gMemTrackers.end())
+			{
+				memLoggerIterator = memLoggerMap.find(memTrackerIterator->second.m_callstack.m_hash);
+				if (memLoggerIterator == memLoggerMap.end())
+				{
+					//This hash doesn't exist in the map
+					LogTrackInfo_T info;
+					info.m_allocationSizeInBytes = memTrackerIterator->second.m_byteSize;
+					info.m_numAllocations = 1;
+					info.m_callstack = memTrackerIterator->second.m_callstack;
+
+					memLoggerMap[memTrackerIterator->second.m_callstack.m_hash] = info;
+				}
+				else
+				{
+					//Hash exists in map so update data (except the callstack as it will be the same)
+					memLoggerIterator->second.m_allocationSizeInBytes += memTrackerIterator->second.m_byteSize;
+					++memLoggerIterator->second.m_numAllocations;
+				}
+
+				memTrackerIterator++;
+			}
+		}
+
+
+		//Sort Map
+		//std::sort(memLoggerMap.begin(), memLoggerMap.end(), MapSortFunction);
+		TODO("Ask Forseth about Map sort using std::sort and custom sort comparator");
+
+		//Log all the elements in the map
+		memLoggerIterator = memLoggerMap.begin();
+		while (memLoggerIterator != memLoggerMap.end())
+		{
+			std::vector<std::string> callStackString = CallstackToString(memLoggerIterator->second.m_callstack);
+			DebuggerPrintf("\n Num allocations for hash: %u", memLoggerIterator->second.m_numAllocations);
+			std::string bytesAllocated = GetSizeString(memLoggerIterator->second.m_allocationSizeInBytes);
+			DebuggerPrintf("\n %s \n", bytesAllocated.c_str());
+			memLoggerIterator++;
+		}
+
 	#endif
 #endif
 }

@@ -12,6 +12,12 @@ struct MemTrackInfo_T
 	Callstack m_callstack;
 };
 
+struct LogTrackInfo_T
+{
+	uint m_numAllocations;
+	size_t m_allocationSizeInBytes;
+	Callstack m_callstack;
+};
 
 // Human parse able data
 // 123 B would return "123 B"
