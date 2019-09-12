@@ -12,6 +12,8 @@
 #include <thread>
 #include <map>
 
+using namespace std::chrono_literals;
+
 std::mutex gTrackerLock;
 
 std::map<void*,		// key
@@ -121,8 +123,6 @@ void TrackAllocation(void* allocation, size_t byte_count)
 	Callstack callstack = CallstackGet();
 	
 	MemTrackInfo_T info;
-	++gTotalAllocations;
-	gTotalBytesAllocated += byte_count;
 
 	info.m_byteSize = byte_count;
 	info.m_callstack = callstack;
@@ -259,8 +259,6 @@ void operator delete(void* ptr)
 	TrackedFree(ptr);
 }
 
-/*
-
 //------------------------------------------------------------------------------------------------------------------------------
 // UNIT TEST
 //------------------------------------------------------------------------------------------------------------------------------
@@ -275,12 +273,12 @@ static void AllocTest(AsyncQueue<void*>& mem_queue, std::atomic<uint>& running_c
 		// (Random01() > .5f) or however your random functions look
 		if (g_RNG->GetRandomFloatZeroToOne() > 0.5f)
 		{
-			byte* ptr = (byte*)TrackedAlloc(MEMTEST_ALLOC_BYTE_SIZE);
+			char* ptr = (char*)TrackedAlloc(MEMTEST_ALLOC_BYTE_SIZE);
 
 			// just doing this to slow it down
 			// (and later, to confirm memory didn't get currupted)
 			for (uint i = 0; i < MEMTEST_ALLOC_BYTE_SIZE; ++i) {
-				ptr[i] = (byte)i;
+				ptr[i] = (char)i;
 			}
 
 			mem_queue.enqueue(ptr);
@@ -308,20 +306,21 @@ UNITTEST("A02", nullptr, 0)
 		PROFILE_LOG_SCOPE("A02 Test");
 		// scope so queue goes out of scope and we
 		// get those allocations back; 
+		uint core_count = std::thread::hardware_concurrency();
 		AsyncQueue<void*> mem_queue;
 		std::atomic<uint> live_count = core_count;
 
-		// wpin up that many threads; 
-		uint core_count = std::thread::hardware_concurrency();
-		for (uint i = 0; i < core_count; ++i) {
-			std::thread test_thread(AllocTest, mem_queue, count);
+		for (unsigned int i = 0; i < core_count; ++i) {
+			std::thread test_thread(AllocTest, std::ref(mem_queue), std::ref(live_count));
+			test_thread.detach();
 		}
 
-		while (live_count.load() > 0) {
+		while (live_count.load() > 0) 
+		{
 			// "ms" is a C++ custom literal equivalent 
 			// for std::chrono::milliseconds(100)
 			// https://en.cppreference.com/w/cpp/chrono/operator%22%22ms
-			std::this_thread::sleep_for(1s);
+			std::this_thread::sleep_for(100ms);
 		}
 
 		void* ptr;
@@ -338,4 +337,3 @@ UNITTEST("A02", nullptr, 0)
 	return (pre_allocations == post_allocations);
 }
 #endif
-*/
