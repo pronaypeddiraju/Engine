@@ -322,6 +322,12 @@
     <ClCompile Include="Core\MemTracking.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Async\MPSCAsyncRingBuffer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Async\Semaphores.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -1195,6 +1201,8 @@
     <ClInclude Include="Core\MemTracking.hpp" />
     <ClInclude Include="Core\UntrackedAllocator.hpp" />
     <ClInclude Include="Core\Async\UniformAsyncRingBuffer.hpp" />
+    <ClInclude Include="Core\Async\MPSCAsyncRingBuffer.hpp" />
+    <ClInclude Include="Core\Async\Semaphores.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Math\Array2D.inl" />
