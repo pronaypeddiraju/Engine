@@ -14,6 +14,7 @@
 
 using namespace std::chrono_literals;
 
+/*
 std::mutex gTrackerLock;
 
 std::map<void*,		// key
@@ -21,8 +22,8 @@ std::map<void*,		// key
 	std::less<void*>, // less to use for map
 	UntrackedAllocator<std::pair<void* const, MemTrackInfo_T>> // allocator  
 > gMemTrackers;
+*/
 
-/*
 //------------------------------------------------------------------------------------------------------------------------------
 std::mutex& GetMemTrackerLock()
 {
@@ -36,7 +37,7 @@ std::map<void*,	MemTrackInfo_T,	std::less<void*>, UntrackedAllocator<std::pair<v
 	static std::map<void*, MemTrackInfo_T, std::less<void*>, UntrackedAllocator<std::pair<void* const, MemTrackInfo_T>>> memTrackerMap;
 	return memTrackerMap;
 }
-*/
+
 
 //------------------------------------------------------------------------------------------------------------------------------
 std::string GetSizeString(size_t byte_count)
@@ -86,7 +87,7 @@ void* TrackedAlloc(size_t byte_count)
 #else
 	#if (MEM_TRACKING == MEM_TRACK_ALLOC_COUNT)
 		++gTotalAllocations;
-		gTotalBytesAllocated += byte_count;
+
 		void* allocation = ::malloc(byte_count);
 		return allocation;
 	#elif (MEM_TRACKING == MEM_TRACK_VERBOSE)
@@ -111,7 +112,6 @@ void TrackedFree(void* ptr)
 	return ::free(ptr);
 #elif (MEM_TRACKING == MEM_TRACK_VERBOSE)
 	--gTotalAllocations;
-	::free(ptr);
 	UntrackAllocation(ptr);
 #endif
 }
@@ -128,8 +128,8 @@ void TrackAllocation(void* allocation, size_t byte_count)
 	info.m_callstack = callstack;
 	info.m_originalPointer = allocation;
 	{
-		std::scoped_lock lock(gTrackerLock);
-		gMemTrackers[allocation] = info;
+		std::scoped_lock lock(GetMemTrackerLock());
+		GetMemTrakingMap()[allocation] = info;
 	}
 #endif
 }
@@ -138,12 +138,13 @@ void TrackAllocation(void* allocation, size_t byte_count)
 void UntrackAllocation(void* allocation)
 {
 	{
-		std::scoped_lock lock(gTrackerLock);
-		auto mapIterator = gMemTrackers.find(allocation);
-		if (mapIterator != gMemTrackers.end())
+		std::scoped_lock lock(GetMemTrackerLock());
+		auto mapIterator = GetMemTrakingMap().find(allocation);
+		::free(allocation);
+		if (mapIterator != GetMemTrakingMap().end())
 		{
 			gTotalBytesAllocated -= mapIterator->second.m_byteSize;
-			gMemTrackers.erase(mapIterator);
+			GetMemTrakingMap().erase(mapIterator);
 		}
 	}
 }
@@ -171,7 +172,7 @@ size_t MemTrackGetLiveByteCount()
 //------------------------------------------------------------------------------------------------------------------------------
 bool MemVecSortFunction(LogTrackInfo_T const& a, LogTrackInfo_T const& b)
 {
-	return (a.m_numAllocations < b.m_numAllocations);
+	return (a.m_numAllocations > b.m_numAllocations);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -179,7 +180,6 @@ void MemTrackLogLiveAllocations()
 {
 #if defined(MEM_TRACKING)
 	#if (MEM_TRACKING == MEM_TRACK_VERBOSE)
-		TODO("Log your allocation data here");
 		//Create a thread safe copy of the map but use callstack as key and pair of num allocations and alloc size as value
 
 		std::map<unsigned long, LogTrackInfo_T, std::less<unsigned long>, UntrackedAllocator<std::pair<unsigned long const, LogTrackInfo_T>>> memLoggerMap;
@@ -190,10 +190,10 @@ void MemTrackLogLiveAllocations()
 		size_t totalAllocationSize = 0;
 		uint totalAllocations = 0;
 
-		memTrackerIterator = gMemTrackers.begin();
+		memTrackerIterator = GetMemTrakingMap().begin();
 		{
-			std::scoped_lock lock(gTrackerLock);
-			while (memTrackerIterator != gMemTrackers.end())
+			std::scoped_lock lock(GetMemTrackerLock());
+			while (memTrackerIterator != GetMemTrakingMap().end())
 			{
 				memLoggerIterator = memLoggerMap.find(memTrackerIterator->second.m_callstack.m_hash);
 				if (memLoggerIterator == memLoggerMap.end())
@@ -221,7 +221,6 @@ void MemTrackLogLiveAllocations()
 
 
 		//Sort Map
-		//std::sort(memLoggerMap.begin(), memLoggerMap.end(), MapSortFunction);
 		std::vector<LogTrackInfo_T> logVector;
 
 		std::map<unsigned long, LogTrackInfo_T, std::less<unsigned long>, UntrackedAllocator<std::pair<unsigned long const, LogTrackInfo_T>>>::iterator logMapItr;
@@ -230,13 +229,12 @@ void MemTrackLogLiveAllocations()
 		while (logMapItr != memLoggerMap.end())
 		{
 			logVector.emplace_back(logMapItr->second);
+			logMapItr++;
 		}
 
 		std::sort(logVector.begin(), logVector.end(), MemVecSortFunction);
 
-		TODO("Ask Forseth about Map sort using std::sort and custom sort comparator");
-
-		//Log all the elements in the map
+		//Log all the elements in the vector
 		DebuggerPrintf("===== BEGIN MEMORY LOG =====");
 		DebuggerPrintf("\n Total Allocations live: %u", totalAllocations);
 		std::string bytesAllocated = GetSizeString(totalAllocationSize);
@@ -293,11 +291,11 @@ static void AllocTest(AsyncQueue<void*>& mem_queue, std::atomic<uint>& running_c
 				ptr[j] = (char)j;
 			}
 
-			mem_queue.enqueue(ptr);
+			mem_queue.EnqueueLocked(ptr);
 		}
 		else {
 			void* ptr;
-			if (mem_queue.dequeue(&ptr)) {
+			if (mem_queue.DequeueLocked(&ptr)) {
 				TrackedFree(ptr);
 			}
 		}
@@ -309,10 +307,11 @@ static void AllocTest(AsyncQueue<void*>& mem_queue, std::atomic<uint>& running_c
 
 // This test will only work if memory tracking is enabled
 // otherwise the memory tracking just return 0;
-UNITTEST("A02", nullptr, 0)
+UNITTEST("A02", nullptr, 100)
 {
 	// unittest assumes 
 	uint pre_allocations = (uint)MemTrackGetLiveAllocationCount();
+	uint pre_alloc_bytes = (uint)MemTrackGetLiveByteCount();
 
 	{
 		PROFILE_LOG_SCOPE("A02 Test");
@@ -336,16 +335,17 @@ UNITTEST("A02", nullptr, 0)
 		}
 
 		void* ptr;
-		while (mem_queue.dequeue(&ptr)) {
+		while (mem_queue.DequeueLocked(&ptr)) {
 			TrackedFree(ptr);
 		}
 	}
 
 	// check we're back to where we started; 
 	uint post_allocations = (uint)MemTrackGetLiveAllocationCount();
+	uint post_alloc_bytes = (uint)MemTrackGetLiveByteCount();
 
 	// if done right, allocations at the start
 	// should be allocations at the end; 
-	return (pre_allocations == post_allocations);
+	return ((pre_allocations == post_allocations) && (pre_alloc_bytes == post_alloc_bytes));
 }
 #endif

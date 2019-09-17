@@ -36,7 +36,7 @@ void				UntrackedFree(void* ptr);
 void*				TrackedAlloc(size_t byte_count);
 void				TrackedFree(void* ptr);
 
-// tracking - work is conditional based on config
+//Tracks the allocation by either adding count or adding to a tracking map 
 void				TrackAllocation(void* allocation, size_t byte_count);
 void				UntrackAllocation(void* allocation);
 

@@ -192,7 +192,6 @@
     <ClCompile Include="Commons\EngineCommon.cpp" />
     <ClCompile Include="Commons\ErrorWarningAssert.cpp" />
     <ClCompile Include="Commons\StringUtils.cpp" />
-    <ClCompile Include="Core\Async\AsyncQueue.cpp" />
     <ClCompile Include="Commons\UnitTest.cpp" />
     <ClCompile Include="Core\Clock.cpp" />
     <ClCompile Include="Core\DevConsole.cpp" />
@@ -491,6 +490,7 @@
     <ClInclude Include="Commons\StringUtils.hpp" />
     <ClInclude Include="Core\Async\AsyncQueue.hpp" />
     <ClInclude Include="Commons\UnitTest.hpp" />
+    <ClInclude Include="Core\Async\UniformAsyncRingBuffer.hpp" />
     <ClInclude Include="Core\Clock.hpp" />
     <ClInclude Include="Core\DevConsole.hpp" />
     <ClInclude Include="Core\EventSystems.hpp" />

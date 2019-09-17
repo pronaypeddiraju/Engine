@@ -310,9 +310,6 @@
     <ClCompile Include="Commons\UnitTest.cpp">
       <Filter>Commons</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Async\AsyncQueue.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Core\Profiler.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -1197,6 +1194,7 @@
     <ClInclude Include="..\ThirdParty\stb\stb_image_write.h" />
     <ClInclude Include="Core\MemTracking.hpp" />
     <ClInclude Include="Core\UntrackedAllocator.hpp" />
+    <ClInclude Include="Core\Async\UniformAsyncRingBuffer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Math\Array2D.inl" />
