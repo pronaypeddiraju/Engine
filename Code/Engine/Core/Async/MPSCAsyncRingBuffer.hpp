@@ -28,7 +28,7 @@ class MPSCRingBuffer
 		bool			InitializeBuffer(size_t sizeInBytes);
 		void			ReleaseBuffer();    // called from de-constructor
 
-		//Instantly returns, either receive valid data or a nullptr
+		//Instantly returns, either receive valid data pointer or a nullptr
 		void*			TryLockWrite(size_t size);
 		//Block until there room to write onto buffer
 		void*			LockWrite(size_t size);

@@ -3,6 +3,24 @@
 #define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
 #include <windows.h>
 
+//------------------------------------------------------------------------------------------------------------------------------
+Semaphore::Semaphore(uint initialCount, uint maxCount)
+{
+	Create(initialCount, maxCount);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+Semaphore::Semaphore()
+{
+	//Does nothing, user must call Create before use
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+Semaphore::~Semaphore()
+{
+	Destroy();
+}
+
 void Semaphore::Create(uint initialCount, uint maxCount)
 {
 	// Creating/Initializing

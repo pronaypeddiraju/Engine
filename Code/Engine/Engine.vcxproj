@@ -191,6 +191,7 @@
     <ClCompile Include="Commons\Callstack.cpp" />
     <ClCompile Include="Commons\EngineCommon.cpp" />
     <ClCompile Include="Commons\ErrorWarningAssert.cpp" />
+    <ClCompile Include="Commons\LogSystem.cpp" />
     <ClCompile Include="Commons\StringUtils.cpp" />
     <ClCompile Include="Commons\UnitTest.cpp" />
     <ClCompile Include="Core\Async\MPSCAsyncRingBuffer.cpp" />
@@ -489,6 +490,7 @@
     <ClInclude Include="Commons\Callstack.hpp" />
     <ClInclude Include="Commons\EngineCommon.hpp" />
     <ClInclude Include="Commons\ErrorWarningAssert.hpp" />
+    <ClInclude Include="Commons\LogSystem.hpp" />
     <ClInclude Include="Commons\StringUtils.hpp" />
     <ClInclude Include="Core\Async\AsyncQueue.hpp" />
     <ClInclude Include="Commons\UnitTest.hpp" />

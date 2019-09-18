@@ -328,6 +328,9 @@
     <ClCompile Include="Core\Async\Semaphores.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Commons\LogSystem.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -1203,6 +1206,7 @@
     <ClInclude Include="Core\Async\UniformAsyncRingBuffer.hpp" />
     <ClInclude Include="Core\Async\MPSCAsyncRingBuffer.hpp" />
     <ClInclude Include="Core\Async\Semaphores.hpp" />
+    <ClInclude Include="Commons\LogSystem.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Math\Array2D.inl" />

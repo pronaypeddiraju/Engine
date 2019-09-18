@@ -322,14 +322,14 @@ Shader* RenderContext::CreateShaderFromFile(const std::string& fileName)
 		//Load the Shader from XML
 		shader->LoadShaderFromXMLSource(fileName);
 
-		bufferSize = CreateFileBuffer( shader->m_shaderSourcePath, &outData); 
+		bufferSize = CreateFileReadBuffer( shader->m_shaderSourcePath, &outData); 
 
 		shader->m_vertexStage.LoadShaderFromSource(this, shader->m_shaderSourcePath, outData, bufferSize, SHADER_STAGE_VERTEX);
 		shader->m_pixelStage.LoadShaderFromSource(this, shader->m_shaderSourcePath, outData, bufferSize, SHADER_STAGE_FRAGMENT);
 	}
 	else
 	{
-		bufferSize = CreateFileBuffer( fileName, &outData); 
+		bufferSize = CreateFileReadBuffer( fileName, &outData); 
 
 		shader->m_vertexStage.LoadShaderFromSource(this, fileName, outData, bufferSize, SHADER_STAGE_VERTEX );
 		shader->m_pixelStage.LoadShaderFromSource(this, fileName, outData, bufferSize, SHADER_STAGE_FRAGMENT);

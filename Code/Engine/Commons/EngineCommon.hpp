@@ -84,6 +84,7 @@ class WindowContext;
 class PhysXSystem;
 class RandomNumberGenerator;
 class UnitTest;
+class LogSystem;
 
 //------------------------------------------------------------------------------------------------------------------------------
 extern DebugRender*	g_debugRenderer;
@@ -97,6 +98,7 @@ extern WindowContext* g_windowContext;
 extern PhysXSystem* g_PxPhysXSystem;
 extern RandomNumberGenerator* g_RNG;
 extern UnitTest* g_allUnitTests;
+extern LogSystem* g_LogSystem;
 
 typedef NamedProperties EventArgs;
 
@@ -159,6 +161,7 @@ constexpr char IMAGE_PATH[] = "Data/Images/";
 constexpr char FONT_PATH[] = "Data/Fonts/";
 constexpr char MATERIAL_PATH[] = "Data/Materials/";
 constexpr char MODEL_PATH[] = "Data/Models/";
+constexpr char LOG_PATH[] = "Data/Logs/";
 
 //------------------------------------------------------------------------------------------------------------------------------
 constexpr float		 CONSOLE_LINE_SPACE = 0.05f;

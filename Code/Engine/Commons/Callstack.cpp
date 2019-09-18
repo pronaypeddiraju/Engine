@@ -19,7 +19,7 @@ Callstack CallstackGet(uint skip_frames /*= 0*/)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-std::vector<std::string> CallstackToString(Callstack const& callStack)
+std::vector<std::string> GetCallstackToString(Callstack const& callStack)
 {
 	HANDLE pHandle = GetCurrentProcess();
 

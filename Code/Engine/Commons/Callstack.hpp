@@ -23,4 +23,4 @@ Callstack CallstackGet(uint skip_frames = 0);
 // filepath.cpp(line,offset): function_name
 // for example
 // Engine/Image.cpp(127,8): Image::LoadFromFile
-std::vector<std::string> CallstackToString(Callstack const& cs);
+std::vector<std::string> GetCallstackToString(Callstack const& cs);

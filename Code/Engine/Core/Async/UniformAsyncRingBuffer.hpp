@@ -139,7 +139,5 @@ template <class T>
 UniformAsyncRingBuffer<T>::UniformAsyncRingBuffer(size_t bufferSize)
 	: m_maxSize(bufferSize)
 {
-	TODO("Check if you can do this correctly with the std::array");
-	TODO("Write a better ring buffer");
 	m_buffer.reserve(bufferSize);
 }

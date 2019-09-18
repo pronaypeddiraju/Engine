@@ -246,7 +246,7 @@ void MemTrackLogLiveAllocations()
 			DebuggerPrintf("\n Num allocations for hash: %u", logVecItr->m_numAllocations);
 			bytesAllocated = GetSizeString(logVecItr->m_allocationSizeInBytes);
 			DebuggerPrintf("\n %s \n", bytesAllocated.c_str());
-			std::vector<std::string> callStackString = CallstackToString(logVecItr->m_callstack);
+			std::vector<std::string> callStackString = GetCallstackToString(logVecItr->m_callstack);
 
 			logVecItr++;
 		}
