@@ -9,8 +9,8 @@
 struct LogObject_T
 {
 	uint64_t			hpcTime;
-	std::string			filter;
-	std::string			line;
+	char*				filter;
+	char*				line;
 	Callstack			callstack;
 };
 
@@ -33,6 +33,7 @@ public:
 
 	void				LogSystemInit();
 	void				LogSystemShutDown();
+	void				WriteToLogFromBuffer(const LogObject_T& log);
 
 	void				Logf(char const* filter, char const* format, ...);
 
@@ -41,7 +42,7 @@ public:
 
 	bool				IsRunning() const		{ return m_isRunning; }
 	void				Stop()					{ m_isRunning = false; }
-	void				SetDestroy()			{ m_canDestroy = true; }
+	void				LogFlush()				{ m_flushRequested = true; }
 private:
-	bool				m_canDestroy = false;
+	bool				m_flushRequested = false;
 };

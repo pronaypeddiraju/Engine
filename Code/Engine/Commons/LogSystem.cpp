@@ -81,38 +81,48 @@ static void LogThread()
 		TODO("Get the thread to read LogObjects from buffer");
 		while (log != nullptr)
 		{
-			//read the log object from buffer
-			log = (LogObject_T*)g_LogSystem->m_messages.TryLockRead(&outSize);
-
-			// write it
-			// buffer is the c_str of the message
-			std::string logWriteString("Log Entry: ");
-			logWriteString += "Time: ";
-			logWriteString += std::to_string(GetHPCToSeconds(log->hpcTime));
-			logWriteString += "Filter: ";
-			logWriteString += log->filter;
-			logWriteString += "\n\t Message: ";
-			logWriteString += log->line;
-			logWriteString += "\n\t Callstack: \n\t ";
-			std::vector<std::string> callStackStrings = GetCallstackToString(log->callstack);
-			std::vector<std::string>::iterator stringsItr = callStackStrings.begin();
-			while (stringsItr != callStackStrings.end())
-			{
-				logWriteString += stringsItr->c_str();
-				logWriteString += "\n\t ";
-				++stringsItr;
-			}
-
-			g_LogSystem->m_fileStream->write(logWriteString.c_str(), logWriteString.length());
-
+			g_LogSystem->WriteToLogFromBuffer(*log);
 			g_LogSystem->m_messages.UnlockRead(log);
+			log = (LogObject_T*)g_LogSystem->m_messages.TryLockRead(&outSize);
 		}
+
+		//Check for log flush
+		TODO("Make sure Ring buffer is empty and then flush the Log if flush was requested and mark it back to false");
+
 	}
 
+	
 	// flush the file
 	g_LogSystem->m_fileStream->flush();
 	// close the file
 	g_LogSystem->m_fileStream->close();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void LogSystem::WriteToLogFromBuffer(const LogObject_T& log)
+{
+	// write it
+	// buffer is the c_str of the message
+	std::string logWriteString("Log Entry: ");
+	logWriteString += "Time: ";
+	logWriteString += std::to_string(GetHPCToSeconds(log.hpcTime));
+	logWriteString += "Filter: ";
+	logWriteString += log.filter;
+	logWriteString += "\n\t Message: ";
+	logWriteString += log.line;
+	logWriteString += "\n\t Callstack: \n\t ";
+	std::vector<std::string> callStackStrings = GetCallstackToString(log.callstack);
+	std::vector<std::string>::iterator stringsItr = callStackStrings.begin();
+	while (stringsItr != callStackStrings.end())
+	{
+		logWriteString += stringsItr->c_str();
+		logWriteString += "\n\t ";
+		++stringsItr;
+	}
+
+	g_LogSystem->m_fileStream->write(logWriteString.c_str(), logWriteString.length());
+
+	log.~LogObject_T();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -152,26 +162,30 @@ void LogSystem::Logf(char const* filter, char const* format, ...)
 	if (g_LogSystem == nullptr)
 		return;
 
-	LogObject_T* log = new LogObject_T();
-
-	log->filter = filter;
-
+	//Do this C Sytled
+	size_t logObjSize = sizeof(LogObject_T);
+	
 	va_list args;
 	va_start(args, format);
-	std::string formatString = Stringf(format);
+	size_t msgLength = vsnprintf(nullptr, 0, format, args) + 1U;
+	//The 1U is added to account for the null termination character
 	va_end(args);
-	log->line = formatString;
+
+	size_t filterLength = strlen(filter) + 1U;
+
+	size_t totalSize = logObjSize + msgLength + filterLength;
+	void* buffer = g_LogSystem->m_messages.TryLockWrite(totalSize);
+
+	LogObject_T* log = (LogObject_T*)buffer;
 	log->hpcTime = GetCurrentTimeHPC();
 	log->callstack = CallstackGet(2);
+	log->line = (char*)buffer + logObjSize;
+	log->filter = (char*)buffer + logObjSize + msgLength;
 
-	void* dataPtr = m_messages.TryLockWrite(sizeof(log));
-	if (dataPtr != nullptr)
-	{
-		memcpy(dataPtr, log, sizeof(LogObject_T));
-	}
-	else
-	{
-		ERROR_RECOVERABLE("Couldn't write to MPSC Ring Buffer from Logf");
-	}
+	vsnprintf(log->line, msgLength, format, args);
+	memcpy(log->filter, filter, filterLength);
+
+	m_messages.UnlockWrite(buffer);
+
 	SignalWork();
 }

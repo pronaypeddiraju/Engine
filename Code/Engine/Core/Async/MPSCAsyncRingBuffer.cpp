@@ -83,6 +83,8 @@ void* MPSCRingBuffer::TryLockWrite(size_t writeSize)
 
 	//uint usedHead = m_writeHead;
 	m_writeHead += (int)totalSize;
+	//we moved by 2 meta data in size so let's get back by 1 meta data size (TotalSize is 2*metaDataSize + writeSize)
+	m_writeHead -= (int)metaDataSize;
 
 	return head + 1;
 }
