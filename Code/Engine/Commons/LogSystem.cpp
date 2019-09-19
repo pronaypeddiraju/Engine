@@ -13,11 +13,11 @@ LogSystem* g_LogSystem = nullptr;
 std::string DateTime()
 {
 	time_t rawTime;
-	struct tm * timeInfo;
+	struct tm * timeInfo = new struct tm;
 	char buffer[80];
 
 	time(&rawTime);
-	timeInfo = localtime(&rawTime);
+	localtime_s(timeInfo, &rawTime);
 
 	strftime(buffer, 80, "ExecutionLog_%d-%m-%Y_%H-%M-%S", timeInfo);
 
@@ -88,6 +88,24 @@ static void LogThread()
 
 		//Check for log flush
 		TODO("Make sure Ring buffer is empty and then flush the Log if flush was requested and mark it back to false");
+		if (g_LogSystem->m_flushRequested)
+		{
+			log = (LogObject_T*)g_LogSystem->m_messages.TryLockRead(&outSize);
+			TODO("Get the thread to read LogObjects from buffer");
+			while (log != nullptr)
+			{
+				g_LogSystem->WriteToLogFromBuffer(*log);
+				g_LogSystem->m_messages.UnlockRead(log);
+				log = (LogObject_T*)g_LogSystem->m_messages.TryLockRead(&outSize);
+			}
+
+			// flush the file
+			g_LogSystem->m_fileStream->flush();
+			// close the file
+			g_LogSystem->m_fileStream->close();
+
+			g_LogSystem->m_flushRequested = false;
+		}
 
 	}
 
@@ -162,6 +180,14 @@ void LogSystem::Logf(char const* filter, char const* format, ...)
 	if (g_LogSystem == nullptr)
 		return;
 
+
+	bool canLog = g_LogSystem->CheckAgainstFilter(filter);
+
+	if (canLog == false)
+	{
+		return;
+	}
+
 	//Do this C Sytled
 	size_t logObjSize = sizeof(LogObject_T);
 	
@@ -185,7 +211,120 @@ void LogSystem::Logf(char const* filter, char const* format, ...)
 	vsnprintf(log->line, msgLength, format, args);
 	memcpy(log->filter, filter, filterLength);
 
+	g_LogSystem->RunAllHooks(log);
 	m_messages.UnlockWrite(buffer);
 
 	SignalWork();
 }
+
+//------------------------------------------------------------------------------------------------------------------------------
+void LogSystem::RunAllHooks(const LogObject_T* logObj)
+{
+	std::vector<LogHookCallback>::iterator itr;
+	itr = m_logHooks.begin();
+
+	while (itr != m_logHooks.end())
+	{
+		//Dereference the itr and then pass arguments to the function pointer
+		//Dereferencing itr is what gives us the function pointer
+		(*itr)(logObj);
+
+		itr++;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool LogSystem::CheckAgainstFilter(const char* filterToCheck)
+{
+	if (m_filterMode == true)
+	{
+		//we are in white list mode so we should not write this log if filter exists in set
+		if (m_filterSet.find(filterToCheck) != m_filterSet.end())
+		{
+			//We found this filter in the set so we shouldn't write
+			return false;
+		}
+		else
+		{
+			//We didn't find it in the set so this filter is writable
+			return true;
+		}
+	}
+	else
+	{
+		//we are in black list mode so we should write this log if filter exists in set
+		if (m_filterSet.find(filterToCheck) != m_filterSet.end())
+		{
+			//We found the filter in the set so we should write this message to log
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void LogSystem::LogEnableAll()
+{
+	m_filterMode = true;
+	m_filterSet.clear();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void LogSystem::LogDisableAll()
+{
+	m_filterMode = false;
+	m_filterSet.clear();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void LogSystem::LogEnable(char const* filter)
+{
+	if (m_filterMode == false)
+	{
+		//We have blacklisted things so enabling a specific filter makes sense
+		m_filterSet.insert(filter);
+	}
+	else
+	{
+		return;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void LogSystem::LogDisable(char const* filter)
+{
+	if (m_filterMode == true)
+	{
+		//We have white-listed things so disabling a specific filter makes sense
+		m_filterSet.insert(filter);
+	}
+	else
+	{
+		return;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void LogSystem::LogHook(LogHookCallback cb)
+{
+	m_logHooks.push_back(cb);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void LogSystem::LogUnhook(LogHookCallback cb)
+{
+	std::vector<LogHookCallback>::iterator itr;
+	itr = std::find(m_logHooks.begin(), m_logHooks.end(), cb);
+	
+	if (itr == m_logHooks.end())
+	{
+		return;
+	}
+
+	m_logHooks.erase(itr);
+}
+
+

@@ -14,6 +14,7 @@
 
 DevConsole* g_devConsole = nullptr;
 
+//------------------------------------------------------------------------------------------------------------------------------
 const STATIC Rgba DevConsole::CONSOLE_INFO			=	Rgba(1.0f, 1.0f, 0.0f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_BG_COLOR		=	Rgba(0.0f, 0.0f, 0.0f, 0.75f);
 const STATIC Rgba DevConsole::CONSOLE_ERROR   		=	Rgba(1.0f, 0.0f, 0.0f, 1.0f);
@@ -22,6 +23,19 @@ const STATIC Rgba DevConsole::CONSOLE_INPUT			=	Rgba(1.0f, 1.0f, 1.0f, 1.0f);
 
 extern std::mutex gTrackerLock;
 extern std::map<void*, MemTrackInfo_T, std::less<void*>, UntrackedAllocator<std::pair<void* const, MemTrackInfo_T>>> gMemTrackers;
+
+//------------------------------------------------------------------------------------------------------------------------------
+void LogHookForDevConsole(const LogObject_T* logObj)
+{
+	LogObject_T object;
+	object.hpcTime = logObj->hpcTime;
+	object.filter = logObj->filter;
+	object.line = logObj->line;
+	object.callstack = logObj->callstack;
+
+	g_devConsole->PrintString(Rgba::WHITE, object.filter);
+	g_devConsole->PrintString(Rgba::WHITE, object.line);
+}
 
 //------------------------------------------------------------------------------------------------------------------------------
 bool DevConsole::ExecuteCommandLine( const std::string& commandLine )

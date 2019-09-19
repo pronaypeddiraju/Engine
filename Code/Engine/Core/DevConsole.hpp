@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Commons/LogSystem.hpp"
 #include "Engine/Renderer/Rgba.hpp"
 #include <string>
 #include <vector>
@@ -66,7 +67,6 @@ public:
 	//Uses ExecuteCommandLine for now
 	static bool		Command_Exec(EventArgs& args);
 
-
 public:
 
  	const static Rgba						CONSOLE_INFO;
@@ -96,3 +96,5 @@ private:
 	bool									m_memTrackingEnabled = true;
 	Vec2									m_memTrackingBoxSize = Vec2(80.f,10.f);
 };
+
+void			LogHookForDevConsole(const LogObject_T* logObj);
