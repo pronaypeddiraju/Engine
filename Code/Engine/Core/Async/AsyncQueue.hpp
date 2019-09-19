@@ -19,10 +19,20 @@ public:
 	void EnqueueLocked(TYPE const &element);
 	bool DequeueLocked(TYPE* out);
 
+	int GetLength() const;
+
 private:
 	std::queue<TYPE> m_queue;
 	std::mutex m_mutex;
 };
+
+//------------------------------------------------------------------------------------------------------------------------------
+template <typename TYPE>
+int AsyncQueue<TYPE>::GetLength() const
+{
+	std::lock_guard<std::mutex> mutexLock(m_mutex);
+	return m_queue.size();
+}
 
 //------------------------------------------------------------------------------------------------------------------------------
 template <typename TYPE>

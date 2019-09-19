@@ -61,7 +61,7 @@ void* MPSCRingBuffer::TryLockWrite(size_t writeSize)
 	if (newHead > m_byteSize) 
 	{
 		//Buffer needs to wrap, so let's write a skip meta buffer so the read head will wrap at this point
-		RingBufferMeta_T* skipBufferEntry = (RingBufferMeta_T*)(m_buffer + newHead);
+		RingBufferMeta_T* skipBufferEntry = (RingBufferMeta_T*)(m_buffer + m_writeHead);
 		skipBufferEntry->bufferObjectSize = 0;  // 0 means skip; 
 		skipBufferEntry->isBufferObjectUnlocked = 1;
 

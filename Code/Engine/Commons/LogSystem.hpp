@@ -37,9 +37,10 @@ public:
 	void				WriteToLogFromBuffer(const LogObject_T& log);
 
 	void				Logf(char const* filter, char const* format, ...);
+	void				LogCallstackf(char const* filter, char const* format, ...);
 
 	void				RunAllHooks(const LogObject_T* logObj);
-	void				WaitForWork() { m_semaphore.Acquire(); }
+	void				WaitForWork()			{ m_semaphore.Acquire(); }
 	void				SignalWork()			{ m_semaphore.Release(1); }
 
 	bool				CheckAgainstFilter(const char* filterToCheck);
@@ -53,7 +54,7 @@ public:
 
 	bool				IsRunning() const		{ return m_isRunning; }
 	void				Stop()					{ m_isRunning = false; }
-	void				LogFlush()				{ m_flushRequested = true; }
+	void				LogFlush();
 	bool				m_flushRequested = false;
 
 	// NOTE - this message is only valid for the lifetime of the callback

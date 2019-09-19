@@ -78,16 +78,15 @@ static void LogThread()
 
 		size_t outSize;
 		LogObject_T *log = (LogObject_T*)g_LogSystem->m_messages.TryLockRead(&outSize);
-		TODO("Get the thread to read LogObjects from buffer");
 		while (log != nullptr)
 		{
 			g_LogSystem->WriteToLogFromBuffer(*log);
+			g_LogSystem->RunAllHooks(log);
 			g_LogSystem->m_messages.UnlockRead(log);
 			log = (LogObject_T*)g_LogSystem->m_messages.TryLockRead(&outSize);
 		}
 
 		//Check for log flush
-		TODO("Make sure Ring buffer is empty and then flush the Log if flush was requested and mark it back to false");
 		if (g_LogSystem->m_flushRequested)
 		{
 			log = (LogObject_T*)g_LogSystem->m_messages.TryLockRead(&outSize);
@@ -95,6 +94,7 @@ static void LogThread()
 			while (log != nullptr)
 			{
 				g_LogSystem->WriteToLogFromBuffer(*log);
+				g_LogSystem->RunAllHooks(log);
 				g_LogSystem->m_messages.UnlockRead(log);
 				log = (LogObject_T*)g_LogSystem->m_messages.TryLockRead(&outSize);
 			}
@@ -128,14 +128,17 @@ void LogSystem::WriteToLogFromBuffer(const LogObject_T& log)
 	logWriteString += log.filter;
 	logWriteString += "\n\t Message: ";
 	logWriteString += log.line;
-	logWriteString += "\n\t Callstack: \n\t ";
-	std::vector<std::string> callStackStrings = GetCallstackToString(log.callstack);
-	std::vector<std::string>::iterator stringsItr = callStackStrings.begin();
-	while (stringsItr != callStackStrings.end())
+	if (log.callstack.m_depth != 0)
 	{
-		logWriteString += stringsItr->c_str();
-		logWriteString += "\n\t ";
-		++stringsItr;
+		logWriteString += "\n\t Callstack: \n\t ";
+		std::vector<std::string> callStackStrings = GetCallstackToString(log.callstack);
+		std::vector<std::string>::iterator stringsItr = callStackStrings.begin();
+		while (stringsItr != callStackStrings.end())
+		{
+			logWriteString += stringsItr->c_str();
+			logWriteString += "\n\t ";
+			++stringsItr;
+		}
 	}
 
 	g_LogSystem->m_fileStream->write(logWriteString.c_str(), logWriteString.length());
@@ -195,12 +198,54 @@ void LogSystem::Logf(char const* filter, char const* format, ...)
 	va_start(args, format);
 	size_t msgLength = vsnprintf(nullptr, 0, format, args) + 1U;
 	//The 1U is added to account for the null termination character
-	va_end(args);
 
 	size_t filterLength = strlen(filter) + 1U;
 
 	size_t totalSize = logObjSize + msgLength + filterLength;
-	void* buffer = g_LogSystem->m_messages.TryLockWrite(totalSize);
+	void* buffer = g_LogSystem->m_messages.LockWrite(totalSize);
+
+	LogObject_T* log = (LogObject_T*)buffer;
+	log->hpcTime = GetCurrentTimeHPC();
+	log->callstack = CallstackGet(2);
+	log->callstack.m_depth = 0;
+	log->line = (char*)buffer + logObjSize;
+	log->filter = (char*)buffer + logObjSize + msgLength;
+
+	vsnprintf(log->line, msgLength, format, args);
+	memcpy(log->filter, filter, filterLength);
+	va_end(args);
+
+	m_messages.UnlockWrite(buffer);
+
+	SignalWork();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void LogSystem::LogCallstackf(char const* filter, char const* format, ...)
+{
+	if (g_LogSystem == nullptr)
+		return;
+
+
+	bool canLog = g_LogSystem->CheckAgainstFilter(filter);
+
+	if (canLog == false)
+	{
+		return;
+	}
+
+	//Do this C Sytled
+	size_t logObjSize = sizeof(LogObject_T);
+
+	va_list args;
+	va_start(args, format);
+	size_t msgLength = vsnprintf(nullptr, 0, format, args) + 1U;
+	//The 1U is added to account for the null termination character
+
+	size_t filterLength = strlen(filter) + 1U;
+
+	size_t totalSize = logObjSize + msgLength + filterLength;
+	void* buffer = g_LogSystem->m_messages.LockWrite(totalSize);
 
 	LogObject_T* log = (LogObject_T*)buffer;
 	log->hpcTime = GetCurrentTimeHPC();
@@ -210,6 +255,7 @@ void LogSystem::Logf(char const* filter, char const* format, ...)
 
 	vsnprintf(log->line, msgLength, format, args);
 	memcpy(log->filter, filter, filterLength);
+	va_end(args);
 
 	g_LogSystem->RunAllHooks(log);
 	m_messages.UnlockWrite(buffer);
@@ -305,6 +351,21 @@ void LogSystem::LogDisable(char const* filter)
 	{
 		return;
 	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void LogSystem::LogFlush()
+{
+	if (g_LogSystem == nullptr)
+		return;
+
+	g_LogSystem->m_flushRequested = true;
+	while (g_LogSystem->m_flushRequested != false)
+	{
+		std::this_thread::yield();
+	}
+
+	return;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

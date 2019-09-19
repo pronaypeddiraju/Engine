@@ -27,14 +27,14 @@ extern std::map<void*, MemTrackInfo_T, std::less<void*>, UntrackedAllocator<std:
 //------------------------------------------------------------------------------------------------------------------------------
 void LogHookForDevConsole(const LogObject_T* logObj)
 {
-	LogObject_T object;
-	object.hpcTime = logObj->hpcTime;
-	object.filter = logObj->filter;
-	object.line = logObj->line;
-	object.callstack = logObj->callstack;
+	char filterString[1024];
+	char lineString[1024];
 
-	g_devConsole->PrintString(Rgba::WHITE, object.filter);
-	g_devConsole->PrintString(Rgba::WHITE, object.line);
+	strcpy_s(filterString, 1024, logObj->filter);
+	strcpy_s(lineString, 1024, logObj->line);
+
+	g_devConsole->PrintString(Rgba::WHITE, filterString);
+	g_devConsole->PrintString(Rgba::WHITE, lineString);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -306,6 +306,14 @@ void DevConsole::Startup()
 	g_eventSystem->SubscribeEventCallBackFn( "Clear", Command_Clear );
 	g_eventSystem->SubscribeEventCallBackFn( "TrackMemory", Command_MemTracking);
 	g_eventSystem->SubscribeEventCallBackFn( "LogMemory", Command_MemLog);
+
+	g_eventSystem->SubscribeEventCallBackFn("EnableAllLogs", Command_EnableAllLogFilters);
+	g_eventSystem->SubscribeEventCallBackFn("DisableAllLogs", Command_DisableAllLogfilters);
+	g_eventSystem->SubscribeEventCallBackFn("EnableLogFilter", Command_EnableLogFilter);
+	g_eventSystem->SubscribeEventCallBackFn("DisableLogFilter", Command_DisableLogFilter);
+	g_eventSystem->SubscribeEventCallBackFn("FlushLog", Command_FlushLogSystem);
+	g_eventSystem->SubscribeEventCallBackFn("Logf", Command_Logf);
+
 	m_currentInput.clear();
 }
 
@@ -358,15 +366,19 @@ ConsoleEntry::ConsoleEntry(const Rgba& textColor, const std::string& printString
 //------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::PrintString( const Rgba& textColor, const std::string& devConsolePrintString )
 {
+	g_devConsole->m_mutexLock.lock();
 	float time = static_cast<float>(GetCurrentTimeSeconds());
 	time -= m_timeAtStart;
 	ConsoleEntry consoleEntry = ConsoleEntry(textColor, devConsolePrintString, m_frameCount, time);
+	
 	m_printLog.push_back(consoleEntry);
+	g_devConsole->m_mutexLock.unlock();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeight ) const
 {
+	g_devConsole->m_mutexLock.lock();
 	camera.SetModelMatrix(Matrix44::IDENTITY);
 	camera.UpdateUniformBuffer(&renderer);
 
@@ -388,6 +400,8 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 
 	int numLines = static_cast<int>(screenHeight / lineHeight);
 	int numStrings = static_cast<int>(m_printLog.size());
+
+	std::vector<ConsoleEntry> printLogVector;
 
 	Vec2 boxBottomLeft = leftBot + Vec2(lineHeight, lineHeight * 2);
 	Vec2 boxTopRight = boxBottomLeft;
@@ -478,6 +492,7 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 	}
 
 	renderer.EndCamera();
+	g_devConsole->m_mutexLock.unlock();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -614,5 +629,58 @@ STATIC bool DevConsole::Command_MemLog(EventArgs& args)
 {
 	UNUSED(args);
 	MemTrackLogLiveAllocations();
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_EnableAllLogFilters(EventArgs& args)
+{
+	UNUSED(args);
+	g_LogSystem->LogEnableAll();
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_DisableAllLogfilters(EventArgs& args)
+{
+	UNUSED(args);
+	g_LogSystem->LogDisableAll();
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_EnableLogFilter(EventArgs& args)
+{
+	std::string filterName;
+	filterName = args.GetValue("Filter", filterName);
+	g_LogSystem->LogEnable(filterName.c_str());
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_DisableLogFilter(EventArgs& args)
+{
+	std::string filterName;
+	filterName = args.GetValue("Filter", filterName);
+	g_LogSystem->LogDisable(filterName.c_str());
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_FlushLogSystem(EventArgs& args)
+{
+	UNUSED(args);
+	g_LogSystem->LogFlush();
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_Logf(EventArgs& args)
+{
+	std::string filterText;
+	std::string messageText;
+	filterText = args.GetValue("Filter", filterText);
+	messageText = args.GetValue("Message", messageText);
+	g_LogSystem->Logf(filterText.c_str(), messageText.c_str());
 	return true;
 }
