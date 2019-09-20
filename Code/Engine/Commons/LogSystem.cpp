@@ -90,7 +90,6 @@ static void LogThread()
 		if (g_LogSystem->m_flushRequested)
 		{
 			log = (LogObject_T*)g_LogSystem->m_messages.TryLockRead(&outSize);
-			TODO("Get the thread to read LogObjects from buffer");
 			while (log != nullptr)
 			{
 				g_LogSystem->WriteToLogFromBuffer(*log);
@@ -101,8 +100,6 @@ static void LogThread()
 
 			// flush the file
 			g_LogSystem->m_fileStream->flush();
-			// close the file
-			g_LogSystem->m_fileStream->close();
 
 			g_LogSystem->m_flushRequested = false;
 		}
@@ -119,6 +116,12 @@ static void LogThread()
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::WriteToLogFromBuffer(const LogObject_T& log)
 {
+	bool result = g_LogSystem->m_fileStream->is_open();
+	if (!result)
+	{
+		ERROR_AND_DIE("The log file stream was closed but LogThread is trying to write to file");
+	}
+
 	// write it
 	// buffer is the c_str of the message
 	std::string logWriteString("Log Entry: ");
@@ -169,6 +172,7 @@ void LogSystem::LogSystemInit()
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::LogSystemShutDown()
 {
+	LogFlush();
 	Stop();
 
 	DebuggerPrintf("Shutting down log system...");
@@ -335,7 +339,11 @@ void LogSystem::LogEnable(char const* filter)
 	}
 	else
 	{
-		return;
+		std::set<std::string>::iterator itr = m_filterSet.find(filter);
+		if (itr != m_filterSet.end())
+		{
+			m_filterSet.erase(itr);
+		}
 	}
 }
 
@@ -349,7 +357,11 @@ void LogSystem::LogDisable(char const* filter)
 	}
 	else
 	{
-		return;
+		std::set<std::string>::iterator itr = m_filterSet.find(filter);
+		if (itr != m_filterSet.end())
+		{
+			m_filterSet.erase(itr);
+		}
 	}
 }
 
@@ -360,7 +372,8 @@ void LogSystem::LogFlush()
 		return;
 
 	g_LogSystem->m_flushRequested = true;
-	while (g_LogSystem->m_flushRequested != false)
+	g_LogSystem->SignalWork();
+	while (g_LogSystem->m_flushRequested)
 	{
 		std::this_thread::yield();
 	}
