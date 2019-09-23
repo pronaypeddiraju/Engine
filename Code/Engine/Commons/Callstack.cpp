@@ -5,7 +5,7 @@
 #include <windows.h>			// #include this (massive, platform-specific) header in very few places
 #include <DbgHelp.h>
 
-#if ( defined( _WIN64 ) & defined( _DEBUG ) )
+#if ( defined( _WIN64 ))
 #pragma comment( lib, "ThirdParty/WinDbg/dbghelp.lib" )
 #endif
 

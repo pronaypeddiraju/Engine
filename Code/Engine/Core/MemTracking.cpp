@@ -154,7 +154,7 @@ size_t MemTrackGetLiveAllocationCount()
 {
 #if defined(MEM_TRACKING)
 	return gTotalAllocations;
-#elif
+#else
 	return 0;
 #endif
 }
@@ -164,7 +164,7 @@ size_t MemTrackGetLiveByteCount()
 {
 #if defined(MEM_TRACKING)
 	return gTotalBytesAllocated;
-#elif
+#else
 	return 0;
 #endif
 }
