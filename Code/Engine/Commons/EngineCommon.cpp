@@ -1,5 +1,7 @@
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Core/Time.hpp"
+#include <time.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -55,6 +57,3 @@ uint SetBitTo(uint flags, uint bit, bool set)
 	}
 	return flags;
 }
-
-
-

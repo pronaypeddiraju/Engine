@@ -329,3 +329,18 @@ void WindowContext::SetMouseMode(eMouseMode mode)
 	}
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------
+void WindowContext::CheckCreateDirectory(const char* directory)
+{
+	if (CreateDirectoryA(directory, NULL) ||
+		ERROR_ALREADY_EXISTS == GetLastError())
+	{
+		//The directory exists
+	}
+	else
+	{
+		// Failed to create directory.
+		ERROR_AND_DIE("Failed to create directory for log file");
+	}
+}

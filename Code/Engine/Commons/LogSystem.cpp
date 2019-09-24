@@ -1,43 +1,11 @@
 #include "Engine/Commons/LogSystem.hpp"
 #include "Engine/Core/FileUtils.hpp"
-#include <fstream>
 #include "Engine/Core/Time.hpp"
-#include <time.h>
-
-#define WIN32_LEAN_AND_MEAN		// Always #define this before #including <windows.h>
-#include <windows.h>			// #include this (massive, platform-specific) header in very few places
+#include "Engine/Core/WindowContext.hpp"
+#include <fstream>
+#include <stdarg.h>
 
 LogSystem* g_LogSystem = nullptr;
-
-//------------------------------------------------------------------------------------------------------------------------------
-std::string DateTime()
-{
-	time_t rawTime;
-	struct tm * timeInfo = new struct tm;
-	char buffer[80];
-
-	time(&rawTime);
-	localtime_s(timeInfo, &rawTime);
-
-	strftime(buffer, 80, "ExecutionLog_%d-%m-%Y_%H-%M-%S", timeInfo);
-
-	return std::string(buffer);
-}
-
-//------------------------------------------------------------------------------------------------------------------------------
-void CheckCreateDirectory(const char* directory)
-{
-	if (CreateDirectoryA(directory, NULL) ||
-		ERROR_ALREADY_EXISTS == GetLastError())
-	{
-		//The directory exists
-	}
-	else
-	{
-		// Failed to create directory.
-		ERROR_AND_DIE("Failed to create directory for log file");
-	}
-}
 
 //------------------------------------------------------------------------------------------------------------------------------
 LogSystem::LogSystem(const char* fileName)
@@ -124,8 +92,8 @@ void LogSystem::WriteToLogFromBuffer(const LogObject_T& log)
 
 	// write it
 	// buffer is the c_str of the message
-	std::string logWriteString("Log Entry: ");
-	logWriteString += "Time: ";
+	std::string logWriteString("\n\n Log Entry: ");
+	logWriteString += "\n\t Time: ";
 	logWriteString += std::to_string(GetHPCToSeconds(log.hpcTime));
 	logWriteString += "Filter: ";
 	logWriteString += log.filter;
@@ -152,12 +120,12 @@ void LogSystem::WriteToLogFromBuffer(const LogObject_T& log)
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::LogSystemInit()
 {
-	CheckCreateDirectory(m_filename.c_str());
+	g_windowContext->CheckCreateDirectory(m_filename.c_str());
 
 	std::string completeFilePath = m_filename;
 
 	//Get system date and time
-	std::string systemDateTime = DateTime();
+	std::string systemDateTime = "ExecutionLog" + GetDateTime();
 	completeFilePath += systemDateTime;
 	completeFilePath += ".bin";
 
@@ -175,7 +143,7 @@ void LogSystem::LogSystemShutDown()
 	LogFlush();
 	Stop();
 
-	DebuggerPrintf("Shutting down log system...");
+	DebuggerPrintf("\n Shutting down log system...");
 	SignalWork();
 
 	m_thread.join();
