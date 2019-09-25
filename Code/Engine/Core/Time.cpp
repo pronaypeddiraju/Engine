@@ -57,7 +57,7 @@ std::string GetDateTime()
 	time(&rawTime);
 	localtime_s(timeInfo, &rawTime);
 
-	strftime(buffer, 80, "Run_%d%m%Y_%H%M%S", timeInfo);
+	strftime(buffer, 80, "Run_%d-%m-%Y_%H-%M-%S", timeInfo);
 
 	return std::string(buffer);
 }
