@@ -87,12 +87,16 @@ void* TrackedAlloc(size_t byte_count)
 #else
 	#if (MEM_TRACKING == MEM_TRACK_ALLOC_COUNT)
 		++gTotalAllocations;
+		++tTotalAllocations;
 
 		void* allocation = ::malloc(byte_count);
 		return allocation;
 	#elif (MEM_TRACKING == MEM_TRACK_VERBOSE)
 		++gTotalAllocations;
 		gTotalBytesAllocated += byte_count;
+
+		++tTotalAllocations;
+		tTotalBytesAllocated += byte_count;
 
 		void* allocation = ::malloc(byte_count);
 		TrackAllocation(allocation, byte_count);
@@ -109,9 +113,13 @@ void TrackedFree(void* ptr)
 		return;
 
 	--gTotalAllocations;
+	--tTotalAllocations;
 	return ::free(ptr);
 #elif (MEM_TRACKING == MEM_TRACK_VERBOSE)
 	--gTotalAllocations;
+
+	--tTotalAllocations;
+
 	UntrackAllocation(ptr);
 #endif
 }
@@ -144,6 +152,7 @@ void UntrackAllocation(void* allocation)
 		if (mapIterator != GetMemTrakingMap().end())
 		{
 			gTotalBytesAllocated -= mapIterator->second.m_byteSize;
+			tTotalBytesAllocated -= mapIterator->second.m_byteSize;
 			GetMemTrakingMap().erase(mapIterator);
 		}
 	}

@@ -12,6 +12,12 @@ NamedStrings g_gameConfigBlackboard;
 std::atomic<size_t> gTotalAllocations = 0U;
 std::atomic<size_t> gTotalBytesAllocated = 0U;
 
+std::atomic<size_t> gAllocatedThisFrame = 0U;
+std::atomic<size_t> gAllocatedBytesThisFrame = 0U;
+
+thread_local size_t tTotalAllocations = 0U;
+thread_local size_t tTotalBytesAllocated = 0U;
+
 //------------------------------------------------------------------------------------------------------------------------------
 bool IsBitSet(uint flags, uint bit)
 {

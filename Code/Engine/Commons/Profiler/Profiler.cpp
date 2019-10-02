@@ -287,8 +287,8 @@ STATIC ProfilerSample_T* Profiler::AllocateNode()
 
 	if (node != nullptr)
 	{
-		node->m_allocationSizeInBytes = gTotalBytesAllocated;
-		node->m_allocCount = gTotalAllocations;
+		node->m_allocationSizeInBytes = tTotalBytesAllocated;
+		node->m_allocCount = tTotalAllocations;
 		node->m_refCount = 1;
 	}
 
@@ -300,8 +300,8 @@ STATIC ProfilerSample_T* Profiler::AllocateNode()
 //------------------------------------------------------------------------------------------------------------------------------
 STATIC void Profiler::FreeNode(ProfilerSample_T* node)
 {
-	node->m_allocationSizeInBytes = gTotalBytesAllocated - node->m_allocationSizeInBytes;
-	node->m_allocCount = gTotalAllocations - node->m_allocCount;
+	node->m_allocationSizeInBytes = tTotalBytesAllocated - node->m_allocationSizeInBytes;
+	node->m_allocCount = tTotalAllocations - node->m_allocCount;
 
 	BlockAllocator* instance = gBlockAllocator->GetInstance();
 	instance->Free(node);

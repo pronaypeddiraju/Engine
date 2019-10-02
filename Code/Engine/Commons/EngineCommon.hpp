@@ -191,3 +191,6 @@ extern std::atomic<size_t> gAllocatedThisFrame;
 extern std::atomic<size_t> gAllocatedBytesThisFrame;
 extern std::atomic<size_t> gTotalAllocations;
 extern std::atomic<size_t> gTotalBytesAllocated;
+
+extern thread_local size_t tTotalAllocations;
+extern thread_local size_t tTotalBytesAllocated;
