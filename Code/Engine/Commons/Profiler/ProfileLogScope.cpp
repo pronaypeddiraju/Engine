@@ -1,4 +1,4 @@
-#include "Engine/Core/Profiler.hpp"
+#include "Engine/Commons/Profiler/ProfileLogScope.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 std::string GetProfileTimeString(double seconds)

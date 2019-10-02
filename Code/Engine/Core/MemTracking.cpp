@@ -1,5 +1,5 @@
 #include "Engine/Core/MemTracking.hpp"
-#include "Engine/Core/UntrackedAllocator.hpp"
+#include "Engine/Allocators/TemplatedUntrackedAllocator.hpp"
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Game/EngineBuildPreferences.hpp"
 #include <malloc.h>
@@ -7,7 +7,7 @@
 #include "Async/AsyncQueue.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Commons/UnitTest.hpp"
-#include "Engine/Core/Profiler.hpp"
+#include "Engine/Commons/Profiler/ProfileLogScope.hpp"
 #include <chrono>
 #include <thread>
 #include <map>
@@ -32,9 +32,9 @@ std::mutex& GetMemTrackerLock()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-std::map<void*,	MemTrackInfo_T,	std::less<void*>, UntrackedAllocator<std::pair<void* const, MemTrackInfo_T>>>& GetMemTrakingMap()
+std::map<void*,	MemTrackInfo_T,	std::less<void*>, TemplatedUntrackedAllocator<std::pair<void* const, MemTrackInfo_T>>>& GetMemTrakingMap()
 {
-	static std::map<void*, MemTrackInfo_T, std::less<void*>, UntrackedAllocator<std::pair<void* const, MemTrackInfo_T>>> memTrackerMap;
+	static std::map<void*, MemTrackInfo_T, std::less<void*>, TemplatedUntrackedAllocator<std::pair<void* const, MemTrackInfo_T>>> memTrackerMap;
 	return memTrackerMap;
 }
 
@@ -182,10 +182,10 @@ void MemTrackLogLiveAllocations()
 	#if (MEM_TRACKING == MEM_TRACK_VERBOSE)
 		//Create a thread safe copy of the map but use callstack as key and pair of num allocations and alloc size as value
 
-		std::map<unsigned long, LogTrackInfo_T, std::less<unsigned long>, UntrackedAllocator<std::pair<unsigned long const, LogTrackInfo_T>>> memLoggerMap;
+		std::map<unsigned long, LogTrackInfo_T, std::less<unsigned long>, TemplatedUntrackedAllocator<std::pair<unsigned long const, LogTrackInfo_T>>> memLoggerMap;
 
-		std::map<unsigned long, LogTrackInfo_T, std::less<unsigned long>, UntrackedAllocator<std::pair<unsigned long const, LogTrackInfo_T>>>::iterator memLoggerIterator;
-		std::map<void*, MemTrackInfo_T, std::less<void*>, UntrackedAllocator<std::pair<void* const, MemTrackInfo_T>>>::iterator memTrackerIterator;
+		std::map<unsigned long, LogTrackInfo_T, std::less<unsigned long>, TemplatedUntrackedAllocator<std::pair<unsigned long const, LogTrackInfo_T>>>::iterator memLoggerIterator;
+		std::map<void*, MemTrackInfo_T, std::less<void*>, TemplatedUntrackedAllocator<std::pair<void* const, MemTrackInfo_T>>>::iterator memTrackerIterator;
 
 		size_t totalAllocationSize = 0;
 		uint totalAllocations = 0;
@@ -223,7 +223,7 @@ void MemTrackLogLiveAllocations()
 		//Sort Map
 		std::vector<LogTrackInfo_T> logVector;
 
-		std::map<unsigned long, LogTrackInfo_T, std::less<unsigned long>, UntrackedAllocator<std::pair<unsigned long const, LogTrackInfo_T>>>::iterator logMapItr;
+		std::map<unsigned long, LogTrackInfo_T, std::less<unsigned long>, TemplatedUntrackedAllocator<std::pair<unsigned long const, LogTrackInfo_T>>>::iterator logMapItr;
 		logMapItr = memLoggerMap.begin();
 
 		while (logMapItr != memLoggerMap.end())

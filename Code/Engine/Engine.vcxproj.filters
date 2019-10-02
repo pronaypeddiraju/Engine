@@ -310,9 +310,6 @@
     <ClCompile Include="Commons\UnitTest.cpp">
       <Filter>Commons</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Profiler.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="PhysXSystem\PhysXSystem.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -329,6 +326,24 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Commons\LogSystem.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Commons\Profiler\ProfileLogScope.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Commons\Profiler\Profiler.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Commons\Profiler\ProfilerSample.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Allocators\UntrackedAllocator.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Allocators\TrackedAllocator.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Allocators\BlockAllocator.cpp">
       <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1193,7 +1208,6 @@
       <Filter>Commons</Filter>
     </ClInclude>
     <ClInclude Include="Core\Async\AsyncQueue.hpp" />
-    <ClInclude Include="Core\Profiler.hpp" />
     <ClInclude Include="Math\Array2D.hpp" />
     <ClInclude Include="PhysXSystem\PhysXSystem.hpp" />
     <ClInclude Include="PhysXSystem\PhysXTypes.hpp" />
@@ -1202,11 +1216,19 @@
     </ClInclude>
     <ClInclude Include="..\ThirdParty\stb\stb_image_write.h" />
     <ClInclude Include="Core\MemTracking.hpp" />
-    <ClInclude Include="Core\UntrackedAllocator.hpp" />
     <ClInclude Include="Core\Async\UniformAsyncRingBuffer.hpp" />
     <ClInclude Include="Core\Async\MPSCAsyncRingBuffer.hpp" />
     <ClInclude Include="Core\Async\Semaphores.hpp" />
     <ClInclude Include="Commons\LogSystem.hpp" />
+    <ClInclude Include="Commons\Profiler\ProfileLogScope.hpp" />
+    <ClInclude Include="Commons\Profiler\Profiler.hpp" />
+    <ClInclude Include="Commons\Profiler\ProfilerSample.hpp" />
+    <ClInclude Include="Commons\Profiler\ProfilerEnums.hpp" />
+    <ClInclude Include="Allocators\InternalAllocator.hpp" />
+    <ClInclude Include="Allocators\TrackedAllocator.hpp" />
+    <ClInclude Include="Allocators\TemplatedUntrackedAllocator.hpp" />
+    <ClInclude Include="Allocators\UntrackedAllocator.hpp" />
+    <ClInclude Include="Allocators\BlockAllocator.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Math\Array2D.inl" />

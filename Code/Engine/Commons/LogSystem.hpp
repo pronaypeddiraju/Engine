@@ -4,6 +4,7 @@
 #include "Engine/Core/Async/MPSCAsyncRingBuffer.hpp"
 #include "Engine/Core/Async/Semaphores.hpp"
 #include <set>
+#include <shared_mutex>
 
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -69,6 +70,7 @@ public:
 
 	std::vector<LogHookCallback>	m_logHooks;
 
+	std::shared_mutex		m_filterMutex;
 	std::set<std::string>	m_filterSet;
-	bool				m_filterMode = true;	//If true, white-list(Enabled) all and ignore filters in the set, if false blacklist(Disable) all and only allow elements in the set
+	bool					m_filterMode = true;	//If true, white-list(Enabled) all and ignore filters in the set, if false blacklist(Disable) all and only allow elements in the set
 };

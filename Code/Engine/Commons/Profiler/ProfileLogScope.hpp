@@ -32,4 +32,5 @@ public:
 #define COMBINE1(X,Y) X##Y  // helper macro
 #define COMBINE(X,Y) COMBINE1(X,Y)
 
-#define PROFILE_LOG_SCOPE( tag )  LogProfileScope COMBINE(__scopeLog, __LINE__) ## ( tag )
+#define PROFILE_LOG_SCOPE( tag )			LogProfileScope COMBINE(__scopeLog, __LINE__) ## ( tag )
+#define PROFILE_LOG_SCOPE_FUNCTION()		PROFILE_LOG_SCOPE(__FUNCTION__);

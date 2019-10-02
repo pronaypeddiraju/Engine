@@ -254,6 +254,7 @@ void LogSystem::RunAllHooks(const LogObject_T* logObj)
 //------------------------------------------------------------------------------------------------------------------------------
 bool LogSystem::CheckAgainstFilter(const char* filterToCheck)
 {
+	std::scoped_lock lock(m_filterMutex);
 	if (m_filterMode == true)
 	{
 		//we are in white list mode so we should not write this log if filter exists in set
@@ -286,6 +287,7 @@ bool LogSystem::CheckAgainstFilter(const char* filterToCheck)
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::LogEnableAll()
 {
+	std::scoped_lock lock(m_filterMutex);
 	m_filterMode = true;
 	m_filterSet.clear();
 }
@@ -293,6 +295,7 @@ void LogSystem::LogEnableAll()
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::LogDisableAll()
 {
+	std::scoped_lock lock(m_filterMutex);
 	m_filterMode = false;
 	m_filterSet.clear();
 }
@@ -300,6 +303,7 @@ void LogSystem::LogDisableAll()
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::LogEnable(char const* filter)
 {
+	std::scoped_lock lock(m_filterMutex);
 	if (m_filterMode == false)
 	{
 		//We have blacklisted things so enabling a specific filter makes sense
@@ -318,6 +322,7 @@ void LogSystem::LogEnable(char const* filter)
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::LogDisable(char const* filter)
 {
+	std::scoped_lock lock(m_filterMutex);
 	if (m_filterMode == true)
 	{
 		//We have white-listed things so disabling a specific filter makes sense

@@ -6,12 +6,12 @@
 // container has its own instance of this allocator - but usually 
 // we just treat this as a namespace/static and don't use much internal state; 
 template <typename T>
-struct UntrackedAllocator
+struct TemplatedUntrackedAllocator
 {
-	UntrackedAllocator() = default;
+	TemplatedUntrackedAllocator() = default;
 
 	template <class U>
-	constexpr UntrackedAllocator(UntrackedAllocator<U> const&) noexcept {}
+	constexpr TemplatedUntrackedAllocator(TemplatedUntrackedAllocator<U> const&) noexcept {}
 
 	// allocator needs to define these types;
 	// the "type" is not as important as the name
@@ -39,13 +39,13 @@ struct UntrackedAllocator
 };
 
 template<typename T, class U>
-bool operator==(UntrackedAllocator<T> const&, UntrackedAllocator<U> const&) 
+bool operator==(TemplatedUntrackedAllocator<T> const&, TemplatedUntrackedAllocator<U> const&)
 { 
 	return true; 
 }
 
 template<typename T, class U>
-bool operator!=(UntrackedAllocator<T> const&, UntrackedAllocator<U> const&) 
+bool operator!=(TemplatedUntrackedAllocator<T> const&, TemplatedUntrackedAllocator<U> const&)
 { 
 	return false; 
 }

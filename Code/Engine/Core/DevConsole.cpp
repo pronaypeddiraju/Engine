@@ -10,7 +10,8 @@
 #include "Engine/Renderer/Rgba.hpp"
 #include "Game/EngineBuildPreferences.hpp"
 #include <algorithm>
-#include "MemTracking.hpp"
+#include "Engine/Core/MemTracking.hpp"
+#include "Engine/Allocators/TemplatedUntrackedAllocator.hpp"
 
 DevConsole* g_devConsole = nullptr;
 
@@ -22,7 +23,7 @@ const STATIC Rgba DevConsole::CONSOLE_ERROR_DESC	=	Rgba(1.0f, 0.5f, 0.3f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_INPUT			=	Rgba(1.0f, 1.0f, 1.0f, 1.0f);
 
 extern std::mutex gTrackerLock;
-extern std::map<void*, MemTrackInfo_T, std::less<void*>, UntrackedAllocator<std::pair<void* const, MemTrackInfo_T>>> gMemTrackers;
+extern std::map<void*, MemTrackInfo_T, std::less<void*>, TemplatedUntrackedAllocator<std::pair<void* const, MemTrackInfo_T>>> gMemTrackers;
 
 //------------------------------------------------------------------------------------------------------------------------------
 void LogHookForDevConsole(const LogObject_T* logObj)
