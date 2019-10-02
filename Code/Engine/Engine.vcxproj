@@ -494,6 +494,7 @@
     <ClInclude Include="..\ThirdParty\TinyXML2\tinyxml2.h" />
     <ClInclude Include="Allocators\BlockAllocator.hpp" />
     <ClInclude Include="Allocators\InternalAllocator.hpp" />
+    <ClInclude Include="Allocators\ObjectAllocator.hpp" />
     <ClInclude Include="Allocators\TrackedAllocator.hpp" />
     <ClInclude Include="Allocators\UntrackedAllocator.hpp" />
     <ClInclude Include="Audio\AudioSystem.hpp" />

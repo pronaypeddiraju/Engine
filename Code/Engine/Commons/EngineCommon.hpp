@@ -72,30 +72,36 @@
 #define MACRO_COMBINE(X,Y) MACRO_COMBINE1(X,Y)
 
 //------------------------------------------------------------------------------------------------------------------------------
+class BlockAllocator;
 class DebugRender;
 class DevConsole;
 class EventSystems;
 class ImGUISystem;
+class InternalAllocator;
 class NamedStrings;
 class NamedProperties;
 class PhysicsSystem;
 class RenderContext;
 class WindowContext;
 class PhysXSystem;
+class Profiler;
 class RandomNumberGenerator;
 class UnitTest;
 class LogSystem;
 
 //------------------------------------------------------------------------------------------------------------------------------
+extern BlockAllocator* gBlockAllocator;
 extern DebugRender*	g_debugRenderer;
 extern DevConsole* g_devConsole;
 extern EventSystems* g_eventSystem;
 extern ImGUISystem* g_ImGUI;
+extern InternalAllocator* g_internalAllocator;
 extern NamedStrings g_gameConfigBlackboard; 
 extern PhysicsSystem* g_physicsSystem;
 extern RenderContext* g_renderContext;
 extern WindowContext* g_windowContext;
 extern PhysXSystem* g_PxPhysXSystem;
+extern Profiler* gProfiler;
 extern RandomNumberGenerator* g_RNG;
 extern UnitTest* g_allUnitTests;
 extern LogSystem* g_LogSystem;

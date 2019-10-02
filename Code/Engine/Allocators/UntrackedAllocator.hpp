@@ -7,11 +7,11 @@
 class UntrackedAllocator : public InternalAllocator
 {
 public:
-	virtual void*				Allocate(size_t size) final;
-	virtual void				Free(void* ptr) final;
+	virtual void*					Allocate(size_t size) final;
+	virtual void					Free(void* ptr) final;
 
-	static	UntrackedAllocator*						CreateInstance();
-	static	void									DestroyInstance();
-	static	UntrackedAllocator*						GetInstance();
+	static	UntrackedAllocator*		CreateInstance();
+	static	void					DestroyInstance();
+	static	UntrackedAllocator*		GetInstance();
 };
 

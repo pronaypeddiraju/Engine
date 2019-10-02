@@ -22,6 +22,9 @@ LogSystem::~LogSystem()
 //------------------------------------------------------------------------------------------------------------------------------
 static void LogThread()
 {
+	if (g_LogSystem == nullptr)
+		return;
+
 	if (g_LogSystem->m_fileStream == nullptr)
 	{
 		// See if a file exists, if not create one
@@ -120,6 +123,7 @@ void LogSystem::WriteToLogFromBuffer(const LogObject_T& log)
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::LogSystemInit()
 {
+	m_logSystemInitialized = true;
 	g_windowContext->CheckCreateDirectory(m_filename.c_str());
 
 	std::string completeFilePath = m_filename;
@@ -140,6 +144,11 @@ void LogSystem::LogSystemInit()
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::LogSystemShutDown()
 {
+	if (g_LogSystem == nullptr)
+		return;
+
+	m_logSystemInitialized = false;
+
 	LogFlush();
 	Stop();
 
@@ -238,6 +247,9 @@ void LogSystem::LogCallstackf(char const* filter, char const* format, ...)
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::RunAllHooks(const LogObject_T* logObj)
 {
+	if (g_LogSystem == nullptr)
+		return;
+
 	std::vector<LogHookCallback>::iterator itr;
 	itr = m_logHooks.begin();
 
@@ -254,6 +266,9 @@ void LogSystem::RunAllHooks(const LogObject_T* logObj)
 //------------------------------------------------------------------------------------------------------------------------------
 bool LogSystem::CheckAgainstFilter(const char* filterToCheck)
 {
+	if (g_LogSystem == nullptr)
+		return false;
+
 	std::scoped_lock lock(m_filterMutex);
 	if (m_filterMode == true)
 	{
@@ -287,6 +302,9 @@ bool LogSystem::CheckAgainstFilter(const char* filterToCheck)
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::LogEnableAll()
 {
+	if (g_LogSystem == nullptr)
+		return;
+
 	std::scoped_lock lock(m_filterMutex);
 	m_filterMode = true;
 	m_filterSet.clear();
@@ -295,6 +313,9 @@ void LogSystem::LogEnableAll()
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::LogDisableAll()
 {
+	if (g_LogSystem == nullptr)
+		return;
+
 	std::scoped_lock lock(m_filterMutex);
 	m_filterMode = false;
 	m_filterSet.clear();
@@ -303,6 +324,9 @@ void LogSystem::LogDisableAll()
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::LogEnable(char const* filter)
 {
+	if (g_LogSystem == nullptr)
+		return;
+
 	std::scoped_lock lock(m_filterMutex);
 	if (m_filterMode == false)
 	{
@@ -322,6 +346,9 @@ void LogSystem::LogEnable(char const* filter)
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::LogDisable(char const* filter)
 {
+	if (g_LogSystem == nullptr)
+		return;
+
 	std::scoped_lock lock(m_filterMutex);
 	if (m_filterMode == true)
 	{
@@ -357,12 +384,18 @@ void LogSystem::LogFlush()
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::LogHook(LogHookCallback cb)
 {
+	if (g_LogSystem == nullptr)
+		return;
+
 	m_logHooks.push_back(cb);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 void LogSystem::LogUnhook(LogHookCallback cb)
 {
+	if (g_LogSystem == nullptr)
+		return;
+
 	std::vector<LogHookCallback>::iterator itr;
 	itr = std::find(m_logHooks.begin(), m_logHooks.end(), cb);
 	

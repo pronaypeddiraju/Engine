@@ -68,6 +68,8 @@ public:
 	void				LogUnhook(LogHookCallback cb);
 
 
+	bool					m_logSystemInitialized = false;
+
 	std::vector<LogHookCallback>	m_logHooks;
 
 	std::shared_mutex		m_filterMutex;

@@ -1,7 +1,9 @@
 #include "Engine/Allocators/BlockAllocator.hpp"
 #include "Engine/Core/MemTracking.hpp"
 
+//------------------------------------------------------------------------------------------------------------------------------
 typedef uint8_t byte;
+BlockAllocator* gBlockAllocator = nullptr;
 
 //------------------------------------------------------------------------------------------------------------------------------
 bool BlockAllocator::Initialize(InternalAllocator* base, size_t blockSize, size_t alignment, uint blocksPerChunk)
@@ -74,30 +76,27 @@ void BlockAllocator::Deinitialize()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void* BlockAllocator::Allocate(size_t byte_size)
+void* BlockAllocator::Allocate(size_t size)
 {
-#if defined(MEM_TRACKING)
-	return TrackedAlloc(byte_size);
-#else
-	return UntrackedAlloc(byte_size);
-#endif
+	if (size <= m_blockSize)
+	{
+		return AllocateBlock();
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 void BlockAllocator::Free(void* ptr)
 {
-#if defined(MEM_TRACKING)
-	return TrackedFree(ptr);
-#else
-	return UntrackedFree(ptr);
-#endif
+	FreeBlock(ptr);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 void* BlockAllocator::AllocateBlock()
 {
-	std::scoped_lock blockLock(m_blockLock);
-
 	Block_T* block = PopFreeBlock();
 	
 	while (block == nullptr) 
@@ -118,6 +117,38 @@ void BlockAllocator::FreeBlock(void* ptr)
 {
 	Block_T* block = (Block_T*)ptr;
 	PushFreeBlock(block);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+BlockAllocator* BlockAllocator::CreateInstance()
+{
+	if (gBlockAllocator == nullptr)
+	{
+		gBlockAllocator = new BlockAllocator();
+	}
+
+	return gBlockAllocator;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void BlockAllocator::DestroyInstance()
+{
+	if (gBlockAllocator != nullptr)
+	{
+		delete gBlockAllocator;
+		gBlockAllocator = nullptr;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+BlockAllocator* BlockAllocator::GetInstance()
+{
+	if (gBlockAllocator == nullptr)
+	{
+		CreateInstance();
+	}
+
+	return gBlockAllocator;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

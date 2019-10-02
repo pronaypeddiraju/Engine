@@ -37,14 +37,21 @@ public:
 	void						Deinitialize();
 
 	//Interface methods
-	virtual void*				Allocate(size_t byte_size) final; // works as long as size <= block_size
+	virtual void*				Allocate(size_t size) final; // works as long as size <= block_size
 	virtual void				Free(void* ptr) final;
+
+	//------------------------------------------------------------------------------------------------------------------------------
+	//Static methods
+	static	BlockAllocator*		CreateInstance();
+	static	void				DestroyInstance();
+	static	BlockAllocator*		GetInstance();
+
+private:
 
 	//Block allocator can allocate and free single blocks
 	void*						AllocateBlock();
 	void						FreeBlock(void* ptr);
 
-private:
 	//Allocated a chunk and splits into blocks
 	//NOTE: Will fail if there is no base allocator provided
 	bool						AllocateChunk();

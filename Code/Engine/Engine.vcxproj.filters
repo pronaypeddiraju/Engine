@@ -1229,6 +1229,7 @@
     <ClInclude Include="Allocators\TemplatedUntrackedAllocator.hpp" />
     <ClInclude Include="Allocators\UntrackedAllocator.hpp" />
     <ClInclude Include="Allocators\BlockAllocator.hpp" />
+    <ClInclude Include="Allocators\ObjectAllocator.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Math\Array2D.inl" />
