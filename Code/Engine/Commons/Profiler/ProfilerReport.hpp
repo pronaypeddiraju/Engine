@@ -15,6 +15,11 @@ public:
 
 	void					GetChildrenFromSampleRoot(ProfilerSample_T* root, ProfilerReportNode* parent);
 
+	void					SortByTotalTime();
+	void					SortBySelfTime();
+
+	void					GetSelfTime();
+
 	ProfilerReportNode*		m_parent = nullptr;
 
 	uint64_t				m_allocationCount = 0U;
@@ -63,8 +68,6 @@ private:
 
 	void					GenerateTreeFromFrame(ProfilerSample_T* root);
 	void					GenerateFlatFromFrame(ProfilerSample_T* root);
-	void					SortByTotalTime();
-	void					SortBySelfTime();
 
 	static bool				Command_ProfilerReportFrame(EventArgs& args);
 

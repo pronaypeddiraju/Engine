@@ -3,6 +3,7 @@
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Commons/Profiler/Profiler.hpp"
 #include "Engine/Core/NamedProperties.hpp"
+#include "Engine/Core/Time.hpp"
 #include <string.h>
 
 ProfilerReport* gProfileReporter = nullptr;
@@ -49,34 +50,6 @@ void ProfilerReport::GenerateTreeFromFrame(ProfilerSample_T* root)
 	}
 
 	m_root = new ProfilerReportNode(root);
-
-	/*
-	ProfilerSample_T* node = nullptr;
-	ProfilerSample_T* next = nullptr;
-
-	node = root;
-	while (node->m_refCount != 0)
-	{
-		if (node->m_lastChild->m_refCount != 0)
-		{
-			next = node->m_lastChild;
-			m_root MakeNode(node->m_lastChild);
-		}
-		else
-		{
-			if (node->m_prevSibling->m_refCount != 0)
-			{
-				next = node->m_prevSibling;
-			}
-			else
-			{
-				next = node->m_parent;
-			}
-			FreeNode(node);
-		}
-		node = next;
-	}
-	*/
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -125,6 +98,7 @@ STATIC bool ProfilerReport::Command_ProfilerReportFrame(EventArgs& args)
 //------------------------------------------------------------------------------------------------------------------------------
 ProfilerReportNode::ProfilerReportNode(ProfilerSample_T* node, ProfilerReportNode* parent)
 {
+	//Setup all data on the ReportNode
 	m_parent = parent;
 
 	m_allocationCount = node->m_allocCount;
@@ -138,9 +112,11 @@ ProfilerReportNode::ProfilerReportNode(ProfilerSample_T* node, ProfilerReportNod
 	strcpy_s(m_label, node->m_label);
 
 	m_totalTimeHPC = node->m_endTime - node->m_startTime;
+	m_totalTime = GetHPCToSeconds(m_totalTimeHPC);
 	m_avgTime = m_totalTime;
 	m_maxTime = m_totalTime;
 
+	//Grab all children
 	if (node->m_lastChild != nullptr)
 	{
 		GetChildrenFromSampleRoot(node->m_lastChild, this);
@@ -149,6 +125,8 @@ ProfilerReportNode::ProfilerReportNode(ProfilerSample_T* node, ProfilerReportNod
 	{
 		GetChildrenFromSampleRoot(node->m_prevSibling, this->m_parent);
 	}
+
+	GetSelfTime();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -164,21 +142,67 @@ void ProfilerReportNode::GetChildrenFromSampleRoot(ProfilerSample_T* root, Profi
 	{
 		parent->m_children.emplace_back(ProfilerReportNode(root, parent));
 	}
+}
 
-	/*
-	ProfilerSample_T* next = nullptr;
-	next = root;
-	while (next != nullptr)
+//------------------------------------------------------------------------------------------------------------------------------
+void ProfilerReportNode::SortByTotalTime()
+{
+	for (int indexI = 0; indexI < m_children.size(); ++indexI)
 	{
-		if (node->m_prevSibling != nullptr)
+		double totalTimeI = m_children[indexI].m_totalTime;
+
+		for (int indexJ = indexI + 1; indexJ < m_children.size(); ++indexJ)
 		{
-			next = node->m_prevSibling;
-			GetChildrenFromSampleRoot(next, &parent->m_children.emplace_back(ProfilerReportNode(next)));
-		}
-		else
-		{
-			next = nullptr;
+			double totalTimeJ = m_children[indexJ].m_totalTime;
+			if (totalTimeI > totalTimeJ)
+			{
+				std::swap(m_children[indexI], m_children[indexJ]);
+				totalTimeI = totalTimeJ;
+			}
 		}
 	}
-	*/
+
+	for (ProfilerReportNode child : m_children)
+	{
+		(&child)->SortByTotalTime();
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void ProfilerReportNode::SortBySelfTime()
+{
+	for (int indexI = 0; indexI < m_children.size(); ++indexI)
+	{
+		double selfTimeI = m_children[indexI].m_selfTime;
+
+		for (int indexJ = indexI + 1; indexJ < m_children.size(); ++indexJ)
+		{
+			double selfTimeJ = m_children[indexJ].m_selfTime;
+			if (selfTimeI > selfTimeJ)
+			{
+				std::swap(m_children[indexI], m_children[indexJ]);
+				selfTimeI = selfTimeJ;
+			}
+		}
+	}
+
+	for (ProfilerReportNode child : m_children)
+	{
+		(&child)->SortBySelfTime();
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void ProfilerReportNode::GetSelfTime()
+{
+	m_selfTime = m_totalTime;
+
+	double childrenTime = 0;
+
+	for (ProfilerReportNode child : m_children)
+	{
+		childrenTime += child.m_totalTime;
+	}
+
+	m_selfTime -= childrenTime;
 }
