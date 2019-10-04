@@ -197,6 +197,7 @@
     <ClCompile Include="Commons\ErrorWarningAssert.cpp" />
     <ClCompile Include="Commons\LogSystem.cpp" />
     <ClCompile Include="Commons\Profiler\Profiler.cpp" />
+    <ClCompile Include="Commons\Profiler\ProfilerReport.cpp" />
     <ClCompile Include="Commons\Profiler\ProfilerSample.cpp" />
     <ClCompile Include="Commons\StringUtils.cpp" />
     <ClCompile Include="Commons\UnitTest.cpp" />
@@ -503,6 +504,7 @@
     <ClInclude Include="Commons\ErrorWarningAssert.hpp" />
     <ClInclude Include="Commons\LogSystem.hpp" />
     <ClInclude Include="Commons\Profiler\Profiler.hpp" />
+    <ClInclude Include="Commons\Profiler\ProfilerReport.hpp" />
     <ClInclude Include="Commons\Profiler\ProfilerSample.hpp" />
     <ClInclude Include="Commons\Profiler\ProfilerEnums.hpp" />
     <ClInclude Include="Commons\StringUtils.hpp" />

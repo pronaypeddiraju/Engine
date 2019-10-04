@@ -3,8 +3,10 @@
 #include "Engine/Allocators/BlockAllocator.hpp"
 #include "Engine/Allocators/InternalAllocator.hpp"
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Commons/Profiler/ProfilerReport.hpp"
 #include "Engine/Core/MemTracking.hpp"
 #include "Engine/Core/Time.hpp"
+#include "Engine/Renderer/ImGUISystem.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Game/EngineBuildPreferences.hpp"
@@ -14,7 +16,10 @@
 
 Profiler* gProfiler = nullptr;
 
-thread_local ProfilerSample_T* Profiler::tActiveNode = nullptr;
+//------------------------------------------------------------------------------------------------------------------------------
+//Used by Profiler to store nodes with respect to each thread
+static thread_local ProfilerSample_T*	tActiveNode = nullptr;
+thread_local int tProfilerDepth = 0;
 
 #if defined(PROFILING_ENABLED)
 //------------------------------------------------------------------------------------------------------------------------------
@@ -32,8 +37,12 @@ Profiler::~Profiler()
 //------------------------------------------------------------------------------------------------------------------------------
 bool Profiler::ProfilerInitialize()
 {
+	g_eventSystem->SubscribeEventCallBackFn("ProfilerReport", Command_ProfilerReport);
+
 	Profiler* profiler = CreateInstance();
 	profiler->ProfilerAllocation(profiler->m_AllowedSize);
+
+	gProfileReporter->CreateInstance();
 
 	return true;
 }
@@ -52,11 +61,26 @@ void Profiler::ProfilerSetMaxHistoryTime(double seconds)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void Profiler::ProfilerPause()
+{
+	m_isPaused = true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Profiler::ProfilerResume()
+{
+	m_isPaused = false;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void Profiler::ProfilerPush(const char* label)
 {
 	ProfilerSample_T* newNode = AllocateNode();
 
 	newNode->m_parent = tActiveNode;
+	newNode->m_lastChild = nullptr;
+	newNode->m_prevSibling = nullptr;
+
 	newNode->m_threadID = std::this_thread::get_id();
 
 	// setup now
@@ -67,16 +91,26 @@ void Profiler::ProfilerPush(const char* label)
 	{
 		tActiveNode->AddChild(newNode);
 	}
+	else
+	{
+		if (!m_isPaused && tProfilerDepth == 0)
+		{
+			tActiveNode = newNode;
+		}
+	}
 
 	// this is now my active node
 	tActiveNode = newNode;
 
-	//DebuggerPrintf("\n Frame Pushed %s", label);
+	++tProfilerDepth;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 void Profiler::ProfilerPop()
 {
+	ASSERT_RECOVERABLE((tProfilerDepth > 0), "The Profiler depth is lesser than or equal to 0");
+	--tProfilerDepth;
+
 	if (tActiveNode == nullptr) 
 	{
 		return;
@@ -101,24 +135,58 @@ void Profiler::ProfilerUpdate()
 	if (gProfiler == nullptr)
 		return;
 
+	//Show the profiler window if we have report enabled
+	if (m_showTimeline)
+	{
+		ShowProfilerTimeline();
+	}
+
+	EraseOldTrees();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Profiler::ShowProfilerTimeline()
+{
+	//Show the imGUI widget here
+
+	if (g_ImGUI == nullptr)
+	{
+		ERROR_AND_DIE("The imGUI system was not initialized! The profiler requires you to intialize it");
+	}
+
+	//Render you imGUI window
+	//Use this place to create/update info for imGui
+	ImGui::Begin("Profiler Window");                          // Create a window called "Hello, world!" and append into it.
+
+	ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+
+
+	ImGui::End();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Profiler::EraseOldTrees()
+{
 	//Check for anything that is older than m_maxHistoryTime and delete if it is
-	//TODO("Delete old trees");
 
 	std::scoped_lock<std::shared_mutex> historyLock(m_HistoryLock);
 
-	std::vector<ProfilerSample_T*>::iterator historyItr;
-	historyItr = m_History.begin();
+	int index = 0;
 
-	while (historyItr != m_History.end())
+	while (index < m_History.size())
 	{
-		double currentTime = GetCurrentTimeSeconds();
-		double sampleTime = GetHPCToSeconds((*historyItr)->m_endTime);
+		double currentTime = GetHPCToSeconds(GetCurrentTimeHPC());
+		double sampleTime = GetHPCToSeconds(m_History[index]->m_endTime);
+
 		if (sampleTime < currentTime - m_maxHistoryTime)
 		{
-			m_History.erase(historyItr);
+			ProfilerSample_T* sample = m_History[index];
+			ProfilerReleaseTree(sample);
+			m_History.erase(m_History.begin() + index);
+			index--;
 		}
 
-		historyItr++;
+		index++;
 	}
 }
 
@@ -249,38 +317,40 @@ STATIC Profiler* Profiler::GetInstance()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-STATIC void Profiler::FreeTree(ProfilerSample_T* root)
+void Profiler::FreeTree(ProfilerSample_T* root)
 {
 	//Free all children and then free the root
 	ProfilerSample_T* node = nullptr;
 	ProfilerSample_T* next = nullptr;
 
 	node = root;
-	while (node->m_refCount != 0)
+	while (node != nullptr)
 	{
-		if (node->m_lastChild->m_refCount != 0)
+		if (node->m_lastChild != nullptr)
 		{
 			next = node->m_lastChild;
-			FreeNode(node->m_lastChild);
+			//FreeNode(next);
+			node->m_lastChild = nullptr;
 		}
 		else
 		{
-			if (node->m_prevSibling->m_refCount != 0)
+			if (node->m_prevSibling != nullptr)
 			{
 				next = node->m_prevSibling;
+				FreeNode(node);
 			}
 			else
 			{
 				next = node->m_parent;
+				FreeNode(node);
 			}
-			FreeNode(node);
 		}
 		node = next;
 	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-STATIC ProfilerSample_T* Profiler::AllocateNode()
+ProfilerSample_T* Profiler::AllocateNode()
 {
 	BlockAllocator* instance = gBlockAllocator->GetInstance();
 	ProfilerSample_T* node = (ProfilerSample_T*)instance->Allocate(sizeof(ProfilerSample_T));
@@ -289,6 +359,10 @@ STATIC ProfilerSample_T* Profiler::AllocateNode()
 	{
 		node->m_allocationSizeInBytes = tTotalBytesAllocated;
 		node->m_allocCount = tTotalAllocations;
+		
+		node->m_freeCount = tTotalFrees;
+		node->m_freeSizeInBytes = tTotalBytesFreed;
+
 		node->m_refCount = 1;
 	}
 
@@ -298,13 +372,25 @@ STATIC ProfilerSample_T* Profiler::AllocateNode()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-STATIC void Profiler::FreeNode(ProfilerSample_T* node)
+void Profiler::FreeNode(ProfilerSample_T* node)
 {
 	node->m_allocationSizeInBytes = tTotalBytesAllocated - node->m_allocationSizeInBytes;
 	node->m_allocCount = tTotalAllocations - node->m_allocCount;
 
+	node->m_freeCount = tTotalFrees - node->m_freeCount;
+	node->m_freeSizeInBytes = tTotalBytesFreed - node->m_freeSizeInBytes;
+
 	BlockAllocator* instance = gBlockAllocator->GetInstance();
 	instance->Free(node);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool Profiler::Command_ProfilerReport(EventArgs& args)
+{
+	UNUSED(args);
+
+	gProfiler->m_showTimeline = !gProfiler->m_showTimeline;
+	return true;
 }
 
 #else

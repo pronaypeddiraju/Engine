@@ -16,7 +16,7 @@ struct ProfilerSample_T
 	ProfilerSample_T*			m_lastChild = nullptr;
 	ProfilerSample_T*			m_prevSibling = nullptr;
 
-	char						m_label[32];
+	char						m_label[64];
 
 	//Timing
 	uint64_t					m_startTime = 0;
@@ -29,6 +29,9 @@ struct ProfilerSample_T
 	// alloc_count, byte_count
 	uint64_t					m_allocCount = 0;
 	size_t						m_allocationSizeInBytes = 0;
+
+	uint64_t					m_freeCount = 0;
+	size_t						m_freeSizeInBytes = 0;
 
 	void						AddChild(ProfilerSample_T* child);
 };

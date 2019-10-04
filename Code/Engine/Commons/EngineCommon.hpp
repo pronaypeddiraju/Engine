@@ -85,6 +85,7 @@ class RenderContext;
 class WindowContext;
 class PhysXSystem;
 class Profiler;
+class ProfilerReport;
 class RandomNumberGenerator;
 class UnitTest;
 class LogSystem;
@@ -102,6 +103,7 @@ extern RenderContext* g_renderContext;
 extern WindowContext* g_windowContext;
 extern PhysXSystem* g_PxPhysXSystem;
 extern Profiler* gProfiler;
+extern ProfilerReport* gProfileReporter;
 extern RandomNumberGenerator* g_RNG;
 extern UnitTest* g_allUnitTests;
 extern LogSystem* g_LogSystem;
@@ -194,3 +196,6 @@ extern std::atomic<size_t> gTotalBytesAllocated;
 
 extern thread_local size_t tTotalAllocations;
 extern thread_local size_t tTotalBytesAllocated;
+
+extern thread_local size_t tTotalFrees;
+extern thread_local size_t tTotalBytesFreed;

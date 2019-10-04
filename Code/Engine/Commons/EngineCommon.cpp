@@ -18,6 +18,9 @@ std::atomic<size_t> gAllocatedBytesThisFrame = 0U;
 thread_local size_t tTotalAllocations = 0U;
 thread_local size_t tTotalBytesAllocated = 0U;
 
+thread_local size_t tTotalFrees = 0U;
+thread_local size_t tTotalBytesFreed = 0U;
+
 //------------------------------------------------------------------------------------------------------------------------------
 bool IsBitSet(uint flags, uint bit)
 {

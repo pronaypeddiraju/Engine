@@ -26,6 +26,9 @@ public:
 
 	void			ProfilerUpdate();
 
+	void			ShowProfilerTimeline();
+	void			EraseOldTrees();
+
 	void			ProfilerAllocation(size_t byteSize = 0);
 	void			ProfilerFree();
 
@@ -46,12 +49,6 @@ public:
 	static	void				DestroyInstance();
 	static	Profiler*			GetInstance();
 
-	static	void				FreeTree(ProfilerSample_T* root);
-
-
-	static ProfilerSample_T*	AllocateNode();
-	static void					FreeNode(ProfilerSample_T* node);
-
 	//------------------------------------------------------------------------------------------------------------------------------
 	// Dev Console Events
 	static	bool				Command_PauseProfiler(EventArgs& args);
@@ -59,13 +56,17 @@ public:
 	static	bool				Command_ProfilerReport(EventArgs& args);
 
 private:
-	double			m_maxHistoryTime = 60;
-	bool			m_isReadyToPause = false;
-	bool			m_isReadyToResume = false;
 
-	//------------------------------------------------------------------------------------------------------------------------------
-	//Used by Profiler to store nodes with respect to each thread
-	static thread_local ProfilerSample_T*	tActiveNode;
+	ProfilerSample_T*			AllocateNode();
+	void						FreeTree(ProfilerSample_T* root);
+	void						FreeNode(ProfilerSample_T* node);
+
+
+	double			m_maxHistoryTime = 10;
+	bool			m_isPaused = false;
+
+	bool			m_showTimeline = false;
+
 	std::vector<ProfilerSample_T*>			m_History;
 	std::shared_mutex						m_HistoryLock;
 
@@ -93,5 +94,5 @@ public:
 };
 
 //------------------------------------------------------------------------------------------------------------------------------
-#define PROFILE_SCOPE( tag )			ProfilerLogObject(tag)
+#define PROFILE_SCOPE( tag )			ProfilerLogObject COMBINE(__scopeLog, __LINE__) ## (tag)
 #define PROFILE_FUNCTION()				PROFILE_SCOPE(__FUNCTION__);

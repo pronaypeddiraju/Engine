@@ -346,6 +346,9 @@
     <ClCompile Include="Allocators\BlockAllocator.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Commons\Profiler\ProfilerReport.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -1230,6 +1233,7 @@
     <ClInclude Include="Allocators\UntrackedAllocator.hpp" />
     <ClInclude Include="Allocators\BlockAllocator.hpp" />
     <ClInclude Include="Allocators\ObjectAllocator.hpp" />
+    <ClInclude Include="Commons\Profiler\ProfilerReport.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Math\Array2D.inl" />

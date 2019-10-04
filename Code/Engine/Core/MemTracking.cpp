@@ -118,7 +118,7 @@ void TrackedFree(void* ptr)
 #elif (MEM_TRACKING == MEM_TRACK_VERBOSE)
 	--gTotalAllocations;
 
-	--tTotalAllocations;
+	++tTotalFrees;
 
 	UntrackAllocation(ptr);
 #endif
@@ -152,7 +152,7 @@ void UntrackAllocation(void* allocation)
 		if (mapIterator != GetMemTrakingMap().end())
 		{
 			gTotalBytesAllocated -= mapIterator->second.m_byteSize;
-			tTotalBytesAllocated -= mapIterator->second.m_byteSize;
+			tTotalBytesFreed += mapIterator->second.m_byteSize;
 			GetMemTrakingMap().erase(mapIterator);
 		}
 	}
