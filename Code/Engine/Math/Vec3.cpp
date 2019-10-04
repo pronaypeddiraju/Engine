@@ -349,6 +349,14 @@ const Vec3 Vec3::ClampVector( Vec3& toClamp, const Vec3& minBound, const Vec3& m
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+STATIC const Vec3 Vec3::LerpVector(Vec3& toLerp, const Vec3& lerpDestination, float lerpPercent)
+{
+	Vec3 result;
+	result = toLerp + lerpPercent * (lerpDestination - toLerp);
+	return result;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void Vec3::operator+=( const Vec3& vecToAdd )
 {
 	x += vecToAdd.x;

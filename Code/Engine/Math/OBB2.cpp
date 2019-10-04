@@ -63,6 +63,7 @@ void OBB2::SetSize( Vec2 newSize )
 	m_halfExtents = newSize * 0.5f;
 }
 
+
 //------------------------------------------------------------------------------------------------------------------------------
 Vec2 OBB2::ToLocalPoint( Vec2 worldPoint ) const
 {

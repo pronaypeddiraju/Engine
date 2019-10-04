@@ -162,13 +162,12 @@ void AddVertsForOBB2D( std::vector<Vertex_PCU>& vertexArray, const OBB2& box, co
 	position2D = box.GetTopRight();
 	Vec3 boxTopRight = Vec3(position2D.x, position2D.y, 0.f);
 
-	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
-	vertexArray.push_back(Vertex_PCU(boxTopLeft, color, Vec2(uvAtMins.x, uvAtMaxs.y)));
-	vertexArray.push_back(Vertex_PCU(boxBottomLeft, color, uvAtMins));
-
-	vertexArray.push_back(Vertex_PCU(boxBottomLeft, color, uvAtMins));
-	vertexArray.push_back(Vertex_PCU(boxBottomRight, color, Vec2(uvAtMaxs.x, uvAtMins.y)));
-	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
+	vertexArray.emplace_back(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y));
+	vertexArray.emplace_back(boxTopLeft, color, Vec2(uvAtMins.x, uvAtMaxs.y));
+	vertexArray.emplace_back(boxBottomLeft, color, uvAtMins);
+	vertexArray.emplace_back(boxBottomLeft, color, uvAtMins);
+	vertexArray.emplace_back(boxBottomRight, color, Vec2(uvAtMaxs.x, uvAtMins.y));
+	vertexArray.emplace_back(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y));
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

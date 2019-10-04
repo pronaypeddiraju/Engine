@@ -56,6 +56,8 @@ public:
 	~RenderContext();
 
 	void						BeginFrame();
+	void						EndFrame();
+	void						Shutdown();
 
 	ColorTargetView*			GetFrameColorTarget();
 	Texture2D*					GetFrameColorTexture();
@@ -63,13 +65,8 @@ public:
 	void						SetRasterStateWireFrame();
 	void						CreateAndSetDefaultRasterState();
 
-
-	void						EndFrame();
-
 	void						BeginCamera( Camera& camera );
 	void						EndCamera();
-
-	void						Shutdown();
 
 	//Getters for DX
 	ID3D11DeviceContext*		GetDXContext() const;
@@ -80,16 +77,12 @@ public:
 	void						EnableLight( uint slot, LightT const &info );         
 	void						DisableLight( uint slot );                           
 	void						UpdateLightBuffer();
-
 	void						EnableDirectionalLight();
 	void						DisableDirectionalLight();
-
-	//Helper Functions for lighting
 	void						EnablePointLight(uint slot, const Vec3& position, const Vec3& direction,
 												 const Rgba& color = Rgba::WHITE, float intensity = 1.f,
 												 const Vec3& diffuseAttenuation = Vec3(1.f, 0.f, 0.f),
 												 const Vec3& specularAttenuation = Vec3(1.f, 0.f, 0.f)) const;
-
 	void						EnableDirectionalLight(const Vec3& position, const Vec3& direction,
 													   const Rgba& color = Rgba::WHITE, float intensity = 1.f,
 													   const Vec3& diffuseAttenuation = Vec3(1.f, 0.f, 0.f),
@@ -136,8 +129,7 @@ public:
 
 	// Stream Data
 	void						BindVertexStream( VertexBuffer *vbo ); 
-	// Be able to bind index buffers; 
-	void						BindIndexStream( IndexBuffer *ibo );    
+	void						BindIndexStream( IndexBuffer *ibo );  // Be able to bind index buffers;   
 
 	// Uniform/Constant Data
 	void						BindModelMatrix( Matrix44 const &model );
@@ -151,11 +143,9 @@ public:
 	//Draw Calls	
 	void						Draw(uint vertexCount, uint byteOffset = 0U);
 	void						DrawIndexed( uint indexCount);                                 
-
 	void						DrawVertexArray( Vertex_PCU const *vertices, uint count ); 
 	void						DrawVertexArray( int numVertexes, const Vertex_PCU* vertexes );
 	void						DrawVertexArray( const std::vector<Vertex_PCU>& vertexes);
-
 	void						DrawMesh( GPUMesh *mesh );                                         
 	
 	//Full screen effects helpers

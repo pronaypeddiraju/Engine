@@ -82,7 +82,7 @@ public:
 	float									m_linearDrag = 0.1f;
 	float									m_angularDrag = 0.1f;
 
-	Vec3									m_constraints = Vec3(0.f, 1.f, 0.f);
+	Vec3									m_constraints = Vec3(0.f, 1.f, 0.f);		//x,z = movement constraint on x,z axis, z = rotation constraint
 	bool									m_isAlive = true;
 
 private:

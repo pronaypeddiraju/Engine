@@ -371,8 +371,11 @@ void DevConsole::PrintString( const Rgba& textColor, const std::string& devConso
 	float time = static_cast<float>(GetCurrentTimeSeconds());
 	time -= m_timeAtStart;
 	ConsoleEntry consoleEntry = ConsoleEntry(textColor, devConsolePrintString, m_frameCount, time);
+<<<<<<< HEAD
 	
+=======
 	// #ToDo: make this thread-safe
+>>>>>>> PhysXBranch
 	m_printLog.push_back(consoleEntry);
 	g_devConsole->m_mutexLock.unlock();
 }
@@ -430,7 +433,11 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 		//Decrement the iterator
 		vecIterator--;
 
+<<<<<<< HEAD
 		textVerts.clear();
+=======
+//		textVerts.empty();
+>>>>>>> PhysXBranch
 
 		//Get length of string
 		std::string printString = "[ T:" + Stringf("%.3f", vecIterator->m_calledTime) + " Frame:" + std::to_string(vecIterator->m_frameNum) + " ] " + vecIterator->m_printString;

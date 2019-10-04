@@ -26,16 +26,16 @@ public:
 	void SetSize( Vec2 newSize );
 
 	//Accessors for OBB Properties
-	inline const Vec2& GetRight() const				{ return m_right; }
-	inline const Vec2& GetUp() const				{ return m_up; }
-	inline const Vec2& GetCenter() const			{ return m_center; }
-	inline const Vec2& GetHalfExtents() const				{ return m_halfExtents; }
+	const Vec2& GetRight() const			{ return m_right; }
+	const Vec2& GetUp() const				{ return m_up; }
+	const Vec2& GetCenter() const			{ return m_center; }
+	const Vec2& GetHalfExtents() const		{ return m_halfExtents; }
 
 	//Accessors for the corners themselves
-	inline Vec2 GetBottomLeft() const		{ return m_center - m_halfExtents.x * GetRight() - m_halfExtents.y * GetUp(); }
-	inline Vec2 GetBottomRight() const		{ return m_center + m_halfExtents.x * GetRight() - m_halfExtents.y * GetUp(); }
-	inline Vec2 GetTopLeft() const			{ return m_center - m_halfExtents.x * GetRight() + m_halfExtents.y * GetUp(); }
-	inline Vec2 GetTopRight() const			{ return m_center + m_halfExtents.x * GetRight() + m_halfExtents.y * GetUp(); }
+	Vec2 GetBottomLeft() const		{ return m_center - m_halfExtents.x * GetRight() - m_halfExtents.y * GetUp(); }
+	Vec2 GetBottomRight() const		{ return m_center + m_halfExtents.x * GetRight() - m_halfExtents.y * GetUp(); }
+	Vec2 GetTopLeft() const			{ return m_center - m_halfExtents.x * GetRight() + m_halfExtents.y * GetUp(); }
+	Vec2 GetTopRight() const		{ return m_center + m_halfExtents.x * GetRight() + m_halfExtents.y * GetUp(); }
 
 	// Collision Utility
 	Vec2 ToLocalPoint( Vec2 worldPoint ) const; 

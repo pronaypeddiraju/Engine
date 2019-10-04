@@ -189,4 +189,19 @@ const STATIC Rgba Rgba::ORANGE(1.f, 0.65f, 0.f, 1.f);
 const STATIC Rgba Rgba::MAGENTA(1.f, 0.f, 1.f, 1.f);
 const STATIC Rgba Rgba::NONE(0.f,0.f, 0.f, 0.f);
 const STATIC Rgba Rgba::CLEAR(1.f, 1.f, 1.f, 0.f);
+
+const STATIC Rgba Rgba::ORGANIC_RED( 1.f, 0.172549f, 0.172549f, 1.f);
+const STATIC Rgba Rgba::ORGANIC_ORANGE(1.f, 0.439215f, 0.043137f, 1.f);
+const STATIC Rgba Rgba::ORGANIC_YELLOW(1.f, 0.839215f, 0.f, 1.f);
+const STATIC Rgba Rgba::ORGANIC_GREEN(0.176470f, 0.705882f, 0.f, 1.f);
+const STATIC Rgba Rgba::ORGANIC_BLUE(0.086274f, 0.615686f, 1.f, 1.f);
+const STATIC Rgba Rgba::ORGANIC_PURPLE(0.745098f, 0.156862f, 1.f, 1.f);
+const STATIC Rgba Rgba::ORGANIC_GREY(0.4f, 0.4f, 0.4f, 1.f);
+const STATIC Rgba Rgba::ORGANIC_BROWN(0.521568f, 0.329411f, 0.223529f, 1.f);
+	  
+const STATIC Rgba Rgba::ORGANIC_DIM_RED(0.447058f, 0.f, 0.f, 1.f);
+const STATIC Rgba Rgba::ORGANIC_DIM_YELLOW(0.243137f, 0.203921f, 0.f, 1.f);
+const STATIC Rgba Rgba::ORGANIC_DIM_GREEN(0.082352f, 0.274509f, 0.f, 1.f);
+const STATIC Rgba Rgba::ORGANIC_DIM_BLUE(0.f, 0.207843f, 0.356862f, 1.f);
+const STATIC Rgba Rgba::ORGANIC_DIM_PURPLE(0.298039f, 0.f, 0.427450f, 1.f);
 //------------------------------------------------------------------------------------------------------------------------------

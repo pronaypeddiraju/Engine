@@ -77,8 +77,11 @@ class DebugRender;
 class DevConsole;
 class EventSystems;
 class ImGUISystem;
+<<<<<<< HEAD
 class InternalAllocator;
+=======
 class InputSystem;
+>>>>>>> PhysXBranch
 class NamedStrings;
 class NamedProperties;
 class PhysicsSystem;
@@ -97,8 +100,11 @@ extern DebugRender*	g_debugRenderer;
 extern DevConsole* g_devConsole;
 extern EventSystems* g_eventSystem;
 extern ImGUISystem* g_ImGUI;
+<<<<<<< HEAD
 extern InternalAllocator* g_internalAllocator;
+=======
 extern InputSystem*	g_inputSystem;
+>>>>>>> PhysXBranch
 extern NamedStrings g_gameConfigBlackboard; 
 extern PhysicsSystem* g_physicsSystem;
 extern RenderContext* g_renderContext;

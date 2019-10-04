@@ -61,6 +61,7 @@ public:
 	void				SetLengthXY(float setLength);
 	void				Normalize();
 	const Vec3			ClampVector(Vec3& toClamp, const Vec3& minBound, const Vec3& maxBound);
+	const static Vec3	LerpVector(Vec3& toLerp, const Vec3& lerpDestination, float lerpPercent);
 
 	// Operators
 	const Vec3			operator+( const Vec3& vecToAdd ) const;					// vec3 + vec3

@@ -108,7 +108,11 @@ const Vec4 Matrix44::TransformHomogeneousPoint3D( const Vec4& homogeneousVec ) c
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+<<<<<<< HEAD
+const Vec3 Matrix44::GetIVector() const
+=======
 const Vec3 Matrix44::GetIBasis() const
+>>>>>>> PhysXBranch
 {
 	Vec3 iVector = Vec3(m_values[Ix], m_values[Iy], m_values[Iz]);
 	iVector = iVector.GetNormalized();

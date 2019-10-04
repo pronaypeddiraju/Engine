@@ -118,7 +118,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/PhysX/include;$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/PhysX/include/vehicle;$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/PhysX/include;$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -258,6 +258,11 @@
     <ClCompile Include="Math\Vertex_Lit.cpp" />
     <ClCompile Include="Math\Vertex_PCU.cpp" />
     <ClCompile Include="PhysXSystem\PhysXSystem.cpp" />
+    <ClCompile Include="PhysXSystem\PhysXVehicleCreate.cpp" />
+    <ClCompile Include="PhysXSystem\PhysXVehicleCreate4W.cpp" />
+    <ClCompile Include="PhysXSystem\PhysXVehicleFilterShader.cpp" />
+    <ClCompile Include="PhysXSystem\PhysXVehicleSceneQuery.cpp" />
+    <ClCompile Include="PhysXSystem\PhysXVehicleTireFriction.cpp" />
     <ClCompile Include="Renderer\BitmapFont.cpp" />
     <ClCompile Include="Renderer\BufferLayout.cpp" />
     <ClCompile Include="Renderer\Camera.cpp" />
@@ -575,6 +580,12 @@
     <ClInclude Include="Math\Vertex_PCU.hpp" />
     <ClInclude Include="PhysXSystem\PhysXSystem.hpp" />
     <ClInclude Include="PhysXSystem\PhysXTypes.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXVehicleCreate.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXVehicleFilterShader.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXVehicleSceneQuery.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXVehicleTireFriction.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXWheelCCDContactModifyCallback.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXWheelContactModifyCallback.hpp" />
     <ClInclude Include="Renderer\AnimTypes.hpp" />
     <ClInclude Include="Renderer\BitmapFont.hpp" />
     <ClInclude Include="Renderer\BufferLayout.hpp" />

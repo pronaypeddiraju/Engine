@@ -1232,6 +1232,7 @@
     <ClInclude Include="Commons\Callstack.hpp">
       <Filter>Commons</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\ThirdParty\stb\stb_image_write.h" />
     <ClInclude Include="Core\MemTracking.hpp" />
     <ClInclude Include="Core\Async\UniformAsyncRingBuffer.hpp" />
@@ -1249,15 +1250,16 @@
     <ClInclude Include="Allocators\BlockAllocator.hpp" />
     <ClInclude Include="Allocators\ObjectAllocator.hpp" />
     <ClInclude Include="Commons\Profiler\ProfilerReport.hpp" />
-	<ClInclude Include="PhysXSystem\PhysXVehicleFilterShader.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Math\Array2D.inl" />
+=======
+    <ClInclude Include="PhysXSystem\PhysXVehicleFilterShader.hpp" />
     <ClInclude Include="PhysXSystem\PhysXVehicleSceneQuery.hpp" />
     <ClInclude Include="PhysXSystem\PhysXVehicleTireFriction.hpp" />
     <ClInclude Include="PhysXSystem\PhysXVehicleCreate.hpp" />
     <ClInclude Include="PhysXSystem\PhysXWheelContactModifyCallback.hpp" />
     <ClInclude Include="PhysXSystem\PhysXWheelCCDContactModifyCallback.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Math\Array2D.inl" />
-    
+>>>>>>> PhysXBranch
   </ItemGroup>
 </Project>
