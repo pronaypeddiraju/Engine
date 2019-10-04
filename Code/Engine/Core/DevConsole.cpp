@@ -8,15 +8,35 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/Rgba.hpp"
+#include "Game/EngineBuildPreferences.hpp"
 #include <algorithm>
+#include "Engine/Core/MemTracking.hpp"
+#include "Engine/Allocators/TemplatedUntrackedAllocator.hpp"
 
 DevConsole* g_devConsole = nullptr;
 
+//------------------------------------------------------------------------------------------------------------------------------
 const STATIC Rgba DevConsole::CONSOLE_INFO			=	Rgba(1.0f, 1.0f, 0.0f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_BG_COLOR		=	Rgba(0.0f, 0.0f, 0.0f, 0.75f);
 const STATIC Rgba DevConsole::CONSOLE_ERROR   		=	Rgba(1.0f, 0.0f, 0.0f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_ERROR_DESC	=	Rgba(1.0f, 0.5f, 0.3f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_INPUT			=	Rgba(1.0f, 1.0f, 1.0f, 1.0f);
+
+extern std::mutex gTrackerLock;
+extern std::map<void*, MemTrackInfo_T, std::less<void*>, TemplatedUntrackedAllocator<std::pair<void* const, MemTrackInfo_T>>> gMemTrackers;
+
+//------------------------------------------------------------------------------------------------------------------------------
+void LogHookForDevConsole(const LogObject_T* logObj)
+{
+	char filterString[1024];
+	char lineString[1024];
+
+	strcpy_s(filterString, 1024, logObj->filter);
+	strcpy_s(lineString, 1024, logObj->line);
+
+	g_devConsole->PrintString(Rgba::WHITE, filterString);
+	g_devConsole->PrintString(Rgba::WHITE, lineString);
+}
 
 //------------------------------------------------------------------------------------------------------------------------------
 bool DevConsole::ExecuteCommandLine( const std::string& commandLine )
@@ -285,7 +305,17 @@ void DevConsole::Startup()
 	g_eventSystem->SubscribeEventCallBackFn( "Test", Command_Test );
 	g_eventSystem->SubscribeEventCallBackFn( "Help", Command_Help );
 	g_eventSystem->SubscribeEventCallBackFn( "Clear", Command_Clear );
-	m_currentInput.empty();
+	g_eventSystem->SubscribeEventCallBackFn( "TrackMemory", Command_MemTracking);
+	g_eventSystem->SubscribeEventCallBackFn( "LogMemory", Command_MemLog);
+
+	g_eventSystem->SubscribeEventCallBackFn("EnableAllLogs", Command_EnableAllLogFilters);
+	g_eventSystem->SubscribeEventCallBackFn("DisableAllLogs", Command_DisableAllLogfilters);
+	g_eventSystem->SubscribeEventCallBackFn("EnableLogFilter", Command_EnableLogFilter);
+	g_eventSystem->SubscribeEventCallBackFn("DisableLogFilter", Command_DisableLogFilter);
+	g_eventSystem->SubscribeEventCallBackFn("FlushLog", Command_FlushLogSystem);
+	g_eventSystem->SubscribeEventCallBackFn("Logf", Command_Logf);
+
+	m_currentInput.clear();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -337,15 +367,19 @@ ConsoleEntry::ConsoleEntry(const Rgba& textColor, const std::string& printString
 //------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::PrintString( const Rgba& textColor, const std::string& devConsolePrintString )
 {
+	g_devConsole->m_mutexLock.lock();
 	float time = static_cast<float>(GetCurrentTimeSeconds());
 	time -= m_timeAtStart;
 	ConsoleEntry consoleEntry = ConsoleEntry(textColor, devConsolePrintString, m_frameCount, time);
+	
 	m_printLog.push_back(consoleEntry);
+	g_devConsole->m_mutexLock.unlock();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeight ) const
 {
+	g_devConsole->m_mutexLock.lock();
 	camera.SetModelMatrix(Matrix44::IDENTITY);
 	camera.UpdateUniformBuffer(&renderer);
 
@@ -367,6 +401,8 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 
 	int numLines = static_cast<int>(screenHeight / lineHeight);
 	int numStrings = static_cast<int>(m_printLog.size());
+
+	std::vector<ConsoleEntry> printLogVector;
 
 	Vec2 boxBottomLeft = leftBot + Vec2(lineHeight, lineHeight * 2);
 	Vec2 boxTopRight = boxBottomLeft;
@@ -393,10 +429,10 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 		//Decrement the iterator
 		vecIterator--;
 
-		textVerts.empty();
+		textVerts.clear();
 
 		//Get length of string
-		std::string printString = "[ T:" + Stringf("%03f", vecIterator->m_calledTime) + " Frame:" + std::to_string(vecIterator->m_frameNum) + " ] " + vecIterator->m_printString;
+		std::string printString = "[ T:" + Stringf("%.3f", vecIterator->m_calledTime) + " Frame:" + std::to_string(vecIterator->m_frameNum) + " ] " + vecIterator->m_printString;
 		int numChars = static_cast<int>(printString.length());
 
 		//Create the required box
@@ -408,6 +444,8 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 		//Print the text
 		m_consoleFont->AddVertsForTextInBox2D(textVerts, printBox, lineHeight, printString, vecIterator->m_printColor, m_consoleFont->GetGlyphAspect(0), Vec2::ALIGN_LEFT_CENTERED);
 		renderer.DrawVertexArray(textVerts);
+
+		textVerts.clear();
 
 		//Change the boxBottomLeft based on line height
 		boxBottomLeft.y += lineHeight;
@@ -449,7 +487,83 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 		renderer.DrawVertexArray(carotVerts);
 	}
 
+	if (m_memTrackingEnabled)
+	{
+		RenderMemTrackingInfo(renderer, camera, lineHeight);
+	}
+
 	renderer.EndCamera();
+	g_devConsole->m_mutexLock.unlock();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void DevConsole::RenderMemTrackingInfo(RenderContext& renderer, Camera& camera, float lineHeight) const
+{
+	renderer.BindTextureView(0U, nullptr);
+
+	//Draw a black box over the entire screen
+	Vec2 boxTopRight = camera.GetOrthoTopRight();
+	Vec2 boxBottomLeft = boxTopRight - m_memTrackingBoxSize;
+
+	AABB2 blackBox = AABB2(boxBottomLeft, boxTopRight);
+	std::vector<Vertex_PCU> boxVerts;
+	AddVertsForAABB2D(boxVerts, blackBox, Rgba::DARK_GREY);
+
+	renderer.DrawVertexArray(boxVerts);
+ 	renderer.BindTextureView(0U, m_consoleFont->GetTexture());
+
+	Vec2 textBoxBottomLeft = boxBottomLeft;
+	Vec2 textBoxTopRight = textBoxBottomLeft + Vec2(m_memTrackingBoxSize.x, lineHeight);
+
+	AABB2 inputBox = AABB2(textBoxBottomLeft, textBoxTopRight);
+
+	std::vector<Vertex_PCU> textVerts;
+
+	GetVertsForDevConsoleMemTracker(textVerts, inputBox, lineHeight);
+
+	renderer.DrawVertexArray(textVerts);
+
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void DevConsole::GetVertsForDevConsoleMemTracker(std::vector<Vertex_PCU>& textVerts, AABB2& memTrackingBox, float lineHeight) const
+{
+	std::string textString;
+	std::string numAllocationsText;
+	std::string totalBytesAllocatedText;
+
+#if defined(MEM_TRACKING)
+	#if (MEM_TRACKING == MEM_TRACK_ALLOC_COUNT)
+		textString = "Tracking Mode: Alloc Count";
+		uint numAllocations = (uint)gTotalAllocations;
+		numAllocationsText = Stringf("Total Allocation count: %u", numAllocations);
+
+		m_consoleFont->AddVertsForTextInBox2D(textVerts, memTrackingBox, lineHeight, numAllocationsText, Rgba::GREEN, 1.f, Vec2::ALIGN_LEFT_BOTTOM);
+		
+		memTrackingBox.m_minBounds += Vec2(0.f, lineHeight);
+		memTrackingBox.m_maxBounds += Vec2(0.f, lineHeight);
+		m_consoleFont->AddVertsForTextInBox2D(textVerts, memTrackingBox, lineHeight, textString, Rgba::GREEN, 1.f, Vec2::ALIGN_LEFT_BOTTOM);
+	#elif (MEM_TRACKING == MEM_TRACK_VERBOSE)
+		textString = "Tracking Mode: Verbose";
+		uint numAllocations = (uint)gTotalAllocations;
+		numAllocationsText = Stringf("Total Allocation count: %u", numAllocations);
+		totalBytesAllocatedText = GetSizeString(gTotalBytesAllocated);
+
+		m_consoleFont->AddVertsForTextInBox2D(textVerts, memTrackingBox, lineHeight, totalBytesAllocatedText, Rgba::GREEN, 1.f, Vec2::ALIGN_LEFT_BOTTOM);
+		
+		memTrackingBox.m_minBounds += Vec2(0.f, lineHeight);
+		memTrackingBox.m_maxBounds += Vec2(0.f, lineHeight);
+		m_consoleFont->AddVertsForTextInBox2D(textVerts, memTrackingBox, lineHeight, numAllocationsText, Rgba::GREEN, 1.f, Vec2::ALIGN_LEFT_BOTTOM);
+
+		memTrackingBox.m_minBounds += Vec2(0.f, lineHeight);
+		memTrackingBox.m_maxBounds += Vec2(0.f, lineHeight);
+		m_consoleFont->AddVertsForTextInBox2D(textVerts, memTrackingBox, lineHeight, textString, Rgba::GREEN, 1.f, Vec2::ALIGN_LEFT_BOTTOM);
+
+	#endif
+#else
+	textString = "Tracking is Off";
+	m_consoleFont->AddVertsForTextInBox2D(textVerts, memTrackingBox, lineHeight, textString, Rgba::GREEN, 1.f, Vec2::ALIGN_LEFT_BOTTOM);
+#endif
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -496,9 +610,78 @@ STATIC bool	DevConsole::Command_Help( EventArgs& args )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-bool DevConsole::Command_Clear(EventArgs& args)
+STATIC bool DevConsole::Command_Clear(EventArgs& args)
 {
 	UNUSED(args);
 	g_devConsole->m_printLog.clear();
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_MemTracking(EventArgs& args)
+{
+	UNUSED(args);
+	g_devConsole->m_memTrackingEnabled = !g_devConsole->m_memTrackingEnabled;
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_MemLog(EventArgs& args)
+{
+	UNUSED(args);
+	MemTrackLogLiveAllocations();
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_EnableAllLogFilters(EventArgs& args)
+{
+	UNUSED(args);
+	g_LogSystem->LogEnableAll();
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_DisableAllLogfilters(EventArgs& args)
+{
+	UNUSED(args);
+	g_LogSystem->LogDisableAll();
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_EnableLogFilter(EventArgs& args)
+{
+	std::string filterName;
+	filterName = args.GetValue("Filter", filterName);
+	g_LogSystem->LogEnable(filterName.c_str());
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_DisableLogFilter(EventArgs& args)
+{
+	std::string filterName;
+	filterName = args.GetValue("Filter", filterName);
+	g_LogSystem->LogDisable(filterName.c_str());
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_FlushLogSystem(EventArgs& args)
+{
+	UNUSED(args);
+	g_LogSystem->LogFlush();
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_Logf(EventArgs& args)
+{
+	std::string filterText;
+	std::string messageText;
+	filterText = args.GetValue("Filter", filterText);
+	messageText = args.GetValue("Message", messageText);
+	g_LogSystem->Logf(filterText.c_str(), messageText.c_str());
 	return true;
 }

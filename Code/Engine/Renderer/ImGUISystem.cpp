@@ -26,6 +26,8 @@ void ImGUISystem::BeginFrame()
 {
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
+
+	ImGui::NewFrame();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

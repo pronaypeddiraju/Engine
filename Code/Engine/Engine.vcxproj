@@ -121,13 +121,14 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/PhysX/include;$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/PhysX/lib/debug_x64;$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/WinDbg;$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/PhysX/lib/debug_x64;$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -167,6 +168,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/PhysX/include;$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -175,7 +177,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/PhysX/lib/release_x64;$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/WinDbg;$(SolutionDir)Code/Submodule/Engine/Code/ThirdParty/PhysX/lib/release_x64;$(SolutionDir)Code/;$(SolutionDir)Code/Submodule/Engine/Code/</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -186,17 +188,30 @@
     <ClCompile Include="..\ThirdParty\imGUI\imgui_impl_win32.cpp" />
     <ClCompile Include="..\ThirdParty\imGUI\imgui_widgets.cpp" />
     <ClCompile Include="..\ThirdParty\TinyXML2\tinyxml2.cpp" />
+    <ClCompile Include="Allocators\BlockAllocator.cpp" />
+    <ClCompile Include="Allocators\TrackedAllocator.cpp" />
+    <ClCompile Include="Allocators\UntrackedAllocator.cpp" />
     <ClCompile Include="Audio\AudioSystem.cpp" />
+    <ClCompile Include="Commons\Callstack.cpp" />
     <ClCompile Include="Commons\EngineCommon.cpp" />
     <ClCompile Include="Commons\ErrorWarningAssert.cpp" />
+    <ClCompile Include="Commons\LogSystem.cpp" />
+    <ClCompile Include="Commons\Profiler\Profiler.cpp" />
+    <ClCompile Include="Commons\Profiler\ProfilerReport.cpp" />
+    <ClCompile Include="Commons\Profiler\ProfilerSample.cpp" />
     <ClCompile Include="Commons\StringUtils.cpp" />
+    <ClCompile Include="Commons\UnitTest.cpp" />
+    <ClCompile Include="Core\Async\MPSCAsyncRingBuffer.cpp" />
+    <ClCompile Include="Core\Async\Semaphores.cpp" />
     <ClCompile Include="Core\Clock.cpp" />
     <ClCompile Include="Core\DevConsole.cpp" />
     <ClCompile Include="Core\EventSystems.cpp" />
     <ClCompile Include="Core\FileUtils.cpp" />
     <ClCompile Include="Core\Image.cpp" />
+    <ClCompile Include="Core\MemTracking.cpp" />
     <ClCompile Include="Core\NamedProperties.cpp" />
     <ClCompile Include="Core\NamedStrings.cpp" />
+    <ClCompile Include="Commons\Profiler\ProfileLogScope.cpp" />
     <ClCompile Include="Core\StopWatch.cpp" />
     <ClCompile Include="Core\Tags.cpp" />
     <ClCompile Include="Core\Time.cpp" />
@@ -476,21 +491,41 @@
     <ClInclude Include="..\ThirdParty\PhysX\include\vehicle\PxVehicleUtilSetup.h" />
     <ClInclude Include="..\ThirdParty\PhysX\include\vehicle\PxVehicleUtilTelemetry.h" />
     <ClInclude Include="..\ThirdParty\PhysX\include\vehicle\PxVehicleWheels.h" />
+    <ClInclude Include="..\ThirdParty\stb\stb_image_write.h" />
     <ClInclude Include="..\ThirdParty\TinyXML2\tinyxml2.h" />
+    <ClInclude Include="Allocators\BlockAllocator.hpp" />
+    <ClInclude Include="Allocators\InternalAllocator.hpp" />
+    <ClInclude Include="Allocators\ObjectAllocator.hpp" />
+    <ClInclude Include="Allocators\TrackedAllocator.hpp" />
+    <ClInclude Include="Allocators\UntrackedAllocator.hpp" />
     <ClInclude Include="Audio\AudioSystem.hpp" />
+    <ClInclude Include="Commons\Callstack.hpp" />
     <ClInclude Include="Commons\EngineCommon.hpp" />
     <ClInclude Include="Commons\ErrorWarningAssert.hpp" />
+    <ClInclude Include="Commons\LogSystem.hpp" />
+    <ClInclude Include="Commons\Profiler\Profiler.hpp" />
+    <ClInclude Include="Commons\Profiler\ProfilerReport.hpp" />
+    <ClInclude Include="Commons\Profiler\ProfilerSample.hpp" />
+    <ClInclude Include="Commons\Profiler\ProfilerEnums.hpp" />
     <ClInclude Include="Commons\StringUtils.hpp" />
+    <ClInclude Include="Core\Async\AsyncQueue.hpp" />
+    <ClInclude Include="Commons\UnitTest.hpp" />
+    <ClInclude Include="Core\Async\MPSCAsyncRingBuffer.hpp" />
+    <ClInclude Include="Core\Async\Semaphores.hpp" />
+    <ClInclude Include="Core\Async\UniformAsyncRingBuffer.hpp" />
     <ClInclude Include="Core\Clock.hpp" />
     <ClInclude Include="Core\DevConsole.hpp" />
     <ClInclude Include="Core\EventSystems.hpp" />
     <ClInclude Include="Core\FileUtils.hpp" />
     <ClInclude Include="Core\Image.hpp" />
+    <ClInclude Include="Core\MemTracking.hpp" />
     <ClInclude Include="Core\NamedProperties.hpp" />
     <ClInclude Include="Core\NamedStrings.hpp" />
+    <ClInclude Include="Commons\Profiler\ProfileLogScope.hpp" />
     <ClInclude Include="Core\StopWatch.hpp" />
     <ClInclude Include="Core\Tags.hpp" />
     <ClInclude Include="Core\Time.hpp" />
+    <ClInclude Include="Allocators\TemplatedUntrackedAllocator.hpp" />
     <ClInclude Include="Core\VertexUtils.hpp" />
     <ClInclude Include="Core\WindowContext.hpp" />
     <ClInclude Include="Core\XMLUtils\XMLUtils.hpp" />
@@ -501,6 +536,7 @@
     <ClInclude Include="Input\XboxController.hpp" />
     <ClInclude Include="Math\AABB2.hpp" />
     <ClInclude Include="Math\AABB3.hpp" />
+    <ClInclude Include="Math\Array2D.hpp" />
     <ClInclude Include="Math\Capsule2D.hpp" />
     <ClInclude Include="Math\Capsule3D.hpp" />
     <ClInclude Include="Math\Collider2D.hpp" />
@@ -577,6 +613,9 @@
     <ClInclude Include="ThirdParty\imGUI\imstb_rectpack.h" />
     <ClInclude Include="ThirdParty\imGUI\imstb_textedit.h" />
     <ClInclude Include="ThirdParty\imGUI\imstb_truetype.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Math\Array2D.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

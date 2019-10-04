@@ -1,8 +1,25 @@
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Core/Time.hpp"
+#include <time.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 
 //------------------------------------------------------------------------------------------------------------------------------
 NamedStrings g_gameConfigBlackboard;
+
+std::atomic<size_t> gTotalAllocations = 0U;
+std::atomic<size_t> gTotalBytesAllocated = 0U;
+
+std::atomic<size_t> gAllocatedThisFrame = 0U;
+std::atomic<size_t> gAllocatedBytesThisFrame = 0U;
+
+thread_local size_t tTotalAllocations = 0U;
+thread_local size_t tTotalBytesAllocated = 0U;
+
+thread_local size_t tTotalFrees = 0U;
+thread_local size_t tTotalBytesFreed = 0U;
 
 //------------------------------------------------------------------------------------------------------------------------------
 bool IsBitSet(uint flags, uint bit)
@@ -49,4 +66,3 @@ uint SetBitTo(uint flags, uint bit, bool set)
 	}
 	return flags;
 }
-

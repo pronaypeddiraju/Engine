@@ -46,7 +46,8 @@ public:
 
 	void				SetMouseMode( eMouseMode mode ); 
 
-	inline bool			IsOpen() const       { return m_hwnd != nullptr; }
+	void				CheckCreateDirectory(const char* directory);
+	inline bool			IsOpen() const { return m_hwnd != nullptr; }
 
 public:
 	void*				m_hwnd; // void* if you're avoiding Windows.h

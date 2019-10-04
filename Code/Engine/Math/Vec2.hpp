@@ -17,6 +17,7 @@ public:
 	//Static Vectors
 	const static Vec2	ZERO;
 	const static Vec2	ONE;
+	const static Vec2	NEGATIVE_ONE;
 	
 	const static Vec2	ALIGN_CENTERED;
 	const static Vec2	ALIGN_LEFT_CENTERED;

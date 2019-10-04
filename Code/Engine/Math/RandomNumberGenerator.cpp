@@ -3,7 +3,7 @@
 #include "Engine/Math/Noise/RawNoise.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
-RandomNumberGenerator* g_RNG;
+RandomNumberGenerator* g_RNG = nullptr;
 
 //------------------------------------------------------------------------------------------------------------------------------
 RandomNumberGenerator::RandomNumberGenerator(unsigned int seed)
@@ -45,6 +45,12 @@ int RandomNumberGenerator::GetRandomIntInRange( int minInt, int maxInt )
 
 	return minInt + randNum % (maxInt - minInt + 1);
 
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+uint RandomNumberGenerator::GetCurrentSeed()
+{
+	return m_currentSeed;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

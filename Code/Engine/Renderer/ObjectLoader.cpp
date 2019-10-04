@@ -29,10 +29,13 @@ ObjectLoader* ObjectLoader::CreateMeshFromFile(RenderContext* renderContext, con
 	{
 		//Load the models from xml;
 		object->LoadFromXML(fileName);
+		object->CreateGPUMesh();
 	}
 	else
 	{
 		object->CreateFromString(fileName.c_str());
+		object->CreateCPUMesh();
+		object->CreateGPUMesh();
 	}
 
 	return object;
@@ -79,11 +82,12 @@ void ObjectLoader::LoadFromXML(const std::string& fileName)
 		m_transform = ParseXmlAttribute(*root, "transform", "");
 
 		CreateFromString((MODEL_PATH + m_source).c_str());
+		CreateCPUMesh();
 
 		XMLElement* elem = root->FirstChildElement("material");
 		if (elem != nullptr)
 		{
-			m_mesh->m_defaultMaterial = ParseXmlAttribute(*elem, "src", "");
+			m_defaultMaterialPath = ParseXmlAttribute(*elem, "src", "");
 		}
 	}
 }
@@ -222,9 +226,6 @@ void ObjectLoader::CreateFromString(const char* data)
 		}
 
 	}
-
-	CreateGPUMesh();
-
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -242,7 +243,7 @@ void ObjectLoader::AddIndexForMesh(const std::string& indices)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-void ObjectLoader::CreateGPUMesh()
+void ObjectLoader::CreateCPUMesh()
 {
 	int numIndices = (int)m_indices.size();
 
@@ -311,7 +312,18 @@ void ObjectLoader::CreateGPUMesh()
 
 	}
 
+	m_cpuMesh = new CPUMesh();
+	for (int vertIndex = 0; vertIndex < (int)vertices.size(); ++vertIndex)
+	{
+		m_cpuMesh->AddVertex(vertices[vertIndex]);
+		m_cpuMesh->AddIndex(vertIndex);
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void ObjectLoader::CreateGPUMesh()
+{
 	m_mesh = new GPUMesh(m_renderContext);
-	m_mesh->CopyVertexArray<Vertex_Lit>(vertices[0], (uint)vertices.size());
-	m_mesh->CopyIndices(&indices[0], (uint)indices.size());
+	m_mesh->CreateFromCPUMesh<Vertex_Lit>(m_cpuMesh);
+	m_mesh->m_defaultMaterial = m_defaultMaterialPath;
 }

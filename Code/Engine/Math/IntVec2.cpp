@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Math/Vec2.hpp"
 #include <vector>
 #include <string>
 
@@ -32,6 +33,13 @@ IntVec2::IntVec2()
 IntVec2::IntVec2( const char* asText )
 {
 	SetFromText(asText);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+IntVec2::IntVec2(const Vec2& vec2)
+{
+	x = (int)vec2.x;
+	y = (int)vec2.y;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -83,6 +91,19 @@ std::string IntVec2::GetAsString() const
 	return string;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
+bool IntVec2::IsInBounds(const IntVec2& bounds) const
+{
+	if (x >= 0 && x < bounds.x && y >= 0 && y < bounds.y)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 //-----------------------------------------------------------------------------------------------
 const IntVec2 IntVec2::operator + ( const IntVec2& vecToAdd ) const
 {
@@ -93,6 +114,19 @@ const IntVec2 IntVec2::operator + ( const IntVec2& vecToAdd ) const
 const IntVec2 IntVec2::operator-( const IntVec2& vecToSubtract ) const
 {
 	return IntVec2( x - vecToSubtract.x, y - vecToSubtract.y ); 
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool IntVec2::operator<(const IntVec2& compare) const
+{
+	if (x < compare.x && y < compare.y)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------

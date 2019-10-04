@@ -140,6 +140,7 @@ public:
 	void				DebugRenderLine(const Vec3& start, const Vec3& end, float duration = 0.f);
 	void				DebugRenderSphere( Vec3 center, float radius, float duration = 0.f, TextureView* texture = nullptr ); 
 	void				DebugRenderBox( const AABB3& box, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr ); 
+	void				DebugRenderQuad( const AABB2& quad, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr, bool billBoarded = true);
 	void				DebugRenderCapsule( const Capsule3D& capsule, const Vec3& position, float duration = 0.f, TextureView* texture = nullptr);
 
 	// EXTRA (helps to be able to set raster fill mode to "wire")

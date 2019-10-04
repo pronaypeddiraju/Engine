@@ -3,6 +3,7 @@
 #include "Engine/Commons/ErrorWarningAssert.hpp"
 #include "Engine/Commons/StringUtils.hpp"
 #include "Engine/Math/Vec2.hpp"
+#include <atomic>
 
 #pragma warning( error: 4172) // Returning address of local variable or temporary variable
 #pragma warning( error: 4172) //Not all control paths return a value
@@ -36,6 +37,19 @@
 #define ASSERT_RETURN_VALUE(assertThis, returnValue) if(!(assertThis)) {return returnValue;}
 #define ASSERT(assertThis) if(!(assertThis)) {return false;}
 
+/*
+#define DEBUG_ASSERT(condition)
+{
+  if (!(condition))
+  {
+	  std::cerr << "Assertion failed at " << __FILE__ << ":" << __LINE__;
+	  std::cerr << " inside " << __FUNCTION__ << std::endl;
+	  std::cerr << "Condition: " << #condition;
+	  abort();
+  }
+}
+*/
+
 //To do Info
 #define _QUOTE(x) # x
 #define QUOTE(x) _QUOTE(x)
@@ -54,31 +68,45 @@
 
 #define UNIMPLEMENTED()  TODO( "IMPLEMENT: " QUOTE(__FILE__) " (" QUOTE(__LINE__) ")" );// ASSERT_RECOVERABLE(0, "")
 
+#define MACRO_COMBINE1(X,Y) X##Y  // helper macro
+#define MACRO_COMBINE(X,Y) MACRO_COMBINE1(X,Y)
 
 //------------------------------------------------------------------------------------------------------------------------------
+class BlockAllocator;
 class DebugRender;
 class DevConsole;
 class EventSystems;
 class ImGUISystem;
+class InternalAllocator;
 class NamedStrings;
 class NamedProperties;
 class PhysicsSystem;
 class RenderContext;
 class WindowContext;
 class PhysXSystem;
+class Profiler;
+class ProfilerReport;
 class RandomNumberGenerator;
+class UnitTest;
+class LogSystem;
 
 //------------------------------------------------------------------------------------------------------------------------------
+extern BlockAllocator* gBlockAllocator;
 extern DebugRender*	g_debugRenderer;
 extern DevConsole* g_devConsole;
 extern EventSystems* g_eventSystem;
 extern ImGUISystem* g_ImGUI;
+extern InternalAllocator* g_internalAllocator;
 extern NamedStrings g_gameConfigBlackboard; 
 extern PhysicsSystem* g_physicsSystem;
 extern RenderContext* g_renderContext;
 extern WindowContext* g_windowContext;
 extern PhysXSystem* g_PxPhysXSystem;
+extern Profiler* gProfiler;
+extern ProfilerReport* gProfileReporter;
 extern RandomNumberGenerator* g_RNG;
+extern UnitTest* g_allUnitTests;
+extern LogSystem* g_LogSystem;
 
 typedef NamedProperties EventArgs;
 
@@ -141,6 +169,7 @@ constexpr char IMAGE_PATH[] = "Data/Images/";
 constexpr char FONT_PATH[] = "Data/Fonts/";
 constexpr char MATERIAL_PATH[] = "Data/Materials/";
 constexpr char MODEL_PATH[] = "Data/Models/";
+constexpr char LOG_PATH[] = "Data/Logs/";
 
 //------------------------------------------------------------------------------------------------------------------------------
 constexpr float		 CONSOLE_LINE_SPACE = 0.05f;
@@ -155,3 +184,18 @@ bool				AreAnyBitsSet(uint currentFlags, uint flagsToCheck);
 uint				SetBit(uint flags, uint bit);
 uint				ClearBit(uint flags, uint bit);
 uint				SetBitTo(uint flags, uint bit, bool set);
+
+//------------------------------------------------------------------------------------------------------------------------------
+// For overloaded operators new and delete
+//------------------------------------------------------------------------------------------------------------------------------
+
+extern std::atomic<size_t> gAllocatedThisFrame;
+extern std::atomic<size_t> gAllocatedBytesThisFrame;
+extern std::atomic<size_t> gTotalAllocations;
+extern std::atomic<size_t> gTotalBytesAllocated;
+
+extern thread_local size_t tTotalAllocations;
+extern thread_local size_t tTotalBytesAllocated;
+
+extern thread_local size_t tTotalFrees;
+extern thread_local size_t tTotalBytesFreed;

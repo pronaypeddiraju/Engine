@@ -1,13 +1,18 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Commons/LogSystem.hpp"
 #include "Engine/Renderer/Rgba.hpp"
 #include <string>
 #include <vector>
+#include "Engine/Core/Async/AsyncQueue.hpp"
+#include <shared_mutex>
 
 class BitmapFont;
 class RenderContext;
+struct AABB2;
 struct Camera;
+struct Vertex_PCU;
 
 //------------------------------------------------------------------------------------------------------------------------------
 struct ConsoleEntry
@@ -33,9 +38,11 @@ public:
 	void			Shutdown();
 
 	void			SetBitmapFont(BitmapFont& bitmapFont);
+	void			GetVertsForDevConsoleMemTracker(std::vector<Vertex_PCU>& textVerts, AABB2& memTrackingBox, float lineHeight) const;
 
 	void			PrintString( const Rgba& textColor, const std::string& devConsolePrintString );
 	void			Render( RenderContext& renderer, Camera& camera, float lineHeight ) const;
+	void			RenderMemTrackingInfo(RenderContext& renderer, Camera& camera, float lineHeight) const;
 
 	void			ToggleOpenFull();
 	bool			IsOpen() const;
@@ -57,10 +64,17 @@ public:
 	static bool		Command_Test(EventArgs& args);
 	static bool		Command_Help(EventArgs& args);
 	static bool		Command_Clear(EventArgs& args);
+	static bool		Command_MemTracking(EventArgs& args);
+	static bool		Command_MemLog(EventArgs& args);
+
+	static bool		Command_EnableAllLogFilters(EventArgs& args);
+	static bool		Command_DisableAllLogfilters(EventArgs& args);
+	static bool		Command_EnableLogFilter(EventArgs& args);
+	static bool		Command_DisableLogFilter(EventArgs& args);
+	static bool		Command_FlushLogSystem(EventArgs& args);
+	static bool		Command_Logf(EventArgs& args);
 	//Uses ExecuteCommandLine for now
 	static bool		Command_Exec(EventArgs& args);
-	
-
 
 public:
 
@@ -70,6 +84,8 @@ public:
  	const static Rgba						CONSOLE_ECHO;
 	const static Rgba						CONSOLE_BG_COLOR;
 	const static Rgba						CONSOLE_INPUT;
+
+	std::shared_mutex						m_mutexLock;
 
 private:
 	BitmapFont*								m_consoleFont = nullptr;
@@ -87,4 +103,10 @@ private:
 	bool									m_carotActive = true;
 
 	unsigned int							m_lastCommandIndex = 0;
+
+	bool									m_memTrackingEnabled = true;
+	Vec2									m_memTrackingBoxSize = Vec2(80.f,10.f);
+	
 };
+
+void			LogHookForDevConsole(const LogObject_T* logObj);

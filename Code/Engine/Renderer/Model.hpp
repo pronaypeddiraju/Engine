@@ -9,6 +9,7 @@ class GPUMesh;
 class Model
 {
 public:
+	Model();
 	Model(RenderContext *ctx, const std::string& meshName);
 	Model(GPUMesh *mesh);
 	~Model();

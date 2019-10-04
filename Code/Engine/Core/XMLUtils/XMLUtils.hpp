@@ -27,3 +27,4 @@ Vec3							ParseXmlAttribute( const XMLElement& xmlElement, const char* attribut
 IntRange						ParseXmlAttribute( const XMLElement& xmlElement, const char* attributeName, const IntRange& defaultValue );
 FloatRange						ParseXmlAttribute( const XMLElement& xmlElement, const char* attributeName, const FloatRange& defaultValue );
 IntVec2							ParseXmlAttribute( const XMLElement& xmlElement, const char* attributeName, const IntVec2& defaultValue );
+uint							ParseXmlAttribute(const XMLElement& xmlElement, const char* attributeName, uint defaultValue);

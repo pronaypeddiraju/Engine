@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
+typedef unsigned int uint;
 
 //------------------------------------------------------------------------------------------------------------------------------
 class RandomNumberGenerator
@@ -11,6 +12,7 @@ public:
 	//Public Methods
 	int					GetRandomIntLessThan(int minInt);
 	int					GetRandomIntInRange(int minInt, int maxInt);
+	uint				GetCurrentSeed();
 	float				GetRandomFloatZeroToOne();
 	float				GetRandomFloatInRange(float minFloat, float maxFloat);
 	bool				PercentChance(float probabilityToReturnTrue);
@@ -18,6 +20,6 @@ public:
 
 private:
 	//Private Methods
-	unsigned int		m_currentSeed = 0;
-	unsigned int		m_position = 0;
+	uint				m_currentSeed = 0;
+	uint				m_position = 0;
 };

@@ -108,13 +108,6 @@ const Vec4 Matrix44::TransformHomogeneousPoint3D( const Vec4& homogeneousVec ) c
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const Vec4 Matrix44::GetQuaternion() const
-{
-	UNIMPLEMENTED("Need to implement Get Quaternion code");
-	return Vec4();
-}
-
-//------------------------------------------------------------------------------------------------------------------------------
 const Vec3 Matrix44::GetIVector() const
 {
 	Vec3 iVector = Vec3(m_values[Ix], m_values[Iy], m_values[Iz]);

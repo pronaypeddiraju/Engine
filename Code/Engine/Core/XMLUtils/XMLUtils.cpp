@@ -35,6 +35,17 @@ int ParseXmlAttribute( const XMLElement& xmlElement, const char* attributeName, 
 		return atoi(s.c_str());
 }
 
+uint ParseXmlAttribute(const XMLElement& xmlElement, const char* attributeName, uint defaultValue)
+{
+	std::string s = ParseXmlAttribute(xmlElement, attributeName, std::to_string(defaultValue));
+	if (s.size() == 0)
+	{
+		return defaultValue;
+	}
+	else
+		return atoi(s.c_str());
+}
+
 char ParseXmlAttribute( const XMLElement& xmlElement, const char* attributeName, char defaultValue )
 {
 	std::string s = ParseXmlAttribute(xmlElement, attributeName, std::to_string(defaultValue));

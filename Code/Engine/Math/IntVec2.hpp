@@ -2,6 +2,8 @@
 #pragma once
 #include <string>
 
+struct Vec2;
+
 //------------------------------------------------------------------------------------------------------------------------------
 struct IntVec2
 {
@@ -12,6 +14,7 @@ public:
 	IntVec2();
 	~IntVec2();
 	IntVec2( const IntVec2& copyFrom );							// copy constructor (from another vec2)
+	IntVec2( const Vec2& vec2 );
 	explicit IntVec2( int initialX, int initialY );		// explicit constructor (from x, y)
 	explicit IntVec2( const char* asText);				// explicit constructor using string to construct
 
@@ -19,6 +22,8 @@ public:
 	void					SetFromText(const char* asText);
 	IntVec2					GetIntVec2() const;
 	std::string				GetAsString() const;
+
+	bool					IsInBounds(const IntVec2& bounds) const;
 
 	//Static Vectors
 	const static IntVec2 ZERO;
@@ -36,6 +41,7 @@ public:
 	void					operator=( const IntVec2& copyFrom );					
 	bool					operator==( const IntVec2& compare ) const;			
 	bool					operator!=( const IntVec2& compare ) const;			
+	bool					operator<( const IntVec2& compare ) const;
 
 	friend const IntVec2	operator*( int uniformScale, const IntVec2& vecToScale );	
 };

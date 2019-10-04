@@ -3,7 +3,7 @@
 #include <fstream>
 
 //------------------------------------------------------------------------------------------------------------------------------
-unsigned long CreateFileBuffer(const std::string& fileName, char **outData )
+unsigned long CreateFileReadBuffer(const std::string& fileName, char **outData )
 {
 	std::ifstream fileStream;
 
@@ -40,7 +40,7 @@ unsigned long CreateFileBuffer(const std::string& fileName, char **outData )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-unsigned long CreateFileTextBuffer(const std::string& fileName, char **outData)
+unsigned long CreateTextFileReadBuffer(const std::string& fileName, char **outData)
 {
 	std::ifstream fileStream;
 
@@ -72,4 +72,42 @@ unsigned long CreateFileTextBuffer(const std::string& fileName, char **outData)
 		return 0;
 	}
 
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+std::ofstream* CreateFileWriteBuffer(const std::string& fileName)
+{
+	std::ofstream* fileStream = new std::ofstream();
+
+	//Open the file in binary and at the end
+	//This tells us where we are in the file and. We open in binary so it doesn't fuck with carriage returns
+	//We open at end of file so it's easier to get the file size
+	fileStream->open(fileName, std::ios::binary | std::ios::ate);
+
+	if (!fileStream->is_open())
+	{
+		//The file didn't exist so lets make one
+		delete fileStream;
+		fileStream = new std::ofstream(fileName, std::ofstream::out, std::ofstream::trunc);
+	}
+
+	return fileStream;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+std::ofstream* CreateTextFileWriteBuffer(const std::string& fileName)
+{
+	std::ofstream* fileStream = new std::ofstream();
+
+	//We open at end of file so it's easier to get the file size
+	fileStream->open(fileName, std::ios::ate);
+
+	if (!fileStream->is_open())
+	{
+		//The file didn't exist so lets make one
+		delete fileStream;
+		fileStream = new std::ofstream(fileName, std::ofstream::out, std::ofstream::trunc);
+	}
+
+	return fileStream;
 }

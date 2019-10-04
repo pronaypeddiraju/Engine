@@ -32,9 +32,6 @@
     <Filter Include="PhysX">
       <UniqueIdentifier>{d05e8324-7dd0-48d4-97eb-7fbb007ed4d5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PhysXSystem">
-      <UniqueIdentifier>{6e59e153-06dc-4424-a67a-083f4bda3201}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vec2.cpp">
@@ -310,8 +307,47 @@
     <ClCompile Include="Math\OBB2.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="Commons\UnitTest.cpp">
+      <Filter>Commons</Filter>
+    </ClCompile>
     <ClCompile Include="PhysXSystem\PhysXSystem.cpp">
-      <Filter>PhysXSystem</Filter>
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Commons\Callstack.cpp">
+      <Filter>Commons</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\MemTracking.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Async\MPSCAsyncRingBuffer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Async\Semaphores.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Commons\LogSystem.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Commons\Profiler\ProfileLogScope.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Commons\Profiler\Profiler.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Commons\Profiler\ProfilerSample.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Allocators\UntrackedAllocator.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Allocators\TrackedAllocator.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Allocators\BlockAllocator.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Commons\Profiler\ProfilerReport.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1171,11 +1207,35 @@
     <ClInclude Include="Math\Trigger2D.hpp" />
     <ClInclude Include="Math\TriggerTouch2D.hpp" />
     <ClInclude Include="Math\TriggerBucket.hpp" />
-    <ClInclude Include="PhysXSystem\PhysXSystem.hpp">
-      <Filter>PhysXSystem</Filter>
+    <ClInclude Include="Commons\UnitTest.hpp">
+      <Filter>Commons</Filter>
     </ClInclude>
-    <ClInclude Include="PhysXSystem\PhysXTypes.hpp">
-      <Filter>PhysXSystem</Filter>
+    <ClInclude Include="Core\Async\AsyncQueue.hpp" />
+    <ClInclude Include="Math\Array2D.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXSystem.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXTypes.hpp" />
+    <ClInclude Include="Commons\Callstack.hpp">
+      <Filter>Commons</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\stb\stb_image_write.h" />
+    <ClInclude Include="Core\MemTracking.hpp" />
+    <ClInclude Include="Core\Async\UniformAsyncRingBuffer.hpp" />
+    <ClInclude Include="Core\Async\MPSCAsyncRingBuffer.hpp" />
+    <ClInclude Include="Core\Async\Semaphores.hpp" />
+    <ClInclude Include="Commons\LogSystem.hpp" />
+    <ClInclude Include="Commons\Profiler\ProfileLogScope.hpp" />
+    <ClInclude Include="Commons\Profiler\Profiler.hpp" />
+    <ClInclude Include="Commons\Profiler\ProfilerSample.hpp" />
+    <ClInclude Include="Commons\Profiler\ProfilerEnums.hpp" />
+    <ClInclude Include="Allocators\InternalAllocator.hpp" />
+    <ClInclude Include="Allocators\TrackedAllocator.hpp" />
+    <ClInclude Include="Allocators\TemplatedUntrackedAllocator.hpp" />
+    <ClInclude Include="Allocators\UntrackedAllocator.hpp" />
+    <ClInclude Include="Allocators\BlockAllocator.hpp" />
+    <ClInclude Include="Allocators\ObjectAllocator.hpp" />
+    <ClInclude Include="Commons\Profiler\ProfilerReport.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Math\Array2D.inl" />
   </ItemGroup>
 </Project>
