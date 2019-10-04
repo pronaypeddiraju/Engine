@@ -581,6 +581,12 @@ void			Profiler::ProfilerFree() {};
 void			Profiler::ProfilerBeginFrame(const char* label) { UNUSED(label); };
 void			Profiler::ProfilerEndFrame() {};
 
+Profiler*		Profiler::CreateInstance() { return nullptr; }
+void			Profiler::DestroyInstance() { return; }
+Profiler*		Profiler::GetInstance() { return nullptr; }
+
+bool			Profiler::IsProfilerOpen() { return false; }
+
 // We can only really 'view' a complete tree
 // these functions return the most recently finished tree
 // use a shared_mutex for accessing trees from the system (as it will try to destroy old ones constantly)
