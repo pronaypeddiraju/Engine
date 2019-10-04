@@ -35,6 +35,12 @@ ProfilerReportNode* ProfilerReport::GetFrameInHistory(uint history /*= 1*/)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+ProfilerReportNode* ProfilerReport::GetRoot()
+{
+	return m_root;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void ProfilerReport::InitializeReporter()
 {
 	g_eventSystem->SubscribeEventCallBackFn("ProfilerReportFrame", Command_ProfilerReportFrame);

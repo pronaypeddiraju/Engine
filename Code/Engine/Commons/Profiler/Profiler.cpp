@@ -7,12 +7,16 @@
 #include "Engine/Core/MemTracking.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Renderer/ImGUISystem.hpp"
+#include "Engine/Core/WindowContext.hpp"
+#include "Engine/Math/IntVec2.hpp"
+#include "Engine/Core/DevConsole.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Game/EngineBuildPreferences.hpp"
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include "../../imGUI/imgui_internal.h"
 
 Profiler* gProfiler = nullptr;
 
@@ -70,6 +74,19 @@ void Profiler::ProfilerPause()
 void Profiler::ProfilerResume()
 {
 	m_isPaused = false;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Profiler::ProfilerTogglePause()
+{
+	if (m_isPaused)
+	{
+		m_isPaused = false;
+	}
+	else
+	{
+		m_isPaused = true;
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -147,21 +164,122 @@ void Profiler::ProfilerUpdate()
 //------------------------------------------------------------------------------------------------------------------------------
 void Profiler::ShowProfilerTimeline()
 {
-	//Show the imGUI widget here
+	if (gProfiler == nullptr || !g_devConsole->IsOpen())
+	{
+		return;
+	}
 
+	//Show the imGUI widget here
 	if (g_ImGUI == nullptr)
 	{
 		ERROR_AND_DIE("The imGUI system was not initialized! The profiler requires you to intialize it");
 	}
 
 	//Render you imGUI window
+	TODO("Make the timeline graph here");
 	//Use this place to create/update info for imGui
 	ImGui::Begin("Profiler Window");                          // Create a window called "Hello, world!" and append into it.
-
+	IntVec2 clientSize = g_windowContext->GetTrueClientBounds();
+	ImGui::SetWindowSize(ImVec2(clientSize.x, clientSize.y - 50), 0);
+	ImGui::SetWindowPos(ImVec2(0,0));
 	ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
 
+	if (!m_isPaused)
+	{
+		//repopulate variables for imGUI
+
+		m_timeArray = new float[m_History.size()];
+		m_allocArray = new float[m_History.size()];
+		m_timeArrayStart = m_timeArray;
+		m_allocArrayStart = m_allocArray;
+		m_maxAlloc = 0;
+		m_maxTime = 0;
+		m_timeArraySize = 0;
+		m_allocArraySize = 0;
+
+
+		PopulateGraphData(m_timeArrayStart, m_allocArrayStart, m_timeArraySize, m_allocArraySize, m_maxTime, m_maxAlloc);
+	}
+	
+	ImGui::Begin("Timeline Window");
+	ImGui::SetWindowPos(ImVec2(50, 50));
+	ImVec2 imClientSize = ImVec2(clientSize.x - 200, 100);
+	ImGui::PlotHistogram("Timeline view", m_timeArray, m_timeArraySize, 0, "Time taken by each frame", 0, m_maxTime, imClientSize);
+	ImVec2 innerRectMax = ImGui::GetItemRectMax();
+	ImVec2 innerRectMin = ImGui::GetItemRectMin();
+	ImRect innerRect = ImRect(innerRectMin, innerRectMax);
+
+	ImGuiWindow* imWindow = ImGui::GetCurrentWindowRead();
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.MouseClicked[0] || io.MouseClicked[1])
+	{
+		ImGuiID ID = ImGui::GetHoveredID();
+		imWindow = ImGui::GetCurrentWindow();
+		ID = imWindow->ChildId;
+		//ID = ImGui::GetItemID();
+		
+		if (innerRect.Contains(io.MousePos))
+		{
+			const float t = ImClamp((io.MousePos.x - innerRect.Min.x) / (innerRect.Max.x - innerRect.Min.x), 0.0f, 0.9999f);
+			const int v_idx = (int)(t * m_timeArraySize);
+			IM_ASSERT(v_idx >= 0 && v_idx < m_timeArraySize);
+
+			const float v0 = m_timeArray[v_idx];
+			int temp = 0;
+			//values_getter(data, (v_idx + 0) % m_timeArraySize);
+			//values_getter(data, (v_idx + 1 + values_offset) % values_count);
+
+			TODO("Get the tree now");
+		}
+
+		ProfilerTogglePause();
+	}
 
 	ImGui::End();
+
+	ImGui::Begin("Allocations Window");
+	ImGui::SetWindowPos(ImVec2(50, 200));
+	ImGui::PlotHistogram("Allocations view", m_allocArray, m_allocArraySize, 0, "Allocations by each frame", 0, m_maxAlloc, ImVec2(clientSize.x - 200, 100));
+	ImGui::End();
+
+	/*
+	ImGui::Begin("Allocations Line View Window");
+	ImGui::SetWindowPos(ImVec2(50, 350));
+	ImGui::PlotLines("Allocations View", allocArray, allocArraySize, 0, "Allocations by each frame", 0, maxAlloc, ImVec2(clientSize.x - 200, 100));
+	ImGui::End();
+	*/
+
+	ImGui::End();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Profiler::PopulateGraphData(float* floatArray, float* allocArray, int& timeArraySize, int& allocArraySize, float& maxTime, float& maxAlloc)
+{
+	std::vector<ProfilerSample_T*>::iterator itr = m_History.begin();
+
+	while (itr != m_History.end())
+	{
+		*floatArray = (float)GetHPCToSeconds((*itr)->m_endTime) - (float)GetHPCToSeconds((*itr)->m_startTime);
+		*allocArray = (*itr)->m_allocCount - (*itr)->m_freeCount;
+
+		if (maxTime < *floatArray)
+		{
+			maxTime = *floatArray;
+		}
+		if (maxAlloc < *allocArray)
+		{
+			maxAlloc = *allocArray;
+		}
+
+		floatArray++;
+		allocArray++;
+
+		timeArraySize++;
+		allocArraySize++;
+
+		itr++;
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -219,6 +337,19 @@ void Profiler::ProfilerEndFrame()
 	ProfilerPop();
 
 	ASSERT_RECOVERABLE(tActiveNode == nullptr, "The active node was nullptr in ProfilerEndFrame")
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool Profiler::IsProfilerOpen()
+{
+	if (m_showTimeline)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

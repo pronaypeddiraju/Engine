@@ -58,6 +58,7 @@ public:
 	~ProfilerReport();
 
 	ProfilerReportNode*		GetFrameInHistory(uint history = 1);
+	ProfilerReportNode*		GetRoot();
 
 	static ProfilerReport*	CreateInstance();
 	static ProfilerReport*	GetInstance();

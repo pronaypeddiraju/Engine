@@ -20,6 +20,7 @@ public:
 
 	void			ProfilerPause();
 	void			ProfilerResume();
+	void			ProfilerTogglePause();
 
 	void			ProfilerPush(const char* label);
 	void			ProfilerPop();
@@ -27,6 +28,7 @@ public:
 	void			ProfilerUpdate();
 
 	void			ShowProfilerTimeline();
+	void			PopulateGraphData(float* floatArray, float* allocArray, int& timeArraySize, int& allocArraySize, float& maxTime, float& maxAlloc);
 	void			EraseOldTrees();
 
 	void			ProfilerAllocation(size_t byteSize = 0);
@@ -34,6 +36,8 @@ public:
 
 	void			ProfilerBeginFrame(const char* label = "Frame");
 	void			ProfilerEndFrame();
+
+	bool			IsProfilerOpen();
 
 	// We can only really 'view' a complete tree
 	// these functions return the most recently finished tree
@@ -71,6 +75,18 @@ private:
 	std::shared_mutex						m_HistoryLock;
 
 	size_t									m_AllowedSize = 1048576;	//1024 KibiBytes or 1 MebiByte
+
+	//------------------------------------------------------------------------------------------------------------------------------
+	//ImGUI values
+
+	float*									m_timeArray;
+	float*									m_allocArray;
+	float*									m_timeArrayStart;
+	float*									m_allocArrayStart;
+	float									m_maxAlloc = 0;
+	float									m_maxTime = 0;
+	int										m_timeArraySize = 0;
+	int										m_allocArraySize = 0;
 };
 
 // EXTRA -> more important to the job system for tracking timing across threads
