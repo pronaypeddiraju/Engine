@@ -123,8 +123,10 @@ STATIC bool ProfilerReport::Command_ProfilerReportFrame(EventArgs& args)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-ProfilerReportNode::ProfilerReportNode(ProfilerSample_T* node)
+ProfilerReportNode::ProfilerReportNode(ProfilerSample_T* node, ProfilerReportNode* parent)
 {
+	m_parent = parent;
+
 	m_allocationCount = node->m_allocCount;
 	m_allocationSize = node->m_allocationSizeInBytes;
 
@@ -143,6 +145,10 @@ ProfilerReportNode::ProfilerReportNode(ProfilerSample_T* node)
 	{
 		GetChildrenFromSampleRoot(node->m_lastChild, this);
 	}
+	else if (node->m_prevSibling != nullptr)
+	{
+		GetChildrenFromSampleRoot(node->m_prevSibling, this->m_parent);
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -154,9 +160,12 @@ ProfilerReportNode::~ProfilerReportNode()
 //------------------------------------------------------------------------------------------------------------------------------
 void ProfilerReportNode::GetChildrenFromSampleRoot(ProfilerSample_T* root, ProfilerReportNode* parent)
 {
-	ProfilerSample_T* node = root;
-	parent->m_children.emplace_back(ProfilerReportNode(root));
+	if (root != nullptr)
+	{
+		parent->m_children.emplace_back(ProfilerReportNode(root, parent));
+	}
 
+	/*
 	ProfilerSample_T* next = nullptr;
 	next = root;
 	while (next != nullptr)
@@ -171,4 +180,5 @@ void ProfilerReportNode::GetChildrenFromSampleRoot(ProfilerSample_T* root, Profi
 			next = nullptr;
 		}
 	}
+	*/
 }

@@ -10,7 +10,7 @@ struct ProfilerSample_T;
 class ProfilerReportNode
 {
 public:
-	ProfilerReportNode(ProfilerSample_T* node);
+	ProfilerReportNode(ProfilerSample_T* node, ProfilerReportNode* parent = nullptr);
 	~ProfilerReportNode();
 
 	void					GetChildrenFromSampleRoot(ProfilerSample_T* root, ProfilerReportNode* parent);
