@@ -64,6 +64,9 @@ public:
 	static ProfilerReport*	GetInstance();
 	static void				DestroyInstance();
 
+	void					DrawTreeViewAsImGUIWidget(uint history);
+	void					DrawFlatViewAsImGUIWidget(uint history);
+
 private:
 	void					InitializeReporter();
 

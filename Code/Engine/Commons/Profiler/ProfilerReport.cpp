@@ -4,6 +4,9 @@
 #include "Engine/Commons/Profiler/Profiler.hpp"
 #include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/Time.hpp"
+#include "Engine/Core/WindowContext.hpp"
+#include "Engine/Renderer/ImGUISystem.hpp"
+#include "ThirdParty/imGUI/imgui_internal.h"
 #include <string.h>
 
 ProfilerReport* gProfileReporter = nullptr;
@@ -88,6 +91,30 @@ void ProfilerReport::DestroyInstance()
 		delete gProfileReporter;
 		gProfileReporter = nullptr;
 	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void ProfilerReport::DrawTreeViewAsImGUIWidget(uint history)
+{
+	//call generate for history
+	ProfilerReportNode* root = GetFrameInHistory(history);
+
+	//create and populate the imGUI widget
+	ImGui::Begin("Tree View Window");
+	ImGui::SetWindowPos(ImVec2(50, 350));
+	ImGui::SetWindowSize(ImVec2(1650, 450));
+
+	ImGui::Columns(5, "Tree View", true);
+
+
+
+	ImGui::End();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void ProfilerReport::DrawFlatViewAsImGUIWidget(uint history)
+{
+	TODO("Flat View");
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

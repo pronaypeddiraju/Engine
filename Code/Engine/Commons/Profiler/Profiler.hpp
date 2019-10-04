@@ -29,6 +29,8 @@ public:
 
 	void			ShowProfilerTimeline();
 	void			PopulateGraphData(float* floatArray, float* allocArray, int& timeArraySize, int& allocArraySize, float& maxTime, float& maxAlloc);
+	void			MakeTimelineWindow();
+	void			MakeAllocationsWindow();
 	void			EraseOldTrees();
 
 	void			ProfilerAllocation(size_t byteSize = 0);
@@ -87,6 +89,8 @@ private:
 	float									m_maxTime = 0;
 	int										m_timeArraySize = 0;
 	int										m_allocArraySize = 0;
+
+	float									m_reportFrameNum = 0;
 };
 
 // EXTRA -> more important to the job system for tracking timing across threads

@@ -8,6 +8,7 @@
 #include "Engine/Core/Time.hpp"
 #include "Engine/Renderer/ImGUISystem.hpp"
 #include "Engine/Core/WindowContext.hpp"
+#include "ThirdParty/imGUI/imgui_internal.h"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Core/DevConsole.hpp"
 
@@ -16,7 +17,6 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#include "../../imGUI/imgui_internal.h"
 
 Profiler* gProfiler = nullptr;
 
@@ -197,61 +197,15 @@ void Profiler::ShowProfilerTimeline()
 		m_timeArraySize = 0;
 		m_allocArraySize = 0;
 
-
 		PopulateGraphData(m_timeArrayStart, m_allocArrayStart, m_timeArraySize, m_allocArraySize, m_maxTime, m_maxAlloc);
 	}
-	
-	ImGui::Begin("Timeline Window");
-	ImGui::SetWindowPos(ImVec2(50, 50));
-	ImVec2 imClientSize = ImVec2(clientSize.x - 200, 100);
-	ImGui::PlotHistogram("Timeline view", m_timeArray, m_timeArraySize, 0, "Time taken by each frame", 0, m_maxTime, imClientSize);
-	ImVec2 innerRectMax = ImGui::GetItemRectMax();
-	ImVec2 innerRectMin = ImGui::GetItemRectMin();
-	ImRect innerRect = ImRect(innerRectMin, innerRectMax);
 
-	ImGuiWindow* imWindow = ImGui::GetCurrentWindowRead();
-
-	ImGuiIO& io = ImGui::GetIO();
-	if (io.MouseClicked[0] || io.MouseClicked[1])
-	{
-		ImGuiID ID = ImGui::GetHoveredID();
-		imWindow = ImGui::GetCurrentWindow();
-		ID = imWindow->ChildId;
-		//ID = ImGui::GetItemID();
-		
-		if (innerRect.Contains(io.MousePos))
-		{
-			const float t = ImClamp((io.MousePos.x - innerRect.Min.x) / (innerRect.Max.x - innerRect.Min.x), 0.0f, 0.9999f);
-			const int v_idx = (int)(t * m_timeArraySize);
-			IM_ASSERT(v_idx >= 0 && v_idx < m_timeArraySize);
-
-			const float v0 = m_timeArray[v_idx];
-			int temp = 0;
-			//values_getter(data, (v_idx + 0) % m_timeArraySize);
-			//values_getter(data, (v_idx + 1 + values_offset) % values_count);
-
-			TODO("Get the tree now");
-		}
-
-		ProfilerTogglePause();
-	}
-
-	ImGui::End();
-
-	ImGui::Begin("Allocations Window");
-	ImGui::SetWindowPos(ImVec2(50, 200));
-	ImGui::PlotHistogram("Allocations view", m_allocArray, m_allocArraySize, 0, "Allocations by each frame", 0, m_maxAlloc, ImVec2(clientSize.x - 200, 100));
-	ImGui::End();
-
-	/*
-	ImGui::Begin("Allocations Line View Window");
-	ImGui::SetWindowPos(ImVec2(50, 350));
-	ImGui::PlotLines("Allocations View", allocArray, allocArraySize, 0, "Allocations by each frame", 0, maxAlloc, ImVec2(clientSize.x - 200, 100));
-	ImGui::End();
-	*/
+	MakeTimelineWindow();
+	MakeAllocationsWindow();
 
 	ImGui::End();
 }
+
 
 //------------------------------------------------------------------------------------------------------------------------------
 void Profiler::PopulateGraphData(float* floatArray, float* allocArray, int& timeArraySize, int& allocArraySize, float& maxTime, float& maxAlloc)
@@ -280,6 +234,89 @@ void Profiler::PopulateGraphData(float* floatArray, float* allocArray, int& time
 
 		itr++;
 	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Profiler::MakeTimelineWindow()
+{
+	IntVec2 clientSize = g_windowContext->GetTrueClientBounds();
+
+	ImGui::Begin("Timeline Window");
+	ImGui::SetWindowPos(ImVec2(50, 50));
+	ImVec2 imClientSize = ImVec2(clientSize.x - 200, 100);
+	ImGui::PlotHistogram("Timeline view", m_timeArray, m_timeArraySize, 0, "Time taken by each frame", 0, m_maxTime, imClientSize);
+	ImVec2 innerRectMax = ImGui::GetItemRectMax();
+	ImVec2 innerRectMin = ImGui::GetItemRectMin();
+	ImRect innerRect = ImRect(innerRectMin, innerRectMax);
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.MouseClicked[0] || io.MouseClicked[1])
+	{
+		ImGuiID ID = ImGui::GetHoveredID();
+		if (innerRect.Contains(io.MousePos))
+		{
+			const float t = ImClamp((io.MousePos.x - innerRect.Min.x) / (innerRect.Max.x - innerRect.Min.x), 0.0f, 0.9999f);
+			const int v_idx = (int)(t * m_timeArraySize);
+			IM_ASSERT(v_idx >= 0 && v_idx < m_timeArraySize);
+
+			m_reportFrameNum = m_timeArray[v_idx];
+
+			ProfilerTogglePause();
+		}
+	}
+
+	if (m_isPaused)
+	{
+		ProfilerReport* reporter = gProfileReporter->GetInstance();
+		reporter->DrawTreeViewAsImGUIWidget(m_reportFrameNum);
+	}
+
+	ImGui::End();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Profiler::MakeAllocationsWindow()
+{
+	IntVec2 clientSize = g_windowContext->GetTrueClientBounds();
+
+	ImGui::Begin("Allocations Window");
+	ImGui::SetWindowPos(ImVec2(50, 200));
+	ImGui::PlotHistogram("Allocations view", m_allocArray, m_allocArraySize, 0, "Allocations by each frame", 0, m_maxAlloc, ImVec2(clientSize.x - 200, 100));
+	
+	ImVec2 innerRectMax = ImGui::GetItemRectMax();
+	ImVec2 innerRectMin = ImGui::GetItemRectMin();
+	ImRect innerRect = ImRect(innerRectMin, innerRectMax);
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.MouseClicked[0] || io.MouseClicked[1])
+	{
+		ImGuiID ID = ImGui::GetHoveredID();
+		if (innerRect.Contains(io.MousePos))
+		{
+			const float t = ImClamp((io.MousePos.x - innerRect.Min.x) / (innerRect.Max.x - innerRect.Min.x), 0.0f, 0.9999f);
+			const int v_idx = (int)(t * m_timeArraySize);
+			IM_ASSERT(v_idx >= 0 && v_idx < m_timeArraySize);
+
+			m_reportFrameNum = m_timeArray[v_idx];
+			
+			ProfilerTogglePause();
+		}
+	}
+
+	if (m_isPaused)
+	{
+		ProfilerReport* reporter = gProfileReporter->GetInstance();
+		reporter->DrawTreeViewAsImGUIWidget(m_reportFrameNum);
+	}
+
+	/*
+	ImGui::Begin("Allocations Line View Window");
+	ImGui::SetWindowPos(ImVec2(50, 350));
+	ImGui::PlotLines("Allocations View", allocArray, allocArraySize, 0, "Allocations by each frame", 0, maxAlloc, ImVec2(clientSize.x - 200, 100));
+	ImGui::End();
+	*/
+
+	ImGui::End();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
