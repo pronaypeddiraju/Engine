@@ -115,5 +115,8 @@ public:
 };
 
 //------------------------------------------------------------------------------------------------------------------------------
+#define COMBINE1(X,Y) X##Y  // helper macro
+#define COMBINE(X,Y) COMBINE1(X,Y)
+
 #define PROFILE_SCOPE( tag )			ProfilerLogObject COMBINE(__scopeLog, __LINE__) ## (tag)
 #define PROFILE_FUNCTION()				PROFILE_SCOPE(__FUNCTION__);

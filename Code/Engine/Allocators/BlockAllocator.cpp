@@ -177,6 +177,7 @@ bool BlockAllocator::AllocateChunk()
 
 		//Break up newly allocated chunk
 		BreakUpChunk(chunk + 1);
+		m_chunkLock.unlock();
 	}
 
 	return true;

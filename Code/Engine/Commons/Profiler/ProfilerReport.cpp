@@ -8,6 +8,7 @@
 #include "Engine/Renderer/ImGUISystem.hpp"
 #include "ThirdParty/imGUI/imgui_internal.h"
 #include <string.h>
+#include <algorithm>
 
 ProfilerReport* gProfileReporter = nullptr;
 
@@ -68,6 +69,15 @@ void ProfilerReport::GenerateTreeFromFrame(ProfilerSample_T* root)
 	}
 
 	m_root = new ProfilerReportNode(root);
+
+	if (m_sortSelfTime != 0)
+	{
+		m_root->SortBySelfTime();
+	}
+	else
+	{
+		m_root->SortByTotalTime();
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -141,9 +151,44 @@ void ProfilerReport::DrawTreeViewAsImGUIWidget(uint history)
 	flags |= ImGuiWindowFlags_NoMouseInputs;
 
 	//create and populate the imGUI widget
-	ImGui::Begin("Tree View Window", NULL, flags);
+	ImGui::Begin("Tree View Window");//, NULL, flags);
 	ImGui::SetWindowPos(ImVec2(50, 350));
 	ImGui::SetWindowSize(ImVec2(1650, 450));
+
+	m_clicked = 0;
+	if (ImGui::Button("Toggle Mode"))
+		m_clicked++;
+	if (m_clicked & 1)
+	{
+		ImGui::SameLine();
+		ImGui::Text("Toggled Profiler Mode");
+		EventArgs args;
+		gProfileReporter->Command_ProfilerToggleMode(args);
+	}
+
+	
+	if (ImGui::Button("Sort by total Time"))
+		m_sortTotalTime++;
+	if (m_sortTotalTime & 1)
+	{
+		m_root->SortByTotalTime();
+		DrawTreeViewAsImGUIWidget(history);
+	}
+
+	if (ImGui::Button("Sort by self Time"))
+		m_sortSelfTime++;
+	if (m_sortSelfTime & 1)
+	{
+		m_root->SortBySelfTime();
+		DrawTreeViewAsImGUIWidget(history);
+	}
+	
+
+	if (m_activeMode == FLAT_VIEW)
+	{
+		ImGui::End();
+		return;
+	}
 
 	ImGui::Spacing();
 
@@ -201,9 +246,48 @@ void ProfilerReport::DrawFlatViewAsImGUIWidget(uint history)
 	flags |= ImGuiWindowFlags_NoMouseInputs;
 
 	//create and populate the imGUI widget
-	ImGui::Begin("Flat View Window", NULL, flags);
+	ImGui::Begin("Flat View Window");// , NULL, flags);
 	ImGui::SetWindowPos(ImVec2(50, 350));
 	ImGui::SetWindowSize(ImVec2(1650, 450));
+
+	m_clicked = 0;
+	if (ImGui::Button("Toggle Mode"))
+		m_clicked++;
+	if (m_clicked & 1)
+	{
+		ImGui::SameLine();
+		ImGui::Text("Toggled Profiler Mode");
+		EventArgs args;
+		gProfileReporter->Command_ProfilerToggleMode(args);
+	}
+
+	if (ImGui::Button("Sort by total Time"))
+		m_sortTotalTime++;
+	if (m_sortTotalTime & 1)
+	{
+		m_root->SortByTotalTime();
+
+		std::sort(m_flatViewVector.begin(), m_flatViewVector.end(), ComparatorTotalTimeSort);
+
+		DrawFlatViewAsImGUIWidget(history);
+	}
+
+	if (ImGui::Button("Sort by self Time"))
+		m_sortSelfTime++;
+	if (m_sortSelfTime & 1)
+	{
+		m_root->SortBySelfTime();
+		
+		std::sort(m_flatViewVector.begin(), m_flatViewVector.end(), ComparatorSelfTimeSort);
+
+		DrawFlatViewAsImGUIWidget(history);
+	}
+
+	if (m_activeMode == TREE_VIEW)
+	{
+		ImGui::End();
+		return;
+	}
 
 	ImGui::Spacing();
 
@@ -235,6 +319,12 @@ void ProfilerReport::SetReportMode(ProfilerReportMode mode)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void ProfilerReport::SetRoot(ProfilerReportNode* root)
+{
+	m_root = root;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC bool ProfilerReport::Command_ProfilerReportFrame(EventArgs& args)
 {
 	uint history = args.GetValue("History", 1);
@@ -243,6 +333,32 @@ STATIC bool ProfilerReport::Command_ProfilerReportFrame(EventArgs& args)
 	TODO("Handle views and send the recieved node to the required view method");
 
 	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool ComparatorTotalTimeSort(ProfilerReportNode* elementA, ProfilerReportNode* elementB)
+{
+	if (elementA->m_totalTime > elementB->m_totalTime)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool ComparatorSelfTimeSort(ProfilerReportNode* elementA, ProfilerReportNode* elementB)
+{
+	if (elementA->m_selfTime > elementB->m_selfTime)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 void ProfilerReport::GenerateFlatViewVector(ProfilerReportNode* root)
@@ -278,6 +394,7 @@ void ProfilerReport::AddToFlatViewVector(ProfilerReportNode& rootNode)
 
 	std::vector<ProfilerReportNode*>::iterator itr = m_flatViewVector.begin();
 
+	bool foundElement = false;
 	while (itr != m_flatViewVector.end())
 	{
 		if (strcmp((*itr)->m_label, rootNode.m_label) == 0)
@@ -293,16 +410,17 @@ void ProfilerReport::AddToFlatViewVector(ProfilerReportNode& rootNode)
 
 			(*itr)->m_avgTime = (*itr)->m_totalTime / (*itr)->m_numCalls;
 			(*itr)->m_avgSelfTime = (*itr)->m_selfTime / (*itr)->m_numCalls;
-		}
-		else
-		{
-			//Didn't find the same function call
-			m_flatViewVector.emplace_back(&rootNode);
-			break;
+
+			foundElement = true;
 		}
 
 		itr++;
 	}	
+
+	if (!foundElement)
+	{
+		m_flatViewVector.emplace_back(&rootNode);
+	}
 }
 
 void ProfilerReport::PopulateTreeForImGUI(ProfilerReportNode* root)
@@ -341,7 +459,7 @@ void ProfilerReport::PopulateTreeForImGUI(ProfilerReportNode* root)
 			{
 				next = &(*childIterator);
 				PopulateTreeForImGUI(next);
-				
+
 				childIterator++;
 			}
 			next = nullptr;
@@ -361,7 +479,7 @@ void ProfilerReport::PopulateFlatForImGUI()
 {
 	if (m_flatViewVector.size() == 0)
 	{
-		ERROR_RECOVERABLE("The flat view vector is empty");
+		GetFrameInHistory(m_lastHistoryFrame);
 	}
 
 	std::vector<ProfilerReportNode*>::iterator nodeItr = m_flatViewVector.begin();
@@ -414,6 +532,10 @@ ProfilerReportNode::ProfilerReportNode(ProfilerSample_T* node, ProfilerReportNod
 {
 	//Setup all data on the ReportNode
 	m_parent = parent;
+	if (m_parent == nullptr)
+	{
+		gProfileReporter->SetRoot(this);
+	}
 
 	m_allocationCount = node->m_allocCount;
 	m_allocationSize = node->m_allocationSizeInBytes;
@@ -441,6 +563,26 @@ ProfilerReportNode::ProfilerReportNode(ProfilerSample_T* node, ProfilerReportNod
 	}
 
 	GetSelfTime();
+
+	if (m_parent == nullptr)
+	{
+		m_totalPercent = 100.f;
+	}
+	else
+	{
+		m_totalPercent = gProfileReporter->GetRoot()->m_totalTime / m_totalTime;
+		m_totalPercent = 100.f / m_totalPercent;
+	}
+
+	if (m_children.size() == 0)
+	{
+		m_selfPercent = 100.f;
+	}
+	else
+	{
+		m_selfPercent = m_totalTime / m_selfTime;
+		m_selfPercent = 100.f / m_selfPercent;
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -468,7 +610,7 @@ void ProfilerReportNode::SortByTotalTime()
 		for (int indexJ = indexI + 1; indexJ < m_children.size(); ++indexJ)
 		{
 			double totalTimeJ = m_children[indexJ].m_totalTime;
-			if (totalTimeI > totalTimeJ)
+			if (totalTimeI < totalTimeJ)
 			{
 				std::swap(m_children[indexI], m_children[indexJ]);
 				totalTimeI = totalTimeJ;
@@ -480,6 +622,10 @@ void ProfilerReportNode::SortByTotalTime()
 	{
 		(&child)->SortByTotalTime();
 	}
+
+	gProfileReporter->SetRoot(this);
+
+	gProfileReporter->m_sortTotalTime = 0;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -492,7 +638,7 @@ void ProfilerReportNode::SortBySelfTime()
 		for (int indexJ = indexI + 1; indexJ < m_children.size(); ++indexJ)
 		{
 			double selfTimeJ = m_children[indexJ].m_selfTime;
-			if (selfTimeI > selfTimeJ)
+			if (selfTimeI < selfTimeJ)
 			{
 				std::swap(m_children[indexI], m_children[indexJ]);
 				selfTimeI = selfTimeJ;
@@ -504,6 +650,10 @@ void ProfilerReportNode::SortBySelfTime()
 	{
 		(&child)->SortBySelfTime();
 	}
+
+	gProfileReporter->SetRoot(this);
+
+	gProfileReporter->m_sortSelfTime = 0;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

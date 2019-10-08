@@ -14,6 +14,7 @@
 #include "Engine/Renderer/Shader.hpp"
 #include <cmath>
 #include <vector>
+#include "Engine/Commons/Profiler/Profiler.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 DebugRender* g_debugRenderer = nullptr;
@@ -1447,6 +1448,8 @@ void DebugRender::DebugAddToLog(char const* format, const Rgba& color /*= Rgba::
 //------------------------------------------------------------------------------------------------------------------------------
 void DebugRender::DebugRenderPoint( DebugRenderOptionsT options, const Vec3& position, float duration, float size, TextureView* texture )
 {
+	PROFILE_FUNCTION();
+
 	options.objectProperties = new Point3DProperties(DEBUG_RENDER_POINT3D, position, size, duration, texture);
 
 	m_worldRenderObjects.push_back(options);

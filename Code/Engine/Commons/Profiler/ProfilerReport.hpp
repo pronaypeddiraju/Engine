@@ -58,6 +58,9 @@ public:
 	bool					operator==(const ProfilerReportNode& compare) const;				// Are nodes equal?
 };
 
+bool						ComparatorTotalTimeSort(ProfilerReportNode* elementA, ProfilerReportNode* elementB);
+bool	 					ComparatorSelfTimeSort(ProfilerReportNode* elementA, ProfilerReportNode* elementB);
+
 //------------------------------------------------------------------------------------------------------------------------------
 class ProfilerReport
 {
@@ -77,6 +80,11 @@ public:
 
 	void					SetReportMode(ProfilerReportMode mode);
 	ProfilerReportMode		GetMode() { return m_activeMode; }
+	void					SetRoot(ProfilerReportNode* root);
+
+	//NOTE: This is only for the UI buttons and is to be accessed only by ProfilerReportNode
+	int						m_sortTotalTime = 0;
+	int						m_sortSelfTime = 0;
 
 private:
 	void					InitializeReporter();
@@ -96,6 +104,8 @@ private:
 	uint					m_lastHistoryFrame = 0U;
 
 	ProfilerReportMode		m_activeMode = TREE_VIEW;
+
+	int						m_clicked = 0;
 
 	std::vector<ProfilerReportNode*>	m_flatViewVector;
 	void GenerateFlatViewVector(ProfilerReportNode* m_root);
