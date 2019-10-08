@@ -66,6 +66,7 @@ private:
 	ProfilerSample_T*			AllocateNode();
 	void						FreeTree(ProfilerSample_T* root);
 	void						FreeNode(ProfilerSample_T* node);
+	void						RepopulateReportData();
 
 
 	double			m_maxHistoryTime = 10;

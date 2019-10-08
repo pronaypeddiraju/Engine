@@ -30,8 +30,16 @@ ProfilerReportNode* ProfilerReport::GetFrameInHistory(uint history /*= 1*/)
 
 	ProfilerSample_T* sample = profiler->ProfilerAcquirePreviousTreeForCallingThread(history);
 
-	//Traverse the tree and create duplicate tree for Reporting
-	GenerateTreeFromFrame(sample);
+	if (m_activeMode == FLAT_VIEW)
+	{
+		//We want flat view
+		GenerateFlatFromFrame(sample);
+	}
+	else
+	{
+		//Traverse the tree and create duplicate tree for Reporting
+		GenerateTreeFromFrame(sample);
+	}
 
 	//Return the root as it now has the frame tree
 	return m_root;
@@ -47,6 +55,7 @@ ProfilerReportNode* ProfilerReport::GetRoot()
 void ProfilerReport::InitializeReporter()
 {
 	g_eventSystem->SubscribeEventCallBackFn("ProfilerReportFrame", Command_ProfilerReportFrame);
+	g_eventSystem->SubscribeEventCallBackFn("ProfilerToggleMode", Command_ProfilerToggleMode);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -59,6 +68,19 @@ void ProfilerReport::GenerateTreeFromFrame(ProfilerSample_T* root)
 	}
 
 	m_root = new ProfilerReportNode(root);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void ProfilerReport::GenerateFlatFromFrame(ProfilerSample_T* root)
+{
+	GenerateTreeFromFrame(root);
+	m_flatViewVector.clear();
+
+	//m_flatViewVector.push_back(m_root);
+
+	GenerateFlatViewVector(m_root);
+
+	TODO("Make flat view vector");
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -96,11 +118,17 @@ void ProfilerReport::DestroyInstance()
 //------------------------------------------------------------------------------------------------------------------------------
 void ProfilerReport::DrawTreeViewAsImGUIWidget(uint history)
 {
+	if (m_lastHistoryFrame == 0U)
+	{
+		m_lastHistoryFrame = history;
+	}
+
 	ProfilerReportNode* root = nullptr;
 
 	//call generate for history
-	if (m_root == nullptr)
+	if (m_root == nullptr || m_lastHistoryFrame != history)
 	{
+		m_lastHistoryFrame = history;
 		root = GetFrameInHistory(history);
 	}
 	else
@@ -116,8 +144,6 @@ void ProfilerReport::DrawTreeViewAsImGUIWidget(uint history)
 	ImGui::Begin("Tree View Window", NULL, flags);
 	ImGui::SetWindowPos(ImVec2(50, 350));
 	ImGui::SetWindowSize(ImVec2(1650, 450));
-
-	TODO("Create the tree view for profiled frames");
 
 	ImGui::Spacing();
 
@@ -144,7 +170,6 @@ void ProfilerReport::DrawTreeViewAsImGUIWidget(uint history)
 	ImGui::EndChild();
 	*/
 
-	//ImGui::Columns(1);
 	PopulateTreeForImGUI(m_root);
 
 	ImGui::End();
@@ -153,7 +178,60 @@ void ProfilerReport::DrawTreeViewAsImGUIWidget(uint history)
 //------------------------------------------------------------------------------------------------------------------------------
 void ProfilerReport::DrawFlatViewAsImGUIWidget(uint history)
 {
-	TODO("Flat View");
+	if (m_lastHistoryFrame == 0U)
+	{
+		m_lastHistoryFrame = history;
+	}
+
+	ProfilerReportNode* root = nullptr;
+
+	//call generate for history
+	if (m_root == nullptr || m_lastHistoryFrame != history)
+	{
+		m_lastHistoryFrame = history;
+		root = GetFrameInHistory(history);
+	}
+	else
+	{
+		root = m_root;
+	}
+
+	ImGuiWindowFlags flags = 0;
+	flags |= ImGuiWindowFlags_NoInputs;
+	flags |= ImGuiWindowFlags_NoMouseInputs;
+
+	//create and populate the imGUI widget
+	ImGui::Begin("Flat View Window", NULL, flags);
+	ImGui::SetWindowPos(ImVec2(50, 350));
+	ImGui::SetWindowSize(ImVec2(1650, 450));
+
+	ImGui::Spacing();
+
+	ImGui::Columns(10, "mycolumns");
+	ImGui::Separator();
+	ImGui::Text("Frame"); ImGui::NextColumn();
+	ImGui::Text("Calls"); ImGui::NextColumn();
+	ImGui::Text("Percent Total"); ImGui::NextColumn();
+	ImGui::Text("Total Time"); ImGui::NextColumn();
+	ImGui::Text("Percent Self"); ImGui::NextColumn();
+	ImGui::Text("Self Time"); ImGui::NextColumn();
+	ImGui::Text("Num Allocations"); ImGui::NextColumn();
+	ImGui::Text("Allocation Size"); ImGui::NextColumn();
+	ImGui::Text("Num Frees"); ImGui::NextColumn();
+	ImGui::Text("Freed Size"); ImGui::NextColumn();
+	ImGui::EndColumns();
+
+	ImGui::Separator();
+
+	PopulateFlatForImGUI();
+
+	ImGui::End();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void ProfilerReport::SetReportMode(ProfilerReportMode mode)
+{
+	m_activeMode = mode;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -167,16 +245,70 @@ STATIC bool ProfilerReport::Command_ProfilerReportFrame(EventArgs& args)
 	return true;
 }
 
+void ProfilerReport::GenerateFlatViewVector(ProfilerReportNode* root)
+{
+	AddToFlatViewVector(*root);
+
+	if (root->m_children.size() != 0)
+	{
+		std::vector<ProfilerReportNode>::iterator nodeItr = root->m_children.begin();
+		while (nodeItr != root->m_children.end())
+		{
+			GenerateFlatViewVector(&(*nodeItr));
+
+			/*
+			for (ProfilerReportNode node : nodeItr->m_children)
+			{
+				GenerateFlatViewVector(&node);
+			}
+			*/
+
+			nodeItr++;
+		}
+	}
+}
+
+void ProfilerReport::AddToFlatViewVector(ProfilerReportNode& rootNode)
+{
+	if (m_flatViewVector.size() == 0)
+	{
+		m_flatViewVector.emplace_back(&rootNode);
+		return;
+	}
+
+	std::vector<ProfilerReportNode*>::iterator itr = m_flatViewVector.begin();
+
+	while (itr != m_flatViewVector.end())
+	{
+		if (strcmp((*itr)->m_label, rootNode.m_label) == 0)
+		{
+			//We found another one of these function calls
+			(*itr)->m_numCalls++;
+			(*itr)->m_totalTime += rootNode.m_totalTime;
+			(*itr)->m_selfTime += rootNode.m_selfTime;
+			(*itr)->m_allocationCount += rootNode.m_allocationCount;
+			(*itr)->m_allocationSize += rootNode.m_allocationSize;
+			(*itr)->m_freeCount += rootNode.m_freeCount;
+			(*itr)->m_freedSize += rootNode.m_freedSize;
+
+			(*itr)->m_avgTime = (*itr)->m_totalTime / (*itr)->m_numCalls;
+			(*itr)->m_avgSelfTime = (*itr)->m_selfTime / (*itr)->m_numCalls;
+		}
+		else
+		{
+			//Didn't find the same function call
+			m_flatViewVector.emplace_back(&rootNode);
+			break;
+		}
+
+		itr++;
+	}	
+}
+
 void ProfilerReport::PopulateTreeForImGUI(ProfilerReportNode* root)
 {	
-	//if (disable_indent)
-	//This will disable indentation for the tree. Use this for flat view
-	//ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.0f);
-
 	ProfilerReportNode* node = root;
 	ProfilerReportNode* next = nullptr;
-
-	bool result = false;
 
 	while (node != nullptr)
 	{
@@ -222,6 +354,59 @@ void ProfilerReport::PopulateTreeForImGUI(ProfilerReportNode* root)
 
 		node = next;
 	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void ProfilerReport::PopulateFlatForImGUI()
+{
+	if (m_flatViewVector.size() == 0)
+	{
+		ERROR_RECOVERABLE("The flat view vector is empty");
+	}
+
+	std::vector<ProfilerReportNode*>::iterator nodeItr = m_flatViewVector.begin();
+
+	while (nodeItr != m_flatViewVector.end())
+	{
+		ImGui::Columns(10, "mycolumns");
+		//ImGui::Text(childIterator->m_label); 
+
+		ImGui::SetNextTreeNodeOpen(true);
+		ImGui::TreeNode((*nodeItr)->m_label);
+
+		ImGui::NextColumn();
+		ImGui::Text(std::to_string((*nodeItr)->m_numCalls).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string((*nodeItr)->m_totalPercent).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string((*nodeItr)->m_totalTime).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string((*nodeItr)->m_selfPercent).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string((*nodeItr)->m_selfTime).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string((*nodeItr)->m_allocationCount).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string((*nodeItr)->m_allocationSize).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string((*nodeItr)->m_freeCount).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string((*nodeItr)->m_freedSize).c_str());
+
+		ImGui::EndColumns();
+		ImGui::TreePop();
+
+		nodeItr++;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool ProfilerReport::Command_ProfilerToggleMode(EventArgs& args)
+{
+	UNUSED(args);
+
+	if (gProfileReporter->m_activeMode == TREE_VIEW)
+	{
+		gProfileReporter->m_activeMode = FLAT_VIEW;
+	}
+	else
+	{
+		gProfileReporter->m_activeMode = TREE_VIEW;
+	}
+
+	return true;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -334,4 +519,18 @@ void ProfilerReportNode::GetSelfTime()
 	}
 
 	m_selfTime -= childrenTime;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool ProfilerReportNode::operator==(const ProfilerReportNode& compare) const
+{
+	if (strcmp(m_label, compare.m_label))
+	{
+		//We are equal if we have the same label
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }

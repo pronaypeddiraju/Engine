@@ -27,10 +27,10 @@ struct ProfilerSample_T
 
 	// memory
 	// alloc_count, byte_count
-	uint64_t					m_allocCount = 0;
+	int							m_allocCount = 0;
 	size_t						m_allocationSizeInBytes = 0;
 
-	uint64_t					m_freeCount = 0;
+	int							m_freeCount = 0;
 	size_t						m_freeSizeInBytes = 0;
 
 	void						AddChild(ProfilerSample_T* child);

@@ -6,6 +6,12 @@
 typedef unsigned int uint;
 struct ProfilerSample_T;
 
+enum ProfilerReportMode
+{
+	TREE_VIEW,
+	FLAT_VIEW
+};
+
 //------------------------------------------------------------------------------------------------------------------------------
 class ProfilerReportNode
 {
@@ -22,11 +28,11 @@ public:
 
 	ProfilerReportNode*		m_parent = nullptr;
 
-	uint64_t				m_allocationCount = 0U;
+	int						m_allocationCount = 0;
 	size_t					m_allocationSize = 0;
 	
-	uint64_t				m_freeCount = 0U;
-	size_t					m_freedSize = 0U;
+	int						m_freeCount = 0;
+	size_t					m_freedSize = 0;
 
 	uint					m_numCalls = 0U;
 
@@ -48,6 +54,8 @@ public:
 
 	//My kids
 	std::vector<ProfilerReportNode>		m_children;
+
+	bool					operator==(const ProfilerReportNode& compare) const;				// Are nodes equal?
 };
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -67,15 +75,28 @@ public:
 	void					DrawTreeViewAsImGUIWidget(uint history);
 	void					DrawFlatViewAsImGUIWidget(uint history);
 
+	void					SetReportMode(ProfilerReportMode mode);
+	ProfilerReportMode		GetMode() { return m_activeMode; }
+
 private:
 	void					InitializeReporter();
 
 	void					GenerateTreeFromFrame(ProfilerSample_T* root);
 	void					GenerateFlatFromFrame(ProfilerSample_T* root);
+	void					AddToFlatViewVector(ProfilerReportNode& rootNode);
 
 	void					PopulateTreeForImGUI(ProfilerReportNode* root);
+	void					PopulateFlatForImGUI();
 
+	static bool				Command_ProfilerToggleMode(EventArgs& args);
 	static bool				Command_ProfilerReportFrame(EventArgs& args);
 
 	ProfilerReportNode*		m_root = nullptr;
+
+	uint					m_lastHistoryFrame = 0U;
+
+	ProfilerReportMode		m_activeMode = TREE_VIEW;
+
+	std::vector<ProfilerReportNode*>	m_flatViewVector;
+	void GenerateFlatViewVector(ProfilerReportNode* m_root);
 };

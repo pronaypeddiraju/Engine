@@ -135,6 +135,10 @@ void Profiler::ProfilerPop()
 
 	// finalize
 	tActiveNode->m_endTime = GetCurrentTimeHPC();
+	tActiveNode->m_allocCount = (int)tTotalAllocations - tActiveNode->m_allocCount;
+	tActiveNode->m_allocationSizeInBytes = tTotalBytesAllocated - tActiveNode->m_allocationSizeInBytes;
+	tActiveNode->m_freeCount = (int)tTotalFrees - tActiveNode->m_freeCount;
+	tActiveNode->m_freeSizeInBytes = tTotalBytesFreed - tActiveNode->m_freeSizeInBytes;
 
 	//Setup where we are now after poping the active node
 	ProfilerSample_T* oldActive = tActiveNode;
@@ -180,29 +184,16 @@ void Profiler::ShowProfilerTimeline()
 	flags |= ImGuiWindowFlags_NoInputs;
 	flags |= ImGuiWindowFlags_NoMouseInputs;
 	
-	//Render you imGUI window
-	TODO("Make the timeline graph here");
 	//Use this place to create/update info for imGui
 	ImGui::Begin("Profiler Window", NULL, flags);                          
 	ImGui::SetWindowCollapsed(false);
 	IntVec2 clientSize = g_windowContext->GetTrueClientBounds();
-	ImGui::SetWindowSize(ImVec2(clientSize.x, clientSize.y - 50), 0);
+	ImGui::SetWindowSize(ImVec2((float)clientSize.x, (float)clientSize.y - 50.f), 0);
 	ImGui::SetWindowPos(ImVec2(0,0));
 
 	if (!m_isPaused)
 	{
-		//repopulate variables for imGUI
-
-		m_timeArray = new float[m_History.size()];
-		m_allocArray = new float[m_History.size()];
-		m_timeArrayStart = m_timeArray;
-		m_allocArrayStart = m_allocArray;
-		m_maxAlloc = 0;
-		m_maxTime = 0;
-		m_timeArraySize = 0;
-		m_allocArraySize = 0;
-
-		PopulateGraphData(m_timeArrayStart, m_allocArrayStart, m_timeArraySize, m_allocArraySize, m_maxTime, m_maxAlloc);
+		RepopulateReportData();
 	}
 
 	MakeTimelineWindow();
@@ -220,7 +211,7 @@ void Profiler::PopulateGraphData(float* floatArray, float* allocArray, int& time
 	while (itr != m_History.end())
 	{
 		*floatArray = (float)(GetHPCToSeconds((*itr)->m_endTime) - GetHPCToSeconds((*itr)->m_startTime));
-		*allocArray = (*itr)->m_allocCount - (*itr)->m_freeCount;
+		*allocArray = (float)(*itr)->m_allocCount - (float)(*itr)->m_freeCount;
 
 		if (maxTime < *floatArray)
 		{
@@ -248,7 +239,7 @@ void Profiler::MakeTimelineWindow()
 
 	ImGui::Begin("Timeline Window");
 	ImGui::SetWindowPos(ImVec2(50, 50));
-	ImVec2 imClientSize = ImVec2(clientSize.x - 200, 100);
+	ImVec2 imClientSize = ImVec2((float)clientSize.x - 200.f, 100.f);
 	ImGui::PlotHistogram("Timeline view", m_timeArray, m_timeArraySize, 0, "Time taken by each frame", 0, m_maxTime, imClientSize);
 	ImVec2 innerRectMax = ImGui::GetItemRectMax();
 	ImVec2 innerRectMin = ImGui::GetItemRectMin();
@@ -257,14 +248,20 @@ void Profiler::MakeTimelineWindow()
 	ImGuiIO& io = ImGui::GetIO();
 	if (io.MouseClicked[0])
 	{
-		ImGuiID ID = ImGui::GetHoveredID();
+		//ImGuiID ID = ImGui::GetHoveredID();
 		if (innerRect.Contains(io.MousePos))
 		{
 			const float t = ImClamp((io.MousePos.x - innerRect.Min.x) / (innerRect.Max.x - innerRect.Min.x), 0.0f, 0.9999f);
 			const int v_idx = (int)(t * m_timeArraySize);
 			IM_ASSERT(v_idx >= 0 && v_idx < m_timeArraySize);
 
-			m_reportFrameNum = m_timeArray[v_idx];
+			/*
+			if (v_idx != m_reportFrameNum)
+			{
+				RepopulateReportData();
+			}
+			*/
+			m_reportFrameNum = v_idx;
 
 			ProfilerPause();
 		}
@@ -277,7 +274,14 @@ void Profiler::MakeTimelineWindow()
 	if (m_isPaused)
 	{
 		ProfilerReport* reporter = gProfileReporter->GetInstance();
-		reporter->DrawTreeViewAsImGUIWidget(m_reportFrameNum);
+		if (reporter->GetMode() == FLAT_VIEW)
+		{
+			reporter->DrawFlatViewAsImGUIWidget((uint)m_reportFrameNum);
+		}
+		else
+		{
+			reporter->DrawTreeViewAsImGUIWidget((uint)m_reportFrameNum);
+		}
 	}
 
 	ImGui::End();
@@ -290,26 +294,36 @@ void Profiler::MakeAllocationsWindow()
 
 	ImGui::Begin("Allocations Window");
 	ImGui::SetWindowPos(ImVec2(50, 200));
-	ImGui::PlotHistogram("Allocations view", m_allocArray, m_allocArraySize, 0, "Allocations by each frame", 0, m_maxAlloc, ImVec2(clientSize.x - 200, 100));
+	ImGui::PlotHistogram("Allocations view", m_allocArray, m_allocArraySize, 0, "Allocations by each frame", 0, m_maxAlloc, ImVec2((float)clientSize.x - 200.f, 100.f));
 	
 	ImVec2 innerRectMax = ImGui::GetItemRectMax();
 	ImVec2 innerRectMin = ImGui::GetItemRectMin();
 	ImRect innerRect = ImRect(innerRectMin, innerRectMax);
 
 	ImGuiIO& io = ImGui::GetIO();
-	if (io.MouseClicked[0] || io.MouseClicked[1])
+	if (io.MouseClicked[0])
 	{
-		ImGuiID ID = ImGui::GetHoveredID();
+		//ImGuiID ID = ImGui::GetHoveredID();
 		if (innerRect.Contains(io.MousePos))
 		{
 			const float t = ImClamp((io.MousePos.x - innerRect.Min.x) / (innerRect.Max.x - innerRect.Min.x), 0.0f, 0.9999f);
 			const int v_idx = (int)(t * m_timeArraySize);
 			IM_ASSERT(v_idx >= 0 && v_idx < m_timeArraySize);
 
-			m_reportFrameNum = m_timeArray[v_idx];
-			
-			ProfilerTogglePause();
+			/*
+			if (v_idx != m_reportFrameNum)
+			{
+				RepopulateReportData();
+			}
+			*/
+			m_reportFrameNum = v_idx;
+
+			ProfilerPause();
 		}
+	}
+	else if (io.MouseClicked[1])
+	{
+		ProfilerResume();
 	}
 
 	/*
@@ -529,9 +543,9 @@ ProfilerSample_T* Profiler::AllocateNode()
 	if (node != nullptr)
 	{
 		node->m_allocationSizeInBytes = tTotalBytesAllocated;
-		node->m_allocCount = tTotalAllocations;
+		node->m_allocCount = (int)tTotalAllocations;
 		
-		node->m_freeCount = tTotalFrees;
+		node->m_freeCount = (int)tTotalFrees;
 		node->m_freeSizeInBytes = tTotalBytesFreed;
 
 		node->m_refCount = 1;
@@ -546,13 +560,28 @@ ProfilerSample_T* Profiler::AllocateNode()
 void Profiler::FreeNode(ProfilerSample_T* node)
 {
 	node->m_allocationSizeInBytes = tTotalBytesAllocated - node->m_allocationSizeInBytes;
-	node->m_allocCount = tTotalAllocations - node->m_allocCount;
+	node->m_allocCount = (int)tTotalAllocations - node->m_allocCount;
 
-	node->m_freeCount = tTotalFrees - node->m_freeCount;
+	node->m_freeCount = (int)tTotalFrees - node->m_freeCount;
 	node->m_freeSizeInBytes = tTotalBytesFreed - node->m_freeSizeInBytes;
 
 	BlockAllocator* instance = gBlockAllocator->GetInstance();
 	instance->Free(node);
+}
+
+void Profiler::RepopulateReportData()
+{
+	//repopulate variables for imGUI
+	m_timeArray = new float[m_History.size()];
+	m_allocArray = new float[m_History.size()];
+	m_timeArrayStart = m_timeArray;
+	m_allocArrayStart = m_allocArray;
+	m_maxAlloc = 0;
+	m_maxTime = 0;
+	m_timeArraySize = 0;
+	m_allocArraySize = 0;
+
+	PopulateGraphData(m_timeArrayStart, m_allocArrayStart, m_timeArraySize, m_allocArraySize, m_maxTime, m_maxAlloc);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
