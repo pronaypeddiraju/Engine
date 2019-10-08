@@ -73,6 +73,8 @@ private:
 	void					GenerateTreeFromFrame(ProfilerSample_T* root);
 	void					GenerateFlatFromFrame(ProfilerSample_T* root);
 
+	void					PopulateTreeForImGUI(ProfilerReportNode* root);
+
 	static bool				Command_ProfilerReportFrame(EventArgs& args);
 
 	ProfilerReportNode*		m_root = nullptr;

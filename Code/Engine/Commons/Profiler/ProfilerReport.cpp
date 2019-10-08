@@ -96,17 +96,56 @@ void ProfilerReport::DestroyInstance()
 //------------------------------------------------------------------------------------------------------------------------------
 void ProfilerReport::DrawTreeViewAsImGUIWidget(uint history)
 {
+	ProfilerReportNode* root = nullptr;
+
 	//call generate for history
-	ProfilerReportNode* root = GetFrameInHistory(history);
+	if (m_root == nullptr)
+	{
+		root = GetFrameInHistory(history);
+	}
+	else
+	{
+		root = m_root;
+	}
+
+	ImGuiWindowFlags flags = 0;
+	flags |= ImGuiWindowFlags_NoInputs;
+	flags |= ImGuiWindowFlags_NoMouseInputs;
 
 	//create and populate the imGUI widget
-	ImGui::Begin("Tree View Window");
+	ImGui::Begin("Tree View Window", NULL, flags);
 	ImGui::SetWindowPos(ImVec2(50, 350));
 	ImGui::SetWindowSize(ImVec2(1650, 450));
 
-	ImGui::Columns(5, "Tree View", true);
+	TODO("Create the tree view for profiled frames");
 
+	ImGui::Spacing();
 
+	ImGui::Columns(10, "mycolumns");
+	ImGui::Separator();
+	ImGui::Text("Frame"); ImGui::NextColumn();
+	ImGui::Text("Calls"); ImGui::NextColumn();
+	ImGui::Text("Percent Total"); ImGui::NextColumn();
+	ImGui::Text("Total Time"); ImGui::NextColumn();
+	ImGui::Text("Percent Self"); ImGui::NextColumn();
+	ImGui::Text("Self Time"); ImGui::NextColumn();
+	ImGui::Text("Num Allocations"); ImGui::NextColumn();
+	ImGui::Text("Allocation Size"); ImGui::NextColumn();
+	ImGui::Text("Num Frees"); ImGui::NextColumn();
+	ImGui::Text("Freed Size"); ImGui::NextColumn();
+	ImGui::EndColumns();
+
+	ImGui::Separator();
+
+	/*
+	ImGui::SetNextWindowContentSize(ImVec2(1600.0f, 0.0f));
+	ImGui::BeginChild("##ScrollingRegion", ImVec2(1600.f, ImGui::GetFontSize() * 30), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+	ImGui::EndChild();
+	*/
+
+	//ImGui::Columns(1);
+	PopulateTreeForImGUI(m_root);
 
 	ImGui::End();
 }
@@ -126,6 +165,63 @@ STATIC bool ProfilerReport::Command_ProfilerReportFrame(EventArgs& args)
 	TODO("Handle views and send the recieved node to the required view method");
 
 	return true;
+}
+
+void ProfilerReport::PopulateTreeForImGUI(ProfilerReportNode* root)
+{	
+	//if (disable_indent)
+	//This will disable indentation for the tree. Use this for flat view
+	//ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.0f);
+
+	ProfilerReportNode* node = root;
+	ProfilerReportNode* next = nullptr;
+
+	bool result = false;
+
+	while (node != nullptr)
+	{
+		ImGui::Columns(10, "mycolumns");
+		//ImGui::Text(childIterator->m_label); 
+
+		ImGui::SetNextTreeNodeOpen(true);
+		ImGui::TreeNode(node->m_label);
+
+		ImGui::NextColumn();
+		ImGui::Text(std::to_string(node->m_numCalls).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string(node->m_totalPercent).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string(node->m_totalTime).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string(node->m_selfPercent).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string(node->m_selfTime).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string(node->m_allocationCount).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string(node->m_allocationSize).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string(node->m_freeCount).c_str()); ImGui::NextColumn();
+		ImGui::Text(std::to_string(node->m_freedSize).c_str());
+
+		ImGui::EndColumns();
+
+		if (node->m_children.size() != 0)
+		{
+			//We have children so for each of them, enter a imGui tree node and call PopulateTree for kids
+			std::vector<ProfilerReportNode>::iterator childIterator;
+			childIterator = node->m_children.begin();
+
+			while (childIterator != node->m_children.end())
+			{
+				next = &(*childIterator);
+				PopulateTreeForImGUI(next);
+				
+				childIterator++;
+			}
+			next = nullptr;
+		}
+		else
+		{
+			next = nullptr;
+		}
+		ImGui::TreePop();
+
+		node = next;
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

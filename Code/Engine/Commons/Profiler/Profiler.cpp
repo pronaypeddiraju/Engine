@@ -175,14 +175,19 @@ void Profiler::ShowProfilerTimeline()
 		ERROR_AND_DIE("The imGUI system was not initialized! The profiler requires you to intialize it");
 	}
 
+	
+	ImGuiWindowFlags flags = 0;
+	flags |= ImGuiWindowFlags_NoInputs;
+	flags |= ImGuiWindowFlags_NoMouseInputs;
+	
 	//Render you imGUI window
 	TODO("Make the timeline graph here");
 	//Use this place to create/update info for imGui
-	ImGui::Begin("Profiler Window");                          // Create a window called "Hello, world!" and append into it.
+	ImGui::Begin("Profiler Window", NULL, flags);                          
+	ImGui::SetWindowCollapsed(false);
 	IntVec2 clientSize = g_windowContext->GetTrueClientBounds();
 	ImGui::SetWindowSize(ImVec2(clientSize.x, clientSize.y - 50), 0);
 	ImGui::SetWindowPos(ImVec2(0,0));
-	ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
 
 	if (!m_isPaused)
 	{
@@ -214,7 +219,7 @@ void Profiler::PopulateGraphData(float* floatArray, float* allocArray, int& time
 
 	while (itr != m_History.end())
 	{
-		*floatArray = (float)GetHPCToSeconds((*itr)->m_endTime) - (float)GetHPCToSeconds((*itr)->m_startTime);
+		*floatArray = (float)(GetHPCToSeconds((*itr)->m_endTime) - GetHPCToSeconds((*itr)->m_startTime));
 		*allocArray = (*itr)->m_allocCount - (*itr)->m_freeCount;
 
 		if (maxTime < *floatArray)
@@ -250,7 +255,7 @@ void Profiler::MakeTimelineWindow()
 	ImRect innerRect = ImRect(innerRectMin, innerRectMax);
 
 	ImGuiIO& io = ImGui::GetIO();
-	if (io.MouseClicked[0] || io.MouseClicked[1])
+	if (io.MouseClicked[0])
 	{
 		ImGuiID ID = ImGui::GetHoveredID();
 		if (innerRect.Contains(io.MousePos))
@@ -261,8 +266,12 @@ void Profiler::MakeTimelineWindow()
 
 			m_reportFrameNum = m_timeArray[v_idx];
 
-			ProfilerTogglePause();
+			ProfilerPause();
 		}
+	}
+	else if (io.MouseClicked[1])
+	{
+		ProfilerResume();
 	}
 
 	if (m_isPaused)
@@ -301,12 +310,6 @@ void Profiler::MakeAllocationsWindow()
 			
 			ProfilerTogglePause();
 		}
-	}
-
-	if (m_isPaused)
-	{
-		ProfilerReport* reporter = gProfileReporter->GetInstance();
-		reporter->DrawTreeViewAsImGUIWidget(m_reportFrameNum);
 	}
 
 	/*
