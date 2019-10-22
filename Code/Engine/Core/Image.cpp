@@ -79,27 +79,32 @@ Image::Image( const Rgba& color, const int width /*= 1*/, const int height /*= 1
 
 	m_texelRepository.resize(numTexels);
 
+	m_imageRawData = (unsigned char*)malloc(numTexels * GetBytesPerPixel());
+	
 	for(int texelIndex = 0; texelIndex < numTexels; texelIndex++)
 	{
-		int redByteIndex = texelIndex;
-		int greenByteIndex = redByteIndex + 1;
-		int blueByteIndex = redByteIndex + 2;
-		int alphaByteIndex = redByteIndex + 3;
-
-		unsigned char redByte = m_imageRawData[redByteIndex];
-		unsigned char greenByte = m_imageRawData[greenByteIndex];
-		unsigned char blueByte = m_imageRawData[blueByteIndex];
-		unsigned char alphaByte = m_imageRawData[alphaByteIndex];
-
 		m_texelRepository[texelIndex] = color;
-		m_texelRepository[texelIndex].SetFromBytes(redByte, greenByte, blueByte, alphaByte);
 	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 Image::Image()
 {
+	
+}
 
+//------------------------------------------------------------------------------------------------------------------------------
+Image::Image(const int width /*= 1*/, const int height /*= 1*/)
+{
+	//Resize vector size to the number of texels
+	int numTexels = width * height;
+
+	m_dimensions.x = width;
+	m_dimensions.y = height;
+
+	m_texelRepository.resize(numTexels);
+
+	m_imageRawData = (unsigned char*)malloc(numTexels * GetBytesPerPixel());
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -150,10 +155,39 @@ const void* Image::GetImageBuffer() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void* Image::GetWritableImageBuffer()
+{
+	return m_imageRawData;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+size_t Image::GetImageSizeAsSizeT() const
+{
+	return m_dimensions.x * m_dimensions.y * GetBytesPerPixel();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void* Image::GetRawPointerToRow(uint rowNum)
+{
+	return m_imageRawData + rowNum * (m_dimensions.y * GetBytesPerPixel());
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void Image::SetTexelColor( int xCoord, int yCoord, const Rgba& setColor )
 {
 	int texelIndex = xCoord + yCoord * m_dimensions.x;
 	m_texelRepository[texelIndex] = setColor;
+	
+	//Set the corresponding byte 
+	int redByteIndex = texelIndex * 4;
+	int greenByteIndex = redByteIndex + 1;
+	int blueByteIndex = redByteIndex + 2;
+	int alphaByteIndex = redByteIndex + 3;
+
+	m_imageRawData[redByteIndex] = (unsigned char)(setColor.r * 255.f);
+	m_imageRawData[greenByteIndex] = (unsigned char)(setColor.g * 255.f);
+	m_imageRawData[blueByteIndex] = (unsigned char)(setColor.b * 255.f);
+	m_imageRawData[alphaByteIndex] = (unsigned char)(setColor.a * 255.f);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -161,6 +195,17 @@ void Image::SetTexelColor( const IntVec2& texelCoordinates, const Rgba& setColor
 {
 	int texelIndex = texelCoordinates.x + texelCoordinates.y * m_dimensions.x;
 	m_texelRepository[texelIndex] = setColor;
+
+	//Set the corresponding byte 
+	int redByteIndex = texelIndex * 4;
+	int greenByteIndex = redByteIndex + 1;
+	int blueByteIndex = redByteIndex + 2;
+	int alphaByteIndex = redByteIndex + 3;
+
+	m_imageRawData[redByteIndex] = (unsigned char)(setColor.r * 255.f);
+	m_imageRawData[greenByteIndex] = (unsigned char)(setColor.g * 255.f);
+	m_imageRawData[blueByteIndex] = (unsigned char)(setColor.b * 255.f);
+	m_imageRawData[alphaByteIndex] = (unsigned char)(setColor.a * 255.f);
 }
 
 /*

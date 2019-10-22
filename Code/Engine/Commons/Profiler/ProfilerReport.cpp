@@ -89,8 +89,6 @@ void ProfilerReport::GenerateFlatFromFrame(ProfilerSample_T* root)
 	//m_flatViewVector.push_back(m_root);
 
 	GenerateFlatViewVector(m_root);
-
-	TODO("Make flat view vector");
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -166,7 +164,7 @@ void ProfilerReport::DrawTreeViewAsImGUIWidget(uint history)
 		gProfileReporter->Command_ProfilerToggleMode(args);
 	}
 
-	
+	ImGui::SameLine();
 	if (ImGui::Button("Sort by total Time"))
 		m_sortTotalTime++;
 	if (m_sortTotalTime & 1)
@@ -175,6 +173,7 @@ void ProfilerReport::DrawTreeViewAsImGUIWidget(uint history)
 		DrawTreeViewAsImGUIWidget(history);
 	}
 
+	ImGui::SameLine();
 	if (ImGui::Button("Sort by self Time"))
 		m_sortSelfTime++;
 	if (m_sortSelfTime & 1)
@@ -261,6 +260,7 @@ void ProfilerReport::DrawFlatViewAsImGUIWidget(uint history)
 		gProfileReporter->Command_ProfilerToggleMode(args);
 	}
 
+	ImGui::SameLine();
 	if (ImGui::Button("Sort by total Time"))
 		m_sortTotalTime++;
 	if (m_sortTotalTime & 1)
@@ -272,6 +272,7 @@ void ProfilerReport::DrawFlatViewAsImGUIWidget(uint history)
 		DrawFlatViewAsImGUIWidget(history);
 	}
 
+	ImGui::SameLine();
 	if (ImGui::Button("Sort by self Time"))
 		m_sortSelfTime++;
 	if (m_sortSelfTime & 1)
@@ -329,8 +330,8 @@ STATIC bool ProfilerReport::Command_ProfilerReportFrame(EventArgs& args)
 {
 	uint history = args.GetValue("History", 1);
 
-	ProfilerReportNode* node = gProfileReporter->GetFrameInHistory(history);
-	TODO("Handle views and send the recieved node to the required view method");
+	ProfilerReport* reporter = ProfilerReport::GetInstance();	
+	reporter->GetFrameInHistory(history);
 
 	return true;
 }
@@ -557,7 +558,8 @@ ProfilerReportNode::ProfilerReportNode(ProfilerSample_T* node, ProfilerReportNod
 	{
 		GetChildrenFromSampleRoot(node->m_lastChild, this);
 	}
-	else if (node->m_prevSibling != nullptr)
+
+	if (node->m_prevSibling != nullptr)
 	{
 		GetChildrenFromSampleRoot(node->m_prevSibling, this->m_parent);
 	}
@@ -570,7 +572,7 @@ ProfilerReportNode::ProfilerReportNode(ProfilerSample_T* node, ProfilerReportNod
 	}
 	else
 	{
-		m_totalPercent = gProfileReporter->GetRoot()->m_totalTime / m_totalTime;
+		m_totalPercent = (float)gProfileReporter->GetRoot()->m_totalTime / (float)m_totalTime;
 		m_totalPercent = 100.f / m_totalPercent;
 	}
 
@@ -580,7 +582,7 @@ ProfilerReportNode::ProfilerReportNode(ProfilerSample_T* node, ProfilerReportNod
 	}
 	else
 	{
-		m_selfPercent = m_totalTime / m_selfTime;
+		m_selfPercent = (float)m_totalTime / (float)m_selfTime;
 		m_selfPercent = 100.f / m_selfPercent;
 	}
 }
@@ -596,7 +598,7 @@ void ProfilerReportNode::GetChildrenFromSampleRoot(ProfilerSample_T* root, Profi
 {
 	if (root != nullptr)
 	{
-		parent->m_children.emplace_back(ProfilerReportNode(root, parent));
+		parent->m_children.push_back(ProfilerReportNode(root, parent));
 	}
 }
 

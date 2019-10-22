@@ -113,7 +113,7 @@ void TrackedFree(void* ptr)
 		return;
 
 	--gTotalAllocations;
-	--tTotalAllocations;
+	++tTotalFrees;
 	return ::free(ptr);
 #elif (MEM_TRACKING == MEM_TRACK_VERBOSE)
 	--gTotalAllocations;

@@ -13,6 +13,7 @@ public:
 	//Use stbi load from the third party image thing we added to our engine (refer to getTextureFromFile in render context)
 	explicit Image(const char* imagePath);
 	explicit Image(const Rgba& color, const int width = 1, const int height = 1);
+	explicit Image(const int width = 1, const int height = 1);
 	Image();
 	~Image();
 
@@ -24,6 +25,10 @@ public:
 	const std::string&	GetImageFilePath() const;
 	const uint			GetBytesPerPixel() const;
 	const void*			GetImageBuffer() const;
+	void*				GetWritableImageBuffer();
+
+	size_t				GetImageSizeAsSizeT() const;
+	void*				GetRawPointerToRow(uint rowNum);
 
 	//Mutators
 	void				SetTexelColor(int xCoord, int yCoord, const Rgba& setColor);

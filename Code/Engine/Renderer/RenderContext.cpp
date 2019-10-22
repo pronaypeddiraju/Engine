@@ -6,6 +6,8 @@
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Core/WindowContext.hpp"
+#include "Engine/Core/JobSystem/ScreenShotJob.hpp"
+#include "Engine/Core/JobSystem/JobSystem.hpp"
 //Math
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/IntVec2.hpp"
@@ -342,6 +344,56 @@ Shader* RenderContext::CreateShaderFromFile(const std::string& fileName)
 	return shader;
 }
 
+void RenderContext::CreateStagingTexture(Texture2D* stagingTexture, Texture2D* backBuffer)
+{
+	//Copy texture to image
+	ID3D11Device *dd = g_renderContext->GetDXDevice();
+
+	// If created from image, we'll assume it is only needed
+	// as a read-only texture resource (if this is not true, change the
+	// signature to take in the option)
+	eTextureUsageBit textureUsage = TEXTURE_USAGE_TEXTURE_BIT;
+
+	// we are not picking static here because
+	// we will eventually want to generate mipmaps,
+	// which requires a GPU access pattern to generate.
+	eGPUMemoryUsage memoryUsage = GPU_MEMORY_USAGE_STAGING;
+
+	// Setup the Texture Description (what the resource will be like on the GPU)
+	D3D11_TEXTURE2D_DESC texDesc;
+
+	((ID3D11Texture2D*)backBuffer->m_handle)->GetDesc(&texDesc);
+
+	IntVec2 dimensions = backBuffer->m_dimensions;
+
+	texDesc.Usage = RenderBuffer::DXUsageFromMemoryUsage(memoryUsage);
+	texDesc.BindFlags = 0U;
+	texDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;                            // Determines how I can access this resource CPU side 
+	texDesc.MiscFlags = 0U;
+
+	// Actually create it
+	DX_SAFE_RELEASE(stagingTexture->m_handle);
+	ID3D11Texture2D *tex2D = (ID3D11Texture2D*)stagingTexture->m_handle;
+	HRESULT hr = dd->CreateTexture2D(&texDesc,
+		nullptr,
+		&tex2D);
+
+	//g_renderContext->GetDXContext()->CopyResource(m_backBuffer->m_handle, m_outTexture->m_handle);
+	ID3D11DeviceContext* d3dContext = g_renderContext->GetDXContext();
+	d3dContext->CopyResource(tex2D, backBuffer->m_handle);
+
+	if (SUCCEEDED(hr))
+	{
+		// save off the info; 
+		stagingTexture->m_dimensions = dimensions;
+		stagingTexture->m_handle = tex2D;
+	}
+	else
+	{
+		ASSERT_OR_DIE(tex2D == nullptr, "The texture was null"); // should be, just like to have the postcondition; 
+	}
+}
+
 //------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::UpdateLightBuffer()
 {
@@ -501,7 +553,7 @@ Texture2D* RenderContext::GetFrameColorTexture()
 void RenderContext::EndFrame()
 {
 	Texture2D* backBufferTexture = new Texture2D(this);
-	
+
 	// Get the back buffer
 	ID3D11Texture2D *back_buffer = nullptr;
 	m_D3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
@@ -511,9 +563,22 @@ void RenderContext::EndFrame()
 	CopyTexture(backBufferTexture, m_defaultColorTexture);
 
 	// We're done rendering, so tell the swap chain they can copy the back buffer to the front (desktop/window) buffer
-	m_D3DSwapChain->Present( 0, // Sync Interval, set to 1 for VSync
-		0 );                    // Present flags, see;
+	m_D3DSwapChain->Present(0, // Sync Interval, set to 1 for VSync
+		0);                    // Present flags, see;
 								// https://msdn.microsoft.com/en-us/library/windows/desktop/bb509554(v=vs.85).aspx
+	
+	if (m_screenShotRequested)
+	{
+		m_stagingTexture = new Texture2D(this);
+
+		CreateStagingTexture(m_stagingTexture, backBufferTexture);
+		ScreenShotJob* screenshotJob = new ScreenShotJob(m_stagingTexture, SCREEN_SHOT_PATH);
+
+		JobSystem* jobSystem = JobSystem::GetInstance();
+		jobSystem->AddJobForCategory(screenshotJob, JOB_RENDER);
+
+		m_screenShotRequested = false;
+	}
 
 	//Free up the color target view or we have a leak in memory 
 	delete m_FrameBuffer_ColorTargetView;
@@ -1000,6 +1065,7 @@ void RenderContext::BindUniformBuffer( uint slot, UniformBuffer *uniformBuffer )
 void RenderContext::CopyTexture(Texture2D *dst, Texture2D *src)
 {
 	m_D3DContext->CopyResource((ID3D11Resource*)dst->m_handle, (ID3D11Resource*)src->m_handle);
+	dst->m_dimensions = src->m_dimensions;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -1266,6 +1332,12 @@ void RenderContext::ApplyEffect(Texture2D *dst, Texture2D *src, Material *mat)
 IntVec2 RenderContext::GetCurrentScreenDimensions()
 {
 	return g_windowContext->GetClientBounds();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void RenderContext::RequestScreenshot()
+{
+	m_screenShotRequested = true;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

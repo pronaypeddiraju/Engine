@@ -9,20 +9,20 @@
 #include <d3d11.h>
 
 //------------------------------------------------------------------------------------------------------------------------------
-static uint DXBindFromUsage( uint usage ) 
+static uint DXBindFromUsage(uint usage)
 {
-	uint binds = 0U; 
+	uint binds = 0U;
 	if (usage & TEXTURE_USAGE_TEXTURE_BIT) {
-		binds |= D3D11_BIND_SHADER_RESOURCE; 
+		binds |= D3D11_BIND_SHADER_RESOURCE;
 	}
 	if (usage & TEXTURE_USAGE_COLOR_TARGET_BIT) {
-		binds |= D3D11_BIND_RENDER_TARGET; 
+		binds |= D3D11_BIND_RENDER_TARGET;
 	}
 	if (usage & TEXTURE_USAGE_DEPTH_STENCIL_TARGET_BIT) {
-		binds |= D3D11_BIND_DEPTH_STENCIL; 
+		binds |= D3D11_BIND_DEPTH_STENCIL;
 	}
 
-	return binds; 
+	return binds;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -130,7 +130,6 @@ bool Texture2D::LoadTextureFromImage( Image const &image )
 		// save off the info; 
 		m_dimensions = dimensions; 
 		m_handle = tex2D;
-		// TODO later assigment, generate mips if option is set; 
 
 		return true; 
 	} 
@@ -138,6 +137,70 @@ bool Texture2D::LoadTextureFromImage( Image const &image )
 	{
 		ASSERT( tex2D == nullptr ); // should be, just like to have the postcondition; 
 		return false; 
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool Texture2D::LoadTextureFromImageDynamic(Image const &image)
+{
+	// cleanup old resources before creating new one just in case; 
+	if (m_handle != nullptr)
+	{
+		delete m_handle;
+		DX_SAFE_RELEASE(m_handle);
+	}
+
+	ID3D11Device *dd = m_owner->m_D3DDevice;
+
+	m_textureUsage = TEXTURE_USAGE_TEXTURE_BIT;
+
+	m_memoryUsage = GPU_MEMORY_USAGE_DYNAMIC;
+
+	D3D11_TEXTURE2D_DESC texDesc;
+	memset(&texDesc, 0, sizeof(texDesc));
+
+	IntVec2 dimensions = image.GetImageDimensions();
+
+	texDesc.Width = dimensions.x;
+	texDesc.Height = dimensions.y;
+	texDesc.MipLevels = 1;
+	texDesc.ArraySize = 1;
+	texDesc.Usage = RenderBuffer::DXUsageFromMemoryUsage(m_memoryUsage);  
+	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;            
+	texDesc.BindFlags = DXBindFromUsage(m_textureUsage);   
+	texDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;                           
+	texDesc.MiscFlags = 0U;
+
+	// If Multisampling - set this up.
+	texDesc.SampleDesc.Count = 1;
+	texDesc.SampleDesc.Quality = 0;
+
+	// Setup Initial Data
+	// pitch is how many bytes is a single row of pixels;  
+	uint pitch = dimensions.x * image.GetBytesPerPixel(); // 4 bytes for an R8G8B8A8 format;  Just sub in four if your image is always 4 bytes per channel
+	D3D11_SUBRESOURCE_DATA data;
+	memset(&data, 0, sizeof(data));
+	data.pSysMem = image.GetImageBuffer();
+	data.SysMemPitch = pitch;
+
+	// Actually create it
+	ID3D11Texture2D *tex2D = nullptr;
+	HRESULT hr = dd->CreateTexture2D(&texDesc,
+		&data,
+		&tex2D);
+
+	if (SUCCEEDED(hr))
+	{
+		// save off the info; 
+		m_dimensions = dimensions;
+		m_handle = tex2D;
+
+		return true;
+	}
+	else
+	{
+		ASSERT(tex2D == nullptr); // should be, just like to have the postcondition; 
+		return false;
 	}
 }
 
@@ -337,6 +400,7 @@ STATIC Texture2D* Texture2D::CreateColorTarget(RenderContext* renderContext, uin
 {
 	Texture2D* colorTarget = new Texture2D(renderContext);
 	bool result = colorTarget->CreateColorTarget(width, height);
+
 
 	if (!result)
 	{

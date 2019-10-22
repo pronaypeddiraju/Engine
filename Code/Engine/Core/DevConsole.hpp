@@ -73,6 +73,8 @@ public:
 	static bool		Command_DisableLogFilter(EventArgs& args);
 	static bool		Command_FlushLogSystem(EventArgs& args);
 	static bool		Command_Logf(EventArgs& args);
+
+	static bool		Command_ScreenShot(EventArgs& args);
 	//Uses ExecuteCommandLine for now
 	static bool		Command_Exec(EventArgs& args);
 

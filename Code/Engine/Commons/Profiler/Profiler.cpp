@@ -261,7 +261,7 @@ void Profiler::MakeTimelineWindow()
 				RepopulateReportData();
 			}
 			*/
-			m_reportFrameNum = v_idx;
+			m_reportFrameNum = (float)v_idx;
 
 			ProfilerPause();
 		}
@@ -316,7 +316,7 @@ void Profiler::MakeAllocationsWindow()
 				RepopulateReportData();
 			}
 			*/
-			m_reportFrameNum = v_idx;
+			m_reportFrameNum = (float)v_idx;
 
 			ProfilerPause();
 		}

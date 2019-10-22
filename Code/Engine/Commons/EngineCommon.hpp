@@ -79,6 +79,7 @@ class EventSystems;
 class ImGUISystem;
 class InternalAllocator;
 class InputSystem;
+class JobSystem;
 class NamedStrings;
 class NamedProperties;
 class PhysicsSystem;
@@ -99,6 +100,7 @@ extern EventSystems* g_eventSystem;
 extern ImGUISystem* g_ImGUI;
 extern InternalAllocator* g_internalAllocator;
 extern InputSystem*	g_inputSystem;
+extern JobSystem* gJobSystem;
 extern NamedStrings g_gameConfigBlackboard; 
 extern PhysicsSystem* g_physicsSystem;
 extern RenderContext* g_renderContext;
@@ -172,6 +174,7 @@ constexpr char FONT_PATH[] = "Data/Fonts/";
 constexpr char MATERIAL_PATH[] = "Data/Materials/";
 constexpr char MODEL_PATH[] = "Data/Models/";
 constexpr char LOG_PATH[] = "Data/Logs/";
+constexpr char SCREEN_SHOT_PATH[] = "Data/Images/ScreenShots/";
 
 //------------------------------------------------------------------------------------------------------------------------------
 constexpr float		 CONSOLE_LINE_SPACE = 0.05f;

@@ -315,6 +315,8 @@ void DevConsole::Startup()
 	g_eventSystem->SubscribeEventCallBackFn("FlushLog", Command_FlushLogSystem);
 	g_eventSystem->SubscribeEventCallBackFn("Logf", Command_Logf);
 
+	g_eventSystem->SubscribeEventCallBackFn("Screenshot", Command_ScreenShot);
+
 	m_currentInput.clear();
 }
 
@@ -684,5 +686,12 @@ STATIC bool DevConsole::Command_Logf(EventArgs& args)
 	filterText = args.GetValue("Filter", filterText);
 	messageText = args.GetValue("Message", messageText);
 	g_LogSystem->Logf(filterText.c_str(), messageText.c_str());
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool DevConsole::Command_ScreenShot(EventArgs& args)
+{
+	g_renderContext->RequestScreenshot();
 	return true;
 }

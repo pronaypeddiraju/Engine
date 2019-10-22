@@ -56,8 +56,9 @@ public:
 
 	bool				LoadTextureFromFile( std::string const &filename, bool isFont = false );
 	bool				LoadTextureFromImage( Image const &image ); 
+	bool				LoadTextureFromImageDynamic(Image const &image);
 
-	bool				CreateDepthStencilTarget( uint width, uint height ); 
+	bool				CreateDepthStencilTarget(uint width, uint height);
 	bool				CreateColorTarget( uint width, uint height );
 
 	// Create a view of this texture usable in the shader; 

@@ -154,6 +154,8 @@ public:
 
 	IntVec2						GetCurrentScreenDimensions();
 
+	void						RequestScreenshot();
+	void						CreateStagingTexture(Texture2D* stagingTexture, Texture2D* backBuffer);
 public:
 	//White texture
 	unsigned char				plainWhiteImageData[4] = {255, 255, 255, 255};
@@ -221,6 +223,9 @@ private:
 
 	void*												m_hwnd = nullptr;
 
+	bool												m_screenShotRequested = false;
+
+	Texture2D*											m_stagingTexture = nullptr;
 public:
 
 	// CPU copy of light data

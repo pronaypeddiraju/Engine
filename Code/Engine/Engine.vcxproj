@@ -208,6 +208,11 @@
     <ClCompile Include="Core\EventSystems.cpp" />
     <ClCompile Include="Core\FileUtils.cpp" />
     <ClCompile Include="Core\Image.cpp" />
+    <ClCompile Include="Core\JobSystem\Job.cpp" />
+    <ClCompile Include="Core\JobSystem\JobCategory.cpp" />
+    <ClCompile Include="Core\JobSystem\JobSystem.cpp" />
+    <ClCompile Include="Core\JobSystem\MadleBrotJob.cpp" />
+    <ClCompile Include="Core\JobSystem\ScreenShotJob.cpp" />
     <ClCompile Include="Core\MemTracking.cpp" />
     <ClCompile Include="Core\NamedProperties.cpp" />
     <ClCompile Include="Core\NamedStrings.cpp" />
@@ -523,6 +528,13 @@
     <ClInclude Include="Core\EventSystems.hpp" />
     <ClInclude Include="Core\FileUtils.hpp" />
     <ClInclude Include="Core\Image.hpp" />
+    <ClInclude Include="Core\JobSystem\Job.hpp" />
+    <ClInclude Include="Core\JobSystem\JobCategory.hpp" />
+    <ClInclude Include="Core\JobSystem\JobSystem.hpp" />
+    <ClInclude Include="Core\JobSystem\JobTypes.hpp" />
+    <ClInclude Include="Core\JobSystem\MadleBrotJob.hpp" />
+    <ClInclude Include="Core\JobSystem\ScreenShotJob.hpp" />
+    <ClInclude Include="Core\JobSystem\WriteImageToFileJob.hpp" />
     <ClInclude Include="Core\MemTracking.hpp" />
     <ClInclude Include="Core\NamedProperties.hpp" />
     <ClInclude Include="Core\NamedStrings.hpp" />
