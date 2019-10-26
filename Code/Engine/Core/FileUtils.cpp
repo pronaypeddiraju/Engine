@@ -111,3 +111,24 @@ std::ofstream* CreateTextFileWriteBuffer(const std::string& fileName)
 
 	return fileStream;
 }
+
+//------------------------------------------------------------------------------------------------------------------------------
+std::string GetDirectoryFromFilePath(const std::string& filePath)
+{
+	//Iterate from the back and see if you can find a "/"
+	for (uint i = (uint)filePath.size(); i > 0; --i)
+	{
+		if (filePath[i] == '/')
+		{
+			return std::string(filePath.begin(), filePath.begin() + i);
+		}
+	}
+	if (filePath[0] == '/')
+	{
+		return "/";
+	}
+	else
+	{
+		return ".";
+	}
+}

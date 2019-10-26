@@ -8,3 +8,5 @@ unsigned long				CreateTextFileReadBuffer(const std::string& fileName, char** ou
 
 std::ofstream*				CreateFileWriteBuffer(const std::string& fileName);
 std::ofstream*				CreateTextFileWriteBuffer(const std::string& fileName);
+
+std::string					GetDirectoryFromFilePath(const std::string& filePath);
