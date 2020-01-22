@@ -179,7 +179,7 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 	m_PxScene->addActor(*m_drivableGroundPlane);
 	
 	//Create a vehicle that will drive on the plane.
-	PxFilterData chassisSimFilterData(COLLISION_FLAG_CHASSIS, COLLISION_FLAG_GROUND, 0, 0);
+	PxFilterData chassisSimFilterData(COLLISION_FLAG_CHASSIS, COLLISION_FLAG_GROUND_AGAINST, COLLISION_FLAG_OBSTACLE, 0);
 	PxFilterData wheelSimFilterData(COLLISION_FLAG_WHEEL, COLLISION_FLAG_WHEEL, PxPairFlag::eDETECT_CCD_CONTACT | PxPairFlag::eMODIFY_CONTACTS, 0);
 	VehicleDesc vehicleDesc = InitializeVehicleDescription(chassisSimFilterData, wheelSimFilterData);
 	PxVehicleDrive4W* vehicleReference = createVehicle4W(vehicleDesc, m_PhysX, m_PxCooking);
@@ -728,9 +728,10 @@ PxConvexMesh* PhysXSystem::CreateCuboidConvexMesh(const PxVec3& halfExtents, PxP
 PxRigidStatic* PhysXSystem::AddStaticObstacle
 (const PxTransform& transform, const PxU32 numShapes, PxTransform* shapeTransforms, PxGeometry** shapeGeometries, PxMaterial** shapeMaterials)
 {
-	PxFilterData simFilterData;
-	simFilterData.word0 = COLLISION_FLAG_GROUND;
-	simFilterData.word1 = COLLISION_FLAG_GROUND_AGAINST;
+	//PxFilterData simFilterData;
+	PxFilterData simFilterData(COLLISION_FLAG_OBSTACLE, COLLISION_FLAG_WHEEL, PxPairFlag::eMODIFY_CONTACTS | PxPairFlag::eDETECT_CCD_CONTACT, 0);
+	//simFilterData.word0 = COLLISION_FLAG_GROUND;
+	//simFilterData.word1 = COLLISION_FLAG_GROUND_AGAINST;
 	PxFilterData qryFilterData;
 	setupDrivableSurface(qryFilterData);
 
