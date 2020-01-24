@@ -12,14 +12,22 @@ Plane2D::Plane2D()
 Plane2D::Plane2D( Vec2 normal, float distanceToOrigin )
 {
 	m_normal = normal;
-	m_distance = distanceToOrigin;
+	m_signedDistance = distanceToOrigin;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+Plane2D::Plane2D(Vec2 normal, Vec2 pointOnPlane)
+{
+	//Use DotProduct(p, normal) = signedDistance to find the signed distance for this plane
+	m_signedDistance = GetDotProduct(normal, pointOnPlane);
+	m_normal = normal;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 float Plane2D::GetDistance( Vec2 point ) const
 {
 	float distance = GetDotProduct(point, m_normal);
-	distance -= m_distance;
+	distance -= m_signedDistance;
 	return distance;
 }
 
@@ -30,7 +38,7 @@ STATIC Plane2D Plane2D::AtPosition( Vec2 pos, Vec2 normal )
 	p.m_normal = normal; 
 	//p.m_distance = -GetDotProduct( pos, normal );    // C4
 	
-	p.m_distance = GetDotProduct( pos, normal );  // Squirrel
+	p.m_signedDistance = GetDotProduct( pos, normal );  // Squirrel
 
 	return p;
 }
@@ -43,7 +51,7 @@ STATIC Plane2D Plane2D::FromPoints( Vec2 p0, Vec2 p1 )
 	Vec2 displacement = p1 - p0;
 	Vec2 tangent = displacement.GetNormalized();
 	p.m_normal = tangent.GetRotated90Degrees() * -1.f;
-	p.m_distance = -GetDotProduct( p1, p.m_normal );    // C4
+	p.m_signedDistance = -GetDotProduct( p1, p.m_normal );    // C4
 
 	return p;
 }

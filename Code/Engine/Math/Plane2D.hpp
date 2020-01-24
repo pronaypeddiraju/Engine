@@ -8,6 +8,7 @@ class Plane2D
 public:
 	Plane2D();
 	Plane2D( Vec2 normal, float distanceToOrigin );
+	Plane2D( Vec2 normal, Vec2 pointOnPlane);
 
 	// positive -> in front of the plane
 	// negative -> behind the plane; 
@@ -20,7 +21,7 @@ public:
 
 public:
 	Vec2				m_normal; 
-	float				m_distance; // distance along normal to get to the origin; 
+	float				m_signedDistance; // distance along normal to get to the origin; 
 		
 public:
 	// named constructors;

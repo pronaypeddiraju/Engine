@@ -17,6 +17,14 @@ Plane3D::Plane3D(Vec3 normal, float signedDistance)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+Plane3D::Plane3D(Vec3 normal, Vec3 pointOnPlane)
+{
+	//Use DotProduct(p, normal) = signedDistance to find the signed distance for this plane
+	m_signedDistance = GetDotProduct(normal, pointOnPlane);
+	m_normal = normal;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 Plane3D::~Plane3D()
 {
 

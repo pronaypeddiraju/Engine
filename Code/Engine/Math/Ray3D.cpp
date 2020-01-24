@@ -69,13 +69,20 @@ uint Raycast(float *out, Ray3D ray, Plane3D const &plane)
 	// n = plane normal
 	// d = distance from origin
 
-	// Ray equation : p + vt;
-	// p = start point
+	// Ray equation : s + vt;
+	// s = start point
 	// v = direction of ray
 	// t = time 
 
 	// By substituting ray eqn in plane eqn we get
-	// t = (d - p.n) / v.n
+	// t = (d - s.n) / v.n
+
+	//First early out is to check if the point p is already on the plane
+	if ((GetDotProduct(ray.m_start, plane.m_normal) - plane.m_signedDistance) == 0)
+	{
+		out[0] = 0;
+		return 1U;
+	}
 
 	float numerator = plane.m_signedDistance - GetDotProduct(ray.m_start, plane.m_normal);
 	float denominator = GetDotProduct(ray.m_direction, plane.m_normal);
@@ -87,8 +94,16 @@ uint Raycast(float *out, Ray3D ray, Plane3D const &plane)
 	}
 	else
 	{
-		out[0] = numerator / denominator;
-		return 1U;
+		float t = numerator / denominator;
+		if(t < 0)
+		{
+			return 0U;
+		}
+		else
+		{
+			out[0] = t;
+			return 1U;
+		}
 	}
 }
 

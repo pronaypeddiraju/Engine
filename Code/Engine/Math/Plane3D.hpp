@@ -10,6 +10,7 @@ struct Plane3D
 {
 	Plane3D();
 	explicit Plane3D(Vec3 normal, float signedDistance);
+	explicit Plane3D(Vec3 normal, Vec3 pointOnPlane);
 	~Plane3D();
 
 	bool			IsPointInFrontOfPlane(const Vec3& position) const;
