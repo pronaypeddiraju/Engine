@@ -353,6 +353,7 @@ void RenderContext::CreateStagingTexture(Texture2D* stagingTexture, Texture2D* b
 	// as a read-only texture resource (if this is not true, change the
 	// signature to take in the option)
 	eTextureUsageBit textureUsage = TEXTURE_USAGE_TEXTURE_BIT;
+	UNUSED(textureUsage);
 
 	// we are not picking static here because
 	// we will eventually want to generate mipmaps,
@@ -1421,7 +1422,7 @@ GPUMesh* RenderContext::CreateOrGetMeshFromFile(const std::string& fileName)
 	}
 	else
 	{
-		//Check the file extention
+		//Check the file extension
 		std::vector<std::string> strings = SplitStringOnDelimiter(fileName, '.');
 		bool isDataDriven = false;
 		if (strings.size() > 1)

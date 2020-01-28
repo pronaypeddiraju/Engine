@@ -34,6 +34,9 @@
 #include "PhysXVehicleTireFriction.hpp"
 #include "PxPhysicsAPI.h"
 
+//For the sake of having my TODOs in this script
+#include "Engine/Commons/EngineCommon.hpp"
+
 namespace vehicle
 {
 
@@ -81,6 +84,8 @@ namespace vehicle
 
 	PxConvexMesh* createChassisMesh(const PxVec3 dims, PxPhysics& physics, PxCooking& cooking)
 	{
+		TODO("Make changes to this function to account for the correct chassis mesh to be used by PhysX");
+
 		const PxF32 x = dims.x*0.5f;
 		const PxF32 y = dims.y*0.5f;
 		const PxF32 z = dims.z*0.5f;
@@ -145,6 +150,9 @@ namespace vehicle
 		//Add the chassis shapes to the actor.
 		for (PxU32 i = 0; i < numChassisMeshes; i++)
 		{
+			//Adding the shape happens here so we may want to see if we can add a differnet convex mesh geometry and not the ugly huge box
+			TODO("Add a 'not ugly huge box' to be the car mesh shape");
+
 			PxShape* chassisShape = PxRigidActorExt::createExclusiveShape(*vehActor, PxConvexMeshGeometry(chassisConvexMeshes[i]), *chassisMaterials[i]);
 			chassisShape->setQueryFilterData(chassisQryFilterData);
 			chassisShape->setSimulationFilterData(chassisSimFilterData);

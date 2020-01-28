@@ -31,6 +31,8 @@
 #include "PhysXVehicleTireFriction.hpp"
 #include "PhysXVehicleSceneQuery.hpp"
 
+//For the sake of the TODOs
+#include "Engine/Commons/EngineCommon.hpp"
 
 namespace vehicle
 {
@@ -226,8 +228,12 @@ namespace vehicle
 			for (PxU32 i = PxVehicleDrive4WWheelOrder::eREAR_RIGHT + 1; i < numWheels; i++)
 			{
 				wheelConvexMeshes[i] = wheelMesh;
-				wheelMaterials[i] = vehicle4WDesc.wheelMaterial;
+				wheelMaterials[i] = vehicle4WDesc.wheelMaterial;	
 			}
+
+			//We need to add a mesh as the convex collider for the car
+			//We need to tell it what the shape is/infer it from a 3D object file
+			TODO("Create a convexMesh from some obj for the car to use instead of the shitty box");
 
 			//Chassis just has a single convex shape for simplicity.
 			PxConvexMesh* chassisConvexMesh = createChassisMesh(chassisDims, *physics, *cooking);
