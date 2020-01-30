@@ -29,6 +29,11 @@ public:
 	const static Vec2	ALIGN_TOP_CENTERED;
 	const static Vec2	ALIGN_BOTTOM_CENTERED;
 
+	const static Vec2	RIGHT;
+	const static Vec2	UP;
+	const static Vec2	LEFT;
+	const static Vec2	DOWN;
+
 	//Accessor methods
 	float				GetLength() const;
 	float				GetLengthSquared() const;

@@ -2,6 +2,7 @@
 #pragma once
 #include "Engine/Math/Vertex_PCU.hpp"
 #include <math.h>
+#include <vector>
 
 //------------------------------------------------------------------------------------------------------------------------------
 #define UNUSED(x) (void)(x);
@@ -37,6 +38,7 @@ float			GetOverlapDistance(Vec2 point, Vec2 centre, float radius);
 bool			DoSpheresOverlap(const Vec3& centreA, float radiusA, const Vec3& centreB, float radiusB);
 
 bool			IsPointInDisc2D(const Vec2& point, const Vec2& centre, float radius);
+Vec2			GetRandomPointOnDisc2D(const Vec2& center, float radius, float minDegrees, float maxDegrees, float& angleUsed);
 bool			IsPointInSector2D(const Vec2& point, const Vec2& origin, float orientationDegrees, float maxDistance, float apertureDegrees);
 bool			IsPointInSector2D(const Vec2& point, const Vec2& origin, const Vec2& orientationVector, float maxDistance, float apertureDegrees);
 bool			IsPointInAABBB2(const AABB2& box, const Vec2& point);
@@ -63,6 +65,8 @@ float			GetRayImpactFractionVsDisc2D( const Vec2& rayStart, const Vec2& rayNorma
 bool			IsPointInCapsule2D( const Vec2& point, const Vec2& capsuleStart, const Vec2& capsuleEnd, float capsuleRadius );
 
 Vec3			GetSphericalToCartesian(float radius, float angleTheta, float anglePhi);
+
+std::vector<Vec2>			GenerateConvexPolygonFromDisc2D(int discRadius);
 
 //Transform Utilities
 Vec2			TransformPosition2D( const Vec2& position, float uniformScale, float rotationDegreesOnZ, const Vec2& translateXY);
