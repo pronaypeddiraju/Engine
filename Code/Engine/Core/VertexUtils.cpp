@@ -2,6 +2,7 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/Capsule2D.hpp"
+#include "Engine/Math/ConvexPoly2D.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/Vec2.hpp"
@@ -231,6 +232,31 @@ void AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const OBB2& b
 	AddVertsForLine2D(vertexArray, box.GetTopRight(), box.GetBottomRight(), thickness, color);
 	//Bottom Line
 	AddVertsForLine2D(vertexArray, box.GetBottomRight(), box.GetBottomLeft(), thickness, color);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+// Make convex polygon mesh to render as a solid shape
+//------------------------------------------------------------------------------------------------------------------------------
+void AddVertsForSolidConvexPoly2D(std::vector<Vertex_PCU>& vertexArray, const ConvexPoly2D& polygon, const Rgba& color)
+{
+	//First 3 verts become the first triangle, then 1st, 3rd and next vertex are considered for every next triangle
+	std::vector<Vec2> points = polygon.GetConvexPoly2DPoints();
+	
+	//Get the first vertex in the ConvexPoly2D
+	Vertex_PCU firstPoint(Vec3(points[0]), color, Vec2::ZERO);
+	
+	Vertex_PCU vert;
+	vert.m_color = color;
+	vert.m_uvTexCoords = Vec2::ZERO;
+
+	for (int pointIndex = 1; pointIndex < points.size() - 1; pointIndex++)
+	{
+		vertexArray.push_back(firstPoint);
+		vert.m_position = Vec3(points[pointIndex]);
+		vertexArray.push_back(vert);
+		vert.m_position = Vec3(points[pointIndex + 1]);
+		vertexArray.push_back(vert);
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

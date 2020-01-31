@@ -382,6 +382,9 @@
     <ClCompile Include="Math\ConvexPoly2D.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Math\Ray2D.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -1281,6 +1284,7 @@
     <ClInclude Include="Core\JobSystem\WriteImageToFileJob.hpp" />
     <ClInclude Include="Core\JobSystem\MadleBrotJob.hpp" />
     <ClInclude Include="Math\ConvexPoly2D.hpp" />
+    <ClInclude Include="Math\Ray2D.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Math\Array2D.inl" />

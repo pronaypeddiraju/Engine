@@ -249,6 +249,7 @@
     <ClCompile Include="Math\Plane2D.cpp" />
     <ClCompile Include="Math\Plane3D.cpp" />
     <ClCompile Include="Math\RandomNumberGenerator.cpp" />
+    <ClCompile Include="Math\Ray2D.cpp" />
     <ClCompile Include="Math\Ray3D.cpp" />
     <ClCompile Include="Math\Rigidbody2D.cpp" />
     <ClCompile Include="Math\RigidBodyBucket.cpp" />
@@ -577,6 +578,7 @@
     <ClInclude Include="Math\Projection.hpp" />
     <ClInclude Include="Math\PhysicsSystem.hpp" />
     <ClInclude Include="Math\RandomNumberGenerator.hpp" />
+    <ClInclude Include="Math\Ray2D.hpp" />
     <ClInclude Include="Math\Ray3D.hpp" />
     <ClInclude Include="Math\Rigidbody2D.hpp" />
     <ClInclude Include="Math\RigidBodyBucket.hpp" />

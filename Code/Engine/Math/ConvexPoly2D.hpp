@@ -10,7 +10,7 @@ public:
 	explicit ConvexPoly2D(const std::vector<Vec2>& constructPoints);
 	~ConvexPoly2D();
 
-	const std::vector<Vec2>&	GetConvexPoly2DPoints();
+	const std::vector<Vec2>&	GetConvexPoly2DPoints() const;
 
 private:
 	std::vector<Vec2>	m_convexPolyPoints;

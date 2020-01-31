@@ -7,6 +7,7 @@
 #define UNUSED(x) (void)(x);
 
 class Capsule2D;
+class ConvexPoly2D;
 class OBB2;
 struct AABB2;
 struct Rgba;
@@ -27,6 +28,8 @@ void			AddVertsForWireCapsule2D( std::vector<Vertex_PCU>& vertexArray, const OBB
 void			AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba& color, float thickness);
 void			AddVertsForBoundingBox( std::vector<Vertex_PCU>& vertexArray, const OBB2& box, const Rgba& color, float thickness);
 
+void			AddVertsForSolidConvexPoly2D(std::vector<Vertex_PCU>& vertexArray, const ConvexPoly2D& polygon, const Rgba& color);
+void			AddVertsForConvexPoly2D(std::vector<Vertex_PCU>& vertexArray, const ConvexPoly2D& polygon, const Rgba& colot, float thickness);
 //void			AddVertsForConvexHull(std::vector<Vertex_Lit>& vertexArray);
 
 //Transform Utils

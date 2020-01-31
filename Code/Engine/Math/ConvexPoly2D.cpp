@@ -19,7 +19,7 @@ ConvexPoly2D::~ConvexPoly2D()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const std::vector<Vec2>& ConvexPoly2D::GetConvexPoly2DPoints()
+const std::vector<Vec2>& ConvexPoly2D::GetConvexPoly2DPoints() const
 {
 	return m_convexPolyPoints;
 }
