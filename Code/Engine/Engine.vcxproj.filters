@@ -379,6 +379,9 @@
     <ClCompile Include="Core\JobSystem\MadleBrotJob.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\PythonScripting\PythonScriptHandler.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vec2.hpp">
@@ -1105,12 +1108,6 @@
     <ClInclude Include="..\ThirdParty\PhysX\include\geometry\PxTriangleMeshGeometry.h">
       <Filter>PhysX</Filter>
     </ClInclude>
-    <ClInclude Include="..\ThirdParty\PhysX\include\geomutils\GuContactBuffer.h">
-      <Filter>PhysX</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ThirdParty\PhysX\include\geomutils\GuContactPoint.h">
-      <Filter>PhysX</Filter>
-    </ClInclude>
     <ClInclude Include="..\ThirdParty\PhysX\include\gpu\PxGpu.h">
       <Filter>PhysX</Filter>
     </ClInclude>
@@ -1277,6 +1274,11 @@
     <ClInclude Include="Core\JobSystem\ScreenShotJob.hpp" />
     <ClInclude Include="Core\JobSystem\WriteImageToFileJob.hpp" />
     <ClInclude Include="Core\JobSystem\MadleBrotJob.hpp" />
+    <ClInclude Include="..\ThirdParty\CPython_3.7\import.h" />
+    <ClInclude Include="..\ThirdParty\CPython_3.7\pyconfig.h" />
+    <ClInclude Include="Core\PythonScripting\PythonScriptHandler.hpp" />
+    <ClInclude Include="ProdigyTemplateLibrary\PVectorBase.hpp" />
+    <ClInclude Include="ProdigyTemplateLibrary\PVector.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Math\Array2D.inl" />

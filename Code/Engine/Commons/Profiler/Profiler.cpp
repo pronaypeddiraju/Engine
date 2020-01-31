@@ -179,7 +179,9 @@ void Profiler::ShowProfilerTimeline()
 		ERROR_AND_DIE("The imGUI system was not initialized! The profiler requires you to intialize it");
 	}
 
-	
+	g_windowContext->SetMouseMode(MOUSE_MODE_ABSOLUTE);
+	g_windowContext->ShowMouse();
+
 	ImGuiWindowFlags flags = 0;
 	flags |= ImGuiWindowFlags_NoInputs;
 	flags |= ImGuiWindowFlags_NoMouseInputs;
@@ -590,6 +592,15 @@ STATIC bool Profiler::Command_ProfilerReport(EventArgs& args)
 	UNUSED(args);
 
 	gProfiler->m_showTimeline = !gProfiler->m_showTimeline;
+
+	TODO("Change back to the old mouse mode and cursor visibility here");
+	/*
+	if (!gProfiler->m_showTimeline)
+	{
+		g_windowContext->SetMouseMode(oldMouseMode);
+		g_windowContext->HideMouse();
+	}
+	*/
 	return true;
 }
 

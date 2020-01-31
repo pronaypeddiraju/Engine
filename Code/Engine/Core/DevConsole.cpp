@@ -387,7 +387,6 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 	camera.UpdateUniformBuffer(&renderer);
 
 	renderer.BeginCamera(camera);
-
 	renderer.BindTextureViewWithSampler( 0U, m_consoleFont->GetTexture()); 
 
 	//Draw a black box over the entire screen
