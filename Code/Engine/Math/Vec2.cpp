@@ -21,6 +21,11 @@ const STATIC Vec2 Vec2::ALIGN_RIGHT_TOP(1.f, 1.f);
 const STATIC Vec2 Vec2::ALIGN_TOP_CENTERED(0.5f, 1.f);
 const STATIC Vec2 Vec2::ALIGN_BOTTOM_CENTERED(0.5f, 0.f);
 
+const STATIC Vec2 Vec2::RIGHT(1.f, 0.f);
+const STATIC Vec2 Vec2::UP(0.f, 1.f);
+const STATIC Vec2 Vec2::LEFT(-1.f, 0.f);
+const STATIC Vec2 Vec2::DOWN(0.f, -1.f);
+
 //------------------------------------------------------------------------------------------------------------------------------
 Vec2::Vec2( const Vec2& copy )
    	: x( copy.x )
