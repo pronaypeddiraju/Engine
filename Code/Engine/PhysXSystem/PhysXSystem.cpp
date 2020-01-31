@@ -89,6 +89,10 @@ PhysXSystem::~PhysXSystem()
 //------------------------------------------------------------------------------------------------------------------------------
 void PhysXSystem::StartUp()
 {
+	//First subscribe the LoadCollisionMeshFromData function as a ReadCollisionMeshFromData event
+	g_eventSystem->SubscribeEventCallBackFn("ReadCollisionMeshFromData", LoadCollisionMeshFromData);
+
+
 	//PhysX starts off by setting up a Physics Foundation
 	m_PxFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_PxAllocator, m_PXErrorCallback);
 
@@ -858,6 +862,23 @@ STATIC PxQuat PhysXSystem::MakeQuaternionFromMatrix(const Matrix44& matrix)
 
 	PxQuat quaternion = PxQuat(x, y, z, w);
 	return quaternion;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
+{
+	TODO("Get collision mesh data here and use it to load the collision object and use it as a PxMesh");
+	UNUSED(args);
+	//Load the mesh
+	DebuggerPrintf("Called event LoadCollisionMeshFromData");
+
+	//Create a PxConvexMesh from the vertex array 
+
+	//Add the PxMesh to the scene 
+
+	//Maintain a std::vector of std::pairs<std::string renderMeshID, std::vector<PxConvexMesh>>;
+
+	return true;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
