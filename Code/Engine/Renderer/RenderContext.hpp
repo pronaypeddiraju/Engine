@@ -38,6 +38,16 @@ struct ID3D11RenderTargetView;
 struct ID3D11RasterizerState;
 
 //------------------------------------------------------------------------------------------------------------------------------
+enum eProdigyDefaultTexture
+{
+	WHITE = 0,
+	FLAT,
+	BLACK, 
+
+	NUM_DEFAULT_TEXTURES
+};
+
+//------------------------------------------------------------------------------------------------------------------------------
 class RenderContext
 {
 	friend class DepthStencilTargetView;
@@ -226,6 +236,8 @@ private:
 	bool												m_screenShotRequested = false;
 
 	Texture2D*											m_stagingTexture = nullptr;
+	TextureView*										m_prodigyDefaultTextures[NUM_DEFAULT_TEXTURES];
+
 public:
 
 	// CPU copy of light data
@@ -237,6 +249,7 @@ public:
 	unsigned int										m_frameCount = 0;
 
 	Image*												m_whiteImage = nullptr;
+
 };
 
 

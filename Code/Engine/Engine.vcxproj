@@ -217,6 +217,7 @@
     <ClCompile Include="Core\NamedProperties.cpp" />
     <ClCompile Include="Core\NamedStrings.cpp" />
     <ClCompile Include="Commons\Profiler\ProfileLogScope.cpp" />
+    <ClCompile Include="Core\PythonScripting\PythonScriptHandler.cpp" />
     <ClCompile Include="Core\StopWatch.cpp" />
     <ClCompile Include="Core\Tags.cpp" />
     <ClCompile Include="Core\Time.cpp" />
@@ -300,6 +301,8 @@
     <ClCompile Include="Renderer\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ThirdParty\CPython_3.7\import.h" />
+    <ClInclude Include="..\ThirdParty\CPython_3.7\pyconfig.h" />
     <ClInclude Include="..\ThirdParty\fmod\fmod.h" />
     <ClInclude Include="..\ThirdParty\fmod\fmod.hpp" />
     <ClInclude Include="..\ThirdParty\fmod\fmod_codec.h" />
@@ -434,8 +437,6 @@
     <ClInclude Include="..\ThirdParty\PhysX\include\geometry\PxTriangle.h" />
     <ClInclude Include="..\ThirdParty\PhysX\include\geometry\PxTriangleMesh.h" />
     <ClInclude Include="..\ThirdParty\PhysX\include\geometry\PxTriangleMeshGeometry.h" />
-    <ClInclude Include="..\ThirdParty\PhysX\include\geomutils\GuContactBuffer.h" />
-    <ClInclude Include="..\ThirdParty\PhysX\include\geomutils\GuContactPoint.h" />
     <ClInclude Include="..\ThirdParty\PhysX\include\gpu\PxGpu.h" />
     <ClInclude Include="..\ThirdParty\PhysX\include\pvd\PxPvd.h" />
     <ClInclude Include="..\ThirdParty\PhysX\include\pvd\PxPvdSceneClient.h" />
@@ -541,6 +542,7 @@
     <ClInclude Include="Core\NamedProperties.hpp" />
     <ClInclude Include="Core\NamedStrings.hpp" />
     <ClInclude Include="Commons\Profiler\ProfileLogScope.hpp" />
+    <ClInclude Include="Core\PythonScripting\PythonScriptHandler.hpp" />
     <ClInclude Include="Core\StopWatch.hpp" />
     <ClInclude Include="Core\Tags.hpp" />
     <ClInclude Include="Core\Time.hpp" />
@@ -602,6 +604,8 @@
     <ClInclude Include="PhysXSystem\PhysXVehicleTireFriction.hpp" />
     <ClInclude Include="PhysXSystem\PhysXWheelCCDContactModifyCallback.hpp" />
     <ClInclude Include="PhysXSystem\PhysXWheelContactModifyCallback.hpp" />
+    <ClInclude Include="ProdigyTemplateLibrary\PVector.hpp" />
+    <ClInclude Include="ProdigyTemplateLibrary\PVectorBase.hpp" />
     <ClInclude Include="Renderer\AnimTypes.hpp" />
     <ClInclude Include="Renderer\BitmapFont.hpp" />
     <ClInclude Include="Renderer\BufferLayout.hpp" />

@@ -379,6 +379,7 @@
     <ClCompile Include="Core\JobSystem\MadleBrotJob.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\PythonScripting\PythonScriptHandler.cpp">
     <ClCompile Include="Math\ConvexPoly2D.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -1283,6 +1284,11 @@
     <ClInclude Include="Core\JobSystem\ScreenShotJob.hpp" />
     <ClInclude Include="Core\JobSystem\WriteImageToFileJob.hpp" />
     <ClInclude Include="Core\JobSystem\MadleBrotJob.hpp" />
+    <ClInclude Include="..\ThirdParty\CPython_3.7\import.h" />
+    <ClInclude Include="..\ThirdParty\CPython_3.7\pyconfig.h" />
+    <ClInclude Include="Core\PythonScripting\PythonScriptHandler.hpp" />
+    <ClInclude Include="ProdigyTemplateLibrary\PVectorBase.hpp" />
+    <ClInclude Include="ProdigyTemplateLibrary\PVector.hpp" />
     <ClInclude Include="Math\ConvexPoly2D.hpp" />
     <ClInclude Include="Math\Ray2D.hpp" />
   </ItemGroup>

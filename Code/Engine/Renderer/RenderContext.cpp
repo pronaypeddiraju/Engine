@@ -211,13 +211,13 @@ void RenderContext::PremakeDefaults()
 {
 	// premake defaults 
 	std::string name = "WHITE.png";
-	CreateOrGetTextureViewFromFile(name);
+	m_prodigyDefaultTextures[WHITE] = CreateOrGetTextureViewFromFile(name);
 	
 	name = "FLAT.png";
-	CreateOrGetTextureViewFromFile(name);
+	m_prodigyDefaultTextures[FLAT] = CreateOrGetTextureViewFromFile(name);
 
 	name = "BLACK.png";
-	CreateOrGetTextureViewFromFile(name);
+	m_prodigyDefaultTextures[BLACK] = CreateOrGetTextureViewFromFile(name);
 
 }
 
@@ -1446,6 +1446,10 @@ GPUMesh* RenderContext::CreateOrGetMeshFromFile(const std::string& fileName)
 
 		filePath = MODEL_PATH + fileName;
 		m_modelDatabase[filePath] = model->m_mesh;
+		model->m_mesh = nullptr;
+		
+		delete model;
+		
 		return m_modelDatabase[filePath];
 	}
 }

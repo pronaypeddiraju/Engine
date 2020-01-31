@@ -78,6 +78,7 @@ void JobSystem::Startup(int numGenericThreads /*= -1*/, int numCategories /*= JO
 void JobSystem::Shutdown()
 {
 	m_isRunning = false;
+	SignalWork();
 
 	for (int threadIndex = 0; threadIndex < m_genericThreads.size(); threadIndex++)
 	{
