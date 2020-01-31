@@ -691,6 +691,7 @@ STATIC bool DevConsole::Command_Logf(EventArgs& args)
 //------------------------------------------------------------------------------------------------------------------------------
 STATIC bool DevConsole::Command_ScreenShot(EventArgs& args)
 {
+	UNUSED(args);
 	g_renderContext->RequestScreenshot();
 	return true;
 }

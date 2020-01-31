@@ -1,7 +1,9 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/Renderer/ObjectLoader.hpp"
 #include "Engine/Commons/StringUtils.hpp"
+#include "Engine/Core/EventSystems.hpp"
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/XMLUtils/XMLUtils.hpp"
 #include "Engine/Math/Vertex_Lit.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
@@ -12,6 +14,12 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 ObjectLoader::ObjectLoader()
+{
+
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+ObjectLoader::~ObjectLoader()
 {
 
 }
@@ -87,7 +95,17 @@ void ObjectLoader::LoadFromXML(const std::string& fileName)
 		XMLElement* elem = root->FirstChildElement("material");
 		if (elem != nullptr)
 		{
+			//Set the default material path for this model from XML
 			m_defaultMaterialPath = ParseXmlAttribute(*elem, "src", "");
+		}
+
+		elem = root->FirstChildElement("collision");
+		if (elem != nullptr)
+		{
+			//We requested to create a static collider with this model so generate that using the PhysX System
+			TODO("Fire the ReadCollisionMeshData event");
+			//NamedProperties args;
+			//g_eventSystem->FireEvent("ReadCollisionMeshFromData", args);
 		}
 	}
 }

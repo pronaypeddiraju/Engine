@@ -1,4 +1,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
+#include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vec2.hpp"
@@ -169,6 +171,20 @@ bool IsPointInDisc2D( const Vec2& point, const Vec2& centre, float radius )
 	{
 		return false;
 	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+Vec2 GetRandomPointOnDisc2D(const Vec2& center, float radius, float minDegrees, float maxDegrees, float& angleUsed)
+{
+	//Get a random point on the disc by traversing a random degree between minDegrees and maxDegrees
+	angleUsed = g_RNG->GetRandomFloatInRange(minDegrees, maxDegrees);
+	//Let's just say the displacement from center to the circumference at angle 0 is some pointOnDisc
+	Vec2 displacementToCircumference= Vec2::RIGHT * radius;
+
+	//Now rotate this displacement by random angle to get the required point on disc2D
+	Vec2 pointOnDisc = displacementToCircumference.GetRotatedDegrees(angleUsed);
+	pointOnDisc += center;
+	return pointOnDisc;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -462,6 +478,24 @@ Vec3 GetSphericalToCartesian( float radius, float angleTheta, float anglePhi )
 	
 	coordinates *= radius;
 	return coordinates;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+std::vector<Vec2> GenerateConvexPolygonFromDisc2D(int discRadius)
+{
+	//We are going to generate a convexPolygon2D using a disc
+	//To do so, assume a disc with radius r
+	//Now move some angle along the disc and get the point on the disc
+	//Increment the angle and get another point
+	//Keep getting such points till the angle we have is not greater than the first angle we chose (so if the
+	//first angle was 35 degrees and we continued till we hit 360, convert the new angle to 0 and again proceed 
+	//till we get something above 35 degrees. That's where we stop and return all the points as the convex polygon
+
+	//NOTE: The order of points matters and in this case it is counter clockwise as that's how our angles increment in our engine
+	
+	UNUSED(discRadius);
+	std::vector<Vec2> vectorOfPoints;
+	return vectorOfPoints;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

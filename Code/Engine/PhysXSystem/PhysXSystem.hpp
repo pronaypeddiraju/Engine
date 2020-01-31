@@ -3,6 +3,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include "ThirdParty/PhysX/include/PxPhysicsAPI.h"
+#include "Engine/Core/EventSystems.hpp"
 #include "Engine/PhysXSystem/PhysXTypes.hpp"
 #include "Engine/PhysXSystem/PhysXVehicleSceneQuery.hpp"
 #include "Engine/PhysXSystem/PhysXVehicleCreate.hpp"
@@ -15,6 +16,7 @@ using namespace physx;
 using namespace vehicle;
 
 class RenderContext;
+class NamedProperties;
 struct Vec3;
 struct Vec4;
 struct Matrix44;
@@ -95,6 +97,8 @@ public:
 	static PxVec4		VecToPxVector(const Vec4& vector);
 	static Vec3			QuaternionToEulerAngles(const PxQuat& quat);
 	static PxQuat		MakeQuaternionFromMatrix(const Matrix44& matrix);
+
+	static bool			LoadCollisionMeshFromData(EventArgs& args);
 
 private:
 

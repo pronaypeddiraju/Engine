@@ -24,7 +24,7 @@ class ObjectLoader
 {
 public:
 	ObjectLoader();
-
+	~ObjectLoader();
 	static ObjectLoader*	CreateMeshFromFile(RenderContext* renderContext, const std::string& filePath, bool isDataDriven);
 
 	void					LoadFromXML(const std::string& fileName);

@@ -89,6 +89,10 @@ PhysXSystem::~PhysXSystem()
 //------------------------------------------------------------------------------------------------------------------------------
 void PhysXSystem::StartUp()
 {
+	//First subscribe the LoadCollisionMeshFromData function as a ReadCollisionMeshFromData event
+	g_eventSystem->SubscribeEventCallBackFn("ReadCollisionMeshFromData", LoadCollisionMeshFromData);
+
+
 	//PhysX starts off by setting up a Physics Foundation
 	m_PxFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_PxAllocator, m_PXErrorCallback);
 
@@ -208,7 +212,7 @@ VehicleDesc PhysXSystem::InitializeVehicleDescription(const PxFilterData& chassi
 	//The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
 	//Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
 	const PxF32 chassisMass = 1500.0f;
-	const PxVec3 chassisDims(2.5f, 2.0f, 5.0f);
+	const PxVec3 chassisDims(2.5f, 1.20f, 5.0f);
 	const PxVec3 chassisMOI
 	((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 12.0f,
 		(chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*0.8f*chassisMass / 12.0f,
@@ -858,6 +862,23 @@ STATIC PxQuat PhysXSystem::MakeQuaternionFromMatrix(const Matrix44& matrix)
 
 	PxQuat quaternion = PxQuat(x, y, z, w);
 	return quaternion;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
+{
+	TODO("Get collision mesh data here and use it to load the collision object and use it as a PxMesh");
+	UNUSED(args);
+	//Load the mesh
+	DebuggerPrintf("Called event LoadCollisionMeshFromData");
+
+	//Create a PxConvexMesh from the vertex array 
+
+	//Add the PxMesh to the scene 
+
+	//Maintain a std::vector of std::pairs<std::string renderMeshID, std::vector<PxConvexMesh>>;
+
+	return true;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
