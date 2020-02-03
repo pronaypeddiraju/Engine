@@ -4,11 +4,14 @@
 #pragma once
 #include "ThirdParty/PhysX/include/PxPhysicsAPI.h"
 #include "Engine/Core/EventSystems.hpp"
+#include "Engine/Math/VertexMaster.hpp"
 #include "Engine/PhysXSystem/PhysXTypes.hpp"
 #include "Engine/PhysXSystem/PhysXVehicleSceneQuery.hpp"
 #include "Engine/PhysXSystem/PhysXVehicleCreate.hpp"
 #include <vector>
 #include <functional>
+#include <map>
+#include <string>
 
 #define PX_RELEASE(x)	if(x)	{ x->release(); x = NULL;	}
 
@@ -102,6 +105,7 @@ public:
 
 private:
 
+	void				AddVertMasterBufferToPxVecBuffer(PxVec3* convexVerts, const VertexMaster* vertices, int numVerts);
 private:
 	PxDefaultAllocator					m_PxAllocator;
 	PxDefaultErrorCallback				m_PXErrorCallback;
@@ -138,4 +142,7 @@ private:
 	int									m_numberOfVehicles = 1;
 	ActorUserData						m_actorUserData;
 	ShapeUserData						m_shapeUserData[PX_MAX_NB_WHEELS];
+
+	//Repository of collision meshes for each rendermesh ID
+	std::map < std::string, std::vector<PxConvexMesh*>>		m_collisionMeshRepository;	
 };
