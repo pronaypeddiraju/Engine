@@ -21,11 +21,14 @@ ObjectLoader::ObjectLoader()
 //------------------------------------------------------------------------------------------------------------------------------
 ObjectLoader::~ObjectLoader()
 {
-
+	if (m_mesh != nullptr)
+	{
+		delete m_mesh;
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-ObjectLoader* ObjectLoader::CreateMeshFromFile(RenderContext* renderContext, const std::string& fileName, bool isDataDriven)
+STATIC ObjectLoader* ObjectLoader::CreateMeshFromFile(RenderContext* renderContext, const std::string& fileName, bool isDataDriven)
 {
 	ObjectLoader* object = new ObjectLoader();
 	object->m_renderContext = renderContext;
@@ -100,12 +103,16 @@ void ObjectLoader::LoadFromXML(const std::string& fileName)
 		}
 
 		elem = root->FirstChildElement("collision");
-		if (elem != nullptr)
+		while (elem != nullptr)
 		{
 			//We requested to create a static collider with this model so generate that using the PhysX System
-			TODO("Fire the ReadCollisionMeshData event");
-			//NamedProperties args;
-			//g_eventSystem->FireEvent("ReadCollisionMeshFromData", args);
+			NamedProperties eventArgs;
+			eventArgs.SetValue("id", ParseXmlAttribute(*root, "id", ""));
+			eventArgs.SetValue("src", ParseXmlAttribute(*elem, "src", ""));
+
+			g_eventSystem->FireEvent("ReadCollisionMeshFromData", eventArgs);
+
+			elem = elem->NextSiblingElement("collision");
 		}
 	}
 }

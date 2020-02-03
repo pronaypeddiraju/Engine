@@ -1,6 +1,9 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/PhysXSystem/PhysXSystem.hpp"
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Core/EventSystems.hpp"
+#include "Engine/Renderer/CPUMesh.hpp"
+#include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Math/Matrix44.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vec3.hpp"
@@ -13,6 +16,7 @@
 #include "Engine/PhysXSystem/PhysXVehicleCreate.hpp"
 #include "Engine/PhysXSystem/PhysXWheelContactModifyCallback.hpp"
 #include "Engine/PhysXSystem/PhysXWheelCCDContactModifyCallback.hpp"
+#include "../Renderer/ObjectLoader.hpp"
 
 //PhysX Pragma Comments
 #if ( defined( _WIN64 ) & defined( _DEBUG ) )
@@ -867,18 +871,97 @@ STATIC PxQuat PhysXSystem::MakeQuaternionFromMatrix(const Matrix44& matrix)
 //------------------------------------------------------------------------------------------------------------------------------
 STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 {
-	TODO("Get collision mesh data here and use it to load the collision object and use it as a PxMesh");
-	UNUSED(args);
 	//Load the mesh
-	DebuggerPrintf("Called event LoadCollisionMeshFromData");
+	DebuggerPrintf("\n\n Called event LoadCollisionMeshFromData");
+	ObjectLoader* loader;
+
+	std::string id = "";
+	std::string src = "";
+	id = args.GetValue("id", id);
+	src = args.GetValue("src", src);
+
+	if (id == "")
+	{
+		//The id is invalid so just return
+		return false;
+	}
+	else
+	{
+		//Id was valid so now let's load the mesh
+		loader = ObjectLoader::CreateMeshFromFile(g_renderContext, MODEL_PATH + src, true);
+	}
 
 	//Create a PxConvexMesh from the vertex array 
+	PxVec3* convexVerts = new PxVec3[loader->m_cpuMesh->GetVertexCount()];
+	g_PxPhysXSystem->AddVertMasterBufferToPxVecBuffer(convexVerts, loader->m_cpuMesh->GetVertices(), loader->m_cpuMesh->GetVertexCount());
 
-	//Add the PxMesh to the scene 
+	//Create a pxDescription for the convexmesh
+	PxConvexMeshDesc desc;
+	desc.points.count = (PxU32)loader->m_cpuMesh->GetVertexCount();
+	desc.points.stride = sizeof(PxVec3);
+	desc.points.data = convexVerts;
+	desc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
 
-	//Maintain a std::vector of std::pairs<std::string renderMeshID, std::vector<PxConvexMesh>>;
+	//Use PxCooking to construct the PxConvexMesh
+	PxDefaultMemoryOutputStream buffer;
+	PxConvexMeshCookingResult::Enum result;
+	if (!g_PxPhysXSystem->GetPhysXCookingModule()->cookConvexMesh(desc, buffer, &result))
+	{
+		//There was a problem making the mesh
+		//Look at result for details
+		return false;
+	}
+
+	//We can actually create the convexMesh
+	PxDefaultMemoryInputData input(buffer.getData(), buffer.getSize());
+	PxConvexMesh* convexMesh = g_PxPhysXSystem->GetPhysXSDK()->createConvexMesh(input);
+
+	//Maintain a map of std::string id to std::vector<PxConvexMesh*> 
+	std::map<std::string, std::vector<PxConvexMesh*>>::iterator itr = g_PxPhysXSystem->m_collisionMeshRepository.find(id);
+	if (itr != g_PxPhysXSystem->m_collisionMeshRepository.end())
+	{
+		//We need to add to the existing vector of collision meshes
+		itr->second.push_back(convexMesh);
+	}
+	else
+	{
+		//We need to make a new entry with the key recieved
+		std::vector<PxConvexMesh*> meshVector{ convexMesh };
+		g_PxPhysXSystem->m_collisionMeshRepository[id] = meshVector;
+	}
+
+	//Finally add the new PxConvexMesh to the scene as a shape
+	//Make the geometry
+	PxConvexMeshGeometry geometry = PxConvexMeshGeometry(convexMesh);
+	const PxMaterial* material = g_PxPhysXSystem->GetDefaultPxMaterial();
+
+	PxShape* shape = g_PxPhysXSystem->GetPhysXSDK()->createShape(geometry, *material);
+
+	PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_OBSTACLE, COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+	PxFilterData qryFilterData;
+	setupDrivableSurface(qryFilterData);
+	shape->setQueryFilterData(qryFilterData);
+	shape->setSimulationFilterData(groundPlaneSimFilterData);
+
+	PxTransform localTm(PxVec3(0, 0, 0), PxQuat(PxIdentity));
+	PxRigidStatic* body = g_PxPhysXSystem->GetPhysXSDK()->createRigidStatic(localTm);
+	body->attachShape(*shape);
+	g_PxPhysXSystem->GetPhysXScene()->addActor(*body);
+
+	PX_ASSERT(convex);
+	delete loader;
 
 	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void PhysXSystem::AddVertMasterBufferToPxVecBuffer(PxVec3* convexVerts, const VertexMaster* vertices, int numVerts)
+{
+	for (int vertIndex = 0; vertIndex < numVerts; vertIndex++)
+	{
+		PxVec3 vector = VecToPxVector(vertices[vertIndex].m_position);
+		convexVerts[vertIndex] = vector;
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
