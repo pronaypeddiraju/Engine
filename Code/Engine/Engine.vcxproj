@@ -235,6 +235,7 @@
     <ClCompile Include="Math\Capsule3D.cpp" />
     <ClCompile Include="Math\Collider2D.cpp" />
     <ClCompile Include="Math\CollisionHandler.cpp" />
+    <ClCompile Include="Math\ConvexHull2D.cpp" />
     <ClCompile Include="Math\ConvexPoly2D.cpp" />
     <ClCompile Include="Math\Disc2D.cpp" />
     <ClCompile Include="Math\FloatRange.cpp" />
@@ -562,6 +563,7 @@
     <ClInclude Include="Math\Capsule3D.hpp" />
     <ClInclude Include="Math\Collider2D.hpp" />
     <ClInclude Include="Math\CollisionHandler.hpp" />
+    <ClInclude Include="Math\ConvexHull2D.hpp" />
     <ClInclude Include="Math\ConvexPoly2D.hpp" />
     <ClInclude Include="Math\Disc2D.hpp" />
     <ClInclude Include="Math\FloatRange.hpp" />

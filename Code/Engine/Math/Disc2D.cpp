@@ -27,7 +27,7 @@ const Vec2& Disc2D::GetCentre() const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-float Disc2D::GetRadius()
+float Disc2D::GetRadius() const
 {
 	return m_radius;
 }

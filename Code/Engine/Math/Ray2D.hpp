@@ -4,10 +4,11 @@
 
 typedef unsigned int uint;
 
-struct Disc2D;
-struct Capsule2D;
-struct Plane2D;
-struct OBB2;
+class Capsule2D;
+class ConvexHull2D;
+class Disc2D;
+class OBB2;
+class Plane2D;
 struct AABB2;
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -27,5 +28,7 @@ struct Ray2D
 uint Raycast(float *out, Ray2D ray, Disc2D const &disc);			// disc
 uint Raycast(float *out, Ray2D ray, Capsule2D const &capsule);      // capsule
 uint Raycast(float *out, Ray2D ray, Plane2D const &plane);          // plane
+uint Raycast(float *out, Ray2D ray, ConvexHull2D const &hull);		// convex hull
+
 uint Raycast(float *out, Ray2D ray, OBB2 const &box);            // obb2
 uint Raycast(float *out, Ray2D ray, AABB2 const &box);            // aabb2

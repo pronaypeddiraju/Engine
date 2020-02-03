@@ -11,7 +11,7 @@ public:
 	~Disc2D();
 
 	const Vec2&				GetCentre() const;
-	float					GetRadius();
+	float					GetRadius() const;
 
 	void					TranslateByVector(const Vec2& translation);
 
