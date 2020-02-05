@@ -4,6 +4,7 @@
 #include "Engine/Math/Disc2D.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Plane2D.hpp"
+#include "Engine/Commons/EngineCommon.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 Ray2D::Ray2D()
@@ -246,13 +247,35 @@ uint Raycast(float *out, Ray2D ray, ConvexHull2D const &hull)
 {
 	//Get all the planes that the hull has
 	std::vector<Plane2D> planes = hull.GetPlanes();
-
-	uint numHits = 0;
-
-	//Now check raycast agaist all the planes
+	std::vector<Plane2D*> planesToCheck;
+	
+	//First identify the planes we are ahead of. Only test if we are going opposite to the plane normal
 	for (int planeIndex = 0; planeIndex < planes.size(); planeIndex++)
 	{
-		uint hitCount = Raycast(&out[planeIndex], ray, planes[planeIndex]);
+		bool result = planes[planeIndex].IsPointInFrontOfPlane(ray.m_start);
+		if (result)
+		{
+			planesToCheck.push_back(&planes[planeIndex]);
+		}
+	}
+
+	std::vector<Plane2D*> planesRayEntersFromFront;
+
+	//check if ray is entering the considered planes from the front side
+	for (int planeIndex = 0; planeIndex < planesToCheck.size(); planeIndex++)
+	{
+		float dotResult = GetDotProduct(ray.m_direction, planesToCheck[planeIndex]->m_normal);
+		if (dotResult <= 0)
+		{
+			planesRayEntersFromFront.push_back(planesToCheck[planeIndex]);
+		}
+	}
+
+	uint numHits = 0;
+	//Now check raycast against all the planes we are entering from the front
+	for (int planeIndex = 0; planeIndex < planesRayEntersFromFront.size(); planeIndex++)
+	{
+		uint hitCount = Raycast(&out[planeIndex], ray, *planesRayEntersFromFront[planeIndex]);
 		numHits += hitCount;
 	}
 

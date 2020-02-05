@@ -13,8 +13,8 @@ public:
 	// positive -> in front of the plane
 	// negative -> behind the plane; 
 	float				GetDistance( Vec2 point ) const;
-	inline bool			IsInFront( Vec2 point ) const { return (GetDistance(point) > 0.0f); }
-	inline bool			IsBehind( Vec2 point ) const { return (GetDistance(point) < 0.0f); }
+	inline bool			IsPointInFrontOfPlane( Vec2 point ) const { return (GetDistance(point) > 0.0f); }
+	inline bool			IsPointBehindPlane( Vec2 point ) const { return (GetDistance(point) < 0.0f); }
 
 	// Not needed for this class, but useful
 	// Vec2 GetProjectedPoint( Vec2 point ) const; 

@@ -20,8 +20,7 @@ struct Ray2D
 
 	Vec2	GetPointAtTime(float time);
 
-	Vec2 m_start = Vec2::ZERO;
-	Vec2 m_direction = Vec2::LEFT;
+	Vec2 m_start = Vec2::ZERO;	Vec2 m_direction = Vec2::LEFT;
 };
 
 //Raycast functions for different types of objects we are raycasting to
