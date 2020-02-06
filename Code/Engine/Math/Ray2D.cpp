@@ -5,6 +5,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Plane2D.hpp"
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Commons/Profiler/Profiler.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 Ray2D::Ray2D()
@@ -26,14 +27,14 @@ Ray2D::~Ray2D()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-Vec2 Ray2D::GetPointAtTime(float time)
+Vec2 Ray2D::GetPointAtTime(float time) const
 {
 	Vec2 distanceInRayDirection = m_direction * time;
 	return m_start + distanceInRayDirection;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-uint Raycast(float *out, Ray2D ray, Disc2D const &disc)
+uint Raycast(float *out, const Ray2D& ray, Disc2D const &disc)
 {
 	//Calculate center between the 2 ray hit points on the disc
 	Vec2 pointToCenter = (disc.GetCentre() - ray.m_start);
@@ -64,7 +65,7 @@ uint Raycast(float *out, Ray2D ray, Disc2D const &disc)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-uint Raycast(float *out, Ray2D ray, Plane2D const &plane, float epsilon)
+uint Raycast(float *out, const Ray2D& ray, Plane2D const &plane, float epsilon)
 {
 	// plane equation : (p.n) - d = 0;
 	// p = point on plane
@@ -110,7 +111,7 @@ uint Raycast(float *out, Ray2D ray, Plane2D const &plane, float epsilon)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-uint Raycast(float *out, Ray2D ray, Capsule2D const &capsule)
+uint Raycast(float *out, const Ray2D& ray, Capsule2D const &capsule)
 {
 	//------------------------------------------------------------------------------------------------------------------------------
 	// Step 1: 
@@ -243,8 +244,10 @@ uint Raycast(float *out, Ray2D ray, Capsule2D const &capsule)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-uint Raycast(RayHit2D *out, Ray2D ray, ConvexHull2D const &hull, float epsilon)
+uint Raycast(RayHit2D *out, const Ray2D& ray, ConvexHull2D const &hull, float epsilon)
 {
+	gProfiler->ProfilerPush("RaycastFn");
+	//PROFILE_LOG_SCOPE_FUNCTION()
 	//Get all the planes that the hull has
 	std::vector<Plane2D> planes = hull.GetPlanes();
 	std::vector<Plane2D*> planesToCheck;
@@ -316,5 +319,6 @@ uint Raycast(RayHit2D *out, Ray2D ray, ConvexHull2D const &hull, float epsilon)
 		}
 	}
 
+	gProfiler->ProfilerPop();
 	return numHits;
 }

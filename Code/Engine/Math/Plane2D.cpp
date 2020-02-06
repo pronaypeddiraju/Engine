@@ -24,7 +24,7 @@ Plane2D::Plane2D(Vec2 normal, Vec2 pointOnPlane)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-float Plane2D::GetDistance( Vec2 point ) const
+float Plane2D::GetDistance( const Vec2& point ) const
 {
 	float distance = GetDotProduct(point, m_normal);
 	distance -= m_signedDistance;
@@ -41,7 +41,7 @@ bool Plane2D::operator==(const Plane2D& compare) const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-STATIC Plane2D Plane2D::AtPosition( Vec2 pos, Vec2 normal ) 
+STATIC Plane2D Plane2D::AtPosition( const Vec2& pos, const Vec2& normal ) 
 {
 	Plane2D p; 
 	p.m_normal = normal; 
@@ -53,7 +53,7 @@ STATIC Plane2D Plane2D::AtPosition( Vec2 pos, Vec2 normal )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-STATIC Plane2D Plane2D::FromPoints( Vec2 p0, Vec2 p1 )
+STATIC Plane2D Plane2D::FromPoints( const Vec2& p0, const Vec2& p1 )
 {
 	Plane2D p;
 	
