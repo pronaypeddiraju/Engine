@@ -11,6 +11,13 @@ class OBB2;
 class Plane2D;
 struct AABB2;
 
+struct RayHit2D
+{
+	Vec2 m_hitPoint;
+	Vec2 m_impactNormal;
+	float m_timeAtHit;
+};
+
 //------------------------------------------------------------------------------------------------------------------------------
 struct Ray2D
 {
@@ -27,7 +34,7 @@ struct Ray2D
 uint Raycast(float *out, Ray2D ray, Disc2D const &disc);			// disc
 uint Raycast(float *out, Ray2D ray, Capsule2D const &capsule);      // capsule
 uint Raycast(float *out, Ray2D ray, Plane2D const &plane);          // plane
-uint Raycast(float *out, Ray2D ray, ConvexHull2D const &hull);		// convex hull
+uint Raycast(RayHit2D *out, Ray2D ray, ConvexHull2D const &hull);		// convex hull
 
 uint Raycast(float *out, Ray2D ray, OBB2 const &box);            // obb2
 uint Raycast(float *out, Ray2D ray, AABB2 const &box);            // aabb2

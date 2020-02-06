@@ -243,7 +243,7 @@ uint Raycast(float *out, Ray2D ray, Capsule2D const &capsule)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-uint Raycast(float *out, Ray2D ray, ConvexHull2D const &hull)
+uint Raycast(RayHit2D *out, Ray2D ray, ConvexHull2D const &hull)
 {
 	//Get all the planes that the hull has
 	std::vector<Plane2D> planes = hull.GetPlanes();
@@ -272,10 +272,22 @@ uint Raycast(float *out, Ray2D ray, ConvexHull2D const &hull)
 	}
 
 	uint numHits = 0;
+	float largestTime = 0;
 	//Now check raycast against all the planes we are entering from the front
 	for (int planeIndex = 0; planeIndex < planesRayEntersFromFront.size(); planeIndex++)
 	{
-		uint hitCount = Raycast(&out[planeIndex], ray, *planesRayEntersFromFront[planeIndex]);
+		float timeAtHit = 0;
+		uint hitCount = Raycast(&timeAtHit, ray, *planesRayEntersFromFront[planeIndex]);
+
+		//We want to store the hit which is farthest away (The last plane that we are entering from the front as planes are infinite technically)
+		if (hitCount > 0 && timeAtHit > largestTime)
+		{
+			largestTime = timeAtHit;
+			out->m_timeAtHit = timeAtHit;
+			out->m_hitPoint = ray.GetPointAtTime(out->m_timeAtHit);
+			out->m_impactNormal = planesRayEntersFromFront[planeIndex]->m_normal;
+		}
+
 		numHits += hitCount;
 	}
 
