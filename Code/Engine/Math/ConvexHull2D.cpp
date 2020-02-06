@@ -58,3 +58,15 @@ const std::vector<Plane2D>& ConvexHull2D::GetPlanes() const
 	return m_outerSlices;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
+void ConvexHull2D::PushPlane(const Plane2D& plane)
+{
+	m_outerSlices.push_back(plane);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void ConvexHull2D::SetBitFieldsForBitBucketBroadPhase(const IntVec2& bitFields)
+{
+	m_bitFieldsXY = bitFields;
+}
+
