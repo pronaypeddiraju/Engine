@@ -64,6 +64,8 @@ Vec2			GetClosestPointOnCapsule2D( const Vec2& referencePos, const Vec2& capsule
 float			GetRayImpactFractionVsDisc2D( const Vec2& rayStart, const Vec2& rayNormalizedDir, float rayLength, const Vec2& discCenter, float discRadius );
 bool			IsPointInCapsule2D( const Vec2& point, const Vec2& capsuleStart, const Vec2& capsuleEnd, float capsuleRadius );
 
+bool			IsPointOnLineSegment2D(const Vec2& position, const Vec2& lineStart, const Vec2& lineEnd, float epsilon = 0.001f);
+
 Vec3			GetSphericalToCartesian(float radius, float angleTheta, float anglePhi);
 
 std::vector<Vec2>			GenerateConvexPolygonFromDisc2D(int discRadius);

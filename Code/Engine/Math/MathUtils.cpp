@@ -468,6 +468,26 @@ bool IsPointInCapsule2D( const Vec2& point, const Vec2& capsuleStart, const Vec2
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+bool IsPointOnLineSegment2D(const Vec2& position, const Vec2& lineStart, const Vec2& lineEnd, float epsilon)
+{
+	Vec2 lineSegment = Vec2(lineEnd - lineStart);
+	Vec2 pointSegment = Vec2(position - lineStart);
+
+	float pointProjection = GetDotProduct(lineSegment, pointSegment);
+	float segmentProjection = GetDotProduct(lineSegment, lineSegment);
+
+	if (pointProjection > 0 && pointProjection < segmentProjection)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 Vec3 GetSphericalToCartesian( float radius, float angleTheta, float anglePhi )
 {
 	Vec3 coordinates;
