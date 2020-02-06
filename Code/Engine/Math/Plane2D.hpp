@@ -16,8 +16,7 @@ public:
 	inline bool			IsPointInFrontOfPlane( Vec2 point ) const { return (GetDistance(point) > 0.0f); }
 	inline bool			IsPointBehindPlane( Vec2 point ) const { return (GetDistance(point) < 0.0f); }
 
-	// Not needed for this class, but useful
-	// Vec2 GetProjectedPoint( Vec2 point ) const; 
+	bool				operator==(const Plane2D& compare) const;
 
 public:
 	Vec2				m_normal; 

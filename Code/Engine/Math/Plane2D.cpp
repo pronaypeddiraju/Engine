@@ -32,6 +32,15 @@ float Plane2D::GetDistance( Vec2 point ) const
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+bool Plane2D::operator==(const Plane2D& compare) const
+{
+	if (m_signedDistance == compare.m_signedDistance && m_normal == compare.m_normal)
+		return true;
+	else
+		return false;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC Plane2D Plane2D::AtPosition( Vec2 pos, Vec2 normal ) 
 {
 	Plane2D p; 

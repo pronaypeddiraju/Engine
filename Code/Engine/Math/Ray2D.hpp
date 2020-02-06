@@ -33,8 +33,8 @@ struct Ray2D
 //Raycast functions for different types of objects we are raycasting to
 uint Raycast(float *out, Ray2D ray, Disc2D const &disc);			// disc
 uint Raycast(float *out, Ray2D ray, Capsule2D const &capsule);      // capsule
-uint Raycast(float *out, Ray2D ray, Plane2D const &plane);          // plane
-uint Raycast(RayHit2D *out, Ray2D ray, ConvexHull2D const &hull);		// convex hull
+uint Raycast(float *out, Ray2D ray, Plane2D const &plane, float epsilon = 0.f);          // plane
+uint Raycast(RayHit2D *out, Ray2D ray, ConvexHull2D const &hull, float epsilon = 0.f);		// convex hull
 
 uint Raycast(float *out, Ray2D ray, OBB2 const &box);            // obb2
 uint Raycast(float *out, Ray2D ray, AABB2 const &box);            // aabb2
