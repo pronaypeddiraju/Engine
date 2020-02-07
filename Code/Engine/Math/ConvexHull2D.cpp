@@ -70,3 +70,9 @@ void ConvexHull2D::SetBitFieldsForBitBucketBroadPhase(const IntVec2& bitFields)
 	m_bitFieldsXY = bitFields;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
+const IntVec2& ConvexHull2D::GetBitFields() const
+{
+	return m_bitFieldsXY;
+}
+

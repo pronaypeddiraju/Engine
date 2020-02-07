@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #pragma once
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/IntVec2.hpp"
 
 typedef unsigned int uint;
 
@@ -28,6 +29,9 @@ struct Ray2D
 	Vec2	GetPointAtTime(float time) const;
 
 	Vec2 m_start = Vec2::ZERO;	Vec2 m_direction = Vec2::LEFT;
+
+	//Only for bit bucket based broad phase checks
+	IntVec2		m_bitFieldsXY;
 };
 
 //Raycast functions for different types of objects we are raycasting to

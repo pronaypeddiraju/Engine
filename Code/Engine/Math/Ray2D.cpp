@@ -246,11 +246,13 @@ uint Raycast(float *out, const Ray2D& ray, Capsule2D const &capsule)
 //------------------------------------------------------------------------------------------------------------------------------
 uint Raycast(RayHit2D *out, const Ray2D& ray, ConvexHull2D const &hull, float epsilon)
 {
-	gProfiler->ProfilerPush("RaycastFn");
-	//PROFILE_LOG_SCOPE_FUNCTION()
+	//gProfiler->ProfilerPush("RaycastFn");
+	
 	//Get all the planes that the hull has
-	std::vector<Plane2D> planes = hull.GetPlanes();
-	std::vector<Plane2D*> planesToCheck;
+	const std::vector<Plane2D>& planes = hull.GetPlanes();
+
+	static std::vector<const Plane2D*> planesToCheck;
+	planesToCheck.clear();
 	
 	//First identify the planes we are ahead of. Only test if we are going opposite to the plane normal
 	for (int planeIndex = 0; planeIndex < planes.size(); planeIndex++)
@@ -258,6 +260,7 @@ uint Raycast(RayHit2D *out, const Ray2D& ray, ConvexHull2D const &hull, float ep
 		bool result = planes[planeIndex].IsPointInFrontOfPlane(ray.m_start);
 		if (result)
 		{
+			//Mark the planes that are valid here
 			planesToCheck.push_back(&planes[planeIndex]);
 		}
 	}
@@ -271,7 +274,8 @@ uint Raycast(RayHit2D *out, const Ray2D& ray, ConvexHull2D const &hull, float ep
 		return 1;
 	}
 
-	std::vector<Plane2D*> planesRayEntersFromFront;
+	static std::vector<const Plane2D*> planesRayEntersFromFront;
+	planesRayEntersFromFront.clear();
 
 	//check if ray is entering the considered planes from the front side
 	for (int planeIndex = 0; planeIndex < planesToCheck.size(); planeIndex++)
@@ -319,6 +323,6 @@ uint Raycast(RayHit2D *out, const Ray2D& ray, ConvexHull2D const &hull, float ep
 		}
 	}
 
-	gProfiler->ProfilerPop();
+	//gProfiler->ProfilerPop();
 	return numHits;
 }
