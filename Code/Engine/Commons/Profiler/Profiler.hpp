@@ -77,7 +77,7 @@ private:
 	std::vector<ProfilerSample_T*>			m_History;
 	std::shared_mutex						m_HistoryLock;
 
-	size_t									m_AllowedSize = 1048576;	//1024 KibiBytes or 1 MebiByte
+	size_t									m_AllowedSize = 104857600;	//1024 KibiBytes or 1 MebiByte
 
 	//------------------------------------------------------------------------------------------------------------------------------
 	//ImGUI values

@@ -39,6 +39,7 @@ public:
 	const static Rgba ORGANIC_DIM_BLUE;
 	const static Rgba ORGANIC_DIM_PURPLE;
 
+	const static Rgba DIM_TRANSLUCENT_GREY;
 private:
 	//private variables
 

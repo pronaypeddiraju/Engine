@@ -61,6 +61,47 @@ void AddVertsForLine2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& start,
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void AddVertsForArrow2D(std::vector<Vertex_PCU>& vertexArray, const Vec2& start, const Vec2& end, float thickness, const Rgba& color)
+{
+	Vec2 centerToBoundVector = end - start;
+	centerToBoundVector.SetLength(thickness / 2);
+	Vec2 centreToBoundRotated = centerToBoundVector.GetRotated90Degrees();
+
+	Vec3 lineCorner = Vec3(start) + Vec3(centreToBoundRotated);
+	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2::ZERO));
+
+	lineCorner = Vec3(start) - Vec3(centreToBoundRotated);
+	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2::ZERO));
+
+	lineCorner = Vec3(end) - Vec3(centerToBoundVector) - Vec3(centreToBoundRotated);
+	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2::ZERO));
+
+	//We have our first triangle now
+	lineCorner = Vec3(end) - Vec3(centerToBoundVector) - Vec3(centreToBoundRotated);
+	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2::ZERO));
+
+	lineCorner = Vec3(end) - Vec3(centerToBoundVector) + Vec3(centreToBoundRotated);
+	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2::ZERO));
+
+	lineCorner = Vec3(start) + Vec3(centreToBoundRotated);
+	vertexArray.push_back(Vertex_PCU(lineCorner, color, Vec2::ZERO));
+
+	//Make a final triangle pointing to end position
+	Vec2 arrowBoundVector = end - start;
+	arrowBoundVector.SetLength(thickness * 3);
+	Vec2 arrowBoundRotated = arrowBoundVector.GetRotated90Degrees();
+
+	Vec3 triangle = Vec3(end);
+	vertexArray.push_back(Vertex_PCU(triangle, color, Vec2::ZERO));
+
+	triangle = Vec3(end) - Vec3(arrowBoundVector) + Vec3(arrowBoundRotated);
+	vertexArray.push_back(Vertex_PCU(triangle, color, Vec2::ZERO));
+
+	triangle = Vec3(end) - Vec3(arrowBoundVector) - Vec3(arrowBoundRotated);
+	vertexArray.push_back(Vertex_PCU(triangle, color, Vec2::ZERO));
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForRing2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& center, float radius, float thickness, const Rgba& color, int numSides /*= 64 */ )
 {
 	float angleToAdd = 360.f / numSides;

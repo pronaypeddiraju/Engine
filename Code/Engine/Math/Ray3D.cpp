@@ -24,14 +24,14 @@ Ray3D::~Ray3D()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-Vec3 Ray3D::GetPointAtTime(float time)
+Vec3 Ray3D::GetPointAtTime(float time) const
 {
 	Vec3 distanceInRayDirection = m_direction * time;
 	return m_start + distanceInRayDirection;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-uint Raycast(float *out, Ray3D ray, Sphere const &sphere)
+uint Raycast(float *out, const Ray3D& ray, Sphere const &sphere)
 {
 	//Calculate center between the 2 ray hit points on the sphere
 	Vec3 pointToCenter = (sphere.m_point - ray.m_start);
@@ -62,7 +62,7 @@ uint Raycast(float *out, Ray3D ray, Sphere const &sphere)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-uint Raycast(float *out, Ray3D ray, Plane3D const &plane)
+uint Raycast(float *out, const Ray3D& ray, Plane3D const &plane)
 {
 	// plane equation : (p.n) - d = 0;
 	// p = point on plane
@@ -108,7 +108,7 @@ uint Raycast(float *out, Ray3D ray, Plane3D const &plane)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-uint Raycast(float *out, Ray3D ray, Capsule3D const &capsule)
+uint Raycast(float *out, const Ray3D& ray, Capsule3D const &capsule)
 {
 	//------------------------------------------------------------------------------------------------------------------------------
 	// Step 1: 

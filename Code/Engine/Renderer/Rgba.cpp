@@ -204,4 +204,6 @@ const STATIC Rgba Rgba::ORGANIC_DIM_YELLOW(0.243137f, 0.203921f, 0.f, 1.f);
 const STATIC Rgba Rgba::ORGANIC_DIM_GREEN(0.082352f, 0.274509f, 0.f, 1.f);
 const STATIC Rgba Rgba::ORGANIC_DIM_BLUE(0.f, 0.207843f, 0.356862f, 1.f);
 const STATIC Rgba Rgba::ORGANIC_DIM_PURPLE(0.298039f, 0.f, 0.427450f, 1.f);
+
+const STATIC Rgba Rgba::DIM_TRANSLUCENT_GREY(0.6f, 0.6f, 0.6f, 0.1f);
 //------------------------------------------------------------------------------------------------------------------------------

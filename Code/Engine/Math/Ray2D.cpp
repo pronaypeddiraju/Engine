@@ -4,6 +4,8 @@
 #include "Engine/Math/Disc2D.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Plane2D.hpp"
+#include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Commons/Profiler/Profiler.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 Ray2D::Ray2D()
@@ -25,14 +27,14 @@ Ray2D::~Ray2D()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-Vec2 Ray2D::GetPointAtTime(float time)
+Vec2 Ray2D::GetPointAtTime(float time) const
 {
 	Vec2 distanceInRayDirection = m_direction * time;
 	return m_start + distanceInRayDirection;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-uint Raycast(float *out, Ray2D ray, Disc2D const &disc)
+uint Raycast(float *out, const Ray2D& ray, Disc2D const &disc)
 {
 	//Calculate center between the 2 ray hit points on the disc
 	Vec2 pointToCenter = (disc.GetCentre() - ray.m_start);
@@ -63,7 +65,7 @@ uint Raycast(float *out, Ray2D ray, Disc2D const &disc)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-uint Raycast(float *out, Ray2D ray, Plane2D const &plane)
+uint Raycast(float *out, const Ray2D& ray, Plane2D const &plane, float epsilon)
 {
 	// plane equation : (p.n) - d = 0;
 	// p = point on plane
@@ -79,13 +81,13 @@ uint Raycast(float *out, Ray2D ray, Plane2D const &plane)
 	// t = (d - s.n) / v.n
 
 	//First early out is to check if the point p is already on the plane
-	if ((GetDotProduct(ray.m_start, plane.m_normal) - plane.m_signedDistance) == 0)
+	if ((GetDotProduct(ray.m_start, plane.m_normal) - (plane.m_signedDistance + epsilon)) == 0)
 	{
 		out[0] = 0;
 		return 1U;
 	}
 
-	float numerator = plane.m_signedDistance - GetDotProduct(ray.m_start, plane.m_normal);
+	float numerator = (plane.m_signedDistance + epsilon) - GetDotProduct(ray.m_start, plane.m_normal);
 	float denominator = GetDotProduct(ray.m_direction, plane.m_normal);
 
 	if (denominator == 0)
@@ -109,7 +111,7 @@ uint Raycast(float *out, Ray2D ray, Plane2D const &plane)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-uint Raycast(float *out, Ray2D ray, Capsule2D const &capsule)
+uint Raycast(float *out, const Ray2D& ray, Capsule2D const &capsule)
 {
 	//------------------------------------------------------------------------------------------------------------------------------
 	// Step 1: 
@@ -242,19 +244,85 @@ uint Raycast(float *out, Ray2D ray, Capsule2D const &capsule)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-uint Raycast(float *out, Ray2D ray, ConvexHull2D const &hull)
+uint Raycast(RayHit2D *out, const Ray2D& ray, ConvexHull2D const &hull, float epsilon)
 {
+	//gProfiler->ProfilerPush("RaycastFn");
+	
 	//Get all the planes that the hull has
-	std::vector<Plane2D> planes = hull.GetPlanes();
+	const std::vector<Plane2D>& planes = hull.GetPlanes();
 
-	uint numHits = 0;
-
-	//Now check raycast agaist all the planes
+	static std::vector<const Plane2D*> planesToCheck;
+	planesToCheck.clear();
+	
+	//First identify the planes we are ahead of. Only test if we are going opposite to the plane normal
 	for (int planeIndex = 0; planeIndex < planes.size(); planeIndex++)
 	{
-		uint hitCount = Raycast(&out[planeIndex], ray, planes[planeIndex]);
-		numHits += hitCount;
+		bool result = planes[planeIndex].IsPointInFrontOfPlane(ray.m_start);
+		if (result)
+		{
+			//Mark the planes that are valid here
+			planesToCheck.push_back(&planes[planeIndex]);
+		}
 	}
 
+	if (planesToCheck.size() == 0)
+	{
+		//We are already in side the convex hull
+		out->m_impactNormal = Vec2::UP;
+		out->m_hitPoint = ray.m_start;
+		out->m_timeAtHit = 0.f;
+		return 1;
+	}
+
+	static std::vector<const Plane2D*> planesRayEntersFromFront;
+	planesRayEntersFromFront.clear();
+
+	//check if ray is entering the considered planes from the front side
+	for (int planeIndex = 0; planeIndex < planesToCheck.size(); planeIndex++)
+	{
+		float dotResult = GetDotProduct(ray.m_direction, planesToCheck[planeIndex]->m_normal);
+		if (dotResult <= 0)
+		{
+			planesRayEntersFromFront.push_back(planesToCheck[planeIndex]);
+		}
+	}
+
+	uint numHits = 0;
+	float largestTime = 0;
+	//Now check raycast against all the planes we are entering from the front
+	for (int planeIndex = 0; planeIndex < planesRayEntersFromFront.size(); planeIndex++)
+	{
+		float timeAtHit = 0;
+		uint hitCount = Raycast(&timeAtHit, ray, *planesRayEntersFromFront[planeIndex], epsilon);
+
+		//We want to store the hit which is farthest away (The last plane that we are entering from the front as planes are infinite technically)
+		if (hitCount > 0 && timeAtHit > largestTime)
+		{
+			bool result = true;
+
+			Vec2 hitPoint = ray.GetPointAtTime(timeAtHit);
+			for (int i = 0; i < planes.size(); i++)
+			{
+				if(planes[i] == *planesRayEntersFromFront[planeIndex])
+					continue;
+				else
+				{
+					if (!planes[i].IsPointBehindPlane(hitPoint))
+						result = false;
+				}
+			}
+
+			if (result)
+			{
+				largestTime = timeAtHit;
+				out->m_timeAtHit = timeAtHit;
+				out->m_hitPoint = ray.GetPointAtTime(out->m_timeAtHit);
+				out->m_impactNormal = planesRayEntersFromFront[planeIndex]->m_normal;
+				numHits += hitCount;
+			}
+		}
+	}
+
+	//gProfiler->ProfilerPop();
 	return numHits;
 }

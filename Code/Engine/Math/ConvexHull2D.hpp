@@ -2,6 +2,7 @@
 #pragma once
 #include "Engine/Math/ConvexPoly2D.hpp"
 #include "Engine/Math/Plane2D.hpp"
+#include "Engine/Math/IntVec2.hpp"
 #include <vector>
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -15,6 +16,16 @@ public:
 	void							MakeConvexHullFromConvexPolyon(const ConvexPoly2D& polygon);
 	int								GetNumPlanes() const;
 	const std::vector<Plane2D>&		GetPlanes() const;
+
+	void							PushPlane(const Plane2D& plane);
+
+	void							SetBitFieldsForBitBucketBroadPhase(const IntVec2& bitFields);
+	const IntVec2&					GetBitFields() const;
+
 private:
 	std::vector<Plane2D> m_outerSlices;
+
+	//For broad-phase checks using bitBuckets
+	IntVec2				m_bitFieldsXY;
+public:
 };
