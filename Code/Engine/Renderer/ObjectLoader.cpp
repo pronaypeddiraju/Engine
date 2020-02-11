@@ -109,6 +109,8 @@ void ObjectLoader::LoadFromXML(const std::string& fileName)
 			NamedProperties eventArgs;
 			eventArgs.SetValue("id", ParseXmlAttribute(*root, "id", ""));
 			eventArgs.SetValue("src", ParseXmlAttribute(*elem, "src", ""));
+			eventArgs.SetValue("physXFlags", ParseXmlAttribute(*elem, "physXFlags", ""));
+			eventArgs.SetValue("position", ParseXmlAttribute(*elem, "position", Vec3::ZERO));
 
 			g_eventSystem->FireEvent("ReadCollisionMeshFromData", eventArgs);
 

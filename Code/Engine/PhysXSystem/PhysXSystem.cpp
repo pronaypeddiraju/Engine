@@ -907,8 +907,13 @@ STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 	PxConvexMeshCookingResult::Enum result;
 	if (!g_PxPhysXSystem->GetPhysXCookingModule()->cookConvexMesh(desc, buffer, &result))
 	{
-		//There was a problem making the mesh
 		//Look at result for details
+		TODO("Print results here and yell at the user");
+
+		//There was a problem making the mesh
+		//For now we are going to just yell and die
+		ERROR_AND_DIE("Failed to cook collision mesh for object in LoadCollisionMeshFromData");
+
 		return false;
 	}
 
@@ -937,13 +942,20 @@ STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 
 	PxShape* shape = g_PxPhysXSystem->GetPhysXSDK()->createShape(geometry, *material);
 
+	TODO("Setup collision flags based on what we read from data to setup obstacles differntly from drivable surfaces")
+
 	PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_OBSTACLE, COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
 	PxFilterData qryFilterData;
 	setupDrivableSurface(qryFilterData);
 	shape->setQueryFilterData(qryFilterData);
 	shape->setSimulationFilterData(groundPlaneSimFilterData);
 
-	PxTransform localTm(PxVec3(0, 0, 0), PxQuat(PxIdentity));
+	//My transform is what?
+	TODO("Load a proper transform value here based on what we recieve as event args from the TrackNode");
+
+	Vec3 position = args.GetValue("position", position);
+
+	PxTransform localTm(VecToPxVector(position), PxQuat(PxIdentity));
 	PxRigidStatic* body = g_PxPhysXSystem->GetPhysXSDK()->createRigidStatic(localTm);
 	body->attachShape(*shape);
 	g_PxPhysXSystem->GetPhysXScene()->addActor(*body);

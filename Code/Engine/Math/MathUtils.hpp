@@ -87,6 +87,7 @@ bool			IsBitFlagSet( unsigned short buttonFlags, unsigned short buttonFlag );
 //Other utilities
 float			GetHigherValue(const float a, const float b);
 float			Clamp(float x, float minClamp, float maxClamp);
+float			ClampZeroToOne(float x);
 float			GetAngluarDisplacement(float startDegrees, float endDegrees);
 float			GetTurnedToward(float currentDegrees, float goalDegrees, float maxPositiveDeltaDegrees);
 
