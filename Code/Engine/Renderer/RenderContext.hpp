@@ -68,6 +68,8 @@ public:
 	void						BeginFrame();
 	void						EndFrame();
 	void						Shutdown();
+	void						ClearAllAssetRepositories();
+	void						Restart();
 
 	ColorTargetView*			GetFrameColorTarget();
 	Texture2D*					GetFrameColorTexture();

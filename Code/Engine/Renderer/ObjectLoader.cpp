@@ -28,7 +28,7 @@ ObjectLoader::~ObjectLoader()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-STATIC ObjectLoader* ObjectLoader::CreateMeshFromFile(RenderContext* renderContext, const std::string& fileName, bool isDataDriven)
+STATIC ObjectLoader* ObjectLoader::MakeLoaderAndLoadMeshFromFile(RenderContext* renderContext, const std::string& fileName, bool isDataDriven)
 {
 	ObjectLoader* object = new ObjectLoader();
 	object->m_renderContext = renderContext;
@@ -50,6 +50,28 @@ STATIC ObjectLoader* ObjectLoader::CreateMeshFromFile(RenderContext* renderConte
 	}
 
 	return object;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void ObjectLoader::LoadMeshFromFile(RenderContext* renderContext, const std::string& fileName, bool isDataDriven)
+{
+	m_renderContext = renderContext;
+
+	DebuggerPrintf("Loading: %s\n", fileName.c_str());
+
+	//Open file and see what it says
+	if (isDataDriven)
+	{
+		//Load the models from xml;
+		LoadFromXML(fileName);
+		CreateGPUMesh();
+	}
+	else
+	{
+		CreateFromString(fileName.c_str());
+		CreateCPUMesh();
+		CreateGPUMesh();
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -111,6 +133,11 @@ void ObjectLoader::LoadFromXML(const std::string& fileName)
 			eventArgs.SetValue("src", ParseXmlAttribute(*elem, "src", ""));
 			eventArgs.SetValue("physXFlags", ParseXmlAttribute(*elem, "physXFlags", ""));
 			eventArgs.SetValue("position", ParseXmlAttribute(*elem, "position", Vec3::ZERO));
+
+			eventArgs.SetValue("transform", m_transform);
+			eventArgs.SetValue("scale", m_scale);
+			eventArgs.SetValue("invert", m_invert);
+			eventArgs.SetValue("tangents", m_tangents);
 
 			g_eventSystem->FireEvent("ReadCollisionMeshFromData", eventArgs);
 

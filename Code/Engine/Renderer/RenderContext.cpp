@@ -637,14 +637,34 @@ void RenderContext::Shutdown()
 	delete m_immediateMesh;
 	m_immediateMesh = nullptr;
 
+	ClearAllAssetRepositories();
+
+	/*
+	texIterator = m_loadedTextures.begin();
+	lastTexIterator = m_loadedTextures.end();
+
+	for(texIterator; texIterator != lastTexIterator; texIterator++)
+	{
+		delete texIterator->second;
+	}
+
+	m_loadedTextures.clear();
+	*/
+
+	D3D11Cleanup();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void RenderContext::ClearAllAssetRepositories()
+{
 	//m_loadedShaders;
 	std::map< std::string, Shader*>::iterator shaderIterator;
 	std::map< std::string, Shader*>::iterator lastShaderIterator;
 
 	shaderIterator = m_loadedShaders.begin();
 	lastShaderIterator = m_loadedShaders.end();
-	
-	for(shaderIterator; shaderIterator != lastShaderIterator; shaderIterator++)
+
+	for (shaderIterator; shaderIterator != lastShaderIterator; shaderIterator++)
 	{
 		delete shaderIterator->second;
 	}
@@ -652,7 +672,7 @@ void RenderContext::Shutdown()
 	//Free all samplers
 	int numFilterModes = NUM_FILTER_MODES;
 
-	for(int filterIterator = 0; filterIterator < numFilterModes; filterIterator++)
+	for (int filterIterator = 0; filterIterator < numFilterModes; filterIterator++)
 	{
 		delete m_cachedSamplers[filterIterator];
 		m_cachedSamplers[filterIterator] = nullptr;
@@ -667,7 +687,7 @@ void RenderContext::Shutdown()
 	texIterator = m_cachedTextureViews.begin();
 	lastTexIterator = m_cachedTextureViews.end();
 
-	for(texIterator; texIterator != lastTexIterator; texIterator++)
+	for (texIterator; texIterator != lastTexIterator; texIterator++)
 	{
 		delete texIterator->second;
 	}
@@ -681,7 +701,7 @@ void RenderContext::Shutdown()
 	fontIterator = m_loadedFonts.begin();
 	lastFontIterator = m_loadedFonts.end();
 
-	for(fontIterator; fontIterator != lastFontIterator; fontIterator++)
+	for (fontIterator; fontIterator != lastFontIterator; fontIterator++)
 	{
 		delete fontIterator->second;
 	}
@@ -695,7 +715,7 @@ void RenderContext::Shutdown()
 	MatIterator = m_materialDatabase.begin();
 	lastMatIterator = m_materialDatabase.end();
 
-	for(MatIterator; MatIterator != lastMatIterator; MatIterator++)
+	for (MatIterator; MatIterator != lastMatIterator; MatIterator++)
 	{
 		delete MatIterator->second;
 	}
@@ -715,20 +735,13 @@ void RenderContext::Shutdown()
 	}
 
 	m_modelDatabase.clear();
+}
 
-	/*
-	texIterator = m_loadedTextures.begin();
-	lastTexIterator = m_loadedTextures.end();
-
-	for(texIterator; texIterator != lastTexIterator; texIterator++)
-	{
-		delete texIterator->second;
-	}
-
-	m_loadedTextures.clear();
-	*/
-
-	D3D11Cleanup();
+//------------------------------------------------------------------------------------------------------------------------------
+void RenderContext::Restart()
+{
+	ClearAllAssetRepositories();
+	Startup();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -1434,7 +1447,7 @@ GPUMesh* RenderContext::CreateOrGetMeshFromFile(const std::string& fileName)
 		}
 
 		//Create the Model
-		ObjectLoader* model = ObjectLoader::CreateMeshFromFile(this, filePath, isDataDriven);
+		ObjectLoader* model = ObjectLoader::MakeLoaderAndLoadMeshFromFile(this, filePath, isDataDriven);
 		
 		//Setup materials
 		std::vector<std::string> splits = SplitStringOnDelimiter(fileName, '.');

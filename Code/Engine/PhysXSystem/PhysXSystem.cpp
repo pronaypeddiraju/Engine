@@ -873,7 +873,7 @@ STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 {
 	//Load the mesh
 	DebuggerPrintf("\n\n Called event LoadCollisionMeshFromData");
-	ObjectLoader* loader;
+	ObjectLoader loader;
 
 	std::string id = "";
 	std::string src = "";
@@ -888,16 +888,34 @@ STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 	else
 	{
 		//Id was valid so now let's load the mesh
-		loader = ObjectLoader::CreateMeshFromFile(g_renderContext, MODEL_PATH + src, true);
+		//Check the file extension
+		std::vector<std::string> strings = SplitStringOnDelimiter(src, '.');
+		bool isDataDriven = false;
+		if (strings.size() > 1)
+		{
+			if (strings[(strings.size() - 1)] == "mesh")
+			{
+				isDataDriven = true;
+			}
+		}
+
+		//Before we can CreateMeshFromFile we need to send it the required transform, scale, invert, tangent information
+		loader.m_tangents = args.GetValue("tangents", loader.m_tangents);
+		loader.m_scale = args.GetValue("scale", loader.m_scale);
+		loader.m_transform = args.GetValue("transform", loader.m_transform);
+		loader.m_invert = args.GetValue("invert", loader.m_invert);
+
+		//This will now load the mesh from file
+		loader.LoadMeshFromFile(g_renderContext, MODEL_PATH + src, isDataDriven);
 	}
 
 	//Create a PxConvexMesh from the vertex array 
-	PxVec3* convexVerts = new PxVec3[loader->m_cpuMesh->GetVertexCount()];
-	g_PxPhysXSystem->AddVertMasterBufferToPxVecBuffer(convexVerts, loader->m_cpuMesh->GetVertices(), loader->m_cpuMesh->GetVertexCount());
+	PxVec3* convexVerts = new PxVec3[loader.m_cpuMesh->GetVertexCount()];
+	g_PxPhysXSystem->AddVertMasterBufferToPxVecBuffer(convexVerts, loader.m_cpuMesh->GetVertices(), loader.m_cpuMesh->GetVertexCount());
 
 	//Create a pxDescription for the convexmesh
 	PxConvexMeshDesc desc;
-	desc.points.count = (PxU32)loader->m_cpuMesh->GetVertexCount();
+	desc.points.count = (PxU32)loader.m_cpuMesh->GetVertexCount();
 	desc.points.stride = sizeof(PxVec3);
 	desc.points.data = convexVerts;
 	desc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
@@ -961,7 +979,6 @@ STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 	g_PxPhysXSystem->GetPhysXScene()->addActor(*body);
 
 	PX_ASSERT(convex);
-	delete loader;
 
 	return true;
 }
@@ -996,5 +1013,28 @@ void PhysXSystem::ShutDown()
 		PX_RELEASE(transport);
 	}
 	PX_RELEASE(m_PxFoundation);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void PhysXSystem::RestartPhysX()
+{
+	if (m_vehicleKitEnabled)
+	{
+		PxCloseVehicleSDK();
+	}
+
+	//Get and release all the actors in the current scene
+	int numActors = m_PxScene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC);
+	if (numActors > 0)
+	{
+		std::vector<PxRigidActor*> actors(numActors);
+		m_PxScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), numActors);
+
+		//Release the actor here
+		for (int actorIndex = 0; actorIndex < numActors; actorIndex++)
+		{
+			actors[actorIndex]->release();
+		}
+	}
 }
 

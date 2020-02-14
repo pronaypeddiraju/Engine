@@ -42,6 +42,8 @@ public:
 	void				EndFrame();
 	void				ShutDown();
 
+	void				RestartPhysX();
+
 	PxScene*			GetPhysXScene() const;
 	PxPhysics*			GetPhysXSDK() const;
 	PxCooking*			GetPhysXCookingModule() const;
