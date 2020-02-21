@@ -149,9 +149,8 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 	m_PxDispatcher = PxDefaultCpuDispatcherCreate(1);
 	sceneDesc.cpuDispatcher = m_PxDispatcher;
-	//sceneDesc.filterShader = PxDefaultSimulationFilterShader;
-	//sceneDesc.filterShader = VehicleFilterShader;
-	sceneDesc.filterShader = VehicleStandardCollisionsFilterShader;
+	sceneDesc.filterShader = VehicleFilterShader;
+	//sceneDesc.filterShader = VehicleStandardCollisionsFilterShader;
 	sceneDesc.contactModifyCallback = &gWheelContactModifyCallback;			//Enable contact modification
 	sceneDesc.ccdContactModifyCallback = &gWheelCCDContactModifyCallback;	//Enable ccd contact modification
 	sceneDesc.flags |= PxSceneFlag::eENABLE_CCD;							//Enable ccd
@@ -189,7 +188,7 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 	
 	//Create a vehicle that will drive on the plane.
 	PxFilterData chassisSimFilterData(COLLISION_FLAG_CHASSIS, COLLISION_FLAG_CHASSIS_AGAINST, 0, 0);
-	PxFilterData wheelSimFilterData(COLLISION_FLAG_WHEEL, COLLISION_FLAG_WHEEL, PxPairFlag::eDETECT_CCD_CONTACT | PxPairFlag::eMODIFY_CONTACTS, 0);
+	PxFilterData wheelSimFilterData(COLLISION_FLAG_WHEEL, COLLISION_FLAG_WHEEL_AGAINST, PxPairFlag::eDETECT_CCD_CONTACT | PxPairFlag::eMODIFY_CONTACTS, 0);
 	VehicleDesc vehicleDesc = InitializeVehicleDescription(chassisSimFilterData, wheelSimFilterData);
 	PxVehicleDrive4W* vehicleReference = createVehicle4W(vehicleDesc, m_PhysX, m_PxCooking);
 	PxTransform startTransform(PxVec3(0, (vehicleDesc.chassisDims.y*0.5f + vehicleDesc.wheelRadius + 1.0f), 0), PxQuat(PxIdentity));
