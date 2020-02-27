@@ -19,13 +19,7 @@ public:
 
 	void							PushPlane(const Plane2D& plane);
 
-	void							SetBitFieldsForBitBucketBroadPhase(const IntVec2& bitFields);
-	const IntVec2&					GetBitFields() const;
-
 private:
 	std::vector<Plane2D> m_outerSlices;
-
-	//For broad-phase checks using bitBuckets
-	IntVec2				m_bitFieldsXY;
 public:
 };
