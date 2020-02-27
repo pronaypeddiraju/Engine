@@ -3,6 +3,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/Matrix44.hpp"
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 AABB3::AABB3()
@@ -13,6 +14,9 @@ AABB3::AABB3()
 //------------------------------------------------------------------------------------------------------------------------------
 AABB3::AABB3( const Vec3& minBounds, const Vec3& maxBounds)
 {
+	m_minBounds = minBounds;
+	m_maxBounds = maxBounds;
+
 	//Setup the front face
 	m_frontBottomLeft = minBounds;
 	m_frontTopRight = Vec3(maxBounds.x, maxBounds.y, minBounds.z);
@@ -87,4 +91,29 @@ void AABB3::TransfromUsingMatrix(const Matrix44& translation)
 	m_backBottomRight = translation.TransformPosition3D(m_backBottomRight);
 	m_backTopLeft = translation.TransformPosition3D(m_backTopLeft);
 	m_backTopRight = translation.TransformPosition3D(m_backTopRight);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool AABB3::IsPointInsideAABB3(const Vec3& point) const
+{
+	if (IsVectorInRange(point, m_minBounds, m_maxBounds))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const Vec3& AABB3::GetMins() const
+{
+	return m_minBounds;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const Vec3& AABB3::GetMaxs() const
+{
+	return m_maxBounds;
 }

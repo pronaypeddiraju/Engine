@@ -149,9 +149,8 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 	m_PxDispatcher = PxDefaultCpuDispatcherCreate(1);
 	sceneDesc.cpuDispatcher = m_PxDispatcher;
-	//sceneDesc.filterShader = PxDefaultSimulationFilterShader;
-	//sceneDesc.filterShader = VehicleFilterShader;
-	sceneDesc.filterShader = VehicleStandardCollisionsFilterShader;
+	sceneDesc.filterShader = VehicleFilterShader;
+	//sceneDesc.filterShader = VehicleStandardCollisionsFilterShader;
 	sceneDesc.contactModifyCallback = &gWheelContactModifyCallback;			//Enable contact modification
 	sceneDesc.ccdContactModifyCallback = &gWheelCCDContactModifyCallback;	//Enable ccd contact modification
 	sceneDesc.flags |= PxSceneFlag::eENABLE_CCD;							//Enable ccd
@@ -189,7 +188,7 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 	
 	//Create a vehicle that will drive on the plane.
 	PxFilterData chassisSimFilterData(COLLISION_FLAG_CHASSIS, COLLISION_FLAG_CHASSIS_AGAINST, 0, 0);
-	PxFilterData wheelSimFilterData(COLLISION_FLAG_WHEEL, COLLISION_FLAG_WHEEL, PxPairFlag::eDETECT_CCD_CONTACT | PxPairFlag::eMODIFY_CONTACTS, 0);
+	PxFilterData wheelSimFilterData(COLLISION_FLAG_WHEEL, COLLISION_FLAG_WHEEL_AGAINST, PxPairFlag::eDETECT_CCD_CONTACT | PxPairFlag::eMODIFY_CONTACTS, 0);
 	VehicleDesc vehicleDesc = InitializeVehicleDescription(chassisSimFilterData, wheelSimFilterData);
 	PxVehicleDrive4W* vehicleReference = createVehicle4W(vehicleDesc, m_PhysX, m_PxCooking);
 	PxTransform startTransform(PxVec3(0, (vehicleDesc.chassisDims.y*0.5f + vehicleDesc.wheelRadius + 1.0f), 0), PxQuat(PxIdentity));
@@ -873,7 +872,7 @@ STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 {
 	//Load the mesh
 	DebuggerPrintf("\n\n Called event LoadCollisionMeshFromData");
-	ObjectLoader* loader;
+	ObjectLoader loader;
 
 	std::string id = "";
 	std::string src = "";
@@ -888,16 +887,34 @@ STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 	else
 	{
 		//Id was valid so now let's load the mesh
-		loader = ObjectLoader::CreateMeshFromFile(g_renderContext, MODEL_PATH + src, true);
+		//Check the file extension
+		std::vector<std::string> strings = SplitStringOnDelimiter(src, '.');
+		bool isDataDriven = false;
+		if (strings.size() > 1)
+		{
+			if (strings[(strings.size() - 1)] == "mesh")
+			{
+				isDataDriven = true;
+			}
+		}
+
+		//Before we can CreateMeshFromFile we need to send it the required transform, scale, invert, tangent information
+		loader.m_tangents = args.GetValue("tangents", loader.m_tangents);
+		loader.m_scale = args.GetValue("scale", loader.m_scale);
+		loader.m_transform = args.GetValue("transform", loader.m_transform);
+		loader.m_invert = args.GetValue("invert", loader.m_invert);
+
+		//This will now load the mesh from file
+		loader.LoadMeshFromFile(g_renderContext, MODEL_PATH + src, isDataDriven);
 	}
 
 	//Create a PxConvexMesh from the vertex array 
-	PxVec3* convexVerts = new PxVec3[loader->m_cpuMesh->GetVertexCount()];
-	g_PxPhysXSystem->AddVertMasterBufferToPxVecBuffer(convexVerts, loader->m_cpuMesh->GetVertices(), loader->m_cpuMesh->GetVertexCount());
+	PxVec3* convexVerts = new PxVec3[loader.m_cpuMesh->GetVertexCount()];
+	g_PxPhysXSystem->AddVertMasterBufferToPxVecBuffer(convexVerts, loader.m_cpuMesh->GetVertices(), loader.m_cpuMesh->GetVertexCount());
 
 	//Create a pxDescription for the convexmesh
 	PxConvexMeshDesc desc;
-	desc.points.count = (PxU32)loader->m_cpuMesh->GetVertexCount();
+	desc.points.count = (PxU32)loader.m_cpuMesh->GetVertexCount();
 	desc.points.stride = sizeof(PxVec3);
 	desc.points.data = convexVerts;
 	desc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
@@ -907,8 +924,13 @@ STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 	PxConvexMeshCookingResult::Enum result;
 	if (!g_PxPhysXSystem->GetPhysXCookingModule()->cookConvexMesh(desc, buffer, &result))
 	{
-		//There was a problem making the mesh
 		//Look at result for details
+		TODO("Print results here and yell at the user");
+
+		//There was a problem making the mesh
+		//For now we are going to just yell and die
+		ERROR_AND_DIE("Failed to cook collision mesh for object in LoadCollisionMeshFromData");
+
 		return false;
 	}
 
@@ -937,19 +959,25 @@ STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 
 	PxShape* shape = g_PxPhysXSystem->GetPhysXSDK()->createShape(geometry, *material);
 
+	TODO("Setup collision flags based on what we read from data to setup obstacles differntly from drivable surfaces")
+
 	PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_OBSTACLE, COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
 	PxFilterData qryFilterData;
 	setupDrivableSurface(qryFilterData);
 	shape->setQueryFilterData(qryFilterData);
 	shape->setSimulationFilterData(groundPlaneSimFilterData);
 
-	PxTransform localTm(PxVec3(0, 0, 0), PxQuat(PxIdentity));
+	//My transform is what?
+	TODO("Load a proper transform value here based on what we recieve as event args from the TrackNode");
+
+	Vec3 position = args.GetValue("position", position);
+
+	PxTransform localTm(VecToPxVector(position), PxQuat(PxIdentity));
 	PxRigidStatic* body = g_PxPhysXSystem->GetPhysXSDK()->createRigidStatic(localTm);
 	body->attachShape(*shape);
 	g_PxPhysXSystem->GetPhysXScene()->addActor(*body);
 
 	PX_ASSERT(convex);
-	delete loader;
 
 	return true;
 }
@@ -984,5 +1012,28 @@ void PhysXSystem::ShutDown()
 		PX_RELEASE(transport);
 	}
 	PX_RELEASE(m_PxFoundation);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void PhysXSystem::RestartPhysX()
+{
+	if (m_vehicleKitEnabled)
+	{
+		PxCloseVehicleSDK();
+	}
+
+	//Get and release all the actors in the current scene
+	int numActors = m_PxScene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC);
+	if (numActors > 0)
+	{
+		std::vector<PxRigidActor*> actors(numActors);
+		m_PxScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), numActors);
+
+		//Release the actor here
+		for (int actorIndex = 0; actorIndex < numActors; actorIndex++)
+		{
+			actors[actorIndex]->release();
+		}
+	}
 }
 

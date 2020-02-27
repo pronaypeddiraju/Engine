@@ -2,6 +2,7 @@
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
@@ -519,6 +520,13 @@ std::vector<Vec2> GenerateConvexPolygonFromDisc2D(int discRadius)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+bool IsPointInsideAABB3(const Vec3& point, const AABB3& box)
+{
+	bool result = box.IsPointInsideAABB3(point);
+	return result;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void PushDiscOutOfPoint(Vec2& discPosition, float radius, const Vec2& pushOutOfPoint)
 {
 	if(!IsPointInDisc2D(pushOutOfPoint, discPosition, radius))
@@ -689,6 +697,48 @@ float RangeMapFloat( float inputValue, float inRangeStart, float inRangeEnd, flo
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+bool IsFloatInRange(float inputValue, float rangeMin, float rangeMax)
+{
+	if (inputValue >= rangeMin && inputValue <= rangeMax)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool IsVectorInRange(const Vec3& inputValue, const Vec3& rangeMin, const Vec3& rangeMax)
+{
+	if (IsFloatInRange(inputValue.x, rangeMin.x, rangeMax.x)
+		&& IsFloatInRange(inputValue.y, rangeMin.y, rangeMax.y)
+		&& IsFloatInRange(inputValue.z, rangeMin.z, rangeMax.z))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool IsVectorInRange(const Vec2& inputValue, const Vec2& rangeMin, const Vec2& rangeMax)
+{
+	if (IsFloatInRange(inputValue.x, rangeMin.x, rangeMax.x)
+		&& IsFloatInRange(inputValue.y, rangeMin.y, rangeMax.y))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 Vec2 GetVectorFromAngle( const float angle )
 {
 	float radianAngle = DegreesToRadians(angle);
@@ -729,6 +779,17 @@ float Clamp( float x, float minClamp, float maxClamp )
 		x = minClamp;
 	else if(x > maxClamp)
 		x = maxClamp;
+
+	return x;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+float ClampZeroToOne(float x)
+{
+	if (x < 0.f)
+		x = 0.f;
+	else if (x > 1.f)
+		x = 1.f;
 
 	return x;
 }

@@ -8,6 +8,7 @@
 #include "Engine/PhysXSystem/PhysXTypes.hpp"
 #include "Engine/PhysXSystem/PhysXVehicleSceneQuery.hpp"
 #include "Engine/PhysXSystem/PhysXVehicleCreate.hpp"
+#include "Engine/PhysXSystem/PhysXSimulationEventCallbacks.hpp"
 #include <vector>
 #include <functional>
 #include <map>
@@ -41,6 +42,8 @@ public:
 	void				Update(float deltaTime);
 	void				EndFrame();
 	void				ShutDown();
+
+	void				RestartPhysX();
 
 	PxScene*			GetPhysXScene() const;
 	PxPhysics*			GetPhysXSDK() const;

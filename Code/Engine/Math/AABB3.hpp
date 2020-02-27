@@ -20,7 +20,11 @@ public:
 
 	void		TranslatePointsBy(const Vec3& translation);
 	void		TransfromUsingMatrix(const Matrix44& translation);
+	
+	bool		IsPointInsideAABB3(const Vec3& point) const;
 
+	const Vec3& GetMins() const;
+	const Vec3& GetMaxs() const;
 public:
 	//Front face
 	Vec3					m_frontTopLeft		= Vec3::ZERO;
@@ -35,4 +39,7 @@ public:
 	Vec3					m_backBottomRight	= Vec3::ZERO;
 
 	Vec3					m_center			= Vec3::ZERO;
+
+	Vec3					m_minBounds			= Vec3::ZERO;
+	Vec3					m_maxBounds			= Vec3::ZERO;
 };

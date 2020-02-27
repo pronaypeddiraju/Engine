@@ -11,6 +11,7 @@ struct Vec2;
 struct Vec3;
 struct Vec4;
 struct AABB2;
+struct AABB3;
 
 constexpr float PI = 3.1415926535897932384626433832795f;
 
@@ -70,6 +71,8 @@ Vec3			GetSphericalToCartesian(float radius, float angleTheta, float anglePhi);
 
 std::vector<Vec2>			GenerateConvexPolygonFromDisc2D(int discRadius);
 
+bool			IsPointInsideAABB3(const Vec3& point, const AABB3& box);
+
 //Transform Utilities
 Vec2			TransformPosition2D( const Vec2& position, float uniformScale, float rotationDegreesOnZ, const Vec2& translateXY);
 Vec3			TransformPosition3D( const Vec3& position, float uniformScale, float rotationDegreesOnZ, const Vec2& translateXY);
@@ -82,6 +85,9 @@ void			PushDiscOutOfPoint(Vec2& discPosition, float radius, const Vec2& pushOutO
 
 //Range map function
 float			RangeMapFloat(float inputValue, float inRangeMin, float inRangeMax, float outRangeMin, float outRangeMax);
+bool			IsFloatInRange(float inputValue, float rangeMin, float rangeMax);
+bool			IsVectorInRange(const Vec2& inputValue, const Vec2& rangeMin, const Vec2& rangeMax);
+bool			IsVectorInRange(const Vec3& inputValue, const Vec3& rangeMin, const Vec3& rangeMax);
 
 //Bitwise functions
 bool			IsBitFlagSet( unsigned short buttonFlags, unsigned short buttonFlag );
@@ -89,6 +95,7 @@ bool			IsBitFlagSet( unsigned short buttonFlags, unsigned short buttonFlag );
 //Other utilities
 float			GetHigherValue(const float a, const float b);
 float			Clamp(float x, float minClamp, float maxClamp);
+float			ClampZeroToOne(float x);
 float			GetAngluarDisplacement(float startDegrees, float endDegrees);
 float			GetTurnedToward(float currentDegrees, float goalDegrees, float maxPositiveDeltaDegrees);
 
