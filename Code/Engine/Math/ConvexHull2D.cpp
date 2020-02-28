@@ -25,7 +25,7 @@ void ConvexHull2D::MakeConvexHullFromConvexPolyon(const ConvexPoly2D& polygon)
 	//Traverse all the points in the convexPolygon and make a convex hull from there
 	std::vector<Vec2> points = polygon.GetConvexPoly2DPoints();
 
-	for (int pointIndex = points.size() - 1; pointIndex > 0; pointIndex--)
+	for (int pointIndex = (int)points.size() - 1; pointIndex > 0; pointIndex--)
 	{
 		//Get the vector between the 2 points
 		Vec2 displacementVector = points[pointIndex] - points[pointIndex - 1];
@@ -62,17 +62,5 @@ const std::vector<Plane2D>& ConvexHull2D::GetPlanes() const
 void ConvexHull2D::PushPlane(const Plane2D& plane)
 {
 	m_outerSlices.push_back(plane);
-}
-
-//------------------------------------------------------------------------------------------------------------------------------
-void ConvexHull2D::SetBitFieldsForBitBucketBroadPhase(const IntVec2& bitFields)
-{
-	m_bitFieldsXY = bitFields;
-}
-
-//------------------------------------------------------------------------------------------------------------------------------
-const IntVec2& ConvexHull2D::GetBitFields() const
-{
-	return m_bitFieldsXY;
 }
 

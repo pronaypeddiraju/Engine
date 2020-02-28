@@ -267,7 +267,7 @@ uint Raycast(RayHit2D *out, const Ray2D& ray, ConvexHull2D const &hull, float ep
 
 	if (planesToCheck.size() == 0)
 	{
-		//We are already in side the convex hull
+		//We are already inside the convex hull
 		out->m_impactNormal = Vec2::UP;
 		out->m_hitPoint = ray.m_start;
 		out->m_timeAtHit = 0.f;
