@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/PhysXSystem/PhysXSystem.hpp"
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Commons/Profiler/Profiler.hpp"
 #include "Engine/Core/EventSystems.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Core/NamedProperties.hpp"
@@ -262,8 +263,12 @@ void PhysXSystem::BeginFrame()
 //------------------------------------------------------------------------------------------------------------------------------
 void PhysXSystem::Update(float deltaTime)
 {
+	gProfiler->ProfilerPush("PhysX System: Update");
+
 	m_PxScene->simulate(deltaTime);
 	m_PxScene->fetchResults(true);
+
+	gProfiler->ProfilerPop();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

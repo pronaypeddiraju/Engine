@@ -4,6 +4,7 @@
 #include "Engine/Core/NamedProperties.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Core/VertexUtils.hpp"
+#include "Engine/Commons/Profiler/Profiler.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/RenderContext.hpp"
@@ -329,6 +330,8 @@ void DevConsole::BeginFrame()
 //------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::UpdateConsole(float deltaTime)
 {
+	gProfiler->ProfilerPush("DevConsole::Update");
+
 	m_carotTimeDiff += deltaTime;
 
 	if(m_carotTimeDiff > 0.5f)
@@ -336,6 +339,8 @@ void DevConsole::UpdateConsole(float deltaTime)
 		m_carotActive = !m_carotActive;
 		m_carotTimeDiff = 0.f;
 	}
+
+	gProfiler->ProfilerPop();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -382,6 +387,8 @@ void DevConsole::PrintString( const Rgba& textColor, const std::string& devConso
 //------------------------------------------------------------------------------------------------------------------------------
 void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeight ) const
 {
+	gProfiler->ProfilerPush("DevConsole::Render");
+
 	g_devConsole->m_mutexLock.lock();
 	camera.SetModelMatrix(Matrix44::IDENTITY);
 	camera.UpdateUniformBuffer(&renderer);
@@ -496,6 +503,8 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 
 	renderer.EndCamera();
 	g_devConsole->m_mutexLock.unlock();
+
+	gProfiler->ProfilerPop();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
