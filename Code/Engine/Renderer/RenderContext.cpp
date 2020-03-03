@@ -2,6 +2,7 @@
 //3rd Party tools
 #include "ThirdParty/stb/stb_image.h"
 //Core systems
+#include "Engine/Commons/Profiler/Profiler.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/Time.hpp"
@@ -93,10 +94,42 @@ bool RenderContext::D3D11Setup( void* hwndVoid )
 	swap_desc.BufferDesc.Width = width;
 	swap_desc.BufferDesc.Height = height;
 
+	//We need to select the Nvidia adaptor or basically the adaptor that is not intel's integrated GPU
+	IDXGIAdapter1 * pDXGIAdapter;
+	IDXGIFactory1 * pIDXGIFactory;
+
+	HRESULT hr = ::CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&pIDXGIFactory);
+
+	UINT i = 0;
+	std::vector <IDXGIAdapter1*> vAdapters;
+
+	while (pIDXGIFactory->EnumAdapters1(i, &pDXGIAdapter) != DXGI_ERROR_NOT_FOUND)
+	{
+		vAdapters.push_back(pDXGIAdapter);
+		++i;
+	}
+
+	IDXGIAdapter1* pickedAdapter = vAdapters[0];
+	std::vector<IDXGIAdapter1*>::iterator adapterItr = vAdapters.begin();
+	DXGI_ADAPTER_DESC1 desc;
+	DXGI_ADAPTER_DESC1 pickedDesc;
+	pickedAdapter->GetDesc1(&pickedDesc);
+
+	for (int adapterIndex = 1; adapterIndex < vAdapters.size(); adapterIndex++)
+	{
+		vAdapters[adapterIndex]->GetDesc1(&desc);
+
+		if (desc.DedicatedVideoMemory > pickedDesc.DedicatedVideoMemory)
+		{
+			pickedAdapter = vAdapters[adapterIndex];
+			pickedDesc = desc;
+		}
+	}
+	
 
 	// Actually Create
-	HRESULT hr = ::D3D11CreateDeviceAndSwapChain( nullptr, // Adapter, if nullptr, will use adapter window is primarily on.
-		D3D_DRIVER_TYPE_HARDWARE,  // Driver Type - We want to use the GPU (HARDWARE)
+	hr = ::D3D11CreateDeviceAndSwapChain( pickedAdapter, // Adapter, if nullptr, will use adapter window is primarily on.
+		D3D_DRIVER_TYPE_UNKNOWN,   // Driver Type - We want to use the GPU (HARDWARE)
 		nullptr,                   // Software Module - DLL that implements software mode (we do not use)
 		device_flags,              // device creation options
 		nullptr,                   // feature level (use default)
@@ -509,6 +542,8 @@ void RenderContext::SetRasterStateWireFrame()
 //------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BeginFrame()
 {
+	gProfiler->ProfilerPush("RenderContext::BeginFrame");
+
 	// Get the back buffer
 	ID3D11Texture2D *back_buffer = nullptr;
 	m_D3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
@@ -536,6 +571,7 @@ void RenderContext::BeginFrame()
 	//ColorTargetView holds a reference to the back_buffer so we can now release it from this function
 	DX_SAFE_RELEASE( back_buffer );
 
+	gProfiler->ProfilerPop();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -553,23 +589,37 @@ Texture2D* RenderContext::GetFrameColorTexture()
 //------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::EndFrame()
 {
-	Texture2D* backBufferTexture = new Texture2D(this);
+	gProfiler->ProfilerPush("RenderContext::EndFrame");
 
+	gProfiler->ProfilerPush("New Texture");
+	Texture2D* backBufferTexture = new Texture2D(this);
+	gProfiler->ProfilerPop();
+	
+	gProfiler->ProfilerPush("Get Buffer");
 	// Get the back buffer
 	ID3D11Texture2D *back_buffer = nullptr;
 	m_D3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
 
 	backBufferTexture->m_handle = back_buffer;
+	gProfiler->ProfilerPop();
 
+	gProfiler->ProfilerPush("CopyTexture");
 	CopyTexture(backBufferTexture, m_defaultColorTexture);
+	gProfiler->ProfilerPop();
 
+	gProfiler->ProfilerPush("D3D Present");
 	// We're done rendering, so tell the swap chain they can copy the back buffer to the front (desktop/window) buffer
 	m_D3DSwapChain->Present(0, // Sync Interval, set to 1 for VSync
 		0);                    // Present flags, see;
 								// https://msdn.microsoft.com/en-us/library/windows/desktop/bb509554(v=vs.85).aspx
-	
+	gProfiler->ProfilerPop();
+
 	if (m_screenShotRequested)
 	{
+
+		delete backBufferTexture;
+		backBufferTexture = nullptr;
+
 		m_stagingTexture = new Texture2D(this);
 
 		CreateStagingTexture(m_stagingTexture, backBufferTexture);
@@ -581,6 +631,7 @@ void RenderContext::EndFrame()
 		m_screenShotRequested = false;
 	}
 
+	gProfiler->ProfilerPush("Free Resources");
 	//Free up the color target view or we have a leak in memory 
 	delete m_FrameBuffer_ColorTargetView;
 	m_FrameBuffer_ColorTargetView = nullptr;
@@ -599,12 +650,12 @@ void RenderContext::EndFrame()
 
 	delete m_FXColorTargetView;
 	m_FXColorTargetView = nullptr;
-
-	delete backBufferTexture;
-	backBufferTexture = nullptr;
+	gProfiler->ProfilerPop();
 
 	// We don't need to release back buffer anymore as it is being released when we delete the backBufferTexture as the texture stores it as a handle
 	//DX_SAFE_RELEASE(back_buffer);
+
+	gProfiler->ProfilerPop();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
