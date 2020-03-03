@@ -13,5 +13,5 @@ std::string					GetDirectoryFromFilePath(const std::string& filePath);
 
 //We need to load binary files as buffers as well which will go under here
 //NOTE: These functions will use fopen, fread, fwrite and fclose. Not streams
-bool						LoadBinaryFileToExistingBuffer(const std::string& filePath, std::vector<unsigned char>& out_buffer);
-bool						SaveBinaryFileFromBuffer(const std::string& filePath, const std::vector<unsigned char>& out_buffer);
+bool						LoadBinaryFileToExistingBuffer(const std::string& filePath, std::vector<unsigned char>& outBuffer);
+bool						SaveBinaryFileFromBuffer(const std::string& filePath, const std::vector<unsigned char>& writeBuffer);

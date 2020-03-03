@@ -203,6 +203,8 @@
     <ClCompile Include="Commons\UnitTest.cpp" />
     <ClCompile Include="Core\Async\MPSCAsyncRingBuffer.cpp" />
     <ClCompile Include="Core\Async\Semaphores.cpp" />
+    <ClCompile Include="Core\BufferReadUtils.cpp" />
+    <ClCompile Include="Core\BufferWriteUtils.cpp" />
     <ClCompile Include="Core\Clock.cpp" />
     <ClCompile Include="Core\DevConsole.cpp" />
     <ClCompile Include="Core\EventSystems.cpp" />
@@ -528,6 +530,9 @@
     <ClInclude Include="Core\Async\MPSCAsyncRingBuffer.hpp" />
     <ClInclude Include="Core\Async\Semaphores.hpp" />
     <ClInclude Include="Core\Async\UniformAsyncRingBuffer.hpp" />
+    <ClInclude Include="Core\BufferReadUtils.hpp" />
+    <ClInclude Include="Core\BufferUtilCommons.hpp" />
+    <ClInclude Include="Core\BufferWriteUtils.hpp" />
     <ClInclude Include="Core\Clock.hpp" />
     <ClInclude Include="Core\DevConsole.hpp" />
     <ClInclude Include="Core\EventSystems.hpp" />

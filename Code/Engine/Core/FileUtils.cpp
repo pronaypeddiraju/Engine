@@ -132,3 +132,67 @@ std::string GetDirectoryFromFilePath(const std::string& filePath)
 		return ".";
 	}
 }
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool LoadBinaryFileToExistingBuffer(const std::string& filePath, std::vector<unsigned char>& outBuffer)
+{
+	FILE* file;
+	long fileSize; 
+	size_t result;
+
+	//You wanna use fopen
+	errno_t errorCode = fopen_s(&file, filePath.c_str(), "rb");	//Note: simply using r would be a read but rb is read binary format file
+
+	//fread 
+	if (errorCode != 0)
+	{
+		std::string errorMessage = Stringf("There was an error opening file %s", filePath.c_str());
+		ERROR_RECOVERABLE(errorMessage);
+		return false;
+	}
+	else
+	{
+		//Check the size of the file. Ensure we reserve that much space on the vector
+		fseek(file, 0, SEEK_END);
+		fileSize = ftell(file);
+		rewind(file);
+
+		//Copy the buffer into the out_buffer
+		outBuffer.resize(fileSize);
+		result = fread(&outBuffer[0], sizeof(char), fileSize, file);	
+
+		if (result != fileSize)
+		{
+			ERROR_RECOVERABLE("There was a problem reading the file");
+			return false;
+		}
+	}
+
+	//fclose when done
+	fclose(file);
+	return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool SaveBinaryFileFromBuffer(const std::string& filePath, const std::vector<unsigned char>& writeBuffer)
+{
+	//fopen the file
+	FILE* file;
+	errno_t errorCode = fopen_s(&file, filePath.c_str(), "wb");
+
+	if (errorCode != 0)
+	{
+		std::string errorMessage = Stringf("There was an error opening file %s", filePath.c_str());
+		ERROR_RECOVERABLE(errorMessage);
+		return false;
+	}
+	else
+	{
+		//fwrite the buffer into the file
+		fwrite(&writeBuffer[0], sizeof(char), writeBuffer.size(), file);
+	}
+
+	//fclose the file
+	fclose(file);
+	return true;
+}
