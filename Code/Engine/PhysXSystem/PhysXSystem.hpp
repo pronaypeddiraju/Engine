@@ -102,6 +102,7 @@ public:
 	static PxVec3		VecToPxVector(const Vec3& vector);
 	static PxVec4		VecToPxVector(const Vec4& vector);
 	static Vec3			QuaternionToEulerAngles(const PxQuat& quat);
+	static PxQuat		EulerAnglesToQuaternion(const Vec3& eulerAngles);
 	static PxQuat		MakeQuaternionFromMatrix(const Matrix44& matrix);
 
 	static bool			LoadCollisionMeshFromData(EventArgs& args);

@@ -1174,13 +1174,16 @@ void RenderContext::BeginCamera( Camera& camera )
 	m_D3DContext->OMSetRenderTargets( colorCount, &dx_rtv, dx_dsv);
 
 	// Next, we have to describe WHAT part of the texture we're rendering to (called the viewport)
-	// This is also usually managed by the camera, but for now, we will just render to the whole texture
+	// This is coming from the camera. By default the camera will render to the whole screen unless otherwise specified on the camera
+
+	AABB2 viewportInPixels = camera.GetViewportInPixels();
+
 	D3D11_VIEWPORT viewport;  
 	memset( &viewport, 0, sizeof(viewport) );
-	viewport.TopLeftX = 0U;
-	viewport.TopLeftY = 0U;
-	viewport.Width = static_cast<float>(colorTargetView->m_width);
-	viewport.Height = static_cast<float>(colorTargetView->m_height);
+	viewport.TopLeftX = (uint)viewportInPixels.m_minBounds.x;
+	viewport.TopLeftY = (uint)(camera.m_colorTargetView->m_height - viewportInPixels.m_maxBounds.y);
+	viewport.Width = viewportInPixels.GetWidth();
+	viewport.Height = viewportInPixels.GetHeight();
 	viewport.MinDepth = 0.0f;        // must be between 0 and 1 (defualt is 0);
 	viewport.MaxDepth = 1.0f;        // must be between 0 and 1 (default is 1)
 	m_D3DContext->RSSetViewports( 1, &viewport );

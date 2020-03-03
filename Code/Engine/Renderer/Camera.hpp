@@ -3,6 +3,7 @@
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Matrix44.hpp"
+#include "Engine/Math/AABB2.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
 class ColorTargetView;
@@ -33,6 +34,12 @@ public:
 	//Function to set the color target view that we are rendering to
 	void					SetColorTarget(ColorTargetView *colorTargetView);
 	void					SetDepthStencilTarget( DepthStencilTargetView *depthStencilView);
+
+	//Viewport logic, set's the desired viewport as a 0 to 1 ratio of color target
+	void					SetViewport(const Vec2& mins, const Vec2& maxs);	//Zero to One ratio of screen
+	const AABB2&			GetViewportInPixels() const;
+	float					GetCameraAspect();
+	
 
 	//Utility
 	inline const Vec3&		GetEuler() {return m_Euler;}
@@ -85,4 +92,13 @@ public:
 	Matrix44					m_view;			//This is the inverse of m_camera
 
 	Vec3						m_Euler = Vec3::ZERO;
+
+	//viewport data
+	AABB2						m_viewportInPixels;
+	float						m_cameraAspect = 16.f / 9.f;
+	float						m_fieldOfView = 0.f;
+	float						m_nearZ = 0.1f;
+	float						m_farZ = 1.f;
+
+	bool						m_isOrthoCam = false;
 };

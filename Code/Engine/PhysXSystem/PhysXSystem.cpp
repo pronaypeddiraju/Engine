@@ -142,50 +142,54 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 	//------------------------------------------------------------------------------------------------------------------------------
 	// Vehicle SDK Setup
 	//------------------------------------------------------------------------------------------------------------------------------
-	m_vehicleKitEnabled = true;
+	if (!m_vehicleKitEnabled)
+	{
+		m_PxScene->release();
+		m_PxScene = nullptr;
 
-	m_PxScene->release();
-	m_PxScene = nullptr;
-	PxSceneDesc sceneDesc(m_PhysX->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
-	m_PxDispatcher = PxDefaultCpuDispatcherCreate(1);
-	sceneDesc.cpuDispatcher = m_PxDispatcher;
-	sceneDesc.filterShader = VehicleFilterShader;
-	//sceneDesc.filterShader = VehicleStandardCollisionsFilterShader;
-	sceneDesc.contactModifyCallback = &gWheelContactModifyCallback;			//Enable contact modification
-	sceneDesc.ccdContactModifyCallback = &gWheelCCDContactModifyCallback;	//Enable ccd contact modification
-	sceneDesc.flags |= PxSceneFlag::eENABLE_CCD;							//Enable ccd
-	m_PxScene = m_PhysX->createScene(sceneDesc);
+		PxSceneDesc sceneDesc(m_PhysX->getTolerancesScale());
+		sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+		m_PxDispatcher = PxDefaultCpuDispatcherCreate(1);
+		sceneDesc.cpuDispatcher = m_PxDispatcher;
+		sceneDesc.filterShader = VehicleFilterShader;
+		//sceneDesc.filterShader = VehicleStandardCollisionsFilterShader;
+		sceneDesc.contactModifyCallback = &gWheelContactModifyCallback;			//Enable contact modification
+		sceneDesc.ccdContactModifyCallback = &gWheelCCDContactModifyCallback;	//Enable ccd contact modification
+		sceneDesc.flags |= PxSceneFlag::eENABLE_CCD;							//Enable ccd
+		m_PxScene = m_PhysX->createScene(sceneDesc);
 
-	PxInitVehicleSDK(*m_PhysX);
-	PxVehicleSetBasisVectors(PxVec3(0, 1, 0), PxVec3(0, 0, 1));
-	PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
-	PxVehicleSetSweepHitRejectionAngles(POINT_REJECT_ANGLE, NORMAL_REJECT_ANGLE);
-	PxVehicleSetMaxHitActorAcceleration(MAX_ACCELERATION);
+		PxInitVehicleSDK(*m_PhysX);
+		PxVehicleSetBasisVectors(PxVec3(0, 1, 0), PxVec3(0, 0, 1));
+		PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
+		PxVehicleSetSweepHitRejectionAngles(POINT_REJECT_ANGLE, NORMAL_REJECT_ANGLE);
+		PxVehicleSetMaxHitActorAcceleration(MAX_ACCELERATION);
 
-	//Create the batched scene queries for the suspension sweeps.
-	//Use the post-filter shader to reject hit shapes that overlap the swept wheel at the start pose of the sweep.
-	PxQueryHitType::Enum(*sceneQueryPreFilter)(PxFilterData, PxFilterData, const void*, PxU32, PxHitFlags&);
-	PxQueryHitType::Enum(*sceneQueryPostFilter)(PxFilterData, PxFilterData, const void*, PxU32, const PxQueryHit&);
+		//Create the batched scene queries for the suspension sweeps.
+		//Use the post-filter shader to reject hit shapes that overlap the swept wheel at the start pose of the sweep.
+		PxQueryHitType::Enum(*sceneQueryPreFilter)(PxFilterData, PxFilterData, const void*, PxU32, PxHitFlags&);
+		PxQueryHitType::Enum(*sceneQueryPostFilter)(PxFilterData, PxFilterData, const void*, PxU32, const PxQueryHit&);
 #if BLOCKING_SWEEPS
-	sceneQueryPreFilter = &WheelSceneQueryPreFilterBlocking;
-	sceneQueryPostFilter = &WheelSceneQueryPostFilterBlocking;
+		sceneQueryPreFilter = &WheelSceneQueryPreFilterBlocking;
+		sceneQueryPostFilter = &WheelSceneQueryPostFilterBlocking;
 #else
-	sceneQueryPreFilter = &WheelSceneQueryPreFilterNonBlocking;
-	sceneQueryPostFilter = &WheelSceneQueryPostFilterNonBlocking;
+		sceneQueryPreFilter = &WheelSceneQueryPreFilterNonBlocking;
+		sceneQueryPostFilter = &WheelSceneQueryPostFilterNonBlocking;
 #endif 
 
-	//Create the batched scene queries for the suspension raycasts.
-	m_vehicleSceneQueryData = VehicleSceneQueryData::allocate(m_numberOfVehicles, PX_MAX_NB_WHEELS, gNumQueryHitsPerWheel, m_numberOfVehicles, sceneQueryPreFilter, sceneQueryPostFilter, m_PxAllocator);
-	m_batchQuery = VehicleSceneQueryData::setUpBatchedSceneQuery(0, *m_vehicleSceneQueryData, m_PxScene);
+		//Create the batched scene queries for the suspension raycasts.
+		m_vehicleSceneQueryData = VehicleSceneQueryData::allocate(m_numberOfVehicles, PX_MAX_NB_WHEELS, gNumQueryHitsPerWheel, m_numberOfVehicles, sceneQueryPreFilter, sceneQueryPostFilter, m_PxAllocator);
+		m_batchQuery = VehicleSceneQueryData::setUpBatchedSceneQuery(0, *m_vehicleSceneQueryData, m_PxScene);
 
-	//Create the friction table for each combination of tire and surface type.
-	m_frictionPairs = createFrictionPairs(m_PxDefaultMaterial);
+		//Create the friction table for each combination of tire and surface type.
+		m_frictionPairs = createFrictionPairs(m_PxDefaultMaterial);
 
-	//Create a plane to drive on.
-	PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0);
-	m_drivableGroundPlane = createDrivablePlane(groundPlaneSimFilterData, m_PxDefaultMaterial, m_PhysX);
-	m_PxScene->addActor(*m_drivableGroundPlane);
+		//Create a plane to drive on.
+		PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0);
+		m_drivableGroundPlane = createDrivablePlane(groundPlaneSimFilterData, m_PxDefaultMaterial, m_PhysX);
+		m_PxScene->addActor(*m_drivableGroundPlane);
+
+		m_vehicleKitEnabled = true;
+	}
 	
 	//Create a vehicle that will drive on the plane.
 	PxFilterData chassisSimFilterData(COLLISION_FLAG_CHASSIS, COLLISION_FLAG_CHASSIS_AGAINST, 0, 0);
@@ -196,8 +200,6 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 	vehicleReference->getRigidDynamicActor()->setGlobalPose(startTransform);
 	vehicleReference->getRigidDynamicActor()->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
 	m_PxScene->addActor(*vehicleReference->getRigidDynamicActor());
-
-	
 
 	//Set the vehicle to rest in first gear.
 	//Set the vehicle to use auto-gears.
@@ -850,6 +852,20 @@ STATIC Vec3 PhysXSystem::QuaternionToEulerAngles(const PxQuat& quat)
 	eulerAngles.z = atan2f(siny_cosp, cosy_cosp);
 
 	return eulerAngles;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC physx::PxQuat PhysXSystem::EulerAnglesToQuaternion(const Vec3& eulerAngles)
+{
+	//assuming x = roll, y = pitch, z = yaw
+	PxQuat quaternion;
+	
+	quaternion.x = sin(eulerAngles.x * 0.5f) * cos(eulerAngles.y * 0.5f) * cos(eulerAngles.z * 0.5f) - cos(eulerAngles.x * 0.5f) * sin(eulerAngles.y * 0.5f) * sin(eulerAngles.z * 0.5f);
+	quaternion.y = cos(eulerAngles.x * 0.5f) * sin(eulerAngles.y * 0.5f) * cos(eulerAngles.z * 0.5f) + sin(eulerAngles.x * 0.5f) * cos(eulerAngles.y * 0.5f) * sin(eulerAngles.z * 0.5f);
+	quaternion.z = cos(eulerAngles.x * 0.5f) * cos(eulerAngles.y * 0.5f) * sin(eulerAngles.z * 0.5f) - sin(eulerAngles.x * 0.5f) * sin(eulerAngles.y * 0.5f) * cos(eulerAngles.z * 0.5f);
+	quaternion.w = cos(eulerAngles.x * 0.5f) * cos(eulerAngles.y * 0.5f) * cos(eulerAngles.z * 0.5f) + sin(eulerAngles.x * 0.5f) * sin(eulerAngles.y * 0.5f) * sin(eulerAngles.z * 0.5f);
+
+	return quaternion;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

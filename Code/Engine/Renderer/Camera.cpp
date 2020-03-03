@@ -4,6 +4,7 @@
 #include "Engine/Renderer/RenderContext.hpp"
 #include "Engine/Renderer/UniformBuffer.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
+#include "Engine/Renderer/ColorTargetView.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/Frustum.hpp"
 #include "Engine/Math/IntVec2.hpp"
@@ -31,6 +32,8 @@ void Camera::SetOrthoView( const Vec2& bottomLeft, const Vec2& topRight, float m
 
 	//Set the camera projection to be an ortho matrix
 	m_projection = Matrix44::MakeOrthoMatrix(bottomLeft, topRight, minZ, maxZ);
+
+	m_isOrthoCam = true;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -58,18 +61,59 @@ void Camera::Translate2D( const Vec2& translation2D )
 void Camera::SetPerspectiveProjection( float FieldOfView, float nearZ, float farZ, float aspectRatio)
 {
 	m_projection = Matrix44::MakePerspectiveMatrix(FieldOfView, nearZ, farZ, aspectRatio);
+	m_fieldOfView = FieldOfView;
+	m_nearZ = nearZ;
+	m_farZ = farZ;
+	m_cameraAspect = aspectRatio;
+	m_isOrthoCam = false;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 void Camera::SetColorTarget( ColorTargetView *colorTargetView )
 {
 	m_colorTargetView = colorTargetView;
+
+	if (m_colorTargetView != nullptr && !m_isOrthoCam)
+	{
+		SetViewport(Vec2::ZERO, Vec2::ONE);
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 void Camera::SetDepthStencilTarget( DepthStencilTargetView *depthStencilView )
 {
 	m_depthStencilView = depthStencilView;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void Camera::SetViewport(const Vec2& mins, const Vec2& maxs)
+{
+	float height = (float)m_colorTargetView->m_height;
+	float width = (float)m_colorTargetView->m_width;
+
+	//We need some percentage of the width and height used
+	m_viewportInPixels.m_minBounds.x = width * mins.x;
+	m_viewportInPixels.m_minBounds.y = height * mins.y;
+
+	m_viewportInPixels.m_maxBounds.x = width * maxs.x;
+	m_viewportInPixels.m_maxBounds.y = height * maxs.y;
+
+	//Setup the correct camera aspect here
+	m_cameraAspect = m_viewportInPixels.GetWidth() / m_viewportInPixels.GetHeight();
+
+	SetPerspectiveProjection(m_fieldOfView, m_nearZ, m_farZ, m_cameraAspect);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const AABB2& Camera::GetViewportInPixels() const
+{
+	return m_viewportInPixels;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+float Camera::GetCameraAspect()
+{
+	return m_cameraAspect;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
