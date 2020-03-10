@@ -395,6 +395,7 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 
 	renderer.BeginCamera(camera);
 	renderer.BindTextureViewWithSampler( 0U, m_consoleFont->GetTexture()); 
+	renderer.BindShader(g_renderContext->CreateOrGetShaderFromFile(m_defaultShaderPath));
 
 	//Draw a black box over the entire screen
 	AABB2 blackBox = AABB2(camera.GetOrthoBottomLeft(), camera.GetOrthoTopRight());

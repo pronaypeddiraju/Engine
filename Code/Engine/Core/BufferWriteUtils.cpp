@@ -172,7 +172,7 @@ void BufferWriteUtils::AppendByteArray(const std::vector<uchar>& byteArray)
 //------------------------------------------------------------------------------------------------------------------------------
 void BufferWriteUtils::AppendStringZeroTerminated(const char* paramString)
 {
-	int stringLength = strlen(paramString);
+	int stringLength = (int)strlen(paramString);
 	
 	const char* ch = paramString;
 
@@ -200,9 +200,9 @@ void BufferWriteUtils::AppendStringZeroTerminated(const std::string& paramString
 //------------------------------------------------------------------------------------------------------------------------------
 void BufferWriteUtils::AppendStringAfter32BitLength(const char* paramString, uint knownLength /*= 0*/)
 {
-	int stringLength = strlen(paramString);
+	int stringLength = (int)strlen(paramString);
 
-	if (knownLength != stringLength)
+	if (knownLength != (uint)stringLength)
 	{
 		knownLength = stringLength;
 	}
@@ -237,11 +237,11 @@ void BufferWriteUtils::AppendStringAfter32BitLength(const std::string& paramStri
 //------------------------------------------------------------------------------------------------------------------------------
 void BufferWriteUtils::AppendStringAfter8BitLength(const char* paramString, uchar knownLength /*= 0*/)
 {
-	int stringLength = strlen(paramString);
+	int stringLength = (int)strlen(paramString);
 
-	if (knownLength != stringLength)
+	if (knownLength != (uchar)stringLength)
 	{
-		knownLength = stringLength;
+		knownLength = (uchar)stringLength;
 	}
 
 	//First write length as 8 bit value

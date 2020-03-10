@@ -471,6 +471,8 @@ bool IsPointInCapsule2D( const Vec2& point, const Vec2& capsuleStart, const Vec2
 //------------------------------------------------------------------------------------------------------------------------------
 bool IsPointOnLineSegment2D(const Vec2& position, const Vec2& lineStart, const Vec2& lineEnd, float epsilon)
 {
+	UNUSED(epsilon);
+
 	Vec2 lineSegment = Vec2(lineEnd - lineStart);
 	Vec2 pointSegment = Vec2(position - lineStart);
 

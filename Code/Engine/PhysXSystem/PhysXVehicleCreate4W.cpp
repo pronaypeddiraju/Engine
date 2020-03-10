@@ -280,8 +280,8 @@ namespace vehicle
 
 			//Engine
 			PxVehicleEngineData engine;
-			engine.mPeakTorque = 500.0f;
-			engine.mMaxOmega = 600.0f;//approx 6000 rpm
+			engine.mPeakTorque = 400.0f;
+			engine.mMaxOmega = 900.0f;//approx 6000 rpm
 			driveSimData.setEngineData(engine);
 
 			//Gears
