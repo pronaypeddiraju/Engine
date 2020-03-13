@@ -242,7 +242,7 @@ void Profiler::MakeTimelineWindow()
 	ImGui::Begin("Timeline Window");
 	ImGui::SetWindowPos(ImVec2(50, 50));
 	ImVec2 imClientSize = ImVec2((float)clientSize.x - 200.f, 100.f);
-	ImGui::PlotHistogram("Timeline view", m_timeArray, m_timeArraySize, 0, "Time taken by each frame", 0, m_maxTime, imClientSize);
+	int returnId = ImGui::PlotHistogram("Timeline view", m_timeArray, m_timeArraySize, 0, "Time taken by each frame", 0, m_maxTime, imClientSize);
 	ImVec2 innerRectMax = ImGui::GetItemRectMax();
 	ImVec2 innerRectMin = ImGui::GetItemRectMin();
 	ImRect innerRect = ImRect(innerRectMin, innerRectMax);
@@ -250,28 +250,14 @@ void Profiler::MakeTimelineWindow()
 	ImGuiIO& io = ImGui::GetIO();
 	if (io.MouseClicked[0])
 	{
-		//ImGuiID ID = ImGui::GetHoveredID();
-		if (innerRect.Contains(io.MousePos))
-		{
-			const float t = ImClamp((io.MousePos.x - innerRect.Min.x) / (innerRect.Max.x - innerRect.Min.x), 0.0f, 0.9999f);
-			const int v_idx = (int)(t * m_timeArraySize);
-			IM_ASSERT(v_idx >= 0 && v_idx < m_timeArraySize);
-
-			/*
-			if (v_idx != m_reportFrameNum)
-			{
-				RepopulateReportData();
-			}
-			*/
-			m_reportFrameNum = (float)v_idx;
-
-			ProfilerPause();
-		}
+		m_reportFrameNum = (float)(returnId);
+		ProfilerPause();
 	}
 	else if (io.MouseClicked[1])
 	{
 		ProfilerResume();
 	}
+
 
 	if (m_isPaused)
 	{
@@ -444,12 +430,10 @@ ProfilerSample_T* Profiler::ProfilerAcquirePreviousTreeForCallingThread(uint his
 {
 	std::scoped_lock<std::shared_mutex> historyLock(m_HistoryLock);
 
-	int index = (int)m_History.size() - 1;
-	index -= history;
-	if (index > 0)
+	if (history > 0)
 	{
 		//Frame exists
-		return m_History[index];
+		return m_History[history];
 	}
 	else
 	{

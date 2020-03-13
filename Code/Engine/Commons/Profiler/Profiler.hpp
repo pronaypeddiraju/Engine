@@ -69,7 +69,7 @@ private:
 	void						RepopulateReportData();
 
 
-	double			m_maxHistoryTime = 10;
+	double			m_maxHistoryTime = 3;
 	bool			m_isPaused = false;
 
 	bool			m_showTimeline = false;

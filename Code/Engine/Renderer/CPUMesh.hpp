@@ -15,23 +15,23 @@ class OBB2;
 typedef unsigned int uint;
 
 //------------------------------------------------------------------------------------------------------------------------------
-class CPUMesh              // A04
+class CPUMesh            
 {
 public:
-	CPUMesh();           // A04
+	CPUMesh();           
 	~CPUMesh();
 
-	void Clear();        // A04; 
+	void Clear();        
 
 	// Modify the stamp;
-	void SetColor( const Rgba& color );           // A04
-	void SetUV( const Vec2& uv );                 // A04
+	void SetColor( const Rgba& color );           
+	void SetUV( const Vec2& uv );                 
 	void SetNormal( const Vec3& norm );
 	void SetTangent( const Vec3& tangent );
 	void SetBiTangent( const Vec3& biTangent );
 	void SetStampColor( const Rgba& color );
 
-	void SetLayout( const BufferLayout* layout ); // A06
+	void SetLayout( const BufferLayout* layout ); 
 
 	// templated helper - so I can do things like
 	// CPUMesh mesh;  
@@ -67,11 +67,11 @@ public:
 	inline uint GetElementCount() const          { return UsesIndexBuffer() ? GetIndexCount() : GetVertexCount(); }
 
 private:
-	std::vector<VertexMaster>  m_vertices;       // A04
-	std::vector<uint>          m_indices;        // A04
+	std::vector<VertexMaster>  m_vertices;       
+	std::vector<uint>          m_indices;        
 
-	VertexMaster m_stamp;                        // A04
-	const BufferLayout* m_layout;                // A06
+	VertexMaster m_stamp;                        
+	const BufferLayout* m_layout;                
 };
 
 
