@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 #include "Engine/PhysXSystem/PhysXSystem.hpp"
 #include "Engine/Commons/EngineCommon.hpp"
+#include "Engine/Commons/Profiler/Profiler.hpp"
 #include "Engine/Core/EventSystems.hpp"
 #include "Engine/Renderer/CPUMesh.hpp"
 #include "Engine/Core/NamedProperties.hpp"
@@ -141,63 +142,64 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 	//------------------------------------------------------------------------------------------------------------------------------
 	// Vehicle SDK Setup
 	//------------------------------------------------------------------------------------------------------------------------------
-	m_vehicleKitEnabled = true;
+	if (!m_vehicleKitEnabled)
+	{
+		m_PxScene->release();
+		m_PxScene = nullptr;
 
-	m_PxScene->release();
-	m_PxScene = nullptr;
-	PxSceneDesc sceneDesc(m_PhysX->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
-	m_PxDispatcher = PxDefaultCpuDispatcherCreate(1);
-	sceneDesc.cpuDispatcher = m_PxDispatcher;
-	//sceneDesc.filterShader = PxDefaultSimulationFilterShader;
-	//sceneDesc.filterShader = VehicleFilterShader;
-	sceneDesc.filterShader = VehicleStandardCollisionsFilterShader;
-	sceneDesc.contactModifyCallback = &gWheelContactModifyCallback;			//Enable contact modification
-	sceneDesc.ccdContactModifyCallback = &gWheelCCDContactModifyCallback;	//Enable ccd contact modification
-	sceneDesc.flags |= PxSceneFlag::eENABLE_CCD;							//Enable ccd
-	m_PxScene = m_PhysX->createScene(sceneDesc);
+		PxSceneDesc sceneDesc(m_PhysX->getTolerancesScale());
+		sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+		m_PxDispatcher = PxDefaultCpuDispatcherCreate(1);
+		sceneDesc.cpuDispatcher = m_PxDispatcher;
+		sceneDesc.filterShader = VehicleFilterShader;
+		//sceneDesc.filterShader = VehicleStandardCollisionsFilterShader;
+		sceneDesc.contactModifyCallback = &gWheelContactModifyCallback;			//Enable contact modification
+		sceneDesc.ccdContactModifyCallback = &gWheelCCDContactModifyCallback;	//Enable ccd contact modification
+		sceneDesc.flags |= PxSceneFlag::eENABLE_CCD;							//Enable ccd
+		m_PxScene = m_PhysX->createScene(sceneDesc);
 
-	PxInitVehicleSDK(*m_PhysX);
-	PxVehicleSetBasisVectors(PxVec3(0, 1, 0), PxVec3(0, 0, 1));
-	PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
-	PxVehicleSetSweepHitRejectionAngles(POINT_REJECT_ANGLE, NORMAL_REJECT_ANGLE);
-	PxVehicleSetMaxHitActorAcceleration(MAX_ACCELERATION);
+		PxInitVehicleSDK(*m_PhysX);
+		PxVehicleSetBasisVectors(PxVec3(0, 1, 0), PxVec3(0, 0, 1));
+		PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
+		PxVehicleSetSweepHitRejectionAngles(POINT_REJECT_ANGLE, NORMAL_REJECT_ANGLE);
+		PxVehicleSetMaxHitActorAcceleration(MAX_ACCELERATION);
 
-	//Create the batched scene queries for the suspension sweeps.
-	//Use the post-filter shader to reject hit shapes that overlap the swept wheel at the start pose of the sweep.
-	PxQueryHitType::Enum(*sceneQueryPreFilter)(PxFilterData, PxFilterData, const void*, PxU32, PxHitFlags&);
-	PxQueryHitType::Enum(*sceneQueryPostFilter)(PxFilterData, PxFilterData, const void*, PxU32, const PxQueryHit&);
+		//Create the batched scene queries for the suspension sweeps.
+		//Use the post-filter shader to reject hit shapes that overlap the swept wheel at the start pose of the sweep.
+		PxQueryHitType::Enum(*sceneQueryPreFilter)(PxFilterData, PxFilterData, const void*, PxU32, PxHitFlags&);
+		PxQueryHitType::Enum(*sceneQueryPostFilter)(PxFilterData, PxFilterData, const void*, PxU32, const PxQueryHit&);
 #if BLOCKING_SWEEPS
-	sceneQueryPreFilter = &WheelSceneQueryPreFilterBlocking;
-	sceneQueryPostFilter = &WheelSceneQueryPostFilterBlocking;
+		sceneQueryPreFilter = &WheelSceneQueryPreFilterBlocking;
+		sceneQueryPostFilter = &WheelSceneQueryPostFilterBlocking;
 #else
-	sceneQueryPreFilter = &WheelSceneQueryPreFilterNonBlocking;
-	sceneQueryPostFilter = &WheelSceneQueryPostFilterNonBlocking;
+		sceneQueryPreFilter = &WheelSceneQueryPreFilterNonBlocking;
+		sceneQueryPostFilter = &WheelSceneQueryPostFilterNonBlocking;
 #endif 
 
-	//Create the batched scene queries for the suspension raycasts.
-	m_vehicleSceneQueryData = VehicleSceneQueryData::allocate(m_numberOfVehicles, PX_MAX_NB_WHEELS, gNumQueryHitsPerWheel, m_numberOfVehicles, sceneQueryPreFilter, sceneQueryPostFilter, m_PxAllocator);
-	m_batchQuery = VehicleSceneQueryData::setUpBatchedSceneQuery(0, *m_vehicleSceneQueryData, m_PxScene);
+		//Create the batched scene queries for the suspension raycasts.
+		m_vehicleSceneQueryData = VehicleSceneQueryData::allocate(m_numberOfVehicles, PX_MAX_NB_WHEELS, gNumQueryHitsPerWheel, m_numberOfVehicles, sceneQueryPreFilter, sceneQueryPostFilter, m_PxAllocator);
+		m_batchQuery = VehicleSceneQueryData::setUpBatchedSceneQuery(0, *m_vehicleSceneQueryData, m_PxScene);
 
-	//Create the friction table for each combination of tire and surface type.
-	m_frictionPairs = createFrictionPairs(m_PxDefaultMaterial);
+		//Create the friction table for each combination of tire and surface type.
+		m_frictionPairs = createFrictionPairs(m_PxDefaultMaterial);
 
-	//Create a plane to drive on.
-	PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0);
-	m_drivableGroundPlane = createDrivablePlane(groundPlaneSimFilterData, m_PxDefaultMaterial, m_PhysX);
-	m_PxScene->addActor(*m_drivableGroundPlane);
+		//Create a plane to drive on.
+		PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0);
+		m_drivableGroundPlane = createDrivablePlane(groundPlaneSimFilterData, m_PxDefaultMaterial, m_PhysX);
+		m_PxScene->addActor(*m_drivableGroundPlane);
+
+		m_vehicleKitEnabled = true;
+	}
 	
 	//Create a vehicle that will drive on the plane.
 	PxFilterData chassisSimFilterData(COLLISION_FLAG_CHASSIS, COLLISION_FLAG_CHASSIS_AGAINST, 0, 0);
-	PxFilterData wheelSimFilterData(COLLISION_FLAG_WHEEL, COLLISION_FLAG_WHEEL, PxPairFlag::eDETECT_CCD_CONTACT | PxPairFlag::eMODIFY_CONTACTS, 0);
+	PxFilterData wheelSimFilterData(COLLISION_FLAG_WHEEL, COLLISION_FLAG_WHEEL_AGAINST, PxPairFlag::eDETECT_CCD_CONTACT | PxPairFlag::eMODIFY_CONTACTS, 0);
 	VehicleDesc vehicleDesc = InitializeVehicleDescription(chassisSimFilterData, wheelSimFilterData);
 	PxVehicleDrive4W* vehicleReference = createVehicle4W(vehicleDesc, m_PhysX, m_PxCooking);
 	PxTransform startTransform(PxVec3(0, (vehicleDesc.chassisDims.y*0.5f + vehicleDesc.wheelRadius + 1.0f), 0), PxQuat(PxIdentity));
 	vehicleReference->getRigidDynamicActor()->setGlobalPose(startTransform);
 	vehicleReference->getRigidDynamicActor()->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
 	m_PxScene->addActor(*vehicleReference->getRigidDynamicActor());
-
-	
 
 	//Set the vehicle to rest in first gear.
 	//Set the vehicle to use auto-gears.
@@ -263,8 +265,12 @@ void PhysXSystem::BeginFrame()
 //------------------------------------------------------------------------------------------------------------------------------
 void PhysXSystem::Update(float deltaTime)
 {
+	gProfiler->ProfilerPush("PhysX System: Update");
+
 	m_PxScene->simulate(deltaTime);
 	m_PxScene->fetchResults(true);
+
+	gProfiler->ProfilerPop();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -849,6 +855,20 @@ STATIC Vec3 PhysXSystem::QuaternionToEulerAngles(const PxQuat& quat)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+STATIC physx::PxQuat PhysXSystem::EulerAnglesToQuaternion(const Vec3& eulerAngles)
+{
+	//assuming x = roll, y = pitch, z = yaw
+	PxQuat quaternion;
+	
+	quaternion.x = sin(eulerAngles.x * 0.5f) * cos(eulerAngles.y * 0.5f) * cos(eulerAngles.z * 0.5f) - cos(eulerAngles.x * 0.5f) * sin(eulerAngles.y * 0.5f) * sin(eulerAngles.z * 0.5f);
+	quaternion.y = cos(eulerAngles.x * 0.5f) * sin(eulerAngles.y * 0.5f) * cos(eulerAngles.z * 0.5f) + sin(eulerAngles.x * 0.5f) * cos(eulerAngles.y * 0.5f) * sin(eulerAngles.z * 0.5f);
+	quaternion.z = cos(eulerAngles.x * 0.5f) * cos(eulerAngles.y * 0.5f) * sin(eulerAngles.z * 0.5f) - sin(eulerAngles.x * 0.5f) * sin(eulerAngles.y * 0.5f) * cos(eulerAngles.z * 0.5f);
+	quaternion.w = cos(eulerAngles.x * 0.5f) * cos(eulerAngles.y * 0.5f) * cos(eulerAngles.z * 0.5f) + sin(eulerAngles.x * 0.5f) * sin(eulerAngles.y * 0.5f) * sin(eulerAngles.z * 0.5f);
+
+	return quaternion;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC PxQuat PhysXSystem::MakeQuaternionFromMatrix(const Matrix44& matrix)
 {
 	//Quaternion
@@ -873,7 +893,7 @@ STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 {
 	//Load the mesh
 	DebuggerPrintf("\n\n Called event LoadCollisionMeshFromData");
-	ObjectLoader* loader;
+	ObjectLoader loader;
 
 	std::string id = "";
 	std::string src = "";
@@ -888,16 +908,34 @@ STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 	else
 	{
 		//Id was valid so now let's load the mesh
-		loader = ObjectLoader::CreateMeshFromFile(g_renderContext, MODEL_PATH + src, true);
+		//Check the file extension
+		std::vector<std::string> strings = SplitStringOnDelimiter(src, '.');
+		bool isDataDriven = false;
+		if (strings.size() > 1)
+		{
+			if (strings[(strings.size() - 1)] == "mesh")
+			{
+				isDataDriven = true;
+			}
+		}
+
+		//Before we can CreateMeshFromFile we need to send it the required transform, scale, invert, tangent information
+		loader.m_tangents = args.GetValue("tangents", loader.m_tangents);
+		loader.m_scale = args.GetValue("scale", loader.m_scale);
+		loader.m_transform = args.GetValue("transform", loader.m_transform);
+		loader.m_invert = args.GetValue("invert", loader.m_invert);
+
+		//This will now load the mesh from file
+		loader.LoadMeshFromFile(g_renderContext, MODEL_PATH + src, isDataDriven);
 	}
 
 	//Create a PxConvexMesh from the vertex array 
-	PxVec3* convexVerts = new PxVec3[loader->m_cpuMesh->GetVertexCount()];
-	g_PxPhysXSystem->AddVertMasterBufferToPxVecBuffer(convexVerts, loader->m_cpuMesh->GetVertices(), loader->m_cpuMesh->GetVertexCount());
+	PxVec3* convexVerts = new PxVec3[loader.m_cpuMesh->GetVertexCount()];
+	g_PxPhysXSystem->AddVertMasterBufferToPxVecBuffer(convexVerts, loader.m_cpuMesh->GetVertices(), loader.m_cpuMesh->GetVertexCount());
 
 	//Create a pxDescription for the convexmesh
 	PxConvexMeshDesc desc;
-	desc.points.count = (PxU32)loader->m_cpuMesh->GetVertexCount();
+	desc.points.count = (PxU32)loader.m_cpuMesh->GetVertexCount();
 	desc.points.stride = sizeof(PxVec3);
 	desc.points.data = convexVerts;
 	desc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
@@ -961,7 +999,6 @@ STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 	g_PxPhysXSystem->GetPhysXScene()->addActor(*body);
 
 	PX_ASSERT(convex);
-	delete loader;
 
 	return true;
 }
@@ -996,5 +1033,28 @@ void PhysXSystem::ShutDown()
 		PX_RELEASE(transport);
 	}
 	PX_RELEASE(m_PxFoundation);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void PhysXSystem::RestartPhysX()
+{
+	if (m_vehicleKitEnabled)
+	{
+		PxCloseVehicleSDK();
+	}
+
+	//Get and release all the actors in the current scene
+	int numActors = m_PxScene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC);
+	if (numActors > 0)
+	{
+		std::vector<PxRigidActor*> actors(numActors);
+		m_PxScene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), numActors);
+
+		//Release the actor here
+		for (int actorIndex = 0; actorIndex < numActors; actorIndex++)
+		{
+			actors[actorIndex]->release();
+		}
+	}
 }
 

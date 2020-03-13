@@ -90,6 +90,13 @@ std::string ToString(float const &value)
 
 //------------------------------------------------------------------------------------------------------------------------------
 template <>
+std::string ToString(double const &value)
+{
+	return std::to_string(value);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+template <>
 std::string ToString(bool const &value)
 {
 	if (value)

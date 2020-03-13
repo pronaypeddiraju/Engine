@@ -175,12 +175,15 @@ constexpr char MATERIAL_PATH[] = "Data/Materials/";
 constexpr char MODEL_PATH[] = "Data/Models/";
 constexpr char LOG_PATH[] = "Data/Logs/";
 constexpr char SCREEN_SHOT_PATH[] = "Data/Images/ScreenShots/";
+constexpr char BINARY_FILES_PATH[] = "Data/Bin/";
 
 //------------------------------------------------------------------------------------------------------------------------------
 constexpr float		 CONSOLE_LINE_SPACE = 0.05f;
 constexpr int		 COLLIDER2D_COUNT = 6;
 
 typedef unsigned int uint;
+typedef unsigned char uchar;
+typedef unsigned short ushort;
 
 //------------------------------------------------------------------------------------------------------------------------------
 bool				IsBitSet(uint flags, uint bit);  // bit is 0 to 31

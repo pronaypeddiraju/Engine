@@ -58,6 +58,9 @@ template <>
 std::string ToString(float const &value);
 
 template <>
+std::string ToString(double const &value);
+
+template <>
 std::string ToString(bool const &value);
 
 template <>

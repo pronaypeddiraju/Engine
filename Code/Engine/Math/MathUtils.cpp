@@ -2,6 +2,7 @@
 #include "Engine/Commons/EngineCommon.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/Vec3.hpp"
@@ -470,6 +471,8 @@ bool IsPointInCapsule2D( const Vec2& point, const Vec2& capsuleStart, const Vec2
 //------------------------------------------------------------------------------------------------------------------------------
 bool IsPointOnLineSegment2D(const Vec2& position, const Vec2& lineStart, const Vec2& lineEnd, float epsilon)
 {
+	UNUSED(epsilon);
+
 	Vec2 lineSegment = Vec2(lineEnd - lineStart);
 	Vec2 pointSegment = Vec2(position - lineStart);
 
@@ -516,6 +519,13 @@ std::vector<Vec2> GenerateConvexPolygonFromDisc2D(int discRadius)
 	UNUSED(discRadius);
 	std::vector<Vec2> vectorOfPoints;
 	return vectorOfPoints;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool IsPointInsideAABB3(const Vec3& point, const AABB3& box)
+{
+	bool result = box.IsPointInsideAABB3(point);
+	return result;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -686,6 +696,48 @@ float RangeMapFloat( float inputValue, float inRangeStart, float inRangeEnd, flo
 	float outValue = outRangeStart + outRangeValue;
 	
 	return outValue;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool IsFloatInRange(float inputValue, float rangeMin, float rangeMax)
+{
+	if (inputValue >= rangeMin && inputValue <= rangeMax)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool IsVectorInRange(const Vec3& inputValue, const Vec3& rangeMin, const Vec3& rangeMax)
+{
+	if (IsFloatInRange(inputValue.x, rangeMin.x, rangeMax.x)
+		&& IsFloatInRange(inputValue.y, rangeMin.y, rangeMax.y)
+		&& IsFloatInRange(inputValue.z, rangeMin.z, rangeMax.z))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+bool IsVectorInRange(const Vec2& inputValue, const Vec2& rangeMin, const Vec2& rangeMax)
+{
+	if (IsFloatInRange(inputValue.x, rangeMin.x, rangeMax.x)
+		&& IsFloatInRange(inputValue.y, rangeMin.y, rangeMax.y))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

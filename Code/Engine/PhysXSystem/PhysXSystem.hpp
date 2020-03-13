@@ -8,6 +8,7 @@
 #include "Engine/PhysXSystem/PhysXTypes.hpp"
 #include "Engine/PhysXSystem/PhysXVehicleSceneQuery.hpp"
 #include "Engine/PhysXSystem/PhysXVehicleCreate.hpp"
+#include "Engine/PhysXSystem/PhysXSimulationEventCallbacks.hpp"
 #include <vector>
 #include <functional>
 #include <map>
@@ -41,6 +42,8 @@ public:
 	void				Update(float deltaTime);
 	void				EndFrame();
 	void				ShutDown();
+
+	void				RestartPhysX();
 
 	PxScene*			GetPhysXScene() const;
 	PxPhysics*			GetPhysXSDK() const;
@@ -99,6 +102,7 @@ public:
 	static PxVec3		VecToPxVector(const Vec3& vector);
 	static PxVec4		VecToPxVector(const Vec4& vector);
 	static Vec3			QuaternionToEulerAngles(const PxQuat& quat);
+	static PxQuat		EulerAnglesToQuaternion(const Vec3& eulerAngles);
 	static PxQuat		MakeQuaternionFromMatrix(const Matrix44& matrix);
 
 	static bool			LoadCollisionMeshFromData(EventArgs& args);

@@ -120,6 +120,9 @@
     <ClCompile Include="Renderer\UniformBuffer.cpp" />
     <ClCompile Include="Renderer\VertexBuffer.cpp" />
     <ClCompile Include="Math\ConvexHull2D.cpp" />
+    <ClCompile Include="PhysXSystem\PhysXSimulationEventCallbacks.cpp" />
+    <ClCompile Include="Core\BufferReadUtils.cpp" />
+    <ClCompile Include="Core\BufferWriteUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirdParty\CPython_3.7\import.h" />
@@ -466,6 +469,10 @@
     <ClInclude Include="ThirdParty\imGUI\imstb_textedit.h" />
     <ClInclude Include="ThirdParty\imGUI\imstb_truetype.h" />
     <ClInclude Include="Math\ConvexHull2D.hpp" />
+    <ClInclude Include="PhysXSystem\PhysXSimulationEventCallbacks.hpp" />
+    <ClInclude Include="Core\BufferUtilCommons.hpp" />
+    <ClInclude Include="Core\BufferReadUtils.hpp" />
+    <ClInclude Include="Core\BufferWriteUtils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Math\Array2D.inl" />

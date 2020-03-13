@@ -46,7 +46,6 @@ namespace vehicle
 		PX_UNUSED(constantBlock);
 		PX_UNUSED(constantBlockSize);
 
-		// let triggers through
 		if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
 		{
 			pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
@@ -70,7 +69,6 @@ namespace vehicle
 		PX_UNUSED(constantBlock);
 		PX_UNUSED(constantBlockSize);
 
-		// let triggers through
 		if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
 		{
 			pairFlags = PxPairFlag::eTRIGGER_DEFAULT;

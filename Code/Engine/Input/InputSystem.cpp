@@ -47,6 +47,23 @@ const XboxController& InputSystem::GetXboxController( int controllerID )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+int InputSystem::GetNumConnectedControllers()
+{
+	int numConnected = 0;
+
+	//Check how many controllers have been connected in the system
+	for (int controllerIndex = 0; controllerIndex < MAX_XBOX_CONTROLLERS; controllerIndex++)
+	{
+		if (m_controllers[controllerIndex].IsConnected())
+		{
+			numConnected++;
+		}
+	}
+
+	return numConnected;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void InputSystem::ResetController( int controllerID )
 {
 	m_controllers[controllerID].Reset();

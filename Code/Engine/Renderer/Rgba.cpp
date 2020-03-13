@@ -58,6 +58,17 @@ void Rgba::SetFromBytes( unsigned char redByte, unsigned char greenByte, unsigne
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void Rgba::GetAsBytes(uchar* bytes) const
+{
+	bytes = new uchar[4];
+
+	bytes[0] = (char)(r * 255.f);
+	bytes[1] = (char)(g * 255.f);
+	bytes[2] = (char)(b * 255.f);
+	bytes[3] = (char)(a * 255.f);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void Rgba::LerpRGBA( Rgba& currentColor, const Rgba& startColor, const Rgba& endColor, float blendFraction )
 {
 	currentColor.r = RangeMapFloat(blendFraction, 0.f, 1.f, startColor.r, endColor.r);

@@ -25,8 +25,10 @@ class ObjectLoader
 public:
 	ObjectLoader();
 	~ObjectLoader();
-	static ObjectLoader*	CreateMeshFromFile(RenderContext* renderContext, const std::string& filePath, bool isDataDriven);
+	static ObjectLoader*	MakeLoaderAndLoadMeshFromFile(RenderContext* renderContext, const std::string& filePath, bool isDataDriven);
 
+	void					LoadMeshFromFile(RenderContext* renderContext, const std::string& fileName, bool isDataDriven);
+	
 	void					LoadFromXML(const std::string& fileName);
 	void					CreateFromString(const char* data);
 	void					AddIndexForMesh(const std::string& indices);

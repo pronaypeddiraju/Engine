@@ -32,6 +32,10 @@ public:
 	void						ShutDown();
 
 	const XboxController&		GetXboxController (int controllerID);
+	int							GetNumConnectedControllers();
+	
+	//This would be a good helper if you track controller assignment
+	//const XboxController&		GetNextAvailableXboxController();
 
 private:
 	XboxController m_controllers[MAX_XBOX_CONTROLLERS] =

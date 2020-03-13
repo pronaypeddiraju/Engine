@@ -2,6 +2,7 @@
 //3rd Party tools
 #include "ThirdParty/stb/stb_image.h"
 //Core systems
+#include "Engine/Commons/Profiler/Profiler.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/Time.hpp"
@@ -93,10 +94,42 @@ bool RenderContext::D3D11Setup( void* hwndVoid )
 	swap_desc.BufferDesc.Width = width;
 	swap_desc.BufferDesc.Height = height;
 
+	//We need to select the Nvidia adaptor or basically the adaptor that is not intel's integrated GPU
+	IDXGIAdapter1 * pDXGIAdapter;
+	IDXGIFactory1 * pIDXGIFactory;
+
+	HRESULT hr = ::CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&pIDXGIFactory);
+
+	UINT i = 0;
+	std::vector <IDXGIAdapter1*> vAdapters;
+
+	while (pIDXGIFactory->EnumAdapters1(i, &pDXGIAdapter) != DXGI_ERROR_NOT_FOUND)
+	{
+		vAdapters.push_back(pDXGIAdapter);
+		++i;
+	}
+
+	IDXGIAdapter1* pickedAdapter = vAdapters[0];
+	std::vector<IDXGIAdapter1*>::iterator adapterItr = vAdapters.begin();
+	DXGI_ADAPTER_DESC1 desc;
+	DXGI_ADAPTER_DESC1 pickedDesc;
+	pickedAdapter->GetDesc1(&pickedDesc);
+
+	for (int adapterIndex = 1; adapterIndex < vAdapters.size(); adapterIndex++)
+	{
+		vAdapters[adapterIndex]->GetDesc1(&desc);
+
+		if (desc.DedicatedVideoMemory > pickedDesc.DedicatedVideoMemory)
+		{
+			pickedAdapter = vAdapters[adapterIndex];
+			pickedDesc = desc;
+		}
+	}
+	
 
 	// Actually Create
-	HRESULT hr = ::D3D11CreateDeviceAndSwapChain( nullptr, // Adapter, if nullptr, will use adapter window is primarily on.
-		D3D_DRIVER_TYPE_HARDWARE,  // Driver Type - We want to use the GPU (HARDWARE)
+	hr = ::D3D11CreateDeviceAndSwapChain( pickedAdapter, // Adapter, if nullptr, will use adapter window is primarily on.
+		D3D_DRIVER_TYPE_UNKNOWN,   // Driver Type - We want to use the GPU (HARDWARE)
 		nullptr,                   // Software Module - DLL that implements software mode (we do not use)
 		device_flags,              // device creation options
 		nullptr,                   // feature level (use default)
@@ -509,6 +542,8 @@ void RenderContext::SetRasterStateWireFrame()
 //------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::BeginFrame()
 {
+	gProfiler->ProfilerPush("RenderContext::BeginFrame");
+
 	// Get the back buffer
 	ID3D11Texture2D *back_buffer = nullptr;
 	m_D3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
@@ -536,6 +571,7 @@ void RenderContext::BeginFrame()
 	//ColorTargetView holds a reference to the back_buffer so we can now release it from this function
 	DX_SAFE_RELEASE( back_buffer );
 
+	gProfiler->ProfilerPop();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -553,23 +589,37 @@ Texture2D* RenderContext::GetFrameColorTexture()
 //------------------------------------------------------------------------------------------------------------------------------
 void RenderContext::EndFrame()
 {
-	Texture2D* backBufferTexture = new Texture2D(this);
+	gProfiler->ProfilerPush("RenderContext::EndFrame");
 
+	gProfiler->ProfilerPush("New Texture");
+	Texture2D* backBufferTexture = new Texture2D(this);
+	gProfiler->ProfilerPop();
+	
+	gProfiler->ProfilerPush("Get Buffer");
 	// Get the back buffer
 	ID3D11Texture2D *back_buffer = nullptr;
 	m_D3DSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
 
 	backBufferTexture->m_handle = back_buffer;
+	gProfiler->ProfilerPop();
 
+	gProfiler->ProfilerPush("CopyTexture");
 	CopyTexture(backBufferTexture, m_defaultColorTexture);
+	gProfiler->ProfilerPop();
 
+	gProfiler->ProfilerPush("D3D Present");
 	// We're done rendering, so tell the swap chain they can copy the back buffer to the front (desktop/window) buffer
 	m_D3DSwapChain->Present(0, // Sync Interval, set to 1 for VSync
 		0);                    // Present flags, see;
 								// https://msdn.microsoft.com/en-us/library/windows/desktop/bb509554(v=vs.85).aspx
-	
+	gProfiler->ProfilerPop();
+
 	if (m_screenShotRequested)
 	{
+
+		delete backBufferTexture;
+		backBufferTexture = nullptr;
+
 		m_stagingTexture = new Texture2D(this);
 
 		CreateStagingTexture(m_stagingTexture, backBufferTexture);
@@ -581,6 +631,7 @@ void RenderContext::EndFrame()
 		m_screenShotRequested = false;
 	}
 
+	gProfiler->ProfilerPush("Free Resources");
 	//Free up the color target view or we have a leak in memory 
 	delete m_FrameBuffer_ColorTargetView;
 	m_FrameBuffer_ColorTargetView = nullptr;
@@ -599,12 +650,12 @@ void RenderContext::EndFrame()
 
 	delete m_FXColorTargetView;
 	m_FXColorTargetView = nullptr;
-
-	delete backBufferTexture;
-	backBufferTexture = nullptr;
+	gProfiler->ProfilerPop();
 
 	// We don't need to release back buffer anymore as it is being released when we delete the backBufferTexture as the texture stores it as a handle
 	//DX_SAFE_RELEASE(back_buffer);
+
+	gProfiler->ProfilerPop();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -637,14 +688,34 @@ void RenderContext::Shutdown()
 	delete m_immediateMesh;
 	m_immediateMesh = nullptr;
 
+	ClearAllAssetRepositories();
+
+	/*
+	texIterator = m_loadedTextures.begin();
+	lastTexIterator = m_loadedTextures.end();
+
+	for(texIterator; texIterator != lastTexIterator; texIterator++)
+	{
+		delete texIterator->second;
+	}
+
+	m_loadedTextures.clear();
+	*/
+
+	D3D11Cleanup();
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void RenderContext::ClearAllAssetRepositories()
+{
 	//m_loadedShaders;
 	std::map< std::string, Shader*>::iterator shaderIterator;
 	std::map< std::string, Shader*>::iterator lastShaderIterator;
 
 	shaderIterator = m_loadedShaders.begin();
 	lastShaderIterator = m_loadedShaders.end();
-	
-	for(shaderIterator; shaderIterator != lastShaderIterator; shaderIterator++)
+
+	for (shaderIterator; shaderIterator != lastShaderIterator; shaderIterator++)
 	{
 		delete shaderIterator->second;
 	}
@@ -652,7 +723,7 @@ void RenderContext::Shutdown()
 	//Free all samplers
 	int numFilterModes = NUM_FILTER_MODES;
 
-	for(int filterIterator = 0; filterIterator < numFilterModes; filterIterator++)
+	for (int filterIterator = 0; filterIterator < numFilterModes; filterIterator++)
 	{
 		delete m_cachedSamplers[filterIterator];
 		m_cachedSamplers[filterIterator] = nullptr;
@@ -667,7 +738,7 @@ void RenderContext::Shutdown()
 	texIterator = m_cachedTextureViews.begin();
 	lastTexIterator = m_cachedTextureViews.end();
 
-	for(texIterator; texIterator != lastTexIterator; texIterator++)
+	for (texIterator; texIterator != lastTexIterator; texIterator++)
 	{
 		delete texIterator->second;
 	}
@@ -681,7 +752,7 @@ void RenderContext::Shutdown()
 	fontIterator = m_loadedFonts.begin();
 	lastFontIterator = m_loadedFonts.end();
 
-	for(fontIterator; fontIterator != lastFontIterator; fontIterator++)
+	for (fontIterator; fontIterator != lastFontIterator; fontIterator++)
 	{
 		delete fontIterator->second;
 	}
@@ -695,7 +766,7 @@ void RenderContext::Shutdown()
 	MatIterator = m_materialDatabase.begin();
 	lastMatIterator = m_materialDatabase.end();
 
-	for(MatIterator; MatIterator != lastMatIterator; MatIterator++)
+	for (MatIterator; MatIterator != lastMatIterator; MatIterator++)
 	{
 		delete MatIterator->second;
 	}
@@ -715,20 +786,13 @@ void RenderContext::Shutdown()
 	}
 
 	m_modelDatabase.clear();
+}
 
-	/*
-	texIterator = m_loadedTextures.begin();
-	lastTexIterator = m_loadedTextures.end();
-
-	for(texIterator; texIterator != lastTexIterator; texIterator++)
-	{
-		delete texIterator->second;
-	}
-
-	m_loadedTextures.clear();
-	*/
-
-	D3D11Cleanup();
+//------------------------------------------------------------------------------------------------------------------------------
+void RenderContext::Restart()
+{
+	ClearAllAssetRepositories();
+	Startup();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -1110,13 +1174,16 @@ void RenderContext::BeginCamera( Camera& camera )
 	m_D3DContext->OMSetRenderTargets( colorCount, &dx_rtv, dx_dsv);
 
 	// Next, we have to describe WHAT part of the texture we're rendering to (called the viewport)
-	// This is also usually managed by the camera, but for now, we will just render to the whole texture
+	// This is coming from the camera. By default the camera will render to the whole screen unless otherwise specified on the camera
+
+	AABB2 viewportInPixels = camera.GetViewportInPixels();
+
 	D3D11_VIEWPORT viewport;  
 	memset( &viewport, 0, sizeof(viewport) );
-	viewport.TopLeftX = 0U;
-	viewport.TopLeftY = 0U;
-	viewport.Width = static_cast<float>(colorTargetView->m_width);
-	viewport.Height = static_cast<float>(colorTargetView->m_height);
+	viewport.TopLeftX = (uint)viewportInPixels.m_minBounds.x;
+	viewport.TopLeftY = (uint)(camera.m_colorTargetView->m_height - viewportInPixels.m_maxBounds.y);
+	viewport.Width = viewportInPixels.GetWidth();
+	viewport.Height = viewportInPixels.GetHeight();
 	viewport.MinDepth = 0.0f;        // must be between 0 and 1 (defualt is 0);
 	viewport.MaxDepth = 1.0f;        // must be between 0 and 1 (default is 1)
 	m_D3DContext->RSSetViewports( 1, &viewport );
@@ -1434,7 +1501,7 @@ GPUMesh* RenderContext::CreateOrGetMeshFromFile(const std::string& fileName)
 		}
 
 		//Create the Model
-		ObjectLoader* model = ObjectLoader::CreateMeshFromFile(this, filePath, isDataDriven);
+		ObjectLoader* model = ObjectLoader::MakeLoaderAndLoadMeshFromFile(this, filePath, isDataDriven);
 		
 		//Setup materials
 		std::vector<std::string> splits = SplitStringOnDelimiter(fileName, '.');

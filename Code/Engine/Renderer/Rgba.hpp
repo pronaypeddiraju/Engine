@@ -1,6 +1,7 @@
 #pragma once
 //------------------------------------------------------------------------------------------------------------------------------
 struct Vec3;
+typedef unsigned char uchar;
 
 //------------------------------------------------------------------------------------------------------------------------------
 struct Rgba
@@ -52,6 +53,8 @@ public:
 
 	void			SetFromText(const char* asText);
 	void			SetFromBytes( unsigned char redByte, unsigned char greenByte, unsigned char blueByte, unsigned char alphaByte = 255 );
+
+	void			GetAsBytes(uchar* bytes) const;
 
 	static void		LerpRGBA( Rgba& currentColor, const Rgba& startColor, const Rgba& endColor, float blendFraction );
 	static void		LerpRGB( Rgba& currentColor, const Rgba& startColor, const Rgba& endColor, float blendFraction );

@@ -19,6 +19,7 @@ public:
 	const static Vec2	ONE;
 	const static Vec2	NEGATIVE_ONE;
 	
+	//For box alignment
 	const static Vec2	ALIGN_CENTERED;
 	const static Vec2	ALIGN_LEFT_CENTERED;
 	const static Vec2	ALIGN_LEFT_BOTTOM;
@@ -29,10 +30,14 @@ public:
 	const static Vec2	ALIGN_TOP_CENTERED;
 	const static Vec2	ALIGN_BOTTOM_CENTERED;
 
+	//Directions
 	const static Vec2	RIGHT;
 	const static Vec2	UP;
 	const static Vec2	LEFT;
 	const static Vec2	DOWN;
+
+	//Split Screen Views
+
 
 	//Accessor methods
 	float				GetLength() const;
