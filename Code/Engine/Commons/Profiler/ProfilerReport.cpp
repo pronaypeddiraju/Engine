@@ -170,7 +170,7 @@ void ProfilerReport::DrawTreeViewAsImGUIWidget(uint history)
 	if (m_sortTotalTime & 1)
 	{
 		m_root->SortByTotalTime();
-		DrawTreeViewAsImGUIWidget(history);
+		DrawTreeViewAsImGUIWidget(m_lastHistoryFrame);
 	}
 
 	ImGui::SameLine();
@@ -179,7 +179,7 @@ void ProfilerReport::DrawTreeViewAsImGUIWidget(uint history)
 	if (m_sortSelfTime & 1)
 	{
 		m_root->SortBySelfTime();
-		DrawTreeViewAsImGUIWidget(history);
+		DrawTreeViewAsImGUIWidget(m_lastHistoryFrame);
 	}
 	
 
@@ -269,7 +269,7 @@ void ProfilerReport::DrawFlatViewAsImGUIWidget(uint history)
 
 		std::sort(m_flatViewVector.begin(), m_flatViewVector.end(), ComparatorTotalTimeSort);
 
-		DrawFlatViewAsImGUIWidget(history);
+		DrawFlatViewAsImGUIWidget(m_lastHistoryFrame);
 	}
 
 	ImGui::SameLine();
@@ -281,7 +281,7 @@ void ProfilerReport::DrawFlatViewAsImGUIWidget(uint history)
 		
 		std::sort(m_flatViewVector.begin(), m_flatViewVector.end(), ComparatorSelfTimeSort);
 
-		DrawFlatViewAsImGUIWidget(history);
+		DrawFlatViewAsImGUIWidget(m_lastHistoryFrame);
 	}
 
 	if (m_activeMode == TREE_VIEW)
