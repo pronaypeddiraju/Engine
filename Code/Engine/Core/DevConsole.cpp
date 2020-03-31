@@ -18,10 +18,11 @@ DevConsole* g_devConsole = nullptr;
 
 //------------------------------------------------------------------------------------------------------------------------------
 const STATIC Rgba DevConsole::CONSOLE_INFO			=	Rgba(1.0f, 1.0f, 0.0f, 1.0f);
-const STATIC Rgba DevConsole::CONSOLE_BG_COLOR		=	Rgba(0.0f, 0.0f, 0.0f, 0.75f);
+const STATIC Rgba DevConsole::CONSOLE_BG_COLOR		=	Rgba(0.f, 0.f, 0.f, 0.7f);
 const STATIC Rgba DevConsole::CONSOLE_ERROR   		=	Rgba(1.0f, 0.0f, 0.0f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_ERROR_DESC	=	Rgba(1.0f, 0.5f, 0.3f, 1.0f);
 const STATIC Rgba DevConsole::CONSOLE_INPUT			=	Rgba(1.0f, 1.0f, 1.0f, 1.0f);
+const STATIC Rgba DevConsole::CONSOLE_ECHO_COLOR	=	Rgba(1.0f, 1.0f, 1.0f, 1.0f);
 
 extern std::mutex gTrackerLock;
 extern std::map<void*, MemTrackInfo_T, std::less<void*>, TemplatedUntrackedAllocator<std::pair<void* const, MemTrackInfo_T>>> gMemTrackers;
@@ -286,9 +287,6 @@ void DevConsole::HandleCharacter( unsigned char charCode )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const STATIC Rgba DevConsole::CONSOLE_ECHO_COLOR		=	Rgba(0.255f, 0.450f, 1.0f, 1.0f);
-
-//------------------------------------------------------------------------------------------------------------------------------
 DevConsole::DevConsole()
 {
 	m_timeAtStart = static_cast<float>(GetCurrentTimeSeconds());
@@ -394,13 +392,14 @@ void DevConsole::Render( RenderContext& renderer, Camera& camera, float lineHeig
 	camera.UpdateUniformBuffer(&renderer);
 
 	renderer.BeginCamera(camera);
-	renderer.BindTextureViewWithSampler( 0U, m_consoleFont->GetTexture()); 
+	renderer.BindTextureViewWithSampler( 0U, nullptr); 
 	renderer.BindShader(g_renderContext->CreateOrGetShaderFromFile(m_defaultShaderPath));
 
 	//Draw a black box over the entire screen
 	AABB2 blackBox = AABB2(camera.GetOrthoBottomLeft(), camera.GetOrthoTopRight());
 	std::vector<Vertex_PCU> boxVerts;
 	AddVertsForAABB2D(boxVerts, blackBox, CONSOLE_BG_COLOR);
+	renderer.DrawVertexArray(boxVerts);
 
 	//Set the text based on Camera size
 	Vec2 leftBot = camera.GetOrthoBottomLeft();

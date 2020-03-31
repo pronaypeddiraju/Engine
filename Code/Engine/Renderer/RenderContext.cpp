@@ -616,10 +616,6 @@ void RenderContext::EndFrame()
 
 	if (m_screenShotRequested)
 	{
-
-		delete backBufferTexture;
-		backBufferTexture = nullptr;
-
 		m_stagingTexture = new Texture2D(this);
 
 		CreateStagingTexture(m_stagingTexture, backBufferTexture);
@@ -629,6 +625,9 @@ void RenderContext::EndFrame()
 		jobSystem->AddJobForCategory(screenshotJob, JOB_RENDER);
 
 		m_screenShotRequested = false;
+
+		delete backBufferTexture;
+		backBufferTexture = nullptr;
 	}
 
 	gProfiler->ProfilerPush("Free Resources");

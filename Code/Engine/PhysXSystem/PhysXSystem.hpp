@@ -104,6 +104,7 @@ public:
 	static Vec3			QuaternionToEulerAngles(const PxQuat& quat);
 	static PxQuat		EulerAnglesToQuaternion(const Vec3& eulerAngles);
 	static PxQuat		MakeQuaternionFromMatrix(const Matrix44& matrix);
+	static float		GetRadiansPerSecondToRotationsPerMinute(float radiansPerSecond);
 
 	static bool			LoadCollisionMeshFromData(EventArgs& args);
 

@@ -146,7 +146,7 @@ VIRTUAL ChannelGroupID AudioSystem::CreateOrGetChannelGroup(const std::string& c
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-VIRTUAL SoundPlaybackID AudioSystem::PlaySound( SoundID soundID, bool isLooped, float volume, float balance, float speed, bool isPaused )
+VIRTUAL SoundPlaybackID AudioSystem::PlayAudio( SoundID soundID, bool isLooped, float volume, float balance, float speed, bool isPaused )
 {
 	size_t numSounds = m_registeredSounds.size();
 	if( soundID < 0 || soundID >= numSounds )
