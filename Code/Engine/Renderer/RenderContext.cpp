@@ -1179,8 +1179,8 @@ void RenderContext::BeginCamera( Camera& camera )
 
 	D3D11_VIEWPORT viewport;  
 	memset( &viewport, 0, sizeof(viewport) );
-	viewport.TopLeftX = (uint)viewportInPixels.m_minBounds.x;
-	viewport.TopLeftY = (uint)(camera.m_colorTargetView->m_height - viewportInPixels.m_maxBounds.y);
+	viewport.TopLeftX = (float)viewportInPixels.m_minBounds.x;
+	viewport.TopLeftY = (float)(camera.m_colorTargetView->m_height - viewportInPixels.m_maxBounds.y);
 	viewport.Width = viewportInPixels.GetWidth();
 	viewport.Height = viewportInPixels.GetHeight();
 	viewport.MinDepth = 0.0f;        // must be between 0 and 1 (defualt is 0);

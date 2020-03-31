@@ -91,7 +91,7 @@ private:
 	int										m_timeArraySize = 0;
 	int										m_allocArraySize = 0;
 
-	float									m_reportFrameNum = 0;
+	int										m_reportFrameNum = 0;
 };
 
 // EXTRA -> more important to the job system for tracking timing across threads
