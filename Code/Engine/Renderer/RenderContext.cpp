@@ -152,6 +152,8 @@ void RenderContext::D3D11Cleanup()
 	ID3D11Debug* debugObject = nullptr;
 	HRESULT hr = m_D3DDevice->QueryInterface(__uuidof(ID3D11Debug), (void**)&debugObject);
 
+	//m_D3DDevice->QueryInterface(IID_PPV_ARGS(&debugObject));
+
 	DX_SAFE_RELEASE(m_defaultRasterState);
 	DX_SAFE_RELEASE(m_D3DSwapChain);
 	DX_SAFE_RELEASE(m_D3DContext);
@@ -162,6 +164,7 @@ void RenderContext::D3D11Cleanup()
 		//Uncomment when debugging
 		//debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 		DX_SAFE_RELEASE(debugObject);
+
 	}
 
 }
@@ -625,10 +628,10 @@ void RenderContext::EndFrame()
 		jobSystem->AddJobForCategory(screenshotJob, JOB_RENDER);
 
 		m_screenShotRequested = false;
-
-		delete backBufferTexture;
-		backBufferTexture = nullptr;
 	}
+
+	delete backBufferTexture;
+	backBufferTexture = nullptr;
 
 	gProfiler->ProfilerPush("Free Resources");
 	//Free up the color target view or we have a leak in memory 
@@ -719,16 +722,19 @@ void RenderContext::ClearAllAssetRepositories()
 		delete shaderIterator->second;
 	}
 
-	//Free all samplers
-	int numFilterModes = NUM_FILTER_MODES;
-
-	for (int filterIterator = 0; filterIterator < numFilterModes; filterIterator++)
-	{
-		delete m_cachedSamplers[filterIterator];
-		m_cachedSamplers[filterIterator] = nullptr;
-	}
-
 	m_loadedShaders.clear();
+
+	//Free all samplers
+// 	int numFilterModes = NUM_FILTER_MODES;
+// 	Sampler* cachedSampler = m_cachedSamplers[0];
+// 	for (int filterIterator = 0; filterIterator < numFilterModes; filterIterator++)
+// 	{
+// 		if (cachedSampler->m_handle != nullptr)
+// 		{
+// 			delete cachedSampler;
+// 		}
+// 		cachedSampler++;
+// 	}
 
 	//Clear all Textures
 	std::map< std::string, TextureView*>::iterator texIterator;
@@ -1511,7 +1517,7 @@ GPUMesh* RenderContext::CreateOrGetMeshFromFile(const std::string& fileName)
 		}
 
 		filePath = MODEL_PATH + fileName;
-		m_modelDatabase[filePath] = model->m_mesh;
+		m_modelDatabase.insert(std::pair<std::string, GPUMesh*>(filePath, model->m_mesh));
 		model->m_mesh = nullptr;
 		
 		delete model;

@@ -78,7 +78,8 @@ VIRTUAL SoundID AudioSystem::CreateOrGetSound( const std::string& soundFilePath 
 		if( newSound )
 		{
 			SoundID newSoundID = m_registeredSounds.size();
-			m_registeredSoundIDs[ soundFilePath ] = newSoundID;
+			m_registeredSoundIDs.insert(std::pair<std::string, SoundID>(soundFilePath, newSoundID));
+			//m_registeredSoundIDs[ soundFilePath ] = newSoundID;
 			m_registeredSounds.push_back( newSound );
 			return newSoundID;
 		}
@@ -133,7 +134,8 @@ VIRTUAL ChannelGroupID AudioSystem::CreateOrGetChannelGroup(const std::string& c
 			master->addGroup(newChannelGroup);
 
 			ChannelGroupID channelID = m_registeredChannelIDs.size();
-			m_registeredChannelIDs[channelName] = channelID;
+			//m_registeredChannelIDs[channelName] = channelID;
+			m_registeredChannelIDs.insert(std::pair<std::string, ChannelGroupID>(channelName, channelID));
 			m_registeredChannels.push_back(newChannelGroup);
 			return channelID;
 		}
