@@ -152,8 +152,6 @@ void RenderContext::D3D11Cleanup()
 	ID3D11Debug* debugObject = nullptr;
 	HRESULT hr = m_D3DDevice->QueryInterface(__uuidof(ID3D11Debug), (void**)&debugObject);
 
-	//m_D3DDevice->QueryInterface(IID_PPV_ARGS(&debugObject));
-
 	DX_SAFE_RELEASE(m_defaultRasterState);
 	DX_SAFE_RELEASE(m_D3DSwapChain);
 	DX_SAFE_RELEASE(m_D3DContext);
@@ -162,7 +160,7 @@ void RenderContext::D3D11Cleanup()
 	if(SUCCEEDED(hr))
 	{
 		//Uncomment when debugging
-		//debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 		DX_SAFE_RELEASE(debugObject);
 
 	}
@@ -787,7 +785,10 @@ void RenderContext::ClearAllAssetRepositories()
 
 	for (modelIterator; modelIterator != lastModelIterator; modelIterator++)
 	{
-		delete modelIterator->second;
+		if (modelIterator->second != nullptr)
+		{
+			delete modelIterator->second;
+		}
 	}
 
 	m_modelDatabase.clear();
