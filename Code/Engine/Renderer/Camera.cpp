@@ -30,6 +30,9 @@ void Camera::SetOrthoView( const Vec2& bottomLeft, const Vec2& topRight, float m
 	m_minZ = minZ;
 	m_maxZ = maxZ;
 
+	m_viewportInPixels.m_minBounds = bottomLeft;
+	m_viewportInPixels.m_maxBounds = topRight;
+
 	//Set the camera projection to be an ortho matrix
 	m_projection = Matrix44::MakeOrthoMatrix(bottomLeft, topRight, minZ, maxZ);
 
@@ -101,7 +104,10 @@ void Camera::SetViewport(const Vec2& mins, const Vec2& maxs)
 	//Setup the correct camera aspect here
 	m_cameraAspect = m_viewportInPixels.GetWidth() / m_viewportInPixels.GetHeight();
 
-	SetPerspectiveProjection(m_fieldOfView, m_nearZ, m_farZ, m_cameraAspect);
+	if (!m_isOrthoCam)
+	{
+		SetPerspectiveProjection(m_fieldOfView, m_nearZ, m_farZ, m_cameraAspect);
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
