@@ -501,7 +501,7 @@ void RenderContext::CreateAndSetDefaultRasterState()
 	D3D11_RASTERIZER_DESC desc; 
 
 	desc.FillMode = D3D11_FILL_SOLID;
-	desc.CullMode = D3D11_CULL_BACK;
+	desc.CullMode = D3D11_CULL_NONE;
 	desc.FrontCounterClockwise = TRUE; 
 	desc.DepthBias = 0U; 
 	desc.DepthBiasClamp = 0.0f; 
@@ -524,7 +524,7 @@ void RenderContext::SetRasterStateWireFrame()
 	D3D11_RASTERIZER_DESC desc; 
 
 	desc.FillMode = D3D11_FILL_WIREFRAME;
-	desc.CullMode = D3D11_CULL_BACK;
+	desc.CullMode = D3D11_CULL_NONE;
 	desc.FrontCounterClockwise = TRUE; 
 	desc.DepthBias = 0U; 
 	desc.DepthBiasClamp = 0.0f; 
