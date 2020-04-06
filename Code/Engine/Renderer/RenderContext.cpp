@@ -160,8 +160,9 @@ void RenderContext::D3D11Cleanup()
 	if(SUCCEEDED(hr))
 	{
 		//Uncomment when debugging
-		//debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		debugObject->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 		DX_SAFE_RELEASE(debugObject);
+
 	}
 
 }
@@ -616,10 +617,6 @@ void RenderContext::EndFrame()
 
 	if (m_screenShotRequested)
 	{
-
-		delete backBufferTexture;
-		backBufferTexture = nullptr;
-
 		m_stagingTexture = new Texture2D(this);
 
 		CreateStagingTexture(m_stagingTexture, backBufferTexture);
@@ -630,6 +627,9 @@ void RenderContext::EndFrame()
 
 		m_screenShotRequested = false;
 	}
+
+	delete backBufferTexture;
+	backBufferTexture = nullptr;
 
 	gProfiler->ProfilerPush("Free Resources");
 	//Free up the color target view or we have a leak in memory 
@@ -720,16 +720,19 @@ void RenderContext::ClearAllAssetRepositories()
 		delete shaderIterator->second;
 	}
 
-	//Free all samplers
-	int numFilterModes = NUM_FILTER_MODES;
-
-	for (int filterIterator = 0; filterIterator < numFilterModes; filterIterator++)
-	{
-		delete m_cachedSamplers[filterIterator];
-		m_cachedSamplers[filterIterator] = nullptr;
-	}
-
 	m_loadedShaders.clear();
+
+	//Free all samplers
+// 	int numFilterModes = NUM_FILTER_MODES;
+// 	Sampler* cachedSampler = m_cachedSamplers[0];
+// 	for (int filterIterator = 0; filterIterator < numFilterModes; filterIterator++)
+// 	{
+// 		if (cachedSampler->m_handle != nullptr)
+// 		{
+// 			delete cachedSampler;
+// 		}
+// 		cachedSampler++;
+// 	}
 
 	//Clear all Textures
 	std::map< std::string, TextureView*>::iterator texIterator;
@@ -782,7 +785,10 @@ void RenderContext::ClearAllAssetRepositories()
 
 	for (modelIterator; modelIterator != lastModelIterator; modelIterator++)
 	{
-		delete modelIterator->second;
+		if (modelIterator->second != nullptr)
+		{
+			delete modelIterator->second;
+		}
 	}
 
 	m_modelDatabase.clear();
@@ -1512,7 +1518,7 @@ GPUMesh* RenderContext::CreateOrGetMeshFromFile(const std::string& fileName)
 		}
 
 		filePath = MODEL_PATH + fileName;
-		m_modelDatabase[filePath] = model->m_mesh;
+		m_modelDatabase.insert(std::pair<std::string, GPUMesh*>(filePath, model->m_mesh));
 		model->m_mesh = nullptr;
 		
 		delete model;

@@ -82,7 +82,6 @@ void GPUMesh::CopyVertexArray(const VertexMaster& verts, uint numVerts)
 template <typename VertexType>
 void GPUMesh::CreateFromCPUMesh( CPUMesh const *mesh, eGPUMemoryUsage mem )
 {
-	//New Implementation A06
 	const BufferLayout* layout = VertexType::layout;
 	if(layout == nullptr)
 	{

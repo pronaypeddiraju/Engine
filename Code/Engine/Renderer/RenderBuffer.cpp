@@ -125,6 +125,9 @@ bool RenderBuffer::CreateBuffer( void const *initialData,
 
 	// Create it - devices create resources; 
 	ID3D11Device *dev = m_owningRenderContext->m_D3DDevice; 
+
+	ASSERT_OR_DIE(m_handle == nullptr, "The buffer was not empty");
+
 	HRESULT hr = dev->CreateBuffer( &bufferDesc, data_ptr, &m_handle );
 
 	if (SUCCEEDED(hr)) 
@@ -188,7 +191,10 @@ RenderBuffer::RenderBuffer( RenderContext *owner )
 //------------------------------------------------------------------------------------------------------------------------------
 RenderBuffer::~RenderBuffer()
 {
-	DX_SAFE_RELEASE(m_handle);
+	if (m_handle != nullptr)
+	{
+		DX_SAFE_RELEASE(m_handle);
+	}
 
 	m_owningRenderContext = nullptr;
 }

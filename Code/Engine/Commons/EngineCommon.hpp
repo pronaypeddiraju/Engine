@@ -72,6 +72,7 @@
 #define MACRO_COMBINE(X,Y) MACRO_COMBINE1(X,Y)
 
 //------------------------------------------------------------------------------------------------------------------------------
+class AudioSystem;
 class BlockAllocator;
 class DebugRender;
 class DevConsole;
@@ -93,6 +94,7 @@ class UnitTest;
 class LogSystem;
 
 //------------------------------------------------------------------------------------------------------------------------------
+extern AudioSystem*	g_audio;
 extern BlockAllocator* gBlockAllocator;
 extern DebugRender*	g_debugRenderer;
 extern DevConsole* g_devConsole;

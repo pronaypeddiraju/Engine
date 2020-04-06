@@ -28,7 +28,7 @@ public:
 
 	virtual SoundID				CreateOrGetSound( const std::string& soundFilePath );
 	virtual SoundID				CreateOrGetSound3D(const std::string& soundFilePath);
-	virtual SoundPlaybackID		PlaySound( SoundID soundID, bool isLooped=false, float volume=1.f, float balance=0.0f, float speed=1.0f, bool isPaused=false );
+	virtual SoundPlaybackID		PlayAudio( SoundID soundID, bool isLooped=false, float volume=1.f, float balance=0.0f, float speed=1.0f, bool isPaused=false );
 	virtual ChannelGroupID		CreateOrGetChannelGroup(const std::string& channelName);
 	virtual SoundPlaybackID		Play3DSound( SoundID soundID, const Vec3& position, ChannelGroupID channelID, bool isLooped=false, float volume=1.f, float balance=0.0f, float speed=1.0f, bool isPaused=false );
 

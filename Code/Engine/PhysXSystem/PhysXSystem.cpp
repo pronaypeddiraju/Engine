@@ -889,6 +889,13 @@ STATIC PxQuat PhysXSystem::MakeQuaternionFromMatrix(const Matrix44& matrix)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+STATIC float PhysXSystem::GetRadiansPerSecondToRotationsPerMinute(float radiansPerSecond)
+{
+	float rotationsPerMinute = radiansPerSecond / (2 * PI);
+	return rotationsPerMinute;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 {
 	//Load the mesh
