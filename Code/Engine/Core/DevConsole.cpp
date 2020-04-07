@@ -512,19 +512,26 @@ void DevConsole::RenderMemTrackingInfo(RenderContext& renderer, Camera& camera, 
 {
 	renderer.BindTextureView(0U, nullptr);
 
+	Vec2 boxSize;
+	AABB2 box = camera.GetViewportInPixels();
+	boxSize = box.m_maxBounds;
+
+	boxSize.x *= 0.2f;
+	boxSize.y *= 0.08f;
+
 	//Draw a black box over the entire screen
 	Vec2 boxTopRight = camera.GetOrthoTopRight();
-	Vec2 boxBottomLeft = boxTopRight - m_memTrackingBoxSize;
+	Vec2 boxBottomLeft = boxTopRight - boxSize;
 
 	AABB2 blackBox = AABB2(boxBottomLeft, boxTopRight);
 	std::vector<Vertex_PCU> boxVerts;
 	AddVertsForAABB2D(boxVerts, blackBox, Rgba::DARK_GREY);
 
 	renderer.DrawVertexArray(boxVerts);
- 	renderer.BindTextureView(0U, m_consoleFont->GetTexture());
+	renderer.BindTextureView(0U, m_consoleFont->GetTexture());
 
 	Vec2 textBoxBottomLeft = boxBottomLeft;
-	Vec2 textBoxTopRight = textBoxBottomLeft + Vec2(m_memTrackingBoxSize.x, lineHeight);
+	Vec2 textBoxTopRight = textBoxBottomLeft + Vec2(boxSize.x, lineHeight);
 
 	AABB2 inputBox = AABB2(textBoxBottomLeft, textBoxTopRight);
 

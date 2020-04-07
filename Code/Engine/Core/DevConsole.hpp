@@ -107,7 +107,6 @@ private:
 	unsigned int							m_lastCommandIndex = 0;
 
 	bool									m_memTrackingEnabled = true;
-	Vec2									m_memTrackingBoxSize = Vec2(80.f,10.f);
 	
 	std::string								m_defaultShaderPath = "default_unlit.xml";
 };
