@@ -342,9 +342,8 @@ BitmapFont* RenderContext::CreateBitmapFontFromFile(const std::string& bitmapNam
 		}
 		break;
 	case VARIABLE_WIDTH:
-	case VARIABLE_WIDTH_KERNING:
 		{
-			std::string imagePath = FONT_PATH + bitmapName + ".png";
+			std::string imagePath = FONT_PATH + bitmapName + "_0.png";
 			std::string XMLFilePath = FONT_PATH + bitmapName + ".fnt";
 			Image fontFileImage(imagePath.c_str());
 			newFont = new BitmapFont(bitmapName, fontFileImage, VARIABLE_WIDTH, splitSize, XMLFilePath);

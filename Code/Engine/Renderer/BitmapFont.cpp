@@ -28,10 +28,9 @@ BitmapFont::BitmapFont(std::string bitmapName, Image& bitmapImage, eFontType fon
 	case PROPORTIONAL:
 		InitializeProportionalFonts(bitmapImage, spriteSplitSize);
 		break;
-	case VARIABLE_WIDTH:
-	case VARIABLE_WIDTH_KERNING:
+	case VARIABLE_WIDTH:	
 		InitializeVariableWidthFonts(bitmapImage, spriteSplitSize, XMLFilePath);
-		MakeSpriteSheetfromImage(bitmapImage, spriteSplitSize);
+		//MakeSpriteSheetfromImage(bitmapImage, spriteSplitSize);
 		break;
 	}
 }
@@ -190,7 +189,6 @@ void BitmapFont::MakeSpriteSheetfromImage(Image& bitmapImage, const IntVec2& spr
 void BitmapFont::InitializeVariableWidthFonts(Image& bitmapImage, const IntVec2& spriteSplitSize, const std::string& XMLFilePath)
 {
 	//Load XML information
-
 	tinyxml2::XMLDocument fontDoc;
 	fontDoc.LoadFile(XMLFilePath.c_str());
 
@@ -204,14 +202,94 @@ void BitmapFont::InitializeVariableWidthFonts(Image& bitmapImage, const IntVec2&
 	{
 		//We successfully loaded the file
 		XMLElement* root = fontDoc.RootElement();
+		XMLElement* node = root->FirstChildElement("common");
 
+		//Get the size of the font sheet
+		m_variableFontData.m_lineHeight = ParseXmlAttribute(*node, "lineHeight", m_variableFontData.m_lineHeight);
+		m_variableFontData.m_sheetSize.x = ParseXmlAttribute(*node, "scaleW", m_variableFontData.m_sheetSize.x);
+		m_variableFontData.m_sheetSize.y = ParseXmlAttribute(*node, "scaleH", m_variableFontData.m_sheetSize.y);
+
+		m_variableFontData.m_pages = ParseXmlAttribute(*node, "pages", m_variableFontData.m_pages);
+		ASSERT_RECOVERABLE(m_variableFontData.m_pages == 1, "More than 1 pages of fonts used with Variable Width font file");
+
+		node = root->FirstChildElement("chars");
+		m_variableFontData.m_numChars = ParseXmlAttribute(*node, "count", m_variableFontData.m_numChars);
+
+		std::vector<SpriteDefenition> spriteDefs(m_maxSupportedCharacters, SpriteDefenition(nullptr, Vec2::ZERO, Vec2::ONE));
+
+		node = node->FirstChildElement("char");
+		for (int charIndex = 0; charIndex < m_variableFontData.m_numChars; charIndex++)
+		{
+			int charID = ParseXmlAttribute(*node, "id", 0);
+			
+			float xPosition = ParseXmlAttribute(*node, "x", 0);
+			float yPosition = ParseXmlAttribute(*node, "y", 0);
+			int width = ParseXmlAttribute(*node, "width", 0);
+			int height = ParseXmlAttribute(*node, "height", 0);
+
+			float xOffset = ParseXmlAttribute(*node, "xoffset", 0);
+			float yOffset = ParseXmlAttribute(*node, "yoffset", 0);
+			float xAdvance = ParseXmlAttribute(*node, "xadvance", 0);
+
+			m_asciiGlyphData[charID].m_paddedWidthBeforeGlyph = xOffset / (float)m_variableFontData.m_lineHeight;
+			m_asciiGlyphData[charID].m_paddedWidthAtGlyph = xAdvance / (float)m_variableFontData.m_lineHeight;
+			m_asciiGlyphData[charID].m_paddedWidthAfterGlyph = (xAdvance - xOffset - width) / (float)m_variableFontData.m_lineHeight;
+
+			m_asciiGlyphData[charID].m_aspectRatio = (float)width / (float)m_variableFontData.m_lineHeight;
+			m_asciiGlyphData[charID].m_texCoordMins = Vec2(xPosition, yPosition + (float)m_variableFontData.m_lineHeight) / (float)m_variableFontData.m_sheetSize.x;
+			m_asciiGlyphData[charID].m_texCoordMaxs = m_asciiGlyphData[charID].m_texCoordMins + Vec2((float)width, -(float)m_variableFontData.m_lineHeight) / (float)m_variableFontData.m_sheetSize.x;
+
+			spriteDefs[charID].SetUVs(m_asciiGlyphData[charID].m_texCoordMins, m_asciiGlyphData[charID].m_texCoordMaxs);
+
+			//Handle special case for Space character
+			if (charID == 32)
+			{
+				m_asciiGlyphData[charID].m_aspectRatio = xAdvance / (float)m_variableFontData.m_lineHeight;
+
+				spriteDefs[charID].SetUVs(m_asciiGlyphData[charID].m_texCoordMins, m_asciiGlyphData[charID].m_texCoordMaxs);
+			}
+
+			node = node->NextSiblingElement();
+		}
+
+		Rgba texelColor;
+		//Remove all alpha on font sheet
+		for (int i = 0; i < m_variableFontData.m_sheetSize.x; i++)
+		{
+			for (int j = 0; j < m_variableFontData.m_sheetSize.y; j++)
+			{
+				texelColor = bitmapImage.GetTexelColor(IntVec2(i, j));
+				if (texelColor != Rgba::WHITE)
+				{
+					texelColor = Rgba(0.f, 0.f, 0.f, 0.f);
+					texelColor.a = 0.f;
+
+					bitmapImage.SetTexelColor(IntVec2(i, j), texelColor);
+				}
+			}
+		}
+
+		m_bitmapSpriteSheet = new SpriteSheet();
+		m_bitmapSpriteSheet->SetSpriteDefs(spriteDefs);
+
+		Texture2D* texture = Texture2D::CreateTextureFromImage(g_renderContext, bitmapImage);
+		m_bitmapTexture = texture->CreateTextureView();
+
+		m_bitmapSpriteSheet->SetSpriteTextureView(m_bitmapTexture);
 	}
+
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
 float BitmapFont::GetGlyphAspect( int glyphCode )
 {
 	return m_asciiGlyphData[glyphCode].m_aspectRatio;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+GlyphData& BitmapFont::GetGlyphData(int glyphCode)
+{
+	return m_asciiGlyphData[glyphCode];
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -237,8 +315,13 @@ void BitmapFont::AddVertsForText2D( std::vector<Vertex_PCU>& textVerts, const Ve
 		glyphAspect = cellAspect * GetGlyphAspect((int)printText[charIndex]);
 		textWidth = glyphAspect * cellHeight ;
 
-		//Make your box
+		//Make your box (Now use the ABC values from GlyphData)
+		GlyphData data = GetGlyphData((int)printText[charIndex]);
+		minBounds.x += data.m_paddedWidthBeforeGlyph;
+
 		Vec2 maxBounds = minBounds + Vec2(textWidth, cellHeight);
+		maxBounds.x += data.m_paddedWidthAfterGlyph;
+
 		m_boundingBox.m_maxBounds = maxBounds;
 		AABB2 box = AABB2(minBounds, maxBounds);
 
@@ -247,9 +330,6 @@ void BitmapFont::AddVertsForText2D( std::vector<Vertex_PCU>& textVerts, const Ve
 		Vec2 minUVs = Vec2::ZERO;
 		Vec2 maxUVs = Vec2::ZERO;
 		sd.GetUVs(minUVs, maxUVs);
-
-		//Correct max UVs based on aspect ratio
-		//maxUVs.x = minUVs.x + (maxUVs.x - minUVs.x) * glyphAspect;
 
 		//Now add the vertices for each char
 		AddVertsForAABB2D(textVerts, box, color, minUVs, maxUVs);

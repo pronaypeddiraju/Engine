@@ -17,8 +17,7 @@ enum eFontType
 {
 	FIXED_WIDTH,
 	PROPORTIONAL,
-	VARIABLE_WIDTH,
-	VARIABLE_WIDTH_KERNING,
+	VARIABLE_WIDTH,	
 	SIGNED_DISTANCE_FIELD
 };
 
@@ -30,9 +29,18 @@ struct GlyphData
 	Vec2 m_texCoordMins = Vec2::ZERO;
 	Vec2 m_texCoordMaxs = Vec2::ONE;
 
-	float m_paddedHeightBeforeGlyph = 0.f;	//A value in TTF font
-	float m_paddedHeightAtGlyph = 1.f;	//B value in TTF font
-	float m_paddedHeightAfterGlyph = 0.f;	//C value in TTF font
+	float m_paddedWidthBeforeGlyph = 0.f;	//A value in TTF font
+	float m_paddedWidthAtGlyph = 1.f;	//B value in TTF font
+	float m_paddedWidthAfterGlyph = 0.f;	//C value in TTF font
+};
+
+//------------------------------------------------------------------------------------------------------------------------------
+struct VariableFontLoader
+{
+	int				m_lineHeight = 0;
+	IntVec2			m_sheetSize = IntVec2::ZERO;
+	int				m_pages = 0;
+	int				m_numChars = 0;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -52,6 +60,7 @@ public:
 	void						InitializeVariableWidthFonts(Image& bitmapImage, const IntVec2& spriteSplitSize, const std::string& XMLFilePath);
 
 	float						GetGlyphAspect(int glyphCode);
+	GlyphData&					GetGlyphData(int glyphCode);
 	AABB2&						GetTextBoundingBox();
 	float						GetNewCellAspect3D(const AABB2& box, float cellHeight, float cellAspect, const std::string& printText);
 	float						GetNewCellAspect(const AABB2& box, float cellHeight, float cellAspect, const std::string& printText);
@@ -78,10 +87,14 @@ private:
 	SpriteSheet*				m_bitmapSpriteSheet;
 	TextureView*				m_bitmapTexture;
 
-	GlyphData					m_asciiGlyphData[128];	//For all 128 ascii characters
+	GlyphData					m_asciiGlyphData[256];	//For all 256 ascii characters
 	float						m_baseAspect = 1.f;
 
 	int							m_splitPadding = 1;	//The amount of padding we wont on our font image split. By default 1
 
 	AABB2						m_boundingBox = AABB2(Vec2::ZERO, Vec2::ONE);
+
+	int							m_maxSupportedCharacters = 256;
+
+	VariableFontLoader			m_variableFontData;
 };
