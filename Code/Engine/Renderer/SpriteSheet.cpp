@@ -3,7 +3,7 @@
 #include "Engine/Renderer/Texture.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
-SpriteSheet::SpriteSheet( TextureView* texture, const IntVec2 spriteGridDefenition )
+SpriteSheet::SpriteSheet( TextureView* texture, const IntVec2& spriteGridDefenition )
 	: m_spriteTexture(texture)
 {
 
@@ -37,13 +37,31 @@ SpriteSheet::SpriteSheet( TextureView* texture, const IntVec2 spriteGridDefeniti
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+SpriteSheet::SpriteSheet()
+{
+
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void SpriteSheet::SetSpriteDefs(const std::vector<SpriteDefenition>& spriteDefs)
+{
+	m_spriteDefs = spriteDefs;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void SpriteSheet::SetSpriteTextureView(TextureView* textureView)
+{
+	m_spriteTexture = textureView;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 const SpriteDefenition& SpriteSheet::GetSpriteDef( int spriteIndex ) const
 {
 	return m_spriteDefs[spriteIndex];
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const SpriteDefenition& SpriteSheet::GetSpriteDef( IntVec2 spriteCoords, int sheetWidth ) const
+const SpriteDefenition& SpriteSheet::GetSpriteDef( const IntVec2& spriteCoords, int sheetWidth ) const
 {
 	//Calculate Sprite index from coordinates
 	int spriteIndex = spriteCoords.x + (spriteCoords.y * sheetWidth);

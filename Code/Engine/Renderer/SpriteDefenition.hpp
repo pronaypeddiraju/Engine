@@ -14,6 +14,7 @@ public:
 	~SpriteDefenition();
 
 	void					SetPivot(const Vec2& pivot);
+	void					SetUVs(const Vec2& minUVs, const Vec2& maxUVs);
 
 	void					GetUVs(Vec2& minUVs, Vec2& maxUVs) const;
 	TextureView*			GetTexture() const;

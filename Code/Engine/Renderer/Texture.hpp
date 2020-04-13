@@ -63,6 +63,7 @@ public:
 
 	// Create a view of this texture usable in the shader; 
 	TextureView2D*				CreateTextureView2D() const;  
+	TextureView*				CreateTextureView() const;
 	
 	DepthStencilTargetView*		CreateDepthStencilTargetView();  
 	ColorTargetView*			CreateColorTargetView(); //A10
@@ -72,4 +73,6 @@ public:
 
 	static Texture2D* CreateColorTarget( RenderContext* renderContext, uint width, uint height );
 	static Texture2D* CreateMatchingColorTarget( Texture2D* other );
+
+	static Texture2D* CreateTextureFromImage(RenderContext* renderContext, const Image& image);
 };

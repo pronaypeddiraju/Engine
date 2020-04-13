@@ -13,7 +13,6 @@
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/IntVec2.hpp"
 //Rendering systems
-#include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/ColorTargetView.hpp"
 #include "Engine/Renderer/DepthStencilTargetView.hpp"
 #include "Engine/Renderer/GPUMesh.hpp"
@@ -322,12 +321,36 @@ Sampler* RenderContext::GetSamplerOfType( const std::string& m_samplerType )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-BitmapFont* RenderContext::CreateBitmapFontFromFile(const std::string& bitmapName)
+BitmapFont* RenderContext::CreateBitmapFontFromFile(const std::string& bitmapName, eFontType fontType, const IntVec2& splitSize)
 {
-	//std::string filePath = "Data/Fonts/" + bitmapName + ".png";
-	TextureView* bitmapTexture = CreateOrGetTextureViewFromFile(bitmapName.c_str(), true);
+	TextureView* bitmapTexture = nullptr;
+	BitmapFont* newFont = nullptr;
 
-	BitmapFont* newFont = new BitmapFont(bitmapName, bitmapTexture);
+	switch (fontType)
+	{
+	case FIXED_WIDTH:
+		{
+			bitmapTexture = CreateOrGetTextureViewFromFile(bitmapName.c_str(), true);
+			newFont = new BitmapFont(bitmapName, bitmapTexture, FIXED_WIDTH, splitSize);
+		}
+		break;
+	case PROPORTIONAL:
+		{
+			std::string imagePath = FONT_PATH + bitmapName + ".png";
+			Image fontFileImage(imagePath.c_str());
+			newFont = new BitmapFont(bitmapName, fontFileImage, PROPORTIONAL, splitSize);
+		}
+		break;
+	case VARIABLE_WIDTH:
+	case VARIABLE_WIDTH_KERNING:
+		{
+			std::string imagePath = FONT_PATH + bitmapName + ".png";
+			std::string XMLFilePath = FONT_PATH + bitmapName + ".fnt";
+			Image fontFileImage(imagePath.c_str());
+			newFont = new BitmapFont(bitmapName, fontFileImage, VARIABLE_WIDTH, splitSize, XMLFilePath);
+		}
+		break;
+	}
 
 	m_loadedFonts[bitmapName] = newFont;
 	return newFont;
@@ -1415,7 +1438,7 @@ void RenderContext::RequestScreenshot()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile(const std::string& bitmapName)
+BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile(const std::string& bitmapName, eFontType fontType, const IntVec2& splitSize)
 {
 	std::map<std::string, BitmapFont*>::const_iterator requestedFont = m_loadedFonts.find(bitmapName);
 	if(requestedFont != m_loadedFonts.end())
@@ -1426,7 +1449,7 @@ BitmapFont* RenderContext::CreateOrGetBitmapFontFromFile(const std::string& bitm
 	else
 	{
 		//Create new font
-		BitmapFont* font = CreateBitmapFontFromFile(bitmapName);
+		BitmapFont* font = CreateBitmapFontFromFile(bitmapName, fontType, splitSize);
 		return font;
 	}
 }

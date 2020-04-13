@@ -31,6 +31,13 @@ void SpriteDefenition::SetPivot(const Vec2& pivot)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void SpriteDefenition::SetUVs(const Vec2& minUVs, const Vec2& maxUVs)
+{
+	m_minUVs = minUVs;
+	m_maxUVs = maxUVs;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void SpriteDefenition::GetUVs( Vec2& minUVs, Vec2& maxUVs ) const
 {
 	minUVs = m_minUVs;

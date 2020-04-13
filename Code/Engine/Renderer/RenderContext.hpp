@@ -6,12 +6,12 @@
 #include "Engine/Renderer/RendererTypes.hpp"
 #include "Engine/Renderer/Rgba.hpp"
 #include "Engine/Renderer/Sampler.hpp"
+#include "Engine/Renderer/BitmapFont.hpp"
 #include <vector>
 #include <map>
 
 //------------------------------------------------------------------------------------------------------------------------------
 //Forward Declarations
-class BitmapFont;
 class ColorTargetView;
 class GPUMesh;
 class Image;
@@ -104,7 +104,7 @@ public:
 	//Get resources
 	TextureView*				CreateOrGetTextureViewFromFile( std::string const &filename, bool isFont = false ); 
 	void						RegisterTextureView(std::string const &fileName, TextureView const *view);
-	BitmapFont*					CreateOrGetBitmapFontFromFile(const std::string& bitmapName);
+	BitmapFont*					CreateOrGetBitmapFontFromFile(const std::string& bitmapName, eFontType fontType = FIXED_WIDTH, const IntVec2& splitSize = IntVec2(16, 16));
 	Shader*						CreateOrGetShaderFromFile( const std::string& fileName );
 	Material*					CreateOrGetMaterialFromFile( const std::string& fileName );
 	GPUMesh*					CreateOrGetMeshFromFile( const std::string& fileName );
@@ -185,7 +185,7 @@ private:
 	bool						PreDraw(GPUMesh *mesh);
 
 	// Private (internal) member functions will go here
-	BitmapFont*					CreateBitmapFontFromFile(const std::string& bitmapName);
+	BitmapFont*					CreateBitmapFontFromFile(const std::string& bitmapName, eFontType fontType, const IntVec2& splitSize);
 	Shader*						CreateShaderFromFile(const std::string& fileName);
 
 private:
