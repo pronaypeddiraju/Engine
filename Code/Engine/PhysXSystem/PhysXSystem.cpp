@@ -896,6 +896,26 @@ STATIC float PhysXSystem::GetRadiansPerSecondToRotationsPerMinute(float radiansP
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+STATIC physx::PxQuat PhysXSystem::MakeQuaternionFromVectors(const Vec3& vector1, const Vec3& vector2)
+{
+	Vec3 cross = GetCrossProduct(vector1, vector2);
+	PxQuat q;
+	q.x = cross.x;
+	q.y = cross.y;
+	q.z = cross.z;
+
+	q.w = sqrt((vector1.GetLengthSquared()) * (vector2.GetLengthSquared())) + GetDotProduct(vector1, vector2);
+	q.normalize();
+	return q;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC physx::PxQuat PhysXSystem::MakeQuaternionFromPxVectors(const PxVec3& vector1, const PxVec3& vector2)
+{
+	return MakeQuaternionFromVectors(PxVectorToVec(vector1), PxVectorToVec(vector2));
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 STATIC bool PhysXSystem::LoadCollisionMeshFromData(EventArgs& args)
 {
 	//Load the mesh
