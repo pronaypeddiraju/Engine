@@ -108,6 +108,7 @@ public:
 	Shader*						CreateOrGetShaderFromFile( const std::string& fileName );
 	Material*					CreateOrGetMaterialFromFile( const std::string& fileName );
 	GPUMesh*					CreateOrGetMeshFromFile( const std::string& fileName );
+	void						AddMeshToDatabase(const std::string& fileName, GPUMesh* mesh);
 
 	//Shader data
 	void						BindShader(Shader* shader);

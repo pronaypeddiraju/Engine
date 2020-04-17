@@ -106,6 +106,7 @@ public:
 	static PxQuat		MakeQuaternionFromMatrix(const Matrix44& matrix);
 	static float		GetRadiansPerSecondToRotationsPerMinute(float radiansPerSecond);
 
+	static Matrix44		MakeMatrixFromQuaternion(const PxQuat& quat, const PxVec3& position);
 	static PxQuat		MakeQuaternionFromVectors(const Vec3& vector1, const Vec3& vector2);
 	static PxQuat		MakeQuaternionFromPxVectors(const PxVec3& vector1, const PxVec3& vector2);
 

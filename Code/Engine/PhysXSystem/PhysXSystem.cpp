@@ -159,7 +159,7 @@ PxVehicleDrive4W* PhysXSystem::StartUpVehicleSDK()
 		m_PxScene = m_PhysX->createScene(sceneDesc);
 
 		PxInitVehicleSDK(*m_PhysX);
-		PxVehicleSetBasisVectors(PxVec3(0, 1, 0), PxVec3(0, 0, 1));
+		PxVehicleSetBasisVectors(PxVec3(0.f, 1.f, 0.f), PxVec3(0.f, 0.f, 1.f));
 		PxVehicleSetUpdateMode(PxVehicleUpdateMode::eVELOCITY_CHANGE);
 		PxVehicleSetSweepHitRejectionAngles(POINT_REJECT_ANGLE, NORMAL_REJECT_ANGLE);
 		PxVehicleSetMaxHitActorAcceleration(MAX_ACCELERATION);
@@ -834,22 +834,26 @@ STATIC Vec3 PhysXSystem::QuaternionToEulerAngles(const PxQuat& quat)
 {
 	Vec3 eulerAngles;
 
-	// roll (x-axis rotation)
+	// roll (z-axis rotation)
 	float sinr_cosp = 2.0f * (quat.w * quat.x + quat.y * quat.z);
 	float cosr_cosp = 1.0f - 2.0f * (quat.x * quat.x + quat.y * quat.y);
-	eulerAngles.x = atan2f(sinr_cosp, cosr_cosp);
+	eulerAngles.z = atan2f(sinr_cosp, cosr_cosp);
 
-	// pitch (y-axis rotation)
+	// pitch (x-axis rotation)
 	float sinp = +2.0f * (quat.w * quat.y - quat.z * quat.x);
 	if (fabs(sinp) >= 1)
-		eulerAngles.y = copysign(PI / 2.f, sinp); // use 90 degrees if out of range
+	{
+		eulerAngles.x = copysign(PI / 2.f, sinp); // use 90 degrees if out of range
+	}
 	else
-		eulerAngles.y = asinf(sinp);
+	{
+		eulerAngles.x = asinf(sinp);
+	}
 
-	// yaw (z-axis rotation)
+	// yaw (y-axis rotation)
 	float siny_cosp = 2.0f * (quat.w * quat.z + quat.x * quat.y);
 	float cosy_cosp = 1.0f - 2.0f * (quat.y * quat.y + quat.z * quat.z);
-	eulerAngles.z = atan2f(siny_cosp, cosy_cosp);
+	eulerAngles.y = atan2f(siny_cosp, cosy_cosp);
 
 	return eulerAngles;
 }
@@ -857,13 +861,24 @@ STATIC Vec3 PhysXSystem::QuaternionToEulerAngles(const PxQuat& quat)
 //------------------------------------------------------------------------------------------------------------------------------
 STATIC physx::PxQuat PhysXSystem::EulerAnglesToQuaternion(const Vec3& eulerAngles)
 {
-	//assuming x = roll, y = pitch, z = yaw
+	//For our axis mapping/coordinate space
+	//Rotation around X = Pitch
+	//Rotation around Y = Yaw
+	//Rotation around Z = Roll
+
+	float cy = cos(eulerAngles.y * 0.5f);
+	float sy = sin(eulerAngles.y * 0.5f);
+	float cp = cos(eulerAngles.x * 0.5f);
+	float sp = sin(eulerAngles.x * 0.5f);
+	float cr = cos(eulerAngles.z * 0.5f);
+	float sr = sin(eulerAngles.z * 0.5f);
+
 	PxQuat quaternion;
 	
-	quaternion.x = sin(eulerAngles.x * 0.5f) * cos(eulerAngles.y * 0.5f) * cos(eulerAngles.z * 0.5f) - cos(eulerAngles.x * 0.5f) * sin(eulerAngles.y * 0.5f) * sin(eulerAngles.z * 0.5f);
-	quaternion.y = cos(eulerAngles.x * 0.5f) * sin(eulerAngles.y * 0.5f) * cos(eulerAngles.z * 0.5f) + sin(eulerAngles.x * 0.5f) * cos(eulerAngles.y * 0.5f) * sin(eulerAngles.z * 0.5f);
-	quaternion.z = cos(eulerAngles.x * 0.5f) * cos(eulerAngles.y * 0.5f) * sin(eulerAngles.z * 0.5f) - sin(eulerAngles.x * 0.5f) * sin(eulerAngles.y * 0.5f) * cos(eulerAngles.z * 0.5f);
-	quaternion.w = cos(eulerAngles.x * 0.5f) * cos(eulerAngles.y * 0.5f) * cos(eulerAngles.z * 0.5f) + sin(eulerAngles.x * 0.5f) * sin(eulerAngles.y * 0.5f) * sin(eulerAngles.z * 0.5f);
+	quaternion.w = cr * cp * cy + sr * sp * sy;
+	quaternion.x = sr * cp * cy - cr * sp * sy;
+	quaternion.y = cr * sp * cy + sr * cp * sy;
+	quaternion.z = cr * cp * sy - sr * sp * cy;
 
 	return quaternion;
 }
@@ -893,6 +908,32 @@ STATIC float PhysXSystem::GetRadiansPerSecondToRotationsPerMinute(float radiansP
 {
 	float rotationsPerMinute = radiansPerSecond / (2 * PI);
 	return rotationsPerMinute;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+STATIC Matrix44 PhysXSystem::MakeMatrixFromQuaternion(const PxQuat& quat, const PxVec3& position)
+{
+	Matrix44 matrix = Matrix44::IDENTITY; 
+
+	//Rotation components
+	matrix.m_values[Matrix44::Ix] = 1 - (2 * (quat.z * quat.z + quat.y * quat.y));
+	matrix.m_values[Matrix44::Iy] = 2 * (quat.x * quat.y - quat.z * quat.w);
+	matrix.m_values[Matrix44::Iz] = 2 * (quat.y * quat.w - quat.x * quat.z);
+
+	matrix.m_values[Matrix44::Jx] = 2 * (quat.x * quat.y + quat.z * quat.w);
+	matrix.m_values[Matrix44::Jy] = 1 - (2 * (quat.x * quat.x + quat.z * quat.z));
+	matrix.m_values[Matrix44::Jz] = 2 * (quat.y * quat.z - quat.x * quat.w);
+
+	matrix.m_values[Matrix44::Kx] = 2 * (quat.x * quat.z - quat.y * quat.w);
+	matrix.m_values[Matrix44::Ky] = 2 * (quat.y * quat.z + quat.x * quat.w);
+	matrix.m_values[Matrix44::Kz] = 1 - (2 * (quat.y * quat.y - quat.x * quat.x));
+
+	//Translation
+	matrix.m_values[Matrix44::Tx] = position.x;
+	matrix.m_values[Matrix44::Ty] = position.y;
+	matrix.m_values[Matrix44::Tz] = position.z;
+
+	return matrix;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

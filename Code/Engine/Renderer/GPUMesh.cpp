@@ -12,10 +12,16 @@ GPUMesh::GPUMesh( RenderContext *renderContext )
 //------------------------------------------------------------------------------------------------------------------------------
 GPUMesh::~GPUMesh()
 {
-	delete m_vertexBuffer;
+	if (m_vertexBuffer != nullptr)
+	{
+		delete m_vertexBuffer;
+	}
 	m_vertexBuffer = nullptr;
 
-	delete m_indexBuffer;
+	if (m_indexBuffer != nullptr)
+	{
+		delete m_indexBuffer;
+	}
 	m_indexBuffer = nullptr;
 }
 
