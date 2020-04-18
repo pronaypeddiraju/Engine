@@ -157,6 +157,8 @@ void BitmapFont::InitializeProportionalFonts(Image& bitmapImage, const IntVec2& 
 	Texture2D* texture = Texture2D::CreateTextureFromImage(g_renderContext, bitmapImage);
 	m_bitmapTexture = texture->CreateTextureView();
 
+	delete texture;
+
 	m_bitmapSpriteSheet->SetSpriteTextureView(m_bitmapTexture);
 }
 
@@ -188,6 +190,8 @@ void BitmapFont::MakeSpriteSheetfromImage(Image& bitmapImage, const IntVec2& spr
 //------------------------------------------------------------------------------------------------------------------------------
 void BitmapFont::InitializeVariableWidthFonts(Image& bitmapImage, const IntVec2& spriteSplitSize, const std::string& XMLFilePath)
 {
+	UNUSED(spriteSplitSize);
+
 	//Load XML information
 	tinyxml2::XMLDocument fontDoc;
 	fontDoc.LoadFile(XMLFilePath.c_str());
@@ -222,14 +226,14 @@ void BitmapFont::InitializeVariableWidthFonts(Image& bitmapImage, const IntVec2&
 		{
 			int charID = ParseXmlAttribute(*node, "id", 0);
 			
-			float xPosition = ParseXmlAttribute(*node, "x", 0);
-			float yPosition = ParseXmlAttribute(*node, "y", 0);
+			float xPosition = ParseXmlAttribute(*node, "x", 0.f);
+			float yPosition = ParseXmlAttribute(*node, "y", 0.f);
 			int width = ParseXmlAttribute(*node, "width", 0);
 			int height = ParseXmlAttribute(*node, "height", 0);
 
-			float xOffset = ParseXmlAttribute(*node, "xoffset", 0);
-			float yOffset = ParseXmlAttribute(*node, "yoffset", 0);
-			float xAdvance = ParseXmlAttribute(*node, "xadvance", 0);
+			float xOffset = ParseXmlAttribute(*node, "xoffset", 0.f);
+			float yOffset = ParseXmlAttribute(*node, "yoffset", 0.f);
+			float xAdvance = ParseXmlAttribute(*node, "xadvance", 0.f);
 
 			m_asciiGlyphData[charID].m_paddedWidthBeforeGlyph = xOffset / (float)m_variableFontData.m_lineHeight;
 			m_asciiGlyphData[charID].m_paddedWidthAtGlyph = xAdvance / (float)m_variableFontData.m_lineHeight;
@@ -274,6 +278,8 @@ void BitmapFont::InitializeVariableWidthFonts(Image& bitmapImage, const IntVec2&
 
 		Texture2D* texture = Texture2D::CreateTextureFromImage(g_renderContext, bitmapImage);
 		m_bitmapTexture = texture->CreateTextureView();
+
+		delete texture;
 
 		m_bitmapSpriteSheet->SetSpriteTextureView(m_bitmapTexture);
 	}

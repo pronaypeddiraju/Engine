@@ -278,6 +278,12 @@ const IntVec2& WindowContext::GetTrueClientBounds()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+float WindowContext::GetTrueClientAspect()
+{
+	return (float)m_trueClientSize.x / (float)m_trueClientSize.y;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void WindowContext::LockMouse()
 {
 	++m_lockCount; 
