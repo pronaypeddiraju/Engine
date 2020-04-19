@@ -61,6 +61,14 @@ void AddVertsForLine2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& start,
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void AddVertsForTriangle2D(std::vector<Vertex_PCU>& vertexArray, const Vec2& p1, const Vec2& p2, const Vec2 p3, const Rgba& color)
+{
+	vertexArray.push_back(Vertex_PCU(p1, color, Vec2::ZERO));
+	vertexArray.push_back(Vertex_PCU(p2, color, Vec2::ZERO));
+	vertexArray.push_back(Vertex_PCU(p3, color, Vec2::ZERO));
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForArrow2D(std::vector<Vertex_PCU>& vertexArray, const Vec2& start, const Vec2& end, float thickness, const Rgba& color)
 {
 	Vec2 centerToBoundVector = end - start;
