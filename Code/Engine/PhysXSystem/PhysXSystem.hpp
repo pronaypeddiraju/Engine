@@ -36,8 +36,19 @@ public:
 
 	//System
 	void				StartUp();
+	
 	PxVehicleDrive4W*	StartUpVehicleSDK();
 	VehicleDesc			InitializeVehicleDescription(const PxFilterData& chassisSimFilterData, const PxFilterData& wheelSimFilterData);
+	PxVehicleDrive4W*	CreateCustomVehicle4W(const VehicleDesc& vehicle4WDesc, PxVehicleDriveSimData4W& driveSimData);
+	void				ComputeWheelCenterActorOffsets4W(const PxF32 wheelFrontZ, const PxF32 wheelRearZ, const PxVec3& chassisDims, const PxF32 wheelWidth, const PxF32 wheelRadius, const PxU32 numWheels, PxVec3* wheelCentreOffsets);
+	void				SetupWheelsSimulationData(const PxF32 wheelMass, const PxF32 wheelMOI, const PxF32 wheelRadius, const PxF32 wheelWidth,
+							const PxU32 numWheels, const PxVec3* wheelCenterActorOffsets,
+							const PxVec3& chassisCMOffset, const PxF32 chassisMass,
+							PxVehicleWheelsSimData* wheelsSimData,
+							const PxVehicleSuspensionData& suspensionData,
+							float maxHandbrakeTorque = 4000.f,
+							float maxSteer = PxPi * 0.333f);
+
 	void				BeginFrame();
 	void				Update(float deltaTime);
 	void				EndFrame();
