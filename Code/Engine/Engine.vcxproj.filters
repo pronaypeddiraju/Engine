@@ -123,6 +123,7 @@
     <ClCompile Include="PhysXSystem\PhysXSimulationEventCallbacks.cpp" />
     <ClCompile Include="Core\BufferReadUtils.cpp" />
     <ClCompile Include="Core\BufferWriteUtils.cpp" />
+    <ClCompile Include="Core\Cooking\CookingSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirdParty\CPython_3.7\import.h" />
@@ -473,6 +474,7 @@
     <ClInclude Include="Core\BufferUtilCommons.hpp" />
     <ClInclude Include="Core\BufferReadUtils.hpp" />
     <ClInclude Include="Core\BufferWriteUtils.hpp" />
+    <ClInclude Include="Core\Cooking\CookingSystem.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Math\Array2D.inl" />

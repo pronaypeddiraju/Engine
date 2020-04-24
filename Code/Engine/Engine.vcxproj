@@ -206,6 +206,7 @@
     <ClCompile Include="Core\BufferReadUtils.cpp" />
     <ClCompile Include="Core\BufferWriteUtils.cpp" />
     <ClCompile Include="Core\Clock.cpp" />
+    <ClCompile Include="Core\Cooking\CookingSystem.cpp" />
     <ClCompile Include="Core\DevConsole.cpp" />
     <ClCompile Include="Core\EventSystems.cpp" />
     <ClCompile Include="Core\FileUtils.cpp" />
@@ -534,6 +535,7 @@
     <ClInclude Include="Core\BufferUtilCommons.hpp" />
     <ClInclude Include="Core\BufferWriteUtils.hpp" />
     <ClInclude Include="Core\Clock.hpp" />
+    <ClInclude Include="Core\Cooking\CookingSystem.hpp" />
     <ClInclude Include="Core\DevConsole.hpp" />
     <ClInclude Include="Core\EventSystems.hpp" />
     <ClInclude Include="Core\FileUtils.hpp" />
