@@ -61,6 +61,14 @@ void AddVertsForLine2D( std::vector<Vertex_PCU>& vertexArray, const Vec2& start,
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void AddVertsForTriangle2D(std::vector<Vertex_PCU>& vertexArray, const Vec2& p1, const Vec2& p2, const Vec2 p3, const Rgba& color)
+{
+	vertexArray.push_back(Vertex_PCU(p1, color, Vec2::ZERO));
+	vertexArray.push_back(Vertex_PCU(p2, color, Vec2::ZERO));
+	vertexArray.push_back(Vertex_PCU(p3, color, Vec2::ZERO));
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForArrow2D(std::vector<Vertex_PCU>& vertexArray, const Vec2& start, const Vec2& end, float thickness, const Rgba& color)
 {
 	Vec2 centerToBoundVector = end - start;
@@ -160,10 +168,10 @@ void AddVertsForWireBox2D(std::vector<Vertex_PCU>& vertexArray, const AABB2& box
 //------------------------------------------------------------------------------------------------------------------------------
 void AddVertsForAABB2D( std::vector<Vertex_PCU>& vertexArray, const AABB2& box, const Rgba& color, const Vec2& uvAtMins /*= Vec2(0.f,0.f)*/, const Vec2& uvAtMaxs /*= Vec2(1.f,1.f) */ )
 {
-	Vec3 boxBottomLeft = Vec3(box.m_minBounds.x, box.m_minBounds.y, 0.f);
-	Vec3 boxBottomRight = Vec3(box.m_maxBounds.x, box.m_minBounds.y, 0.f);
-	Vec3 boxTopLeft = Vec3(box.m_minBounds.x, box.m_maxBounds.y, 0.f);
-	Vec3 boxTopRight = Vec3(box.m_maxBounds.x, box.m_maxBounds.y, 0.f);
+	Vec3 boxBottomLeft = Vec3(box.m_minBounds.x, box.m_minBounds.y, 0.5f);
+	Vec3 boxBottomRight = Vec3(box.m_maxBounds.x, box.m_minBounds.y, 0.5f);
+	Vec3 boxTopLeft = Vec3(box.m_minBounds.x, box.m_maxBounds.y, 0.5f);
+	Vec3 boxTopRight = Vec3(box.m_maxBounds.x, box.m_maxBounds.y, 0.5f);
 
 	vertexArray.push_back(Vertex_PCU(boxTopRight, color, Vec2(uvAtMaxs.x, uvAtMaxs.y)));
 	vertexArray.push_back(Vertex_PCU(boxTopLeft, color, Vec2(uvAtMins.x, uvAtMaxs.y)));
