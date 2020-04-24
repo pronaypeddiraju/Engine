@@ -33,6 +33,7 @@ public:
 	//Mutators
 	void				SetTexelColor(int xCoord, int yCoord, const Rgba& setColor);
 	void				SetTexelColor(const IntVec2& texelCoordinates, const Rgba& setColor);
+	void				InitializeTexelRepository(const IntVec2& imageDimensions);
 
 	//void				operator=(const Image& copyFrom);				
 

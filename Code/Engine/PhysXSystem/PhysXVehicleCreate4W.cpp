@@ -231,10 +231,6 @@ namespace vehicle
 				wheelMaterials[i] = vehicle4WDesc.wheelMaterial;	
 			}
 
-			//We need to add a mesh as the convex collider for the car
-			//We need to tell it what the shape is/infer it from a 3D object file
-			TODO("Create a convexMesh from some obj for the car to use instead of the shitty box");
-
 			//Chassis just has a single convex shape for simplicity.
 			PxConvexMesh* chassisConvexMesh = createChassisMesh(chassisDims, *physics, *cooking);
 			PxConvexMesh* chassisConvexMeshes[1] = { chassisConvexMesh };
@@ -286,7 +282,7 @@ namespace vehicle
 
 			//Gears
 			PxVehicleGearsData gears;
-			gears.mSwitchTime = 0.5f;
+			gears.mSwitchTime = 0.1f;
 			driveSimData.setGearsData(gears);
 
 			//Clutch

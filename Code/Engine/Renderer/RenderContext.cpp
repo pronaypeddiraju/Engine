@@ -547,7 +547,7 @@ void RenderContext::SetRasterStateWireFrame()
 	D3D11_RASTERIZER_DESC desc; 
 
 	desc.FillMode = D3D11_FILL_WIREFRAME;
-	desc.CullMode = D3D11_CULL_NONE;
+	desc.CullMode = D3D11_CULL_BACK;
 	desc.FrontCounterClockwise = TRUE; 
 	desc.DepthBias = 0U; 
 	desc.DepthBiasClamp = 0.0f; 
@@ -804,6 +804,8 @@ void RenderContext::ClearAllAssetRepositories()
 
 	modelIterator = m_modelDatabase.begin();
 	lastModelIterator = m_modelDatabase.end();
+
+	std::string modelName;
 
 	for (modelIterator; modelIterator != lastModelIterator; modelIterator++)
 	{
@@ -1547,5 +1549,14 @@ GPUMesh* RenderContext::CreateOrGetMeshFromFile(const std::string& fileName)
 		
 		return m_modelDatabase[filePath];
 	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void RenderContext::AddMeshToDatabase(const std::string& fileName, GPUMesh* mesh)
+{
+	//Just add mesh as a fresh mesh into database
+	//This is for when ObjectLoader or other mesh loading utilities load GPU Meshes
+	std::string filePath = MODEL_PATH + fileName;
+	m_modelDatabase.insert(std::pair<std::string, GPUMesh*>(filePath, mesh));
 }
 

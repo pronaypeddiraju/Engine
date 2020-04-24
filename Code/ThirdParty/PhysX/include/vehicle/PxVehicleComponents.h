@@ -100,14 +100,21 @@ public:
 	PxVehicleEngineData()
 		: 	mMOI(1.0f),
 			mPeakTorque(500.0f),
-			mMaxOmega(600.0f),
+			mMaxOmega(1200.f),
 			mDampingRateFullThrottle(0.15f),
 			mDampingRateZeroThrottleClutchEngaged(2.0f),
 			mDampingRateZeroThrottleClutchDisengaged(0.35f)
 	{
+// 		mTorqueCurve.addPair(0.0f, 0.8f);
+// 		mTorqueCurve.addPair(0.33f, 1.0f);
+// 		mTorqueCurve.addPair(1.0f, 0.8f);
+
+		//What I think is good
 		mTorqueCurve.addPair(0.0f, 0.8f);
-		mTorqueCurve.addPair(0.33f, 1.0f);
-		mTorqueCurve.addPair(1.0f, 0.8f);
+		mTorqueCurve.addPair(0.33f, 1.f);
+		mTorqueCurve.addPair(0.66f, 0.6f);
+		mTorqueCurve.addPair(1.0f, 0.5f);
+
 
 		mRecipMOI=1.0f/mMOI;
 		mRecipMaxOmega=1.0f/mMaxOmega;
@@ -285,7 +292,7 @@ public:
 	PxVehicleGearsData()
 		: 	mFinalRatio(4.0f),
 			mNbRatios(7),
-			mSwitchTime(0.5f)
+			mSwitchTime(0.1f)
 	{
 		mRatios[PxVehicleGearsData::eREVERSE]=-4.0f;
 		mRatios[PxVehicleGearsData::eNEUTRAL]=0.0f;

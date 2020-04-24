@@ -82,6 +82,7 @@ public:
 	const Vec2			operator*( const Vec2& vecToMultiply) const;			// vec2 * vec2
 	const Vec2			operator/( float inverseScale ) const;					// vec2 / float
 	void				operator+=( const Vec2& vecToAdd );						// vec2 += vec2
+	void				operator+=( float floatToAdd );							// vec2 += float
 	void				operator-=( const Vec2& vecToSubtract );				// vec2 -= vec2
 	void				operator*=( const float uniformScale );					// vec2 *= float
 	void				operator/=( const float uniformDivisor );				// vec2 /= float

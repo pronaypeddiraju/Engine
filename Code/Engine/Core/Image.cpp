@@ -208,6 +208,16 @@ void Image::SetTexelColor( const IntVec2& texelCoordinates, const Rgba& setColor
 	m_imageRawData[alphaByteIndex] = (unsigned char)(setColor.a * 255.f);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
+void Image::InitializeTexelRepository(const IntVec2& imageDimensions)
+{
+	int numTexels = imageDimensions.x * imageDimensions.y;
+	for (int texelIndex = 0; texelIndex < numTexels; texelIndex++)
+	{
+		m_texelRepository.emplace_back(Rgba::CLEAR);
+	}
+}
+
 /*
 void Image::operator=(const Image& copyFrom)
 {

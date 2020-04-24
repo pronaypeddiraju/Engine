@@ -34,6 +34,7 @@ public:
 	IntVec2				GetClientMouseRelativeMovement(); 
 	const IntVec2&		GetClientBounds();
 	const IntVec2&		GetTrueClientBounds();
+	float				GetTrueClientAspect();
 
 	void				LockMouse(); 
 	void				UnlockMouse(); 
