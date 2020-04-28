@@ -99,7 +99,7 @@ public:
 
 	PxVehicleEngineData()
 		: 	mMOI(1.0f),
-			mPeakTorque(500.0f),
+			mPeakTorque(650.0f),
 			mMaxOmega(1200.f),
 			mDampingRateFullThrottle(0.15f),
 			mDampingRateZeroThrottleClutchEngaged(2.0f),
@@ -113,7 +113,7 @@ public:
 		mTorqueCurve.addPair(0.0f, 0.8f);
 		mTorqueCurve.addPair(0.33f, 1.f);
 		mTorqueCurve.addPair(0.66f, 0.6f);
-		mTorqueCurve.addPair(1.0f, 0.5f);
+		mTorqueCurve.addPair(1.0f, 0.8f);
 
 
 		mRecipMOI=1.0f/mMOI;
@@ -458,7 +458,7 @@ public:
 			mCentreBias(1.3f),
 			mFrontBias(1.3f),
 			mRearBias(1.3f),
-			mType(PxVehicleDifferential4WData::eDIFF_TYPE_LS_4WD)
+			mType(PxVehicleDifferential4WData::eDIFF_TYPE_LS_REARWD)
 	{
 	}
 
