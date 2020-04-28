@@ -132,6 +132,7 @@ const unsigned short M_KEY = 77;
 const unsigned short N_KEY = 78;
 const unsigned short T_KEY = 'T';
 const unsigned short P_KEY = 'P';
+const unsigned short R_KEY = 'R';
 const unsigned short W_KEY = 87;
 const unsigned short A_KEY = 65;
 const unsigned short B_KEY = 66;
