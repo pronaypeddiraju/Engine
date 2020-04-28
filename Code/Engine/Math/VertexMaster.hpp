@@ -11,15 +11,11 @@
 // for construction of a mesh before it is sent to the GPU.  Like an Image for a Texture
 struct VertexMaster
 {
-	Vec3 m_position;							// A04
-	Vec3 m_normal;								// A05
-	Vec3 m_tangent;								// A07
-	Vec3 m_biTangent;							// A07
+	Vec3 m_position;							
+	Vec3 m_normal;								
+	Vec3 m_tangent;								
+	Vec3 m_biTangent;							
 
-	Rgba m_color = Rgba::WHITE;					// A04
-	Vec2 m_uv = Vec2::ZERO;						// A04;
-
-
-	// skin weights         // Summer
-	// skin indices         // Summer
+	Rgba m_color = Rgba::WHITE;					
+	Vec2 m_uv = Vec2::ZERO;						
 }; 
