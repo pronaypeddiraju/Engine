@@ -40,10 +40,12 @@ const std::string Stringf( const int maxLength, const char* format, ... )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-std::vector<std::string> SplitStringOnDelimiter(std::string s, char delimiter )
+std::vector<std::string> SplitStringOnDelimiter(const std::string& s, char delimiter )
 {
 	//Make a vector of strings
-	std::vector<std::string> splitStrings;
+	static std::vector<std::string> splitStrings;
+	splitStrings.clear();
+
 	size_t startPos = 0;
 	//find first occurance of the delimiter
 	size_t endPos = s.find_first_of(delimiter);
