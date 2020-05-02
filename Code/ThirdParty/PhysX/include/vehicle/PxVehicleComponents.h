@@ -458,7 +458,7 @@ public:
 			mCentreBias(1.3f),
 			mFrontBias(1.3f),
 			mRearBias(1.3f),
-			mType(PxVehicleDifferential4WData::eDIFF_TYPE_LS_REARWD)
+			mType(PxVehicleDifferential4WData::eDIFF_TYPE_LS_4WD)
 	{
 	}
 
