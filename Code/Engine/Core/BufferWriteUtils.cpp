@@ -305,6 +305,17 @@ void BufferWriteUtils::AppendVertexPCU(const Vertex_PCU& vertex)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void BufferWriteUtils::AppendVertexMaster(const VertexMaster& vertex)
+{
+	AppendVec3(vertex.m_position);
+	AppendVec3(vertex.m_normal);
+	AppendVec3(vertex.m_tangent);
+	AppendVec3(vertex.m_biTangent);
+	AppendRgba(vertex.m_color);
+	AppendVec2(vertex.m_uv);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void BufferWriteUtils::AppendZeros(size_t howManyBytesWorthOfZerosToAppend)
 {
 	uchar ch = 0;
@@ -319,7 +330,7 @@ void BufferWriteUtils::AppendZeros(size_t howManyBytesWorthOfZerosToAppend)
 uchar* BufferWriteUtils::AppendUninitializedBytes(size_t howManyJunkBytesToAppend)
 {
 	uchar* locationOfJunk = &m_buffer[m_buffer.size() - 1];
-	uchar junk;
+	uchar junk = 0;
 
 	for (int i = 0; i < howManyJunkBytesToAppend; i++)
 	{

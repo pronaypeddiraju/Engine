@@ -4,6 +4,7 @@
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/Vertex_PCU.hpp"
+#include "Engine/Math/VertexMaster.hpp"
 #include "Engine/Renderer/Rgba.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -49,6 +50,7 @@ public:
 	void					AppendVec3(const Vec3& vec3);								// writes 3 floats: x,y,z
 	void					AppendIntVec2(const IntVec2& ivec2);						// writes 2 ints: x,y
 	void					AppendVertexPCU(const Vertex_PCU& vertex);					// writes Vec3 pos, Rgba color, Vec2 uv
+	void					AppendVertexMaster(const VertexMaster& vertex);					// writes Vec3 pos, Vec3 normal, Vec3 tangent, Vec3 bitangent, Rgba color, Vec2 uv
 	void					AppendZeros(size_t howManyBytesWorthOfZerosToAppend);
 	uchar*					AppendUninitializedBytes(size_t howManyJunkBytesToAppend); // returns the START of the new uninitialized bytes (typically to copy into)
 

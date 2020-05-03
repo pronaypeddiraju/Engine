@@ -4,6 +4,7 @@
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/Vertex_PCU.hpp"
+#include "Engine/Math/VertexMaster.hpp"
 #include "Engine/Renderer/Rgba.hpp"
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -42,6 +43,7 @@ public:
 	Vec3					ParseVec3();															// reads 3 floats: x,y,z
 	IntVec2					ParseIntVec2();															// reads 2 ints: x,y
 	Vertex_PCU				ParseVertexPCU();														// reads Vec3 pos, Rgba color, Vec2 uv
+	VertexMaster			ParseVertexMaster();														// reads Vec3 pos, Vec3 normal, Vec3 tangent, Vec3 bitangent, Rgba color, Vec2 uv
 
 	inline size_t			GetTotalSize() const { return m_bufferSize; }
 	inline size_t			GetRemainingSize() const { return (m_scanEnd - m_scanPosition) + 1; }

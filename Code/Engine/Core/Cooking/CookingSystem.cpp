@@ -12,3 +12,9 @@ CookingSystem::~CookingSystem()
 
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
+void CookingSystem::CookGPUMesh(const GPUMesh& mesh)
+{
+	
+}
+

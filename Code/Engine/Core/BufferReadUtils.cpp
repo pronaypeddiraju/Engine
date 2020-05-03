@@ -371,6 +371,21 @@ Vertex_PCU BufferReadUtils::ParseVertexPCU()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+VertexMaster BufferReadUtils::ParseVertexMaster()
+{
+	VertexMaster vertex;
+	vertex.m_position = ParseVec3();
+	vertex.m_normal = ParseVec3();
+	vertex.m_tangent = ParseVec3();
+	vertex.m_biTangent = ParseVec3();
+
+	vertex.m_color = ParseRgba();
+	vertex.m_uv = ParseVec2();
+
+	return vertex;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 bool BufferReadUtils::IsBufferDataAvailable(size_t numBytes) const
 {
 	return m_scanPosition + (numBytes - 1) <= m_scanEnd;

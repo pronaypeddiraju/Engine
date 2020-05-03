@@ -21,6 +21,8 @@ ObjectLoader::ObjectLoader()
 //------------------------------------------------------------------------------------------------------------------------------
 ObjectLoader::~ObjectLoader()
 {
+	MakeCookedVersion();
+
 	if (m_mesh != nullptr)
 	{
 		delete m_mesh;
@@ -32,8 +34,30 @@ STATIC ObjectLoader* ObjectLoader::MakeLoaderAndLoadMeshFromFile(RenderContext* 
 {
 	ObjectLoader* object = new ObjectLoader();
 	object->m_renderContext = renderContext;
+	
+	object->m_fullFileName = fileName;
 
-	DebuggerPrintf("Loading: %s\n", fileName.c_str());
+	DebuggerPrintf("Loading: %s\n", object->m_fullFileName.c_str());
+
+	//Chck if a cooked version exists
+	std::vector<std::string> splits = SplitStringOnDelimiter(fileName, '.');
+	std::string pmeshPath = "";
+	for (int index = 0; index < splits.size() - 1; index++)
+	{
+		pmeshPath += splits[index];
+	}
+	pmeshPath += ".pmsh";
+
+	Buffer readBuffer;
+	if (LoadBinaryFileToExistingBuffer(pmeshPath, readBuffer))
+	{
+		//This is a cooked mesh
+		object->m_isCooked = true;
+
+		object->LoadFromPMSH(fileName, readBuffer);
+		object->CreateGPUMesh();
+		return object;
+	}
 
 	//Open file and see what it says
 	if (isDataDriven)
@@ -59,6 +83,31 @@ void ObjectLoader::LoadMeshFromFile(RenderContext* renderContext, const std::str
 
 	DebuggerPrintf("Loading: %s\n", fileName.c_str());
 
+	m_fullFileName = fileName;
+
+	DebuggerPrintf("Loading: %s\n", m_fullFileName.c_str());
+
+	//Chck if a cooked version exists
+	std::vector<std::string> splits = SplitStringOnDelimiter(fileName, '.');
+	std::string pmeshPath = "";
+	for (int index = 0; index < splits.size() - 1; index++)
+	{
+		pmeshPath += splits[index];
+	}
+	pmeshPath += ".pmsh";
+
+	Buffer readBuffer;
+	if (LoadBinaryFileToExistingBuffer(pmeshPath, readBuffer))
+	{
+		//This is a cooked mesh
+		m_isCooked = true;
+
+		LoadFromPMSH(fileName, readBuffer);
+		CreateGPUMesh();
+
+		return;
+	}
+
 	//Open file and see what it says
 	if (isDataDriven)
 	{
@@ -71,6 +120,59 @@ void ObjectLoader::LoadMeshFromFile(RenderContext* renderContext, const std::str
 		CreateFromString(fileName.c_str());
 		CreateCPUMesh();
 		CreateGPUMesh();
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void ObjectLoader::LoadFromPMSH(const std::string& fileName, Buffer& readBuffer)
+{
+	BufferReadUtils readUtils(readBuffer);
+
+	//Check FourCC
+	uchar* fourCC = new uchar[4];
+	readUtils.ParseByteArray(fourCC, 4);
+
+	if (fourCC[0] != 'P' || fourCC[1] != 'M' || fourCC[2] != 'S' || fourCC[3] != 'H')
+	{
+		ERROR_AND_DIE("FourCC code mismatch for PMSH");
+	}
+
+	uchar byte = readUtils.ParseByte();
+	uchar versionMajor = readUtils.ParseByte();
+	if (versionMajor != 1)
+	{
+		ERROR_AND_DIE("Major Version mismatch for PMSH");
+	}
+	uchar versionMinor = readUtils.ParseByte();
+	if (versionMinor != 0)
+	{
+		ERROR_AND_DIE("Minor Version mismatch for PMSH");
+	}
+
+	eBufferEndianness endianNess = (eBufferEndianness)readUtils.ParseByte();
+	readUtils.SetEndianMode(endianNess);
+
+	uint numVerts = readUtils.ParseUint32();
+	uint numIndices = readUtils.ParseUint32();
+
+	m_cpuMesh = new CPUMesh();
+	m_cpuMesh->ReserveForNumVertices(numVerts);
+	m_cpuMesh->ReserveForNumIndices(numIndices);
+
+	//Copy all the verts
+	VertexMaster tempVertex;
+	for (int vertexIndex = 0; vertexIndex < (int)numVerts; vertexIndex++)
+	{
+		tempVertex = readUtils.ParseVertexMaster();
+		m_cpuMesh->AddVertex(tempVertex);
+	}
+
+	//Indice data
+	uint tempIndice = 0;
+	for (int indiceIndex = 0; indiceIndex < (int)numIndices; indiceIndex++)
+	{
+		tempIndice = readUtils.ParseUint32();
+		m_cpuMesh->AddIndex(tempIndice);
 	}
 }
 
@@ -231,6 +333,17 @@ void ObjectLoader::CreateFromString(const char* data)
 
 			int numIndices = (int)tokens.size();
 
+// 			if (SplitStringOnDelimiter(tokens[0], '/').size() == 1)
+// 			{
+// 				//If there is only 1 entry for the faces
+// 				ObjIndex idx;
+// 				idx.vertexIndex = atoi(tokens[0].c_str()) - 1;
+// 				idx.uvIndex = 0;
+// 				idx.normalIndex = 0;
+// 
+// 				m_indices.push_back(idx);
+// 			}
+			
 			if (numIndices == 3)
 			{
 				if (!m_invert)
@@ -275,7 +388,6 @@ void ObjectLoader::CreateFromString(const char* data)
 			}
 			else
 			{
-				DebuggerPrintf("Obj file contains an n-gon \n");
 				if (!m_invert)
 				{
 					//We have 5 face so better plit into tris
@@ -339,7 +451,11 @@ void ObjectLoader::CreateCPUMesh()
 
 		vertex.m_position = m_positions[m_indices[index].vertexIndex];
 		vertex.m_normal = m_normals[m_indices[index].normalIndex];
-		vertex.m_uv = m_uvs[m_indices[index].uvIndex];
+
+		if (m_uvs.size() != 0)		
+		{
+			vertex.m_uv = m_uvs[m_indices[index].uvIndex];
+		}
 
 		vertices.push_back(vertex);
 		indices.push_back(index);
@@ -410,4 +526,79 @@ void ObjectLoader::CreateGPUMesh()
 	m_mesh = new GPUMesh(m_renderContext);
 	m_mesh->CreateFromCPUMesh<Vertex_Lit>(m_cpuMesh);
 	m_mesh->m_defaultMaterial = m_defaultMaterialPath;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void ObjectLoader::MakeCookedVersion()
+{
+	if (m_isCooked || !m_cookingRun)
+	{
+		DebuggerPrintf("\n Mesh is already a cooked mesh");
+		return;
+	}
+
+	//Write cooked version to disk
+
+	Buffer buffer;
+	BufferWriteUtils writeBufferUtil(buffer);
+
+	//Header
+	//Four CC
+	writeBufferUtil.AppendByte('P');
+	writeBufferUtil.AppendByte('M');
+	writeBufferUtil.AppendByte('S');
+	writeBufferUtil.AppendByte('H');
+
+	//Reserved Byte
+	writeBufferUtil.AppendByte(0);
+
+	//File Number
+	writeBufferUtil.AppendByte(1);
+	writeBufferUtil.AppendByte(0);
+
+	//Endianness
+	writeBufferUtil.AppendByte(writeBufferUtil.m_endianMode);
+
+	//Mesh Data
+	uint numVertices = m_cpuMesh->GetVertexCount();
+	uint numIndices = m_cpuMesh->GetIndexCount();
+	writeBufferUtil.AppendUint32(numVertices);
+	writeBufferUtil.AppendUint32(numIndices);
+
+	//Vertex Data
+	const VertexMaster* vertices = m_cpuMesh->GetVertices();
+	for (int vertexIndex = 0; vertexIndex < (int)numVertices; vertexIndex++)
+	{
+		writeBufferUtil.AppendVertexMaster(vertices[vertexIndex]);
+	}
+
+	//Index Data
+	const uint* indices = m_cpuMesh->GetIndices();
+	for (int indiceIndex = 0; indiceIndex < (int)numIndices; indiceIndex++)
+	{
+		writeBufferUtil.AppendUint32(indices[indiceIndex]);
+	}
+
+	std::string fileSavePath = "";
+	std::vector<std::string> splits = SplitStringOnDelimiter(m_fullFileName, '.');
+	if (splits[splits.size() - 1] == "mesh" || splits[splits.size() - 1] ==  "obj")
+	{
+		//Write source except the extention
+		for (int i = 0; i < splits.size() - 1; i++)
+		{
+			fileSavePath += splits[i];
+		}
+
+		fileSavePath += ".pmsh";
+	}
+
+	bool success = SaveBinaryFileFromBuffer(fileSavePath, buffer);
+	if (success)
+	{
+		DebuggerPrintf("\n Sucessfully cooked %s PMSH to disk", fileSavePath.c_str());
+	}
+	else
+	{
+		DebuggerPrintf("\n Failed to cook %s PMSH to disk", fileSavePath.c_str());
+	}
 }

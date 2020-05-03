@@ -170,6 +170,8 @@ const unsigned short TAB_KEY = 9;
 const unsigned short LCTRL_KEY = 17;
 const unsigned short LSHIFT_KEY = 16;
 
+constexpr bool RUN_COOKING = false;
+
 //------------------------------------------------------------------------------------------------------------------------------
 constexpr char SHADER_PATH[] = "Data/Shaders/"; 
 constexpr char IMAGE_PATH[] = "Data/Images/";

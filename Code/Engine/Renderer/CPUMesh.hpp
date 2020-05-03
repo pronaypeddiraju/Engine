@@ -33,6 +33,9 @@ public:
 
 	void SetLayout( const BufferLayout* layout ); 
 
+	void ReserveForNumVertices(int numVerts);
+	void ReserveForNumIndices(int numIndices);
+
 	// templated helper - so I can do things like
 	// CPUMesh mesh;  
 	// mesh.SetBufferLayout<VertexPCU>(); 

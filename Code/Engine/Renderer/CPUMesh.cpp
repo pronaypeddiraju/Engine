@@ -468,6 +468,20 @@ void CPUMesh::SetLayout( const BufferLayout* layout )
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void CPUMesh::ReserveForNumVertices(int numVerts)
+{
+	//Pre-allocate the vector of vertices
+	m_vertices.reserve(numVerts);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void CPUMesh::ReserveForNumIndices(int numIndices)
+{
+	//Pre-allocate the vector of indices
+	m_indices.reserve(numIndices);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 BufferLayout const* CPUMesh::GetLayout() const
 {
 	return m_layout;

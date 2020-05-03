@@ -147,7 +147,7 @@ bool LoadBinaryFileToExistingBuffer(const std::string& filePath, std::vector<uns
 	if (errorCode != 0)
 	{
 		std::string errorMessage = Stringf("There was an error opening file %s", filePath.c_str());
-		ERROR_RECOVERABLE(errorMessage);
+		//ERROR_RECOVERABLE(errorMessage);
 		return false;
 	}
 	else
