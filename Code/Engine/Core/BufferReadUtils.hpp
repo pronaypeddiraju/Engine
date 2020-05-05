@@ -23,8 +23,11 @@ public:
 	bool					IsEndianModeBig() const { return (m_endianMode == eBufferEndianness::BUFFER_BIG_ENDIAN) || (m_endianMode == eBufferEndianness::BUFFER_NATIVE && PLATFORM_IS_BIG_ENDIAN); }
 	bool					IsEndianModeOppositeNative() const { return m_isOppositeEndian; }
 
+	bool					SetReadLocation(uint newScanLocation);
+
 	uchar					ParseByte();
 	char					ParseChar();
+	short					ParseShort();
 	int						ParseInt32();
 	uint					ParseUint32();
 	float					ParseFloat();

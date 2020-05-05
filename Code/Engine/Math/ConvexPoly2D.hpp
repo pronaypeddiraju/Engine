@@ -12,7 +12,7 @@ public:
 	~ConvexPoly2D();
 
 	const std::vector<Vec2>&	GetConvexPoly2DPoints() const;
-
+	int							GetNumVertices();
 private:
 	std::vector<Vec2>	m_convexPolyPoints;
 };

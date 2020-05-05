@@ -37,6 +37,25 @@ void BufferReadUtils::SetEndianMode(eBufferEndianness endianModeToUseForSubseque
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+bool BufferReadUtils::SetReadLocation(uint newScanLocation)
+{
+	if (newScanLocation >= 0 && newScanLocation < m_bufferSize)
+	{
+		m_scanPosition = m_scanStart;
+		for (int i = 0; i < newScanLocation; i++)
+		{
+			m_scanPosition++;
+		}
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 uchar BufferReadUtils::ParseByte()
 {
 	//Check if we have the correct number of bytes in the buffer remaining
@@ -58,6 +77,29 @@ char BufferReadUtils::ParseChar()
 	char parsedValue;
 	parsedValue = (char)*m_scanPosition;
 	(uchar)m_scanPosition++;
+	return parsedValue;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+short BufferReadUtils::ParseShort()
+{
+	//Check if we have the correct number of bytes in the buffer remaining
+	GuaranteeBufferDataAvailable(sizeof(short));
+	short parsedValue = 0;
+
+	uchar bytes[2];
+	bytes[0] = *m_scanPosition;
+	m_scanPosition++;
+	bytes[1] = *m_scanPosition;
+	m_scanPosition++;
+
+	if (IsEndianModeOppositeNative())
+	{
+		Reverse2BytesInPlace(&bytes);
+	}
+
+	memcpy(&parsedValue, &bytes, sizeof(short));
+
 	return parsedValue;
 }
 

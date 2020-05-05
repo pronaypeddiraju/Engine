@@ -24,3 +24,9 @@ const std::vector<Vec2>& ConvexPoly2D::GetConvexPoly2DPoints() const
 	return m_convexPolyPoints;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
+int ConvexPoly2D::GetNumVertices()
+{
+	return m_convexPolyPoints.size();
+}
+

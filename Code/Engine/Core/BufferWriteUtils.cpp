@@ -46,6 +46,25 @@ void BufferWriteUtils::AppendChar(char paramChar)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+void BufferWriteUtils::AppendShort(short paramShort)
+{
+	uchar asBytes[sizeof(short)];
+	std::copy(static_cast<const uchar*>(static_cast<const void*>(&paramShort)),
+		static_cast<const uchar*>(static_cast<const void*>(&paramShort)) + sizeof(short),
+		asBytes);
+
+	if (IsEndianModeOppositeNative())
+	{
+		Reverse2BytesInPlace(&asBytes);
+	}
+
+	ReserveAdditional(sizeof(short));
+
+	m_buffer.push_back(asBytes[0]);
+	m_buffer.push_back(asBytes[1]);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 void BufferWriteUtils::AppendInt32(int paramInt)
 {
 	uchar asBytes[sizeof(int)];
@@ -338,4 +357,23 @@ uchar* BufferWriteUtils::AppendUninitializedBytes(size_t howManyJunkBytesToAppen
 	}
 
 	return locationOfJunk;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+void BufferWriteUtils::WriteUint32AtLocation(int writeLocation, uint paramUint)
+{
+	uchar asBytes[sizeof(uint)];
+	std::copy(static_cast<const uchar*>(static_cast<const void*>(&paramUint)),
+		static_cast<const uchar*>(static_cast<const void*>(&paramUint)) + sizeof(uint),
+		asBytes);
+
+	if (IsEndianModeOppositeNative())
+	{
+		Reverse4BytesInPlace(&asBytes);
+	}
+
+	m_buffer[writeLocation] = asBytes[0];
+	m_buffer[writeLocation + 1] = asBytes[1];
+	m_buffer[writeLocation + 2] = asBytes[2];
+	m_buffer[writeLocation + 3] = asBytes[3];
 }

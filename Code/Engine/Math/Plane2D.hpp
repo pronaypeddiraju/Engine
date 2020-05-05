@@ -13,6 +13,8 @@ public:
 	// positive -> in front of the plane
 	// negative -> behind the plane; 
 	float				GetDistance( const Vec2& point ) const;
+	Vec2				GetNormal() const { return m_normal; }
+	float				GetSignedDistance() const { return m_signedDistance; }
 	inline bool			IsPointInFrontOfPlane( const Vec2& point ) const { return (GetDistance(point) > 0.0f); }
 	inline bool			IsPointBehindPlane( const Vec2& point ) const { return (GetDistance(point) < 0.0f); }
 

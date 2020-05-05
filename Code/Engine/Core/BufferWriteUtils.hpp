@@ -31,6 +31,7 @@ public:
 	// Each of these appends to the buffer's end
 	void					AppendByte(uchar paramUchar);
 	void					AppendChar(char paramChar);
+	void					AppendShort(short paramShort);
 	void					AppendInt32(int paramInt);
 	void					AppendUint32(uint paramUint);
 	void					AppendFloat(float paramFloat);
@@ -53,6 +54,9 @@ public:
 	void					AppendVertexMaster(const VertexMaster& vertex);					// writes Vec3 pos, Vec3 normal, Vec3 tangent, Vec3 bitangent, Rgba color, Vec2 uv
 	void					AppendZeros(size_t howManyBytesWorthOfZerosToAppend);
 	uchar*					AppendUninitializedBytes(size_t howManyJunkBytesToAppend); // returns the START of the new uninitialized bytes (typically to copy into)
+
+	//Writing at a specific location
+	void					WriteUint32AtLocation(int writeLocation, uint paramUint);
 
 	eBufferEndianness		m_endianMode = eBufferEndianness::BUFFER_NATIVE;
 	bool					m_isOppositeEndian = false;									// false if buffer matches native (don't need to reverse)
