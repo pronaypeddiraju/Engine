@@ -208,8 +208,7 @@ void BufferWriteUtils::AppendStringZeroTerminated(const char* paramString)
 void BufferWriteUtils::AppendStringZeroTerminated(const std::string& paramString)
 {
 	const char* ch = &paramString[0];
-
-	while (ch != '\0')
+	while (*ch != '\0')
 	{
 		AppendChar(*ch);
 		ch++;

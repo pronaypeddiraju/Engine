@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 
 #define MAX_TRACE 64
 #define TRACE_MAX_FUNCTION_NAME_LENGTH 1024

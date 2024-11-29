@@ -32,8 +32,8 @@ struct PVectorBase
 
 	enum : size_t
 	{
-		nonValidPos		= (size_t)-1;	//non valid position.
-		maxSize			= (size_t)-2;	//-1 reserved for nonValidPos, maxSize conveniently can be -2 so that we don't have any integer wrap around issues
+		nonValidPos		= -1,	//non valid position.
+		maxSize			= -2	//-1 reserved for nonValidPos, maxSize conveniently can be -2 so that we don't have any integer wrap around issues
 	};
 
 protected:
