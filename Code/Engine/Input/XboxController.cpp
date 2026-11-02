@@ -101,7 +101,7 @@ void XboxController::UpdateTrigger( float& triggerValue, unsigned char rawValue 
 //------------------------------------------------------------------------------------------------------------------------------
 void XboxController::UpdateJoystick( AnalogJoyStick& joystick, short rawX, short rawY )
 {
-	//normalize my shit
+	//normalize the raw stick values
 	float correctedRawX = RangeMapFloat(rawX, -32768.f, 32767.f, -1.f, 1.f);
 	float correctedRawY = RangeMapFloat(rawY, -32768.f, 32767.f, -1.f, 1.f);
 	joystick.UpdatePosition(correctedRawX, correctedRawY);

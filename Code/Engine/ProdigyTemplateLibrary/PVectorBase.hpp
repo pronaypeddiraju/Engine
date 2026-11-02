@@ -160,7 +160,7 @@ inline void					PVectorBase<T, PAllocator>::Free(T* p, size_t numObjectsToFree)
 {
 	if (p)
 	{
-		//TODO("Unfuck freeing memory using interal allocator stored");
+		//TODO("Fix freeing memory using interal allocator stored");
 		GetInternalAllocator().Free(p, numObjectsToFree * sizeof(T));
 	}
 }
