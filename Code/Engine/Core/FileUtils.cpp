@@ -8,7 +8,7 @@ unsigned long CreateFileReadBuffer(const std::string& fileName, char **outData )
 	std::ifstream fileStream;
 
 	//Open the file in binary and at the end
-	//This tells us where we are in the file and. We open in binary so it doesn't fuck with carriage returns
+	//This tells us where we are in the file and. We open in binary so it doesn't alter carriage returns
 	//We open at end of file so it's easier to get the file size
 	fileStream.open(fileName, std::ios::binary | std::ios::ate);
 
@@ -80,7 +80,7 @@ std::ofstream* CreateFileWriteBuffer(const std::string& fileName)
 	std::ofstream* fileStream = new std::ofstream();
 
 	//Open the file in binary and at the end
-	//This tells us where we are in the file and. We open in binary so it doesn't fuck with carriage returns
+	//This tells us where we are in the file and. We open in binary so it doesn't alter carriage returns
 	//We open at end of file so it's easier to get the file size
 	fileStream->open(fileName, std::ios::binary | std::ios::ate);
 
